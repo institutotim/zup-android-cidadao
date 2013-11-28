@@ -1,5 +1,6 @@
 package br.com.ntxdev.zup;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,7 +10,6 @@ import android.widget.TextView;
 import br.com.ntxdev.zup.fragment.EstatisticasFragment;
 import br.com.ntxdev.zup.fragment.ExploreFragment;
 import br.com.ntxdev.zup.fragment.MinhaContaFragment;
-import br.com.ntxdev.zup.fragment.SoliciteFragment;
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
 	
@@ -20,10 +20,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		((TextView) findViewById(R.id.exploreButton)).setOnClickListener(this);
-		((TextView) findViewById(R.id.soliciteButton)).setOnClickListener(this);
-		((TextView) findViewById(R.id.minhaContaButton)).setOnClickListener(this);
-		((TextView) findViewById(R.id.estatisticasButton)).setOnClickListener(this);
+		findViewById(R.id.exploreButton).setOnClickListener(this);
+		findViewById(R.id.soliciteButton).setOnClickListener(this);
+		findViewById(R.id.minhaContaButton).setOnClickListener(this);
+		findViewById(R.id.estatisticasButton).setOnClickListener(this);
 		
 		current = (TextView) findViewById(R.id.exploreButton);
 		setFragment(new ExploreFragment());
@@ -31,6 +31,15 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
 	@Override
 	public void onClick(View v) {
+		if (v.getId() == current.getId()) {
+			return;
+		}
+		
+		if (v.getId() == R.id.soliciteButton) {
+			startActivity(new Intent(this, SoliciteActivity.class));
+			return;
+		}
+		
 		unselectCurrent();
 		selectCurrent(v.getId());
 	}
@@ -38,7 +47,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 	private void selectCurrent(int id) {
 		TextView view = (TextView) findViewById(id);
 		view.setTextColor(Color.WHITE);
-		switch (id) {
+		switch (id) {		
 		case R.id.estatisticasButton:
 			view.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.tabbar_icon_estatisticas_active), null, null);
 			setFragment(new EstatisticasFragment());
@@ -50,11 +59,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 		case R.id.minhaContaButton:
 			view.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.tabbar_icon_conta_active), null, null);
 			setFragment(new MinhaContaFragment());
-			break;
-		case R.id.soliciteButton:
-			view.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.tabbar_icon_solicite_active), null, null);
-			setFragment(new SoliciteFragment());
-			break;		
+			break;				
 		}
 		current = view;
 	}
@@ -75,9 +80,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 		case R.id.minhaContaButton:
 			current.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.tabbar_icon_conta), null, null);
 			break;
-		case R.id.soliciteButton:
-			current.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.tabbar_icon_solicite), null, null);
-			break;		
 		}
 	}
 }

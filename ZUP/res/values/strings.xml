@@ -2,13 +2,21 @@
 <resources>
 
     <string name="app_name">ZUP</string>
-
     <string name="estatisticas">Estatísticas</string>
-
     <string name="minha_conta">Minha conta</string>
-
     <string name="solicite">Solicite</string>
-
     <string name="explore">Explore</string>
-
+    <string name="filtrar">Filtrar</string>
+    <string name="title_activity_solicite">SoliciteActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="limpeza_de_boca_de_lobo">Limpeza de boca de lobo</string>
+    <string name="coleta_de_entulho">Coleta de entulho</string>
+    <string name="selecione_a_categoria">Selecione a categoria</string>
+    <string name="selecione_o_local">Selecione o endereço ou arraste o marcador até a posição exata</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="nova_solicitacao">Nova Solicitação</string>
+    <string name="anterior">Anterior</string>
+    <string name="proximo">Próximo</string>
+    
 </resources>
