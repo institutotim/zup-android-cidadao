@@ -14,9 +14,22 @@
     <string name="coleta_de_entulho">Coleta de entulho</string>
     <string name="selecione_a_categoria">Selecione a categoria</string>
     <string name="selecione_o_local">Selecione o endereço ou arraste o marcador até a posição exata</string>
+    <string name="adicione_fotos">Adicione uma ou até 3 fotos</string>
+    <string name="concluir_solicitacao">Conclua sua solicitação</string>
     <string name="cancelar">Cancelar</string>
     <string name="nova_solicitacao">Nova Solicitação</string>
     <string name="anterior">Anterior</string>
     <string name="proximo">Próximo</string>
+    <string name="publicar">Publicar</string>
+    <string name="adicionar_foto">Adicionar foto</string>
+    <string name="se_desejar_detalhe_a_situacao">Se desejar, detalhe a situação</string>
+    <string name="compartilhar_rede_social">Compartilhar no %s</string>
+    <string name="seletor_on_off">Seletor on/off</string>
+    
+    <string-array name="foto_menu">
+        <item>Escolher foto do álbum</item>
+        <item>Tirar foto</item>
+        <item>Cancelar</item>
+    </string-array>
     
 </resources>

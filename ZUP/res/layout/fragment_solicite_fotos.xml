@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff" >
+
+    <ImageView
+        android:id="@+id/fotoFrame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:contentDescription="@string/adicionar_foto"
+        android:src="@drawable/solicite_foto_frame" />
+
+    <LinearLayout
+        android:id="@+id/containerFotos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="horizontal"
+        android:padding="2dp"
+        android:visibility="gone" >
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/fotoButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="35dp"
+        android:background="@drawable/button_blue_bg"
+        android:padding="10dp"
+        android:text="@string/adicionar_foto"
+        android:textColor="#fff" />
+
+</RelativeLayout>

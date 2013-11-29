@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import br.com.ntxdev.zup.domain.Solicitacao;
+import br.com.ntxdev.zup.fragment.SoliciteDetalhesFragment;
+import br.com.ntxdev.zup.fragment.SoliciteFotosFragment;
 import br.com.ntxdev.zup.fragment.SoliciteLocalFragment;
 import br.com.ntxdev.zup.fragment.SoliciteTipoFragment;
 
@@ -15,7 +17,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 	private Passo atual = Passo.TIPO;
 	private Solicitacao solicitacao = new Solicitacao();
 	
-	private View botaoAvancar;
+	private TextView botaoAvancar;
 	private View botaoVoltar;
 	
 	private enum Passo {
@@ -27,7 +29,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_solicite);
 		
-		botaoAvancar = findViewById(R.id.botaoAvancar);
+		botaoAvancar = (TextView) findViewById(R.id.botaoAvancar);
 		botaoAvancar.setOnClickListener(this);
 		botaoVoltar = findViewById(R.id.botaoVoltar);
 		botaoVoltar.setOnClickListener(this);
@@ -56,13 +58,36 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 	public void setInfo(int string) {
 		((TextView) findViewById(R.id.instrucoes)).setText(string);
 	}
+	
+	public void setComentario(String comentario) {
+		solicitacao.setComentario(comentario);
+	}
+	
+	public void setRedeSocial(boolean publicar) {
+		solicitacao.setRedeSocial(publicar);
+	}
+	
+	public void adicionarFoto(String foto) {
+		solicitacao.adicionarFoto(foto);
+	}
+	
+	public void removerFoto(String foto) {
+		solicitacao.removerFoto(foto);
+	}
 
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == botaoAvancar.getId()) {
-			
+			if (atual.equals(Passo.LOCAL)) {
+				getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, new SoliciteFotosFragment()).commit();
+				atual = Passo.FOTOS;
+			} else if (atual.equals(Passo.FOTOS)) {
+				getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, new SoliciteDetalhesFragment()).commit();
+				botaoAvancar.setText(R.string.publicar);
+				atual = Passo.COMENTARIOS;
+			}
 		} else if (v.getId() == botaoVoltar.getId()) {
-			
+			botaoAvancar.setText(R.string.proximo);
 		}
 	}
 }

@@ -16,6 +16,8 @@ public class Solicitacao implements Serializable {
 	private float latitude;
 	private float longitude;
 	private List<String> fotos = new ArrayList<String>();
+	private String comentario;
+	private boolean redeSocial = false;
 
 	public Tipo getTipo() {
 		return tipo;
@@ -44,5 +46,25 @@ public class Solicitacao implements Serializable {
 	
 	public void adicionarFoto(String foto) {
 		fotos.add(foto);
+	}
+	
+	public void removerFoto(String foto) {
+		fotos.remove(foto);
+	}
+
+	public String getComentario() {
+		return comentario;
+	}
+
+	public void setComentario(String comentario) {
+		this.comentario = comentario;
+	}
+
+	public boolean isRedeSocial() {
+		return redeSocial;
+	}
+
+	public void setRedeSocial(boolean redeSocial) {
+		this.redeSocial = redeSocial;
 	}
 }
