@@ -2,5 +2,8 @@ box: wercker/android
 build:
   steps:
     - script:
-        name: run gradle
-        code: gradle --full-stacktrace -q --project-cache-dir=$WERCKER_CACHE_DIR build
+        name: Build
+        code: |
+		echo -e "$BUILD_SCRIPT" > build-script.sh
+                chmod +x build-script.sh
+                ./build-script.sh
