@@ -3,7 +3,7 @@
 
     <string name="app_name">ZUP</string>
     <string name="estatisticas">Estatísticas</string>
-    <string name="minha_conta">Minha conta</string>
+    <string name="minha_conta">Minha Conta</string>
     <string name="solicite">Solicite</string>
     <string name="explore">Explore</string>
     <string name="filtrar">Filtrar</string>
@@ -25,11 +25,22 @@
     <string name="se_desejar_detalhe_a_situacao">Se desejar, detalhe a situação</string>
     <string name="compartilhar_rede_social">Compartilhar no %s</string>
     <string name="seletor_on_off">Seletor on/off</string>
-    
+    <string name="sair">Sair</string>
+    <string name="minhas_solicitacoes">Minhas solicitações</string>
+    <string name="solicitacoes">solicitações</string>
+    <string name="solicitacao">solicitação</string>
+    <string name="seta_direita">Seta direita</string>
+    <string name="em_aberto">em aberto</string>
+    <string name="em_andamento">em andamento</string>
+    <string name="resolvido">resolvido</string>
+    <string name="nao_resolvido">não resolvido</string>
+    <string name="protocolo">protocolo</string>
+
     <string-array name="foto_menu">
         <item>Escolher foto do álbum</item>
         <item>Tirar foto</item>
         <item>Cancelar</item>
     </string-array>
-    
+        <string name="editar">Editar</string>
+
 </resources>
