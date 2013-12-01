@@ -42,5 +42,6 @@
         <item>Cancelar</item>
     </string-array>
         <string name="editar">Editar</string>
+        <string name="voltar">Voltar</string>
 
 </resources>

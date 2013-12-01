@@ -1,8 +1,12 @@
 package br.com.ntxdev.zup.domain;
 
+import java.io.Serializable;
+
 import android.graphics.Color;
 
-public class SolicitacaoListItem {
+public class SolicitacaoListItem implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	public enum Status {
 		EM_ABERTO(Color.rgb(0xff, 0x60, 0x49)),

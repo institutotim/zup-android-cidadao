@@ -4,18 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import br.com.ntxdev.zup.R;
+import br.com.ntxdev.zup.SolicitacaoDetalheActivity;
 import br.com.ntxdev.zup.domain.SolicitacaoListItem;
 
-public class MinhaContaFragment extends Fragment {
+public class MinhaContaFragment extends Fragment implements AdapterView.OnItemClickListener {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -52,6 +55,7 @@ public class MinhaContaFragment extends Fragment {
 		items.add(item);
 
 		ListView list = (ListView) view.findViewById(R.id.listaSolicitacoes);
+		list.setOnItemClickListener(this);
 		list.setAdapter(new SolicitacaoAdapter(getActivity(), items));
 		
 		((TextView) view.findViewById(R.id.solicitacoes)).setText(items.size() + " " + 
@@ -101,5 +105,13 @@ public class MinhaContaFragment extends Fragment {
 
 			return row;
 		}
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		SolicitacaoListItem item = (SolicitacaoListItem) parent.getItemAtPosition(position);
+		Intent intent = new Intent(getActivity(), SolicitacaoDetalheActivity.class);
+		intent.putExtra("solicitacao", item);
+		startActivity(intent);
 	}
 }

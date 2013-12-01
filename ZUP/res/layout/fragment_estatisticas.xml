@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:wheel="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff" >
+
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="#fff"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp" >
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/button_blue_bg"
+            android:padding="2dp"
+            android:text="@string/filtrar"
+            android:textColor="#fff" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/button1"
+            android:layout_alignBottom="@+id/button1"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:text="Estatísticas"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:gravity="center" />
+
+    </RelativeLayout>
+
+    
+    <com.todddavies.components.progressbar.ProgressWheel
+        android:id="@+id/spinnerResolvido"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="34dp"
+        android:layout_marginTop="85dp"
+        wheel:barColor="#78c953"
+        wheel:barLength="60dp"
+        wheel:barWidth="10dp"
+        wheel:rimColor="#f3f3f3"
+        wheel:rimWidth="10dp"
+        wheel:text="28%"
+        wheel:textColor="#b2b2b2"
+        wheel:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/txtQtdResolvido"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/spinnerResolvido"
+        android:layout_alignRight="@+id/spinnerResolvido"
+        android:layout_below="@+id/spinnerResolvido"
+        android:gravity="center"
+        android:text="206"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#78c953" />
+    
+    <TextView
+        android:id="@+id/txtResolvido"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/txtQtdResolvido"
+        android:layout_alignRight="@+id/txtQtdResolvido"
+        android:layout_below="@+id/txtQtdResolvido"
+        android:gravity="center"
+        android:text="Resolvidas"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+    
+    <com.todddavies.components.progressbar.ProgressWheel
+        android:id="@+id/spinnerAndamento"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="170dp"
+        android:layout_marginTop="85dp"
+        wheel:barColor="#ffac2d"
+        wheel:barLength="60dp"
+        wheel:barWidth="10dp"
+        wheel:rimColor="#f3f3f3"
+        wheel:rimWidth="10dp"
+        wheel:text="61%"
+        wheel:textColor="#b2b2b2"
+        wheel:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/txtQtdAndamento"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/txtResolvido"
+        android:layout_alignLeft="@+id/spinnerAndamento"
+        android:layout_alignRight="@+id/spinnerAndamento"
+        android:gravity="center"
+        android:text="381"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#ffac2d" />
+
+    <TextView
+        android:id="@+id/txtAndamento"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/txtResolvido"
+        android:layout_alignBottom="@+id/txtResolvido"
+        android:layout_alignLeft="@+id/txtQtdAndamento"
+        android:layout_alignRight="@+id/txtQtdAndamento"
+        android:gravity="center"
+        android:text="Em andamento"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+    
+    
+    <com.todddavies.components.progressbar.ProgressWheel
+        android:id="@+id/spinnerNaoResolvido"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="170dp"
+        android:layout_marginTop="255dp"
+        wheel:barColor="#999999"
+        wheel:barLength="60dp"
+        wheel:barWidth="10dp"
+        wheel:rimColor="#f3f3f3"
+        wheel:rimWidth="10dp"
+        wheel:text="4%"
+        wheel:textColor="#b2b2b2"
+        wheel:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/txtQtdNaoResolvido"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/spinnerNaoResolvido"
+        android:layout_alignRight="@+id/spinnerNaoResolvido"
+        android:layout_below="@+id/spinnerNaoResolvido"
+        android:gravity="center"
+        android:text="381"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#999999" />
+
+    <TextView
+        android:id="@+id/txtNaoResolvido"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/txtQtdNaoResolvido"
+        android:layout_below="@+id/txtQtdNaoResolvido"
+        android:gravity="center"
+        android:text="Não Resolvidas"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+    
+    <com.todddavies.components.progressbar.ProgressWheel
+        android:id="@+id/spinnerEmAberto"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="34dp"
+        android:layout_marginTop="255dp"
+        wheel:barColor="#ff6049"
+        wheel:barLength="60dp"
+        wheel:barWidth="10dp"
+        wheel:rimColor="#f3f3f3"
+        wheel:rimWidth="10dp"
+        wheel:text="11%"
+        wheel:textColor="#b2b2b2"
+        wheel:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/txtQtdEmAberto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/spinnerEmAberto"
+        android:layout_alignRight="@+id/spinnerEmAberto"
+        android:layout_below="@+id/spinnerEmAberto"
+        android:gravity="center"
+        android:text="69"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#ff6049" />
+
+    <TextView
+        android:id="@+id/txtEmAberto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/txtNaoResolvido"
+        android:layout_alignBottom="@+id/txtNaoResolvido"
+        android:layout_alignLeft="@+id/txtQtdEmAberto"
+        android:layout_alignRight="@+id/txtQtdEmAberto"
+        android:gravity="center"
+        android:text="Em aberto"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+    
+
+</RelativeLayout>
