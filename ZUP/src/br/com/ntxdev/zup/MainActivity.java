@@ -10,6 +10,7 @@ import android.widget.TextView;
 import br.com.ntxdev.zup.fragment.EstatisticasFragment;
 import br.com.ntxdev.zup.fragment.ExploreFragment;
 import br.com.ntxdev.zup.fragment.MinhaContaFragment;
+import br.com.ntxdev.zup.util.FontUtils;
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
 	
@@ -20,12 +21,23 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		findViewById(R.id.exploreButton).setOnClickListener(this);
-		findViewById(R.id.soliciteButton).setOnClickListener(this);
-		findViewById(R.id.minhaContaButton).setOnClickListener(this);
-		findViewById(R.id.estatisticasButton).setOnClickListener(this);
+		TextView exploreButton = (TextView) findViewById(R.id.exploreButton);
+		exploreButton.setOnClickListener(this);
+		exploreButton.setTypeface(FontUtils.getLight(this));
 		
-		current = (TextView) findViewById(R.id.exploreButton);
+		TextView soliciteButton = (TextView) findViewById(R.id.soliciteButton);
+		soliciteButton.setOnClickListener(this);
+		soliciteButton.setTypeface(FontUtils.getLight(this));
+		
+		TextView minhaContaButton = (TextView) findViewById(R.id.minhaContaButton);
+		minhaContaButton.setOnClickListener(this);
+		minhaContaButton.setTypeface(FontUtils.getLight(this));
+		
+		TextView estatisticasButton = (TextView) findViewById(R.id.estatisticasButton);
+		estatisticasButton.setOnClickListener(this);
+		estatisticasButton.setTypeface(FontUtils.getLight(this));
+		
+		current = exploreButton;
 		setFragment(new ExploreFragment());
 	}
 

@@ -17,6 +17,7 @@ import android.widget.TextView;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SolicitacaoDetalheActivity;
 import br.com.ntxdev.zup.domain.SolicitacaoListItem;
+import br.com.ntxdev.zup.util.FontUtils;
 
 public class MinhaContaFragment extends Fragment implements AdapterView.OnItemClickListener {
 
@@ -25,6 +26,8 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 		View view = inflater.inflate(R.layout.fragment_minha_conta, container, false);
 
 		List<SolicitacaoListItem> items = new ArrayList<SolicitacaoListItem>();
+		
+		((TextView) view.findViewById(R.id.minhaConta)).setTypeface(FontUtils.getLight(getActivity()));
 
 		SolicitacaoListItem item = new SolicitacaoListItem();
 		item.setData("hoje");

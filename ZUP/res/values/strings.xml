@@ -30,18 +30,26 @@
     <string name="solicitacoes">solicitações</string>
     <string name="solicitacao">solicitação</string>
     <string name="seta_direita">Seta direita</string>
-    <string name="em_aberto">em aberto</string>
-    <string name="em_andamento">em andamento</string>
+    <string name="em_aberto">Em aberto</string>
+    <string name="em_andamento">Em andamento</string>
     <string name="resolvido">resolvido</string>
     <string name="nao_resolvido">não resolvido</string>
     <string name="protocolo">protocolo</string>
-
+    <string name="gps_off">Seu GPS está desativado, deseja ativá-lo?</string>
+    <string name="yes">Sim</string>
+    <string name="no">Não</string>
+    <string name="enviada">enviada</string>
+    
     <string-array name="foto_menu">
         <item>Escolher foto do álbum</item>
         <item>Tirar foto</item>
         <item>Cancelar</item>
     </string-array>
-        <string name="editar">Editar</string>
-        <string name="voltar">Voltar</string>
+
+    <string name="editar">Editar</string>
+    <string name="voltar">Voltar</string>
+    <string name="title_activity_testes">TestesActivity</string>
+    <string name="resolvidas">Resolvidas</string>
+    <string name="nao_resolvidas">Não Resolvidas</string>
 
 </resources>

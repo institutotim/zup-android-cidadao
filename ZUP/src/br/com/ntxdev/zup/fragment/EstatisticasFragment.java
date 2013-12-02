@@ -5,7 +5,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 import br.com.ntxdev.zup.R;
+import br.com.ntxdev.zup.util.FontUtils;
 
 import com.todddavies.components.progressbar.ProgressWheel;
 
@@ -14,6 +17,22 @@ public class EstatisticasFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_estatisticas, container, false);
+		
+		((TextView) view.findViewById(R.id.titulo)).setTypeface(FontUtils.getLight(getActivity()));
+		
+		((TextView) view.findViewById(R.id.txtQtdAndamento)).setTypeface(FontUtils.getExtraBold(getActivity()));
+		((TextView) view.findViewById(R.id.txtQtdEmAberto)).setTypeface(FontUtils.getExtraBold(getActivity()));
+		((TextView) view.findViewById(R.id.txtQtdNaoResolvido)).setTypeface(FontUtils.getExtraBold(getActivity()));
+		((TextView) view.findViewById(R.id.txtQtdResolvido)).setTypeface(FontUtils.getExtraBold(getActivity()));
+		
+		((TextView) view.findViewById(R.id.txtAndamento)).setTypeface(FontUtils.getLight(getActivity()));
+		((TextView) view.findViewById(R.id.txtEmAberto)).setTypeface(FontUtils.getLight(getActivity()));
+		((TextView) view.findViewById(R.id.txtNaoResolvido)).setTypeface(FontUtils.getLight(getActivity()));
+		((TextView) view.findViewById(R.id.txtResolvido)).setTypeface(FontUtils.getLight(getActivity()));
+		
+		Button botaoFiltrar = (Button) view.findViewById(R.id.botaoFiltrar);
+		botaoFiltrar.setTypeface(FontUtils.getLight(getActivity()));
+		
 		ProgressWheel pResolvido = (ProgressWheel) view.findViewById(R.id.spinnerResolvido);
 		pResolvido.setProgress((int) (360.0 / 100.0 * 28));
 		
