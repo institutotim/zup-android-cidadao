@@ -18,11 +18,11 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/minha_conta"
-            android:textColor="@android:color/black"
+            android:textColor="#000"
             android:textSize="21sp" />
 
         <Button
-            android:id="@+id/botaoCancelar"
+            android:id="@+id/botaoSair"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"

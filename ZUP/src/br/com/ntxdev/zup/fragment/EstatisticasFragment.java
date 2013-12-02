@@ -25,13 +25,13 @@ public class EstatisticasFragment extends Fragment {
 		((TextView) view.findViewById(R.id.txtQtdNaoResolvido)).setTypeface(FontUtils.getExtraBold(getActivity()));
 		((TextView) view.findViewById(R.id.txtQtdResolvido)).setTypeface(FontUtils.getExtraBold(getActivity()));
 		
-		((TextView) view.findViewById(R.id.txtAndamento)).setTypeface(FontUtils.getLight(getActivity()));
-		((TextView) view.findViewById(R.id.txtEmAberto)).setTypeface(FontUtils.getLight(getActivity()));
-		((TextView) view.findViewById(R.id.txtNaoResolvido)).setTypeface(FontUtils.getLight(getActivity()));
-		((TextView) view.findViewById(R.id.txtResolvido)).setTypeface(FontUtils.getLight(getActivity()));
+		((TextView) view.findViewById(R.id.txtAndamento)).setTypeface(FontUtils.getRegular(getActivity()));
+		((TextView) view.findViewById(R.id.txtEmAberto)).setTypeface(FontUtils.getRegular(getActivity()));
+		((TextView) view.findViewById(R.id.txtNaoResolvido)).setTypeface(FontUtils.getRegular(getActivity()));
+		((TextView) view.findViewById(R.id.txtResolvido)).setTypeface(FontUtils.getRegular(getActivity()));
 		
 		Button botaoFiltrar = (Button) view.findViewById(R.id.botaoFiltrar);
-		botaoFiltrar.setTypeface(FontUtils.getLight(getActivity()));
+		botaoFiltrar.setTypeface(FontUtils.getRegular(getActivity()));
 		
 		ProgressWheel pResolvido = (ProgressWheel) view.findViewById(R.id.spinnerResolvido);
 		pResolvido.setProgress((int) (360.0 / 100.0 * 28));

@@ -5,8 +5,10 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -21,6 +23,9 @@ import android.view.View;
  * http://creativecommons.org/licenses/by/3.0/
  */
 public class ProgressWheel extends View {
+	
+	// FIX
+	Rect bounds = new Rect();
 	
 	//Sizes (with defaults)
 	private int layout_height = 0;
@@ -83,7 +88,7 @@ public class ProgressWheel extends View {
 	
 	//Other
 	private String text = "";
-	private String[] splitText = {};
+	//private String[] splitText = {};
 	
 	/**
 	 * The constructor for the ProgressWheel
@@ -142,6 +147,7 @@ public class ProgressWheel extends View {
         textPaint.setStyle(Style.FILL);
         textPaint.setAntiAlias(true);
         textPaint.setTextSize(textSize);
+        textPaint.setTypeface(Typeface.createFromAsset(getContext().getAssets(), "fonts/OpenSans-Bold.ttf"));
 	}
 
 	/**
@@ -243,14 +249,18 @@ public class ProgressWheel extends View {
 				circleRadius, 
 				circlePaint);
 		//Draw the text (attempts to center it horizontally and vertically)
-		int offsetNum = 0;
-		for(String s : splitText) {
-			float offset = textPaint.measureText(s) / 2;
-			canvas.drawText(s, this.getWidth() / 2 - offset, 
-				this.getHeight() / 2 + (textSize*(offsetNum)) 
-				- ((splitText.length-1)*(textSize/2)), textPaint);
-			offsetNum++;
-		}
+		//int offsetNum = 0;
+		
+		textPaint.getTextBounds(text, 0, text.length(), bounds);
+		
+		canvas.drawText(text, this.getWidth() / 2 - textPaint.measureText(text) / 2, this.getHeight() / 2 + bounds.height() / 2, textPaint);
+//		for(String s : splitText) {
+//			float offset = textPaint.measureText(s) / 2;
+//			canvas.drawText(s, this.getWidth() / 2 - offset, 
+//				this.getHeight() / 2 + (textSize*(offsetNum)) 
+//				- ((splitText.length-1)*(textSize/2)), textPaint);
+//			offsetNum++;
+//		}
 	}
 
 	/**
@@ -310,7 +320,7 @@ public class ProgressWheel extends View {
 	 */
 	public void setText(String text) {
 		this.text = text;
-		splitText = this.text.split("\n");
+		//splitText = this.text.split("\n");
 	}
 	
 	public int getCircleRadius() {

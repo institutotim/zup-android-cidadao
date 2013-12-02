@@ -39,17 +39,19 @@
     <string name="yes">Sim</string>
     <string name="no">Não</string>
     <string name="enviada">enviada</string>
-    
-    <string-array name="foto_menu">
-        <item>Escolher foto do álbum</item>
-        <item>Tirar foto</item>
-        <item>Cancelar</item>
-    </string-array>
-
     <string name="editar">Editar</string>
     <string name="voltar">Voltar</string>
     <string name="title_activity_testes">TestesActivity</string>
     <string name="resolvidas">Resolvidas</string>
     <string name="nao_resolvidas">Não Resolvidas</string>
+    <string name="ver_detalhes_de">Ver detalhes de</string>
+    <string name="boca_de_lobo">Boca de lobo</string>
+    <string name="coleta_de_entulho">Coleta de entulho</string>
+    
+    <string-array name="foto_menu">
+        <item>Escolher foto do álbum</item>
+        <item>Tirar foto</item>
+        <item>Cancelar</item>
+    </string-array>   
 
 </resources>

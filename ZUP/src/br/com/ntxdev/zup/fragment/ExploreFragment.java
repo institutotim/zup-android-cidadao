@@ -13,7 +13,9 @@ import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import br.com.ntxdev.zup.R;
+import br.com.ntxdev.zup.util.FontUtils;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,6 +33,8 @@ public class ExploreFragment extends Fragment implements android.location.Locati
 	private GoogleMap map;
 	private double latitudeAtual;
 	private double longitudeAtual;
+	
+	private Button botaoFiltrar;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -48,6 +52,9 @@ public class ExploreFragment extends Fragment implements android.location.Locati
 		
 		mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
 		map = mapFragment.getMap();
+		
+		botaoFiltrar = (Button) view.findViewById(R.id.botaoFiltrar);
+		botaoFiltrar.setTypeface(FontUtils.getRegular(getActivity()));
 		
 		if(map != null){
 			Location location = getLocalizacao();

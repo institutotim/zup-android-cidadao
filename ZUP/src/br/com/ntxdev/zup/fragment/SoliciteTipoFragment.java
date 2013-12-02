@@ -10,6 +10,7 @@ import android.widget.TextView;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SoliciteActivity;
 import br.com.ntxdev.zup.domain.Solicitacao;
+import br.com.ntxdev.zup.util.FontUtils;
 
 public class SoliciteTipoFragment extends Fragment implements View.OnClickListener {
 
@@ -25,8 +26,10 @@ public class SoliciteTipoFragment extends Fragment implements View.OnClickListen
 		
 		opcaoBocaDeLobo = (TextView) view.findViewById(R.id.opcaoBocaDeLobo);
 		opcaoBocaDeLobo.setOnClickListener(this);
+		opcaoBocaDeLobo.setTypeface(FontUtils.getRegular(getActivity()));
 		opcaoColetaEntulho = (TextView) view.findViewById(R.id.opcaoColetaEntulho);
 		opcaoColetaEntulho.setOnClickListener(this);
+		opcaoColetaEntulho.setTypeface(FontUtils.getRegular(getActivity()));
 		
 		return view;
 	}

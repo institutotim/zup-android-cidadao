@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SoliciteActivity;
+import br.com.ntxdev.zup.util.FontUtils;
 import eu.janmuller.android.simplecropimage.CropImage;
 
 public class SoliciteFotosFragment extends Fragment implements View.OnClickListener {
@@ -48,6 +49,7 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
 		
 		fotoButton = (Button) view.findViewById(R.id.fotoButton);
 		fotoButton.setOnClickListener(this);
+		fotoButton.setTypeface(FontUtils.getRegular(getActivity()));
 		
 		return view;
 	}

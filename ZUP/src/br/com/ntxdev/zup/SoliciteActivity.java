@@ -10,6 +10,7 @@ import br.com.ntxdev.zup.fragment.SoliciteDetalhesFragment;
 import br.com.ntxdev.zup.fragment.SoliciteFotosFragment;
 import br.com.ntxdev.zup.fragment.SoliciteLocalFragment;
 import br.com.ntxdev.zup.fragment.SoliciteTipoFragment;
+import br.com.ntxdev.zup.util.FontUtils;
 
 public class SoliciteActivity extends FragmentActivity implements View.OnClickListener {
 	
@@ -18,7 +19,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 	private Solicitacao solicitacao = new Solicitacao();
 	
 	private TextView botaoAvancar;
-	private View botaoVoltar;
+	private TextView botaoVoltar;
 	
 	private enum Passo {
 		TIPO, LOCAL, FOTOS, COMENTARIOS
@@ -29,12 +30,17 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_solicite);
 		
+		((TextView) findViewById(R.id.titulo)).setTypeface(FontUtils.getLight(this));
+		
 		botaoAvancar = (TextView) findViewById(R.id.botaoAvancar);
 		botaoAvancar.setOnClickListener(this);
-		botaoVoltar = findViewById(R.id.botaoVoltar);
+		botaoAvancar.setTypeface(FontUtils.getRegular(this));
+		botaoVoltar = (TextView) findViewById(R.id.botaoVoltar);
 		botaoVoltar.setOnClickListener(this);
+		botaoVoltar.setTypeface(FontUtils.getRegular(this));
 		
 		botaoCancelar = (Button) findViewById(R.id.botaoCancelar);
+		botaoCancelar.setTypeface(FontUtils.getRegular(this));
 		botaoCancelar.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -55,8 +61,14 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 		atual = Passo.LOCAL;
 	}
 	
+	public Solicitacao.Tipo getTipo() {
+		return solicitacao.getTipo();
+	}
+	
 	public void setInfo(int string) {
-		((TextView) findViewById(R.id.instrucoes)).setText(string);
+		TextView info = (TextView) findViewById(R.id.instrucoes);
+		info.setText(string);
+		info.setTypeface(FontUtils.getBold(this));
 	}
 	
 	public void setComentario(String comentario) {
@@ -88,6 +100,16 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 			}
 		} else if (v.getId() == botaoVoltar.getId()) {
 			botaoAvancar.setText(R.string.proximo);
+			if (atual.equals(Passo.COMENTARIOS)) {
+				getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, new SoliciteFotosFragment()).commit();
+				atual = Passo.FOTOS;
+			} else if (atual.equals(Passo.FOTOS)) {
+				getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, new SoliciteLocalFragment()).commit();
+				atual = Passo.LOCAL;
+			} else if (atual.equals(Passo.LOCAL)) {
+				getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, new SoliciteTipoFragment()).commit();
+				atual = Passo.TIPO;
+			}
 		}
 	}
 }

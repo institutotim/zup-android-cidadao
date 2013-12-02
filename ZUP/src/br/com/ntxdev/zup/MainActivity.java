@@ -23,19 +23,19 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 		
 		TextView exploreButton = (TextView) findViewById(R.id.exploreButton);
 		exploreButton.setOnClickListener(this);
-		exploreButton.setTypeface(FontUtils.getLight(this));
+		exploreButton.setTypeface(FontUtils.getRegular(this));
 		
 		TextView soliciteButton = (TextView) findViewById(R.id.soliciteButton);
 		soliciteButton.setOnClickListener(this);
-		soliciteButton.setTypeface(FontUtils.getLight(this));
+		soliciteButton.setTypeface(FontUtils.getRegular(this));
 		
 		TextView minhaContaButton = (TextView) findViewById(R.id.minhaContaButton);
 		minhaContaButton.setOnClickListener(this);
-		minhaContaButton.setTypeface(FontUtils.getLight(this));
+		minhaContaButton.setTypeface(FontUtils.getRegular(this));
 		
 		TextView estatisticasButton = (TextView) findViewById(R.id.estatisticasButton);
 		estatisticasButton.setOnClickListener(this);
-		estatisticasButton.setTypeface(FontUtils.getLight(this));
+		estatisticasButton.setTypeface(FontUtils.getRegular(this));
 		
 		current = exploreButton;
 		setFragment(new ExploreFragment());

@@ -16,4 +16,12 @@ public class FontUtils {
 	public static Typeface getBold(Context context) {
 		return Typeface.createFromAsset(context.getAssets(), "fonts/OpenSans-Bold.ttf");
 	}
+	
+	public static Typeface getRegular(Context context) {
+		return Typeface.createFromAsset(context.getAssets(), "fonts/OpenSans-Regular.ttf");
+	}
+	
+	public static Typeface getSemibold(Context context) {
+		return Typeface.createFromAsset(context.getAssets(), "fonts/OpenSans-Semibold.ttf");
+	}
 }
