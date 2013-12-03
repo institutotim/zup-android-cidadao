@@ -1,23 +1,16 @@
 package br.com.ntxdev.zup;
 
-import java.util.Arrays;
-import java.util.List;
-
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import br.com.ntxdev.zup.domain.SolicitacaoListItem;
-import br.com.ntxdev.zup.fragment.ImageViewFragment;
 import br.com.ntxdev.zup.util.FontUtils;
+import br.com.ntxdev.zup.widget.ImagePagerAdapter;
 
 import com.viewpagerindicator.CirclePageIndicator;
-import com.viewpagerindicator.IconPagerAdapter;
 import com.viewpagerindicator.PageIndicator;
 
 public class SolicitacaoDetalheActivity extends FragmentActivity {
@@ -88,30 +81,6 @@ public class SolicitacaoDetalheActivity extends FragmentActivity {
 			indicadorStatus.setText(R.string.nao_resolvido);
 			indicadorStatus.setBackgroundResource(R.drawable.status_gray_bg);
 			break;
-		}
-	}
-
-	public class ImagePagerAdapter extends FragmentPagerAdapter implements IconPagerAdapter {
-
-		protected final List<Integer> imagens = Arrays.asList(R.drawable.img_1, R.drawable.img_2, R.drawable.img_3);
-
-		public ImagePagerAdapter(FragmentManager fm) {
-			super(fm);
-		}
-
-		@Override
-		public Fragment getItem(int position) {
-			return ImageViewFragment.newInstance(imagens.get(position));
-		}
-
-		@Override
-		public int getCount() {
-			return imagens.size();
-		}
-
-		@Override
-		public int getIconResId(int index) {
-			return R.drawable.ic_launcher;
 		}
 	}
 }
