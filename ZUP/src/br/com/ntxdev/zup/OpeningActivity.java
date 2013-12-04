@@ -47,7 +47,6 @@ public class OpeningActivity extends FragmentActivity {
 			@Override
 			public void onClick(View v) {
 				startActivity(new Intent(OpeningActivity.this, CadastroActivity.class));
-				finish();
 			}			
 		});
 		
