@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import br.com.ntxdev.zup.FiltroExploreActivity;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.util.FontUtils;
 
@@ -28,12 +29,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class ExploreFragment extends Fragment implements android.location.LocationListener {
 
 	private static final String TAG = "ExploreFragment";
+	private static int FILTRO_CODE = 1507;
 	private static View view;
 	private SupportMapFragment mapFragment;
 	private GoogleMap map;
 	private double latitudeAtual;
 	private double longitudeAtual;
-	
+
 	private Button botaoFiltrar;
 
 	@Override
@@ -49,57 +51,62 @@ public class ExploreFragment extends Fragment implements android.location.Locati
 		} catch (InflateException e) {
 			Log.w(TAG, e.getMessage());
 		}
-		
+
 		mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
 		map = mapFragment.getMap();
-		
+
 		botaoFiltrar = (Button) view.findViewById(R.id.botaoFiltrar);
 		botaoFiltrar.setTypeface(FontUtils.getRegular(getActivity()));
-		
-		if(map != null){
+		botaoFiltrar.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startActivityForResult(new Intent(getActivity(), FiltroExploreActivity.class), FILTRO_CODE);
+			}
+		});
+
+		if (map != null) {
 			Location location = getLocalizacao();
-		    latitudeAtual = location.getLatitude();
-		    longitudeAtual = location.getLongitude();
-			
+			latitudeAtual = location.getLatitude();
+			longitudeAtual = location.getLongitude();
+
 			map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 			LatLng latLng = new LatLng(latitudeAtual, longitudeAtual);
-			
-			map.addMarker(new MarkerOptions()
-            .anchor(0.0f, 1.0f) // Anchors the marker on the bottom left
-            .position(new LatLng(latitudeAtual, longitudeAtual)));
-			
+
+			map.addMarker(new MarkerOptions().anchor(0.0f, 1.0f) // Anchors the
+																	// marker on
+																	// the
+																	// bottom
+																	// left
+					.position(new LatLng(latitudeAtual, longitudeAtual)));
+
 			final CameraPosition position = new CameraPosition.Builder().target(latLng).zoom(17).build();
 			CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
 			map.animateCamera(update);
-			
-			
+
 		}
-		
+
 		return view;
 	}
-	
-	public Location getLocalizacao(){
+
+	public Location getLocalizacao() {
 		LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-		if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
+		if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
 			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 30000, 100, this);
-		}else {
+		} else {
 			// Solicita ao usu‡rio para ligar o GPS
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-			alertDialogBuilder.setMessage(R.string.gps_off)
-					.setCancelable(false).setPositiveButton(
-							R.string.yes,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog, int id) {
-									Intent callGPSSettingIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-									startActivity(callGPSSettingIntent);
-								}
-							});
-			alertDialogBuilder.setNegativeButton(R.string.no,
-					new DialogInterface.OnClickListener() {
+			alertDialogBuilder.setMessage(R.string.gps_off).setCancelable(false)
+					.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
-							dialog.cancel();
+							Intent callGPSSettingIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+							startActivity(callGPSSettingIntent);
 						}
 					});
+			alertDialogBuilder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.cancel();
+				}
+			});
 			AlertDialog alert = alertDialogBuilder.create();
 			alert.show();
 		}
@@ -107,26 +114,18 @@ public class ExploreFragment extends Fragment implements android.location.Locati
 	}
 
 	@Override
-	public void onLocationChanged(Location arg0) {
-		// TODO Auto-generated method stub
-		
+	public void onLocationChanged(Location location) {
 	}
 
 	@Override
 	public void onProviderDisabled(String provider) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void onProviderEnabled(String provider) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
-		// TODO Auto-generated method stub
-		
 	}
 }

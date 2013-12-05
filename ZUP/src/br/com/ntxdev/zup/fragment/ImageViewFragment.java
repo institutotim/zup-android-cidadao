@@ -38,10 +38,6 @@ public class ImageViewFragment extends Fragment {
 		imageView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
 		return imageView;
-		
-//		View view = new View(getActivity());
-//		view.setBackgroundColor(Color.rgb(System.currentTimeMillis() % 2 == 0 ? 0xff : 0, System.currentTimeMillis() % 2 == 0 ? 0xff : 0, System.currentTimeMillis() % 2 == 0 ? 0xff : 0));
-//		return view;
 	}
 
 	@Override

@@ -54,7 +54,7 @@ public class CadastroActivity extends Activity implements OnClickListener {
 	ImageButton mBtnTwitter;
 	private static final String CONSUMER_KEY = "6JyIkj71ZqG4wk3YF0Y4hw";
 	private static final String CONSUMER_SECRET = "sJl9aRVqlEt7nxlKvpMVK6tLULz5FSQ2KUOW0yie4";
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -268,6 +268,9 @@ public class CadastroActivity extends Activity implements OnClickListener {
 		}
 
 		public void onComplete(String value) {
+			//Mostra o campo nome do Twitter no formulário
+			String nomeUsuario = mTwitter.getNomeUsuario();
+			campoNome.setText(nomeUsuario);
 			try {
 				mTwitter.updateStatus(TwitterApp.MESSAGE);
 			} catch (Exception e) {

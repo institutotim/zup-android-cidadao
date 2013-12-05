@@ -17,6 +17,7 @@ import android.app.ProgressDialog;
 import android.os.Handler;
 import android.os.Message;
 import android.view.Window;
+import android.widget.EditText;
 
 public class TwitterApp {
 	private Twitter mTwitter;
@@ -150,9 +151,11 @@ public class TwitterApp {
 					configureToken();
 
 					User user = mTwitter.verifyCredentials();
-
+					
+					//Seta os campos do perfil do usuário
 					nomeUsuario = (user.getName());
 					profileImage = (user.getProfileImageURL().toString());
+					
 
 					mSession.storeAccessToken(mAccessToken, user.getName());
 
@@ -241,4 +244,6 @@ public class TwitterApp {
 	public String getProfileImage(){
 		return this.profileImage;
 	}
+	
+
 }

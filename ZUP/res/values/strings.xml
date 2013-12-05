@@ -47,41 +47,49 @@
     <string name="ver_detalhes_de">Ver detalhes de</string>
     <string name="boca_de_lobo">Boca de lobo</string>
     <string name="coleta_de_entulho">Coleta de entulho</string>
-    
+    <string name="nao_possui_conta">Não possui conta?</string>
+    <string name="cadastre_se">Cadastre-se</string>
+    <string name="login">Login</string>
+    <string name="possui_conta">Possui conta?</string>
+    <string name="pular_e_acessar_o_aplicativo">Pular e acessar o aplicativo</string>
+    <string name="nova_conta">Nova conta</string>
+    <string name="criar">Criar</string>
+    <string name="inicie_o_cadastro_usando">Inicie o cadastro usando</string>
+    <string name="ou_preencha_os_dados">Ou preencha os dados</string>
+    <string name="facebook">Facebook</string>
+    <string name="twitter">Twitter</string>
+    <string name="google">Google+</string>
+    <string name="nome_completo">Nome completo</string>
+    <string name="email">E-mail</string>
+    <string name="senha">Senha</string>
+    <string name="confirme_a_senha">Confirme a senha</string>
+    <string name="appFacebook_id">620491261347069</string>
+    <string name="telefone">Telefone</string>
+    <string name="cpf">CPF</string>
+    <string name="endereco">Endereço</string>
+    <string name="cep">CEP</string>
+    <string name="complemento">Complemento</string>
+    <string name="bairro">Bairro</string>
+    <string name="filtros">Filtros</string>
+    <string name="concluido">Concluído</string>
+    <string name="exibir_solicitacoes_de">Exibir solicitações de</string>
+    <string name="ultimos_6_meses">Últimos 6 meses</string>
+    <string name="ultimos_3_meses">Últimos 3 meses</string>
+    <string name="ultimo_mes">Último mês</string>
+    <string name="ultima_semana">Última semana</string>
+    <string name="expandir">Expandir</string>
+    <string name="todos_os_status">Todos os status</string>
+    <string name="resolvidos">Resolvidos</string>
+    <string name="nao_resolvidos">Não resolvidos</string>
+    <string name="exibir_pontos_de">Exibir pontos de</string>
+    <string name="floresta_urbana">Floresta urbana</string>
+    <string name="pracas_com_wifi">Praças com wifi</string>
+    <string name="bocas_de_lobo">Bocas de lobo</string>
+
     <string-array name="foto_menu">
         <item>Escolher foto do álbum</item>
         <item>Tirar foto</item>
         <item>Cancelar</item>
     </string-array>
-        <string name="nao_possui_conta">Não possui conta?</string>
-        <string name="cadastre_se">Cadastre-se</string>
-        <string name="login">Login</string>
-        <string name="possui_conta">Possui conta?</string>
-        <string name="pular_e_acessar_o_aplicativo">Pular e acessar o aplicativo</string>
-        <string name="nova_conta">Nova conta</string>
-        <string name="criar">Criar</string>
-        <string name="inicie_o_cadastro_usando">Inicie o cadastro usando</string>
-        <string name="ou_preencha_os_dados">Ou preencha os dados</string>
-        <string name="facebook">Facebook</string>
-        <string name="twitter">Twitter</string>
-        <string name="google">Google+</string>
-        <string name="nome_completo">Nome completo</string>
-        <string name="email">E-mail</string>
-        <string name="senha">Senha</string>
-        <string name="confirme_a_senha">Confirme a senha</string>   
-        
-        <string name="appFacebook_id">181443718719972</string>   
-        
-        <string name="telefone">Telefone</string>   
-        
-        <string name="cpf">CPF</string>   
-        
-        <string name="endereco">Endereço</string>   
-        
-        <string name="cep">CEP</string>   
-        
-        <string name="complemento">Complemento</string>   
-        
-        <string name="bairro">Bairro</string>
 
 </resources>
