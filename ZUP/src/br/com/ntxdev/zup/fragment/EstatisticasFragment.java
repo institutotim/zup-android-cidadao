@@ -1,5 +1,6 @@
 package br.com.ntxdev.zup.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import br.com.ntxdev.zup.FiltroEstatisticasActivity;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.util.FontUtils;
 
@@ -32,6 +34,12 @@ public class EstatisticasFragment extends Fragment {
 		
 		Button botaoFiltrar = (Button) view.findViewById(R.id.botaoFiltrar);
 		botaoFiltrar.setTypeface(FontUtils.getRegular(getActivity()));
+		botaoFiltrar.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(getActivity(), FiltroEstatisticasActivity.class));				
+			}
+		});
 		
 		ProgressWheel pResolvido = (ProgressWheel) view.findViewById(R.id.spinnerResolvido);
 		pResolvido.setProgress((int) (360.0 / 100.0 * 28));

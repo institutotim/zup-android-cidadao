@@ -42,8 +42,8 @@ public class SoliciteLocalFragment extends Fragment implements LocationListener 
 	private SupportMapFragment mapFragment;
 	private GoogleMap map;
 	
-	private double latitudeAtual;
-	private double longitudeAtual;
+	private double latitudeAtual = -23.536726;
+	private double longitudeAtual = -46.639841;
 	private HashMap<String, String> enderecoAtual;
 
 	@Override
@@ -70,8 +70,10 @@ public class SoliciteLocalFragment extends Fragment implements LocationListener 
 
 		if (map != null) {
 			Location location = getLocalizacao();
-			latitudeAtual = location.getLatitude();
-			longitudeAtual = location.getLongitude();
+			if(location != null){
+				latitudeAtual = location.getLatitude();
+				longitudeAtual = location.getLongitude();
+			}
 			atualizaEndereco();
 
 			map.clear();

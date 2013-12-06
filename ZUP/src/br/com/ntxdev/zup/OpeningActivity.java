@@ -52,5 +52,11 @@ public class OpeningActivity extends FragmentActivity {
 		
 		Button botaoLogin = (Button) findViewById(R.id.botaoLogin);
 		botaoLogin.setTypeface(FontUtils.getRegular(this));
+		botaoLogin.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(OpeningActivity.this, LoginActivity.class));
+			}			
+		});
 	}
 }

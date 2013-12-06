@@ -91,5 +91,9 @@
         <item>Tirar foto</item>
         <item>Cancelar</item>
     </string-array>
+        <string name="entrar">Entrar</string>
+        <string name="esqueceu_a_senha">Esqueceu a senha?</string>
+        <string name="enviar">Enviar</string>
+        <string name="todos_os_bairros">Todos os bairros</string>
 
 </resources>

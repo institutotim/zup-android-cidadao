@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import br.com.ntxdev.zup.util.FontUtils;
+import br.com.ntxdev.zup.util.SessionSocialNetwork;
 import br.com.ntxdex.zup.twitter.TwitterApp;
 import br.com.ntxdex.zup.twitter.TwitterSession;
 import br.com.ntxdex.zup.twitter.TwitterApp.TwDialogListener;
@@ -43,6 +44,8 @@ public class CadastroActivity extends Activity implements OnClickListener {
 	private EditText campoComplemento;
 	private EditText campoCEP;
 	private EditText campoBairro;
+	
+	private SessionSocialNetwork sessionSocialNetwork;
 
 	// Integração Facebook
 	private ImageButton buttonLoginFacebook;
@@ -107,6 +110,8 @@ public class CadastroActivity extends Activity implements OnClickListener {
 		
 		campoBairro = (EditText) findViewById(R.id.campoBairro);
 		campoBairro.setTypeface(FontUtils.getLight(this));
+		
+		sessionSocialNetwork = SessionSocialNetwork.getInstance();		
 
 		buttonLoginFacebook = (ImageButton) findViewById(R.id.botao_logar_facebook);
 		Settings.addLoggingBehavior(LoggingBehavior.INCLUDE_ACCESS_TOKENS);
@@ -223,6 +228,9 @@ public class CadastroActivity extends Activity implements OnClickListener {
 								campoNome.setText(user.getName());
 								campoEmail.setText(user.asMap().get("email")
 										.toString());
+								sessionSocialNetwork.setNome(user.getName());
+								sessionSocialNetwork.setEmail(user.asMap().get("email").toString());
+								sessionSocialNetwork.setSessionFacebook(session);
 							}
 						}
 						if (response.getError() != null) {
@@ -270,13 +278,15 @@ public class CadastroActivity extends Activity implements OnClickListener {
 		public void onComplete(String value) {
 			//Mostra o campo nome do Twitter no formul�rio
 			String nomeUsuario = mTwitter.getNomeUsuario();
+			sessionSocialNetwork.setNome(nomeUsuario);
+			sessionSocialNetwork.setSessionTwitter(mTwitter);
 			campoNome.setText(nomeUsuario);
 			try {
-				mTwitter.updateStatus(TwitterApp.MESSAGE);
+				//mTwitter.updateStatus(TwitterApp.MESSAGE);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			mTwitter.resetAccessToken();
+			//mTwitter.resetAccessToken();
 		}
 	};
 }

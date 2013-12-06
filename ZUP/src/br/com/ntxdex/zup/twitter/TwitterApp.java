@@ -155,7 +155,6 @@ public class TwitterApp {
 					//Seta os campos do perfil do usuário
 					nomeUsuario = (user.getName());
 					profileImage = (user.getProfileImageURL().toString());
-					
 
 					mSession.storeAccessToken(mAccessToken, user.getName());
 

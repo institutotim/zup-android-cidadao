@@ -33,8 +33,8 @@ public class ExploreFragment extends Fragment implements android.location.Locati
 	private static View view;
 	private SupportMapFragment mapFragment;
 	private GoogleMap map;
-	private double latitudeAtual;
-	private double longitudeAtual;
+	private double latitudeAtual = -23.536726;
+	private double longitudeAtual = -46.639841;
 
 	private Button botaoFiltrar;
 
@@ -66,8 +66,10 @@ public class ExploreFragment extends Fragment implements android.location.Locati
 
 		if (map != null) {
 			Location location = getLocalizacao();
-			latitudeAtual = location.getLatitude();
-			longitudeAtual = location.getLongitude();
+			if(location != null){
+				latitudeAtual = location.getLatitude();
+				longitudeAtual = location.getLongitude();
+			}
 
 			map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 			LatLng latLng = new LatLng(latitudeAtual, longitudeAtual);
