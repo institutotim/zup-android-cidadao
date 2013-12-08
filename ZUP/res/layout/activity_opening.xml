@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/br.com.ntxdev.zup"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
@@ -81,10 +82,11 @@
     </LinearLayout>
 
     <RelativeLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/loginBox"
-        android:layout_alignParentTop="true" >
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" >
 
         <android.support.v4.view.ViewPager
             android:id="@+id/pager"
@@ -98,7 +100,10 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:padding="10dip" />
+            android:padding="@dimen/circle_padding"
+            app:fillColor="#98d7ef"
+            app:pageColor="#fff"
+            app:strokeColor="#fff" />
     </RelativeLayout>
 
 </RelativeLayout>

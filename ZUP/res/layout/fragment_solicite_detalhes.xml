@@ -1,49 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#fff"
-    android:orientation="vertical"
-    android:padding="30dp"
-    android:paddingTop="45dp" >
+    android:layout_height="match_parent" >
 
-    <EditText
-        android:id="@+id/comentario"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#f1f1f1"
-        android:gravity="top"
-        android:hint="@string/se_desejar_detalhe_a_situacao"
-        android:minLines="8"
-        android:padding="10dp"
-        android:textColor="#4c4c4c" />
+        android:background="#fff"
+        android:orientation="vertical"
+        android:padding="30dp"
+        android:paddingTop="45dp" >
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="25dp" >
-
-        <ImageView
-            android:id="@+id/seletor_postagem"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:clickable="true"
-            android:contentDescription="@string/seletor_on_off"
-            android:src="@drawable/switch_off" />
-
-        <TextView
-            android:id="@+id/redeSocial"
+        <EditText
+            android:id="@+id/comentario"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/seletor_postagem"
-            android:gravity="center"
-            android:text="@string/compartilhar_rede_social"
-            android:textColor="#333"
-            android:textSize="18sp" />
-    </RelativeLayout>
+            android:background="#f1f1f1"
+            android:gravity="top"
+            android:hint="@string/se_desejar_detalhe_a_situacao"
+            android:minLines="8"
+            android:padding="10dp"
+            android:textColor="#4c4c4c" />
 
-</LinearLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp" >
+
+            <ImageView
+                android:id="@+id/seletor_postagem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:clickable="true"
+                android:contentDescription="@string/seletor_on_off"
+                android:src="@drawable/switch_off" />
+
+            <TextView
+                android:id="@+id/redeSocial"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@id/seletor_postagem"
+                android:gravity="center"
+                android:text="@string/compartilhar_rede_social"
+                android:textColor="#333"
+                android:textSize="18sp" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</ScrollView>

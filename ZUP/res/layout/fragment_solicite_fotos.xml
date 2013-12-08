@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="35dp"
+        android:layout_marginBottom="@dimen/take_picture_bottom_margin"
         android:background="@drawable/button_blue_bg"
         android:padding="10dp"
         android:text="@string/adicionar_foto"

@@ -44,13 +44,6 @@
             android:src="@drawable/ic_rotate_right"
             android:visibility="gone" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="@string/mova_e_redimensione"
-            android:textColor="#fff" />
-
         <Button
             android:id="@+id/save"
             android:layout_width="wrap_content"
@@ -58,6 +51,16 @@
             android:layout_alignParentRight="true"
             android:background="@drawable/button_blue_bg"
             android:text="@string/escolher"
+            android:textColor="#fff" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_toLeftOf="@id/save"
+            android:layout_toRightOf="@id/discard"
+            android:gravity="center"
+            android:text="@string/mova_e_redimensione"
             android:textColor="#fff" />
     </RelativeLayout>
 

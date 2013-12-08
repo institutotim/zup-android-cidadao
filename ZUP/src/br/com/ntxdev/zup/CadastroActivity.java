@@ -226,8 +226,7 @@ public class CadastroActivity extends Activity implements OnClickListener {
 						if (session == Session.getActiveSession()) {
 							if (user != null) {
 								campoNome.setText(user.getName());
-								campoEmail.setText(user.asMap().get("email")
-										.toString());
+								campoEmail.setText(user.asMap().get("email").toString());
 								sessionSocialNetwork.setNome(user.getName());
 								sessionSocialNetwork.setEmail(user.asMap().get("email").toString());
 								sessionSocialNetwork.setSessionFacebook(session);
@@ -276,7 +275,7 @@ public class CadastroActivity extends Activity implements OnClickListener {
 		}
 
 		public void onComplete(String value) {
-			//Mostra o campo nome do Twitter no formulário
+			//Mostra o campo nome do Twitter no formulï¿½rio
 			String nomeUsuario = mTwitter.getNomeUsuario();
 			sessionSocialNetwork.setNome(nomeUsuario);
 			sessionSocialNetwork.setSessionTwitter(mTwitter);

@@ -160,6 +160,7 @@
                     android:background="@drawable/textbox_bg"
                     android:hint="@string/confirme_a_senha"
                     android:inputType="textPassword"
+                    android:ellipsize="end"
                     android:padding="12dp"
                     android:textColor="#000"
                     android:textSize="18sp" />

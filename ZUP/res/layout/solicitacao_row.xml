@@ -18,41 +18,43 @@
         android:padding="10dp" >
 
         <TextView
-            android:id="@+id/protocolo"
+            android:id="@+id/data"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="5dp"
+            android:drawablePadding="10dp"
+            android:drawableRight="@drawable/seta_direita"
+            android:textAllCaps="true"
+            android:textColor="#666"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/protocolo"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@id/data"
+            android:ellipsize="end"
+            android:singleLine="true"
             android:textAllCaps="true"
             android:textColor="#666"
             android:textSize="12sp" />
 
-        <RelativeLayout
+        <TextView
+            android:id="@+id/indicadorStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true" >
-
-            <ImageView
-                android:id="@+id/seta"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_marginLeft="10dp"
-                android:contentDescription="@string/seta_direita"
-                android:src="@drawable/seta_direita" />
-
-            <TextView
-                android:id="@+id/data"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toLeftOf="@id/seta"
-                android:textAllCaps="true"
-                android:textColor="#666"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-        </RelativeLayout>
+            android:layout_marginLeft="5dp"
+            android:textAllCaps="true"
+            android:textColor="#fff"
+            android:textSize="12sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/titulo"
@@ -61,18 +63,10 @@
             android:layout_alignParentLeft="true"
             android:layout_below="@id/protocolo"
             android:layout_marginTop="15dp"
+            android:layout_toLeftOf="@id/indicadorStatus"
+            android:ellipsize="end"
+            android:singleLine="true"
             android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/indicadorStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:textAllCaps="true"
-            android:textColor="#fff"
-            android:textSize="12sp"
-            android:textStyle="bold" />
     </RelativeLayout>
 
 </RelativeLayout>

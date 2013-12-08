@@ -229,7 +229,7 @@
                 android:background="#f3f3f3"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal"
-                android:padding="35dp"
+                android:padding="@dimen/padding_3_icons"
                 android:weightSum="3" >
 
                 <TextView

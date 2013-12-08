@@ -108,7 +108,12 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
             listaFotos.add(path);
             fotoFrame.setVisibility(View.GONE);
             ImageView imgView = new ImageView(getActivity());
-            imgView.setImageBitmap(bitmap);
+            if (getResources().getDimension(R.dimen.image_resize) != 0) {
+	            imgView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, (int) (getResources().getDimension(R.dimen.image_resize) / getResources().getDisplayMetrics().density), 
+	            		(int) (getResources().getDimension(R.dimen.image_resize) / getResources().getDisplayMetrics().density), false));
+	        } else {
+	        	imgView.setImageBitmap(bitmap);
+            }
             imgView.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
             imgView.setTag(path);
             containerFotos.setVisibility(View.VISIBLE);

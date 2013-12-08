@@ -37,6 +37,7 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Region;
+import android.graphics.Typeface;
 import android.media.FaceDetector;
 import android.net.Uri;
 import android.os.Build;
@@ -48,6 +49,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.Toast;
 
 
@@ -164,7 +166,10 @@ public class CropImage extends MonitoredActivity {
         // Make UI fullscreen.
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        findViewById(R.id.discard).setOnClickListener(
+        Button discardButton = (Button) findViewById(R.id.discard);
+        discardButton.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/OpenSans-Regular.ttf"));
+        
+        discardButton.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View v) {
 
@@ -173,7 +178,10 @@ public class CropImage extends MonitoredActivity {
                     }
                 });
 
-        findViewById(R.id.save).setOnClickListener(
+        Button saveButton = (Button) findViewById(R.id.save);
+        saveButton.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/OpenSans-Regular.ttf"));
+        
+        saveButton.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View v) {
 
