@@ -19,9 +19,9 @@
             android:layout_centerInParent="true"
             android:text="@string/filtros"
             android:textColor="#000"
-            android:textSize="21sp" />
+            android:textSize="@dimen/title_text_size" />
 
-        <Button
+        <TextView
             android:id="@+id/botaoConcluido"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
                 android:drawableRight="@drawable/seta_expandir"
                 android:padding="25dp"
                 android:text="@string/todos_os_status"
-                android:textSize="20sp" />
+                android:textSize="@dimen/navigation_text_size" />
 
             <View
                 android:id="@+id/separator3"
@@ -93,7 +93,7 @@
                     android:padding="15dp"
                     android:text="@string/todos_os_status"
                     android:textColor="#2ab4dc"
-                    android:textSize="20sp" />
+                    android:textSize="@dimen/navigation_text_size" />
 
                 <TextView
                     android:id="@+id/resolvidos"
@@ -104,7 +104,7 @@
                     android:padding="15dp"
                     android:text="@string/resolvidos"
                     android:textColor="@color/text_option_color"
-                    android:textSize="20sp" />
+                    android:textSize="@dimen/navigation_text_size" />
 
                 <TextView
                     android:id="@+id/emAndamento"
@@ -115,7 +115,7 @@
                     android:padding="15dp"
                     android:text="@string/em_andamento"
                     android:textColor="@color/text_option_color"
-                    android:textSize="20sp" />
+                    android:textSize="@dimen/navigation_text_size" />
 
                 <TextView
                     android:id="@+id/emAberto"
@@ -126,7 +126,7 @@
                     android:padding="15dp"
                     android:text="@string/em_aberto"
                     android:textColor="@color/text_option_color"
-                    android:textSize="20sp" />
+                    android:textSize="@dimen/navigation_text_size" />
 
                 <TextView
                     android:id="@+id/naoResolvidos"
@@ -137,7 +137,7 @@
                     android:padding="15dp"
                     android:text="@string/nao_resolvidos"
                     android:textColor="@color/text_option_color"
-                    android:textSize="20sp" />
+                    android:textSize="@dimen/navigation_text_size" />
             </LinearLayout>
             
             <TextView
@@ -151,7 +151,7 @@
                 android:drawableRight="@drawable/seta_expandir"
                 android:padding="25dp"
                 android:text="@string/todos_os_bairros"
-                android:textSize="20sp" />
+                android:textSize="@dimen/navigation_text_size" />
 
             <View
                 android:id="@+id/separator4"

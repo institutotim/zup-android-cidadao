@@ -19,9 +19,9 @@
             android:layout_centerInParent="true"
             android:text="@string/esqueceu_a_senha"
             android:textColor="#000"
-            android:textSize="21sp" />
+            android:textSize="@dimen/title_text_size" />
 
-        <Button
+        <TextView
             android:id="@+id/botaoVoltar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
             android:text="@string/cancelar"
             android:textColor="#fff" />
 
-        <Button
+        <TextView
             android:id="@+id/botaoEnviar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -60,6 +60,6 @@
         android:inputType="textEmailAddress"
         android:padding="12dp"
         android:textColor="#000"
-        android:textSize="18sp" />
+        android:textSize="@dimen/navigation_text_size" />
 
 </RelativeLayout>

@@ -14,7 +14,7 @@
         android:paddingBottom="10dp"
         android:paddingTop="10dp" >
 
-        <Button
+        <TextView
             android:id="@+id/botaoVoltar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
             android:layout_marginLeft="3dp"
             android:textAllCaps="true"
             android:textColor="#fff"
-            android:textSize="12sp" />
+            android:textSize="@dimen/row_status" />
 
         <TextView
             android:id="@+id/protocolo"
@@ -56,7 +56,7 @@
             android:singleLine="true"
             android:textAllCaps="true"
             android:textColor="#999"
-            android:textSize="14sp" />
+            android:textSize="@dimen/instruction_text_size" />
     </RelativeLayout>
 
     <ScrollView
@@ -80,7 +80,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
-                    android:textSize="20sp" />
+                    android:textSize="@dimen/row_title" />
 
                 <TextView
                     android:id="@+id/data"
@@ -89,7 +89,7 @@
                     android:layout_below="@id/titulo"
                     android:textAllCaps="true"
                     android:textColor="#666"
-                    android:textSize="12sp" />
+                    android:textSize="@dimen/small_text_size" />
             </RelativeLayout>
 
             <RelativeLayout

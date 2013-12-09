@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import br.com.ntxdev.zup.FiltroEstatisticasActivity;
 import br.com.ntxdev.zup.R;
@@ -32,7 +31,7 @@ public class EstatisticasFragment extends Fragment {
 		((TextView) view.findViewById(R.id.txtNaoResolvido)).setTypeface(FontUtils.getRegular(getActivity()));
 		((TextView) view.findViewById(R.id.txtResolvido)).setTypeface(FontUtils.getRegular(getActivity()));
 		
-		Button botaoFiltrar = (Button) view.findViewById(R.id.botaoFiltrar);
+		TextView botaoFiltrar = (TextView) view.findViewById(R.id.botaoFiltrar);
 		botaoFiltrar.setTypeface(FontUtils.getRegular(getActivity()));
 		botaoFiltrar.setOnClickListener(new View.OnClickListener() {
 			@Override

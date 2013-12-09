@@ -23,7 +23,7 @@ public class FiltroEstatisticasActivity extends Activity implements View.OnClick
 	private LinearLayout opcoes;
 	
 	private BuscaExplore busca = new BuscaExplore();
-	private Button botaoConcluido;
+	private TextView botaoConcluido;
 	private TextView bairros;
 
 	@Override
@@ -38,7 +38,7 @@ public class FiltroEstatisticasActivity extends Activity implements View.OnClick
 		
 		((TextView) findViewById(R.id.filtros)).setTypeface(FontUtils.getLight(this));
 		
-		botaoConcluido = (Button) findViewById(R.id.botaoConcluido);
+		botaoConcluido = (TextView) findViewById(R.id.botaoConcluido);
 		botaoConcluido.setTypeface(FontUtils.getRegular(this));
 		botaoConcluido.setOnClickListener(this);
 		

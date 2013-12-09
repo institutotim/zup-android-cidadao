@@ -50,6 +50,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -166,7 +167,7 @@ public class CropImage extends MonitoredActivity {
         // Make UI fullscreen.
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        Button discardButton = (Button) findViewById(R.id.discard);
+        TextView discardButton = (TextView) findViewById(R.id.discard);
         discardButton.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/OpenSans-Regular.ttf"));
         
         discardButton.setOnClickListener(
@@ -178,7 +179,7 @@ public class CropImage extends MonitoredActivity {
                     }
                 });
 
-        Button saveButton = (Button) findViewById(R.id.save);
+        TextView saveButton = (TextView) findViewById(R.id.save);
         saveButton.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/OpenSans-Regular.ttf"));
         
         saveButton.setOnClickListener(

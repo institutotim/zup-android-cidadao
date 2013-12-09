@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import br.com.ntxdev.zup.domain.SolicitacaoListItem;
 import br.com.ntxdev.zup.util.FontUtils;
@@ -52,7 +51,7 @@ public class SolicitacaoDetalheActivity extends FragmentActivity {
 		link.setTypeface(FontUtils.getBold(this));
 		link.setText(getString(R.string.ver_detalhes_de) + " " + getString(R.string.boca_de_lobo) + " 65564567");
 		
-		Button botaoVoltar = (Button) findViewById(R.id.botaoVoltar);
+		TextView botaoVoltar = (TextView) findViewById(R.id.botaoVoltar);
 		botaoVoltar.setTypeface(FontUtils.getRegular(this));
 		botaoVoltar.setOnClickListener(new View.OnClickListener() {
 

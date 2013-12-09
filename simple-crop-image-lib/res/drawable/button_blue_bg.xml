@@ -9,10 +9,10 @@
             <corners
                 android:radius="10dp"/>
             <padding
-                android:left="10dp"
-                android:top="10dp"
-                android:right="10dp"
-                android:bottom="10dp"/>
+                android:left="@dimen/topbar_button_padding"
+                android:top="@dimen/topbar_button_padding"
+                android:right="@dimen/topbar_button_padding"
+                android:bottom="@dimen/topbar_button_padding"/>
         </shape>
     </item>
     <item>
@@ -22,10 +22,10 @@
                 android:width="0dp" />
             <corners
                 android:radius="10dp"/>
-            <padding android:left="10dp"
-                android:top="10dp"
-                android:right="10dp"
-                android:bottom="10dp"/>
+            <padding android:left="@dimen/topbar_button_padding"
+                android:top="@dimen/topbar_button_padding"
+                android:right="@dimen/topbar_button_padding"
+                android:bottom="@dimen/topbar_button_padding"/>
         </shape>
     </item>
 </selector>

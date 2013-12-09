@@ -19,9 +19,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SoliciteActivity;
 import br.com.ntxdev.zup.util.FontUtils;
@@ -29,7 +29,7 @@ import eu.janmuller.android.simplecropimage.CropImage;
 
 public class SoliciteFotosFragment extends Fragment implements View.OnClickListener {
 
-	private Button fotoButton;
+	private TextView fotoButton;
 	private final int CAMERA_RETURN = 1406;
 	private final int CROP_RETURN = 1407;
 	private final int GALLERY_RETURN = 1408;
@@ -47,7 +47,7 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
 		fotoFrame = (ImageView) view.findViewById(R.id.fotoFrame);
 		containerFotos = (LinearLayout) view.findViewById(R.id.containerFotos);
 		
-		fotoButton = (Button) view.findViewById(R.id.fotoButton);
+		fotoButton = (TextView) view.findViewById(R.id.fotoButton);
 		fotoButton.setOnClickListener(this);
 		fotoButton.setTypeface(FontUtils.getRegular(getActivity()));
 		

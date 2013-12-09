@@ -32,7 +32,7 @@
             android:layout_weight="1"
             android:gravity="center_horizontal|top"
             android:text="@string/ultimos_6_meses"
-            android:textSize="14sp" />
+            android:textSize="@dimen/instruction_text_size" />
 
         <TextView
             android:id="@+id/textView2"
@@ -41,7 +41,7 @@
             android:layout_weight="1"
             android:gravity="center_horizontal|top"
             android:text="@string/ultimos_3_meses"
-            android:textSize="14sp" />
+            android:textSize="@dimen/instruction_text_size" />
 
         <TextView
             android:id="@+id/textView3"
@@ -50,7 +50,7 @@
             android:layout_weight="1"
             android:gravity="center_horizontal|top"
             android:text="@string/ultimo_mes"
-            android:textSize="14sp" />
+            android:textSize="@dimen/instruction_text_size" />
 
         <TextView
             android:id="@+id/textView4"
@@ -59,7 +59,7 @@
             android:layout_weight="1"
             android:gravity="center_horizontal|top"
             android:text="@string/ultima_semana"
-            android:textSize="14sp" />
+            android:textSize="@dimen/instruction_text_size" />
     </LinearLayout>
 
 </LinearLayout>

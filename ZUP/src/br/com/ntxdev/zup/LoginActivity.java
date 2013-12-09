@@ -1,18 +1,17 @@
 package br.com.ntxdev.zup;
 
-import br.com.ntxdev.zup.util.FontUtils;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import br.com.ntxdev.zup.util.FontUtils;
 
 public class LoginActivity extends Activity implements View.OnClickListener {
 
-	private Button botaoCancelar;
-	private Button botaoEntrar;
+	private TextView botaoCancelar;
+	private TextView botaoEntrar;
 	private EditText campoSenha;
 	private EditText campoEmail;
 	private TextView linkEsqueciSenha;
@@ -28,7 +27,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 		linkEsqueciSenha.setTypeface(FontUtils.getBold(this));
 		linkEsqueciSenha.setOnClickListener(this);
 		
-		botaoCancelar = (Button) findViewById(R.id.botaoCancelar);
+		botaoCancelar = (TextView) findViewById(R.id.botaoCancelar);
 		botaoCancelar.setTypeface(FontUtils.getRegular(this));
 		botaoCancelar.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -36,7 +35,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 				finish();				
 			}
 		});
-		botaoEntrar = (Button) findViewById(R.id.botaoEntrar);
+		botaoEntrar = (TextView) findViewById(R.id.botaoEntrar);
 		botaoEntrar.setTypeface(FontUtils.getRegular(this));
 		botaoEntrar.setOnClickListener(this);
 		

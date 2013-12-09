@@ -28,8 +28,7 @@
             android:drawableRight="@drawable/seta_direita"
             android:textAllCaps="true"
             android:textColor="#666"
-            android:textSize="12sp"
-            android:textStyle="bold" />
+            android:textSize="@dimen/row_date" />
 
         <TextView
             android:id="@+id/protocolo"
@@ -42,7 +41,7 @@
             android:singleLine="true"
             android:textAllCaps="true"
             android:textColor="#666"
-            android:textSize="12sp" />
+            android:textSize="@dimen/row_protocol" />
 
         <TextView
             android:id="@+id/indicadorStatus"
@@ -53,7 +52,7 @@
             android:layout_marginLeft="5dp"
             android:textAllCaps="true"
             android:textColor="#fff"
-            android:textSize="12sp"
+            android:textSize="@dimen/row_status"
             android:textStyle="bold" />
 
         <TextView
@@ -66,7 +65,7 @@
             android:layout_toLeftOf="@id/indicadorStatus"
             android:ellipsize="end"
             android:singleLine="true"
-            android:textSize="20sp" />
+            android:textSize="@dimen/row_title" />
     </RelativeLayout>
 
 </RelativeLayout>

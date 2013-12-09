@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import br.com.ntxdev.zup.util.FontUtils;
 import br.com.ntxdev.zup.widget.ImagePagerAdapter;
@@ -41,7 +40,7 @@ public class OpeningActivity extends FragmentActivity {
 			}			
 		});
 		
-		Button botaoCadastrar = (Button) findViewById(R.id.botaoCadastrar);
+		TextView botaoCadastrar = (TextView) findViewById(R.id.botaoCadastrar);
 		botaoCadastrar.setTypeface(FontUtils.getRegular(this));
 		botaoCadastrar.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -50,7 +49,7 @@ public class OpeningActivity extends FragmentActivity {
 			}			
 		});
 		
-		Button botaoLogin = (Button) findViewById(R.id.botaoLogin);
+		TextView botaoLogin = (TextView) findViewById(R.id.botaoLogin);
 		botaoLogin.setTypeface(FontUtils.getRegular(this));
 		botaoLogin.setOnClickListener(new View.OnClickListener() {
 			@Override

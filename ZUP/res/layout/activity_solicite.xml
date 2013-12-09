@@ -7,10 +7,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:background="@android:color/white"
+        android:background="#fff"
         android:padding="10dp" >
 
-        <Button
+        <TextView
             android:id="@+id/botaoCancelar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -24,12 +24,10 @@
             android:id="@+id/titulo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@id/botaoCancelar"
+            android:layout_centerInParent="true"
             android:text="@string/nova_solicitacao"
             android:textColor="@android:color/black"
-            android:textSize="21sp" />
+            android:textSize="@dimen/title_text_size" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -48,8 +46,7 @@
             android:gravity="center"
             android:textAllCaps="true"
             android:textColor="#999"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textSize="@dimen/instruction_text_size" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -68,7 +65,7 @@
             android:clickable="true"
             android:text="@string/anterior"
             android:textColor="@color/text_previous_color"
-            android:textSize="18sp" />
+            android:textSize="@dimen/navigation_text_size" />
 
         <TextView
             android:id="@+id/botaoAvancar"
@@ -78,7 +75,7 @@
             android:clickable="true"
             android:text="@string/proximo"
             android:textColor="@color/text_next_color"
-            android:textSize="18sp" />
+            android:textSize="@dimen/navigation_text_size" />
     </RelativeLayout>
 
     <FrameLayout

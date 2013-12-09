@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import br.com.ntxdev.zup.R;
@@ -22,16 +21,16 @@ import br.com.ntxdev.zup.util.FontUtils;
 
 public class MinhaContaFragment extends Fragment implements AdapterView.OnItemClickListener {
 	
-	private Button botaoSair;
-	private Button botaoEditar;
+	private TextView botaoSair;
+	private TextView botaoEditar;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_minha_conta, container, false);
 		
-		botaoSair = (Button) view.findViewById(R.id.botaoSair);
+		botaoSair = (TextView) view.findViewById(R.id.botaoSair);
 		botaoSair.setTypeface(FontUtils.getRegular(getActivity()));
-		botaoEditar = (Button) view.findViewById(R.id.botaoEditar);
+		botaoEditar = (TextView) view.findViewById(R.id.botaoEditar);
 		botaoEditar.setTypeface(FontUtils.getRegular(getActivity()));
 		
 		((TextView) view.findViewById(R.id.instrucoes)).setTypeface(FontUtils.getBold(getActivity()));
@@ -44,28 +43,28 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 		
 		SolicitacaoListItem item = new SolicitacaoListItem();
 		item.setData("hoje");
-		item.setProtocolo("uhuihhfgisdhguhd");
+		item.setProtocolo("uhuihhfgisdh");
 		item.setTitulo("Limpeza de boca de lobo");
 		item.setStatus(SolicitacaoListItem.Status.EM_ABERTO);
 		items.add(item);
 
 		item = new SolicitacaoListItem();
 		item.setData("há 12 dias atrás");
-		item.setProtocolo("uhuihhfgisdhguhd");
+		item.setProtocolo("uhuihhfgisdh");
 		item.setTitulo("Coleta de entulho");
 		item.setStatus(SolicitacaoListItem.Status.EM_ANDAMENTO);
 		items.add(item);
 
 		item = new SolicitacaoListItem();
 		item.setData("há 2 dias atrás");
-		item.setProtocolo("uhuihhfgisdhguhd");
+		item.setProtocolo("uhuihhfgisdh");
 		item.setTitulo("Coleta de entulho");
 		item.setStatus(SolicitacaoListItem.Status.NAO_RESOLVIDO);
 		items.add(item);
 
 		item = new SolicitacaoListItem();
 		item.setData("ontem");
-		item.setProtocolo("uhuihhfgisdhguhd");
+		item.setProtocolo("uhuihhfgisdh");
 		item.setTitulo("Coleta de entulho");
 		item.setStatus(SolicitacaoListItem.Status.RESOLVIDO);
 		items.add(item);

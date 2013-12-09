@@ -19,15 +19,15 @@
             android:contentDescription="@string/app_name"
             android:src="@drawable/zup" />
 
-        <Button
+        <TextView
             android:id="@+id/botaoFiltrar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
-            android:padding="2dp"
             android:background="@drawable/button_blue_bg"
+            android:clickable="true"
             android:text="@string/filtrar"
             android:textColor="#fff" />
     </RelativeLayout>

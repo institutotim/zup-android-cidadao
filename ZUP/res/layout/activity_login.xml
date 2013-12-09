@@ -18,9 +18,9 @@
             android:layout_centerInParent="true"
             android:text="@string/login"
             android:textColor="#000"
-            android:textSize="21sp" />
+            android:textSize="@dimen/title_text_size" />
 
-        <Button
+        <TextView
             android:id="@+id/botaoCancelar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -30,7 +30,7 @@
             android:text="@string/cancelar"
             android:textColor="#fff" />
 
-        <Button
+        <TextView
             android:id="@+id/botaoEntrar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -59,7 +59,7 @@
         android:inputType="textEmailAddress"
         android:padding="12dp"
         android:textColor="#000"
-        android:textSize="18sp" />
+        android:textSize="@dimen/navigation_text_size" />
 
     <EditText
         android:id="@+id/campoSenha"
@@ -72,7 +72,7 @@
         android:inputType="textPassword"
         android:padding="12dp"
         android:textColor="#000"
-        android:textSize="18sp" />
+        android:textSize="@dimen/navigation_text_size" />
 
     <TextView
         android:id="@+id/linkEsqueciSenha"
@@ -84,6 +84,6 @@
         android:padding="30dp"
         android:text="@string/esqueceu_a_senha"
         android:textColor="@color/text_next_color"
-        android:textSize="14sp" />
+        android:textSize="@dimen/instruction_text_size" />
 
 </RelativeLayout>

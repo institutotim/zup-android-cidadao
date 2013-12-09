@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -14,7 +13,7 @@ import br.com.ntxdev.zup.util.FontUtils;
 
 public class FiltroExploreActivity extends Activity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
-	private Button botaoConcluido;
+	private TextView botaoConcluido;
 	private TextView opcaoBocaDeLobo;
 	private TextView opcaoColetaEntulho;
 	private TextView status;
@@ -43,7 +42,7 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 
 		opcoes = (LinearLayout) findViewById(R.id.opcoes);
 
-		botaoConcluido = (Button) findViewById(R.id.botaoConcluido);
+		botaoConcluido = (TextView) findViewById(R.id.botaoConcluido);
 		botaoConcluido.setTypeface(FontUtils.getRegular(this));
 		botaoConcluido.setOnClickListener(this);
 

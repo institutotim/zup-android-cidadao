@@ -13,7 +13,7 @@ import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.TextView;
 import br.com.ntxdev.zup.FiltroExploreActivity;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.util.FontUtils;
@@ -36,7 +36,7 @@ public class ExploreFragment extends Fragment implements android.location.Locati
 	private double latitudeAtual = -23.536726;
 	private double longitudeAtual = -46.639841;
 
-	private Button botaoFiltrar;
+	private TextView botaoFiltrar;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -55,7 +55,7 @@ public class ExploreFragment extends Fragment implements android.location.Locati
 		mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
 		map = mapFragment.getMap();
 
-		botaoFiltrar = (Button) view.findViewById(R.id.botaoFiltrar);
+		botaoFiltrar = (TextView) view.findViewById(R.id.botaoFiltrar);
 		botaoFiltrar.setTypeface(FontUtils.getRegular(getActivity()));
 		botaoFiltrar.setOnClickListener(new View.OnClickListener() {
 			@Override

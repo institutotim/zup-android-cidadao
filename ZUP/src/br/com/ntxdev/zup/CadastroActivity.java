@@ -11,15 +11,14 @@ import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import br.com.ntxdev.zup.util.FontUtils;
 import br.com.ntxdev.zup.util.SessionSocialNetwork;
 import br.com.ntxdex.zup.twitter.TwitterApp;
-import br.com.ntxdex.zup.twitter.TwitterSession;
 import br.com.ntxdex.zup.twitter.TwitterApp.TwDialogListener;
+import br.com.ntxdex.zup.twitter.TwitterSession;
 
 import com.facebook.LoggingBehavior;
 import com.facebook.Request;
@@ -31,8 +30,8 @@ import com.facebook.model.GraphUser;
 
 public class CadastroActivity extends Activity implements OnClickListener {
 
-	private Button botaoCancelar;
-	private Button botaoCriar;
+	private TextView botaoCancelar;
+	private TextView botaoCriar;
 
 	private EditText campoNome;
 	private EditText campoEmail;
@@ -70,7 +69,7 @@ public class CadastroActivity extends Activity implements OnClickListener {
 		((TextView) findViewById(R.id.textView2)).setTypeface(FontUtils
 				.getLight(this));
 
-		botaoCancelar = (Button) findViewById(R.id.botaoCancelar);
+		botaoCancelar = (TextView) findViewById(R.id.botaoCancelar);
 		botaoCancelar.setTypeface(FontUtils.getRegular(this));
 		botaoCancelar.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -78,7 +77,7 @@ public class CadastroActivity extends Activity implements OnClickListener {
 				finish();				
 			}
 		});
-		botaoCriar = (Button) findViewById(R.id.botaoCriar);
+		botaoCriar = (TextView) findViewById(R.id.botaoCriar);
 		botaoCriar.setTypeface(FontUtils.getRegular(this));
 
 		campoNome = (EditText) findViewById(R.id.campoNome);

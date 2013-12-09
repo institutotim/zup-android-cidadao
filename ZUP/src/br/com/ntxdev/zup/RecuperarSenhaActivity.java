@@ -1,17 +1,16 @@
 package br.com.ntxdev.zup;
 
-import br.com.ntxdev.zup.util.FontUtils;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import br.com.ntxdev.zup.util.FontUtils;
 
 public class RecuperarSenhaActivity extends Activity implements View.OnClickListener {
 
-	private Button botaoVoltar;
-	private Button botaoEnviar;
+	private TextView botaoVoltar;
+	private TextView botaoEnviar;
 	private EditText campoEmail;
 
 	@Override
@@ -21,7 +20,7 @@ public class RecuperarSenhaActivity extends Activity implements View.OnClickList
 
 		((TextView) findViewById(R.id.esqueceuSenha)).setTypeface(FontUtils.getLight(this));
 		
-		botaoVoltar = (Button) findViewById(R.id.botaoVoltar);
+		botaoVoltar = (TextView) findViewById(R.id.botaoVoltar);
 		botaoVoltar.setTypeface(FontUtils.getRegular(this));
 		botaoVoltar.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -30,7 +29,7 @@ public class RecuperarSenhaActivity extends Activity implements View.OnClickList
 			}
 		});
 		
-		botaoEnviar = (Button) findViewById(R.id.botaoEnviar);
+		botaoEnviar = (TextView) findViewById(R.id.botaoEnviar);
 		botaoEnviar.setTypeface(FontUtils.getRegular(this));
 		botaoEnviar.setOnClickListener(this);
 		
