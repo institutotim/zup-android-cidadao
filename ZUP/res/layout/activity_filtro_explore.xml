@@ -10,7 +10,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:background="@android:color/white"
-        android:padding="10dp" >
+        android:paddingBottom="10dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="10dp" >
 
         <TextView
             android:id="@+id/filtros"
@@ -79,12 +82,14 @@
                     android:clickable="true"
                     android:drawableTop="@drawable/icon_boca_lobo"
                     android:gravity="center"
+                    android:drawablePadding="10dp"
                     android:text="@string/limpeza_de_boca_de_lobo"
                     android:textColor="@color/icon_text_color" />
 
                 <TextView
                     android:id="@+id/opcaoColetaEntulho"
                     android:layout_width="0dp"
+                    android:drawablePadding="10dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:clickable="true"
@@ -227,16 +232,17 @@
                 android:background="#f3f3f3"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal"
-                android:padding="@dimen/padding_3_icons"
+                android:padding="35dp"
                 android:weightSum="3" >
 
                 <TextView
                     android:id="@+id/opcaoFlorestaUrbana"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="15dp"
+                    android:layout_marginRight="10dp"
                     android:layout_weight="1"
                     android:clickable="true"
+                    android:drawablePadding="10dp"
                     android:drawableTop="@drawable/icon_floresta_urbana"
                     android:gravity="center"
                     android:text="@string/floresta_urbana"
@@ -246,11 +252,12 @@
                     android:id="@+id/opcaoPracasWifi"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="15dp"
+                    android:layout_marginRight="10dp"
                     android:layout_weight="1"
                     android:clickable="true"
                     android:drawableTop="@drawable/icon_praca_wifi"
                     android:gravity="center"
+                    android:drawablePadding="10dp"
                     android:text="@string/pracas_com_wifi"
                     android:textColor="@color/icon_text_color" />
 
@@ -260,6 +267,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:clickable="true"
+                    android:drawablePadding="10dp"
                     android:drawableTop="@drawable/icon_boca_lobo"
                     android:gravity="center"
                     android:text="@string/bocas_de_lobo"

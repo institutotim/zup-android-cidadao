@@ -1,5 +1,7 @@
 package br.com.ntxdev.zup;
 
+import java.util.Arrays;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -9,7 +11,7 @@ import android.widget.TextView;
 import br.com.ntxdev.zup.util.FontUtils;
 import br.com.ntxdev.zup.widget.ImagePagerAdapter;
 
-import com.viewpagerindicator.CirclePageIndicator;
+import com.viewpagerindicator.IconPageIndicator;
 import com.viewpagerindicator.PageIndicator;
 
 public class OpeningActivity extends FragmentActivity {
@@ -19,12 +21,14 @@ public class OpeningActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_opening);
 		
-		ImagePagerAdapter mAdapter = new ImagePagerAdapter(getSupportFragmentManager());
+		ImagePagerAdapter mAdapter = new ImagePagerAdapter(getSupportFragmentManager(), 
+				Arrays.asList(R.drawable.tour_img1, R.drawable.tour_img2, R.drawable.tour_img3,
+						R.drawable.tour_img4, R.drawable.tour_img5));
 
 		ViewPager mPager = (ViewPager) findViewById(R.id.pager);
 		mPager.setAdapter(mAdapter);
 
-		PageIndicator mIndicator = (CirclePageIndicator) findViewById(R.id.indicator);
+		PageIndicator mIndicator = (IconPageIndicator) findViewById(R.id.indicator);
 		mIndicator.setViewPager(mPager);
 		
 		((TextView) findViewById(R.id.labelNaoPossuiConta)).setTypeface(FontUtils.getRegular(this));

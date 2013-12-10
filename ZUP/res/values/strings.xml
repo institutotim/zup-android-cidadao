@@ -10,8 +10,8 @@
     <string name="title_activity_solicite">SoliciteActivity</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
-    <string name="limpeza_de_boca_de_lobo">Limpeza de boca de lobo</string>
-    <string name="coleta_de_entulho">Coleta de entulho</string>
+    <string name="limpeza_de_boca_de_lobo">Limpeza de\nboca de lobo</string>
+    <string name="coleta_de_entulho">Coleta de\nentulho</string>
     <string name="selecione_a_categoria">Selecione a categoria</string>
     <string name="selecione_o_local">Selecione o endereço ou arraste o marcador até a posição exata</string>
     <string name="adicione_fotos">Adicione uma ou até 3 fotos</string>
@@ -73,18 +73,18 @@
     <string name="filtros">Filtros</string>
     <string name="concluido">Concluído</string>
     <string name="exibir_solicitacoes_de">Exibir solicitações de</string>
-    <string name="ultimos_6_meses">Últimos 6 meses</string>
-    <string name="ultimos_3_meses">Últimos 3 meses</string>
-    <string name="ultimo_mes">Último mês</string>
-    <string name="ultima_semana">Última semana</string>
+    <string name="ultimos_6_meses">Últimos\n6 meses</string>
+    <string name="ultimos_3_meses">Últimos\n3 meses</string>
+    <string name="ultimo_mes">Último\nmês</string>
+    <string name="ultima_semana">Última\nsemana</string>
     <string name="expandir">Expandir</string>
     <string name="todos_os_status">Todos os status</string>
     <string name="resolvidos">Resolvidos</string>
     <string name="nao_resolvidos">Não resolvidos</string>
     <string name="exibir_pontos_de">Exibir pontos de</string>
-    <string name="floresta_urbana">Floresta urbana</string>
-    <string name="pracas_com_wifi">Praças com wifi</string>
-    <string name="bocas_de_lobo">Bocas de lobo</string>
+    <string name="floresta_urbana">Floresta\nurbana</string>
+    <string name="pracas_com_wifi">Praças com\nwifi</string>
+    <string name="bocas_de_lobo">Bocas de\nlobo</string>
 
     <string-array name="foto_menu">
         <item>Escolher foto do álbum</item>

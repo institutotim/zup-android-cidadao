@@ -12,11 +12,12 @@
     <dimen name="title_text_size">18sp</dimen>
     <dimen name="instruction_text_size">12sp</dimen>
     <dimen name="navigation_text_size">14sp</dimen>
-    <dimen name="big_chart_text">32sp</dimen>
+    <dimen name="big_chart_text">36sp</dimen>
     <dimen name="small_text_size">10sp</dimen>    
     <dimen name="medium_chart_text">14sp</dimen>
     <dimen name="chart_width">9dp</dimen>
     <dimen name="chart_size">40dp</dimen>
+    <dimen name="chart_radius">85dp</dimen>
     <!-- Row dimensions -->
     <dimen name="row_title">18sp</dimen>
     <dimen name="row_date">10sp</dimen>

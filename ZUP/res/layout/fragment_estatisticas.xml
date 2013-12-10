@@ -38,11 +38,18 @@
             android:text="@string/estatisticas"
             android:textSize="@dimen/title_text_size" />
     </RelativeLayout>
+    
+    <View
+        android:id="@+id/separator1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/header"
+        android:background="#ccc" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/header" >
+        android:layout_below="@id/separator1" >
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -65,8 +72,8 @@
 
                     <com.todddavies.components.progressbar.ProgressWheel
                         android:id="@+id/spinnerResolvido"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
+                        android:layout_width="@dimen/chart_radius"
+                        android:layout_height="@dimen/chart_radius"
                         wheel:barColor="#78c953"
                         wheel:barLength="@dimen/chart_size"
                         wheel:barWidth="@dimen/chart_width"
@@ -101,8 +108,8 @@
 
                     <com.todddavies.components.progressbar.ProgressWheel
                         android:id="@+id/spinnerAndamento"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
+                        android:layout_width="@dimen/chart_radius"
+                        android:layout_height="@dimen/chart_radius"
                         wheel:barColor="#ffac2d"
                         wheel:barLength="@dimen/chart_size"
                         wheel:barWidth="@dimen/chart_width"
@@ -147,8 +154,8 @@
 
                     <com.todddavies.components.progressbar.ProgressWheel
                         android:id="@+id/spinnerNaoResolvido"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
+                        android:layout_width="@dimen/chart_radius"
+                        android:layout_height="@dimen/chart_radius"
                         wheel:barColor="#999999"
                         wheel:barLength="@dimen/chart_size"
                         wheel:barWidth="@dimen/chart_width"
@@ -184,8 +191,8 @@
 
                     <com.todddavies.components.progressbar.ProgressWheel
                         android:id="@+id/spinnerEmAberto"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
+                        android:layout_width="@dimen/chart_radius"
+                        android:layout_height="@dimen/chart_radius"
                         wheel:barColor="#ff6049"
                         wheel:barLength="@dimen/chart_size"
                         wheel:barWidth="@dimen/chart_width"

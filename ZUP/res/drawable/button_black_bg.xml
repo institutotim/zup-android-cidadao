@@ -7,7 +7,7 @@
             <stroke
                 android:width="0dp" />
             <corners
-                android:radius="10dp"/>
+                android:radius="5dp"/>
             <padding
                 android:left="10dp"
                 android:top="10dp"
@@ -21,8 +21,9 @@
             <stroke
                 android:width="0dp" />
             <corners
-                android:radius="10dp"/>
-            <padding android:left="10dp"
+                android:radius="5dp"/>
+            <padding 
+                android:left="10dp"
                 android:top="10dp"
                 android:right="10dp"
                 android:bottom="10dp"/>

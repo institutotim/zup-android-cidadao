@@ -66,7 +66,10 @@ public class SoliciteLocalFragment extends Fragment implements LocationListener 
 		enderecoAtual = new HashMap<String, String>();
 
 		mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.mapaLocal);
-		map = mapFragment.getMap();		
+		map = mapFragment.getMap();
+		if (map != null) {
+			map.getUiSettings().setZoomControlsEnabled(false);
+		}
 
 		if (map != null) {
 			Location location = getLocalizacao();

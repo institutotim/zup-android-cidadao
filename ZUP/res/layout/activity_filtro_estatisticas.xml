@@ -10,7 +10,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:background="@android:color/white"
-        android:padding="10dp" >
+        android:paddingBottom="10dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="10dp" >
 
         <TextView
             android:id="@+id/filtros"

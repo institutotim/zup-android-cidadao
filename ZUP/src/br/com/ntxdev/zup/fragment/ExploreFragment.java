@@ -54,6 +54,9 @@ public class ExploreFragment extends Fragment implements android.location.Locati
 
 		mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
 		map = mapFragment.getMap();
+		if (map != null) {
+			map.getUiSettings().setZoomControlsEnabled(false);
+		}
 
 		botaoFiltrar = (TextView) view.findViewById(R.id.botaoFiltrar);
 		botaoFiltrar.setTypeface(FontUtils.getRegular(getActivity()));

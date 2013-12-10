@@ -9,23 +9,25 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:background="#fff"
-        android:paddingBottom="10dp"
-        android:paddingTop="10dp" >
+         >
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
             android:contentDescription="@string/app_name"
+            android:layout_marginTop="20dp"
             android:src="@drawable/zup" />
 
         <TextView
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:id="@+id/botaoFiltrar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="5dp"
             android:background="@drawable/button_blue_bg"
             android:clickable="true"
             android:text="@string/filtrar"

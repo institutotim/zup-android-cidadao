@@ -13,10 +13,15 @@ import com.viewpagerindicator.IconPagerAdapter;
 
 public class ImagePagerAdapter extends FragmentPagerAdapter implements IconPagerAdapter {
 
-	protected final List<Integer> imagens = Arrays.asList(R.drawable.img_1, R.drawable.img_2, R.drawable.img_3);
+	protected List<Integer> imagens = Arrays.asList(R.drawable.img_1, R.drawable.img_2, R.drawable.img_3);
 
 	public ImagePagerAdapter(FragmentManager fm) {
 		super(fm);
+	}
+	
+	public ImagePagerAdapter(FragmentManager fm, List<Integer> images) {
+		super(fm);
+		imagens = images;
 	}
 
 	@Override
@@ -31,6 +36,6 @@ public class ImagePagerAdapter extends FragmentPagerAdapter implements IconPager
 
 	@Override
 	public int getIconResId(int index) {
-		return R.drawable.ic_launcher;
+		return R.drawable.selector;
 	}
 }
