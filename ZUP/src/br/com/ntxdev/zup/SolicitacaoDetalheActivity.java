@@ -9,7 +9,7 @@ import br.com.ntxdev.zup.domain.SolicitacaoListItem;
 import br.com.ntxdev.zup.util.FontUtils;
 import br.com.ntxdev.zup.widget.ImagePagerAdapter;
 
-import com.viewpagerindicator.CirclePageIndicator;
+import com.viewpagerindicator.IconPageIndicator;
 import com.viewpagerindicator.PageIndicator;
 
 public class SolicitacaoDetalheActivity extends FragmentActivity {
@@ -21,7 +21,8 @@ public class SolicitacaoDetalheActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_solicitacao_detalhe);
 
-		solicitacao = (SolicitacaoListItem) getIntent().getExtras().getSerializable("solicitacao");
+		solicitacao = (SolicitacaoListItem) getIntent().getExtras().getSerializable("solicitacao");		
+		boolean alterarLabel = getIntent().getExtras().getBoolean("alterar_botao", false);		
 		
 		TextView protocolo = (TextView) findViewById(R.id.protocolo);
 		protocolo.setText(getString(R.string.protocolo) + " " + solicitacao.getProtocolo());
@@ -35,23 +36,26 @@ public class SolicitacaoDetalheActivity extends FragmentActivity {
 		data.setText(getString(R.string.enviada) + " " + solicitacao.getData());
 		data.setTypeface(FontUtils.getBold(this));
 
-		ImagePagerAdapter mAdapter = new ImagePagerAdapter(getSupportFragmentManager());
+		ImagePagerAdapter mAdapter = new ImagePagerAdapter(getSupportFragmentManager(), solicitacao.getFotos());
 
 		ViewPager mPager = (ViewPager) findViewById(R.id.pager);
 		mPager.setAdapter(mAdapter);
 
-		PageIndicator mIndicator = (CirclePageIndicator) findViewById(R.id.indicator);
+		PageIndicator mIndicator = (IconPageIndicator) findViewById(R.id.indicator);
 		mIndicator.setViewPager(mPager);
 		
 		TextView comentario = (TextView) findViewById(R.id.comentario);
 		comentario.setTypeface(FontUtils.getRegular(this));
-		comentario.setText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi porta a lacus at varius. Suspendisse aliquam nulla eu volutpat sagittis. Aenean nibh diam, fringilla quis arcu in, interdum consequat felis. In vestibulum bibendum varius. Etiam eu pulvinar sem. Vestibulum vel sagittis nisi, ac pulvinar sem.");
+		comentario.setText(solicitacao.getComentario());
 
 		TextView link = (TextView) findViewById(R.id.linkLocal);
 		link.setTypeface(FontUtils.getBold(this));
 		link.setText(getString(R.string.ver_detalhes_de) + " " + getString(R.string.boca_de_lobo) + " 65564567");
 		
 		TextView botaoVoltar = (TextView) findViewById(R.id.botaoVoltar);
+		if (alterarLabel) {
+			botaoVoltar.setText(R.string.solicitaces_maiusculo);
+		}
 		botaoVoltar.setTypeface(FontUtils.getRegular(this));
 		botaoVoltar.setOnClickListener(new View.OnClickListener() {
 

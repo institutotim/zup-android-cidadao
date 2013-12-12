@@ -1,5 +1,8 @@
 package br.com.ntxdev.zup.fragment;
 
+import java.util.Arrays;
+
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,19 +17,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import br.com.ntxdev.zup.DetalheMapaActivity;
 import br.com.ntxdev.zup.FiltroExploreActivity;
 import br.com.ntxdev.zup.R;
+import br.com.ntxdev.zup.SolicitacaoDetalheActivity;
+import br.com.ntxdev.zup.domain.BuscaExplore;
+import br.com.ntxdev.zup.domain.SolicitacaoListItem;
 import br.com.ntxdev.zup.util.FontUtils;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class ExploreFragment extends Fragment implements android.location.LocationListener {
+public class ExploreFragment extends Fragment implements android.location.LocationListener, OnInfoWindowClickListener {
 
 	private static final String TAG = "ExploreFragment";
 	private static int FILTRO_CODE = 1507;
@@ -35,8 +45,11 @@ public class ExploreFragment extends Fragment implements android.location.Locati
 	private GoogleMap map;
 	private double latitudeAtual = -23.536726;
 	private double longitudeAtual = -46.639841;
-
+	
 	private TextView botaoFiltrar;
+	private Marker pontoBocaLobo;
+	private Marker relatoEntulho;
+	private BuscaExplore busca;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -54,20 +67,27 @@ public class ExploreFragment extends Fragment implements android.location.Locati
 
 		mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
 		map = mapFragment.getMap();
-		if (map != null) {
-			map.getUiSettings().setZoomControlsEnabled(false);
-		}
 
 		botaoFiltrar = (TextView) view.findViewById(R.id.botaoFiltrar);
 		botaoFiltrar.setTypeface(FontUtils.getRegular(getActivity()));
 		botaoFiltrar.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				startActivityForResult(new Intent(getActivity(), FiltroExploreActivity.class), FILTRO_CODE);
+				Intent intent = new Intent(getActivity(), FiltroExploreActivity.class);
+				intent.putExtra("busca", busca);
+				startActivityForResult(intent, FILTRO_CODE);
 			}
 		});
 
 		if (map != null) {
+			map.getUiSettings().setZoomControlsEnabled(false);
+			map.setOnInfoWindowClickListener(this);
+			
+			busca = new BuscaExplore();
+			busca.setColetaDeEntulho(true);
+			busca.setLimpezaBocaDeLobo(true);
+			addMarkers(busca);
+			
 			Location location = getLocalizacao();
 			if(location != null){
 				latitudeAtual = location.getLatitude();
@@ -75,22 +95,47 @@ public class ExploreFragment extends Fragment implements android.location.Locati
 			}
 
 			map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-			LatLng latLng = new LatLng(latitudeAtual, longitudeAtual);
+//			LatLng latLng = new LatLng(latitudeAtual, longitudeAtual);
+			LatLng latLng = new LatLng(-23.55056197755646, -46.633128048934736);
 
-			map.addMarker(new MarkerOptions().anchor(0.0f, 1.0f) // Anchors the
-																	// marker on
-																	// the
-																	// bottom
-																	// left
-					.position(new LatLng(latitudeAtual, longitudeAtual)));
+//			map.addMarker(new MarkerOptions().anchor(0.0f, 1.0f).position(new LatLng(latitudeAtual, longitudeAtual)));
+			map.addMarker(new MarkerOptions().anchor(0.0f, 1.0f).position(latLng));
 
-			final CameraPosition position = new CameraPosition.Builder().target(latLng).zoom(17).build();
+			final CameraPosition position = new CameraPosition.Builder().target(latLng).zoom(15).build();
 			CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
 			map.animateCamera(update);
 
 		}
 
 		return view;
+	}
+
+	private void addMarkers(BuscaExplore busca) {
+		if (busca.isExibirBocasLobo())		
+			pontoBocaLobo = map.addMarker(new MarkerOptions()
+					.position(new LatLng(-23.551102912885938, -46.635670783080855))
+					.title("Boca de lobo 4758268")
+					.icon(BitmapDescriptorFactory.fromResource(R.drawable.ponto_bocalobo)));
+		if (busca.isLimpezaBocaDeLobo())
+			map.addMarker(new MarkerOptions()
+					.position(new LatLng(-23.551102912885938, -46.635670783080855))
+					.title("Boca de lobo 4758268")
+					.icon(BitmapDescriptorFactory.fromResource(R.drawable.map_pin_boca_lobo)));
+		if (busca.isColetaDeEntulho())
+			relatoEntulho = map.addMarker(new MarkerOptions()
+					.position(new LatLng(-23.549126029339284, -46.63785946563701))
+					.title("Coleta de entulho")
+					.icon(BitmapDescriptorFactory.fromResource(R.drawable.map_pin_entulho)));	
+		if (busca.isExibirFlorestaUrbana())
+			map.addMarker(new MarkerOptions()
+					.position(new LatLng(-23.5512602754729, -46.63378250793437))
+					.title("Árvore 07828-00034-r-1-01")
+					.icon(BitmapDescriptorFactory.fromResource(R.drawable.ponto_floresta_urbana)));
+		if (busca.isExibirPracasWifi())
+			map.addMarker(new MarkerOptions()
+					.position(new LatLng(-23.552843726018978, -46.63550985053996))
+					.title("Praça Dom José Gaspar")
+					.icon(BitmapDescriptorFactory.fromResource(R.drawable.ponto_praca_wifi)));		
 	}
 
 	public Location getLocalizacao() {
@@ -132,5 +177,43 @@ public class ExploreFragment extends Fragment implements android.location.Locati
 
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
+	}
+
+	@Override
+	public void onInfoWindowClick(Marker marker) {
+		Intent intent = null;		
+		
+		if (marker.equals(relatoEntulho)) {
+			SolicitacaoListItem item = new SolicitacaoListItem();
+			item.setTitulo(marker.getTitle());
+			item.setComentario("Apesar da placa, o pessoal vive enchendo a calçada de entulho, cansei de ter que desviar pela rua. Pior quando chove e esse entulho começa a se espalhar.");
+			item.setData("há 4 dias");
+			item.setEndereco("Rua Hermílio Lemos, 498, Cambuci, São Paulo");
+			item.setFotos(Arrays.asList(R.drawable.entulho1, R.drawable.entulho2));
+			item.setProtocolo("1844356633");
+			item.setStatus(SolicitacaoListItem.Status.EM_ANDAMENTO);
+			intent = new Intent(getActivity(), SolicitacaoDetalheActivity.class);
+			intent.putExtra("solicitacao", item);
+		} else {
+			intent = new Intent(getActivity(), DetalheMapaActivity.class);
+			intent.putExtra("title", marker.getTitle());
+		}
+		
+		if (marker.equals(pontoBocaLobo)) {
+			intent.putExtra("info_page", true);
+		}
+		
+		startActivity(intent);		
+	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == FILTRO_CODE && resultCode == Activity.RESULT_OK) {
+			map.clear();
+			LatLng latLng = new LatLng(-23.55056197755646, -46.633128048934736);
+			map.addMarker(new MarkerOptions().anchor(0.0f, 1.0f).position(latLng));
+			busca = (BuscaExplore) data.getSerializableExtra("busca");
+			addMarkers(busca);
+		}
 	}
 }

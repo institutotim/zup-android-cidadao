@@ -7,7 +7,7 @@
             <stroke
                 android:width="0dp" />
             <corners
-                android:radius="10dp"/>
+                android:radius="5dp"/>
             <padding
                 android:left="@dimen/topbar_button_padding"
                 android:top="@dimen/topbar_button_padding"
@@ -21,7 +21,7 @@
             <stroke
                 android:width="0dp" />
             <corners
-                android:radius="10dp"/>
+                android:radius="5dp"/>
             <padding android:left="@dimen/topbar_button_padding"
                 android:top="@dimen/topbar_button_padding"
                 android:right="@dimen/topbar_button_padding"

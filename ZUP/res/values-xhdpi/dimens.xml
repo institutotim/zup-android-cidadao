@@ -25,4 +25,5 @@
     <dimen name="row_protocol">12sp</dimen>
     <dimen name="row_status">12sp</dimen>
 
+    <dimen name="view_pager_size">400dp</dimen>
 </resources>

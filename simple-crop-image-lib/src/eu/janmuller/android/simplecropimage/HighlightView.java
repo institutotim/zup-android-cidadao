@@ -125,7 +125,7 @@ class HighlightView {
 
                 path.addRect(new RectF(mDrawRect), Path.Direction.CW);
             
-		mOutlinePaint.setColor(0xFFFF8A00);    
+		mOutlinePaint.setColor(0xFFFFFFFF);    
 
             }
             

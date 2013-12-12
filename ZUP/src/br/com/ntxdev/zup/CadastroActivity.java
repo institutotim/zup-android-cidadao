@@ -3,7 +3,9 @@ package br.com.ntxdev.zup;
 import java.util.Arrays;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.os.StrictMode.ThreadPolicy;
@@ -27,6 +29,7 @@ import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.Settings;
 import com.facebook.model.GraphUser;
+import com.google.gson.Gson;
 
 public class CadastroActivity extends Activity implements OnClickListener {
 
@@ -45,6 +48,7 @@ public class CadastroActivity extends Activity implements OnClickListener {
 	private EditText campoBairro;
 	
 	private SessionSocialNetwork sessionSocialNetwork;
+	private SharedPreferences sharedPref;
 
 	// Integração Facebook
 	private ImageButton buttonLoginFacebook;
@@ -110,7 +114,10 @@ public class CadastroActivity extends Activity implements OnClickListener {
 		campoBairro = (EditText) findViewById(R.id.campoBairro);
 		campoBairro.setTypeface(FontUtils.getLight(this));
 		
-		sessionSocialNetwork = SessionSocialNetwork.getInstance();		
+		sessionSocialNetwork = SessionSocialNetwork.getInstance();	
+		Context context = getApplicationContext();
+		sharedPref = context.getSharedPreferences(getString(R.string.pref_shared_session_key), Context.MODE_PRIVATE);
+		
 
 		buttonLoginFacebook = (ImageButton) findViewById(R.id.botao_logar_facebook);
 		Settings.addLoggingBehavior(LoggingBehavior.INCLUDE_ACCESS_TOKENS);
@@ -229,6 +236,11 @@ public class CadastroActivity extends Activity implements OnClickListener {
 								sessionSocialNetwork.setNome(user.getName());
 								sessionSocialNetwork.setEmail(user.asMap().get("email").toString());
 								sessionSocialNetwork.setSessionFacebook(session);
+								Gson objetoGson = new Gson();
+								String objetoString = objetoGson.toJson(sessionSocialNetwork);
+								SharedPreferences.Editor editor = sharedPref.edit();
+								editor.putString("sessionNetwork", objetoString);
+								editor.commit();
 							}
 						}
 						if (response.getError() != null) {
@@ -278,6 +290,13 @@ public class CadastroActivity extends Activity implements OnClickListener {
 			String nomeUsuario = mTwitter.getNomeUsuario();
 			sessionSocialNetwork.setNome(nomeUsuario);
 			sessionSocialNetwork.setSessionTwitter(mTwitter);
+			
+			Gson objetoGson = new Gson();
+			String objetoString = objetoGson.toJson(sessionSocialNetwork);
+			SharedPreferences.Editor editor = sharedPref.edit();
+			editor.putString("sessionNetwork", objetoString);
+			editor.commit();
+			
 			campoNome.setText(nomeUsuario);
 			try {
 				//mTwitter.updateStatus(TwitterApp.MESSAGE);

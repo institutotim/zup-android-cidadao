@@ -63,7 +63,7 @@
                     android:id="@+id/botaoCadastrar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/button_gray_bg"
+                    android:background="@drawable/button_cadastre_bg"
                     android:gravity="center"
                     android:text="@string/cadastre_se"
                     android:textColor="#fff" />

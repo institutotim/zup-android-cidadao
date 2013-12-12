@@ -1,6 +1,7 @@
 package br.com.ntxdev.zup.domain;
 
 import java.io.Serializable;
+import java.util.List;
 
 import android.graphics.Color;
 
@@ -29,6 +30,10 @@ public class SolicitacaoListItem implements Serializable {
 	private String titulo;
 	private String data;
 	private Status status;
+	private String comentario;
+	private String endereco;
+	
+	private List<Integer> fotos;
 
 	public String getProtocolo() {
 		return protocolo;
@@ -60,5 +65,29 @@ public class SolicitacaoListItem implements Serializable {
 
 	public void setData(String data) {
 		this.data = data;
+	}
+
+	public String getComentario() {
+		return comentario;
+	}
+
+	public void setComentario(String comentario) {
+		this.comentario = comentario;
+	}
+
+	public List<Integer> getFotos() {
+		return fotos;
+	}
+
+	public void setFotos(List<Integer> fotos) {
+		this.fotos = fotos;
+	}
+
+	public String getEndereco() {
+		return endereco;
+	}
+
+	public void setEndereco(String endereco) {
+		this.endereco = endereco;
 	}
 }

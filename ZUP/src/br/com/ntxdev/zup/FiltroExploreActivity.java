@@ -33,6 +33,8 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_filtro_explore);
+		
+		busca = (BuscaExplore) getIntent().getSerializableExtra("busca");
 
 		((TextView) findViewById(R.id.filtros)).setTypeface(FontUtils.getLight(this));
 		((TextView) findViewById(R.id.instrucoes)).setTypeface(FontUtils.getBold(this));
@@ -49,6 +51,7 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 		opcaoBocaDeLobo = (TextView) findViewById(R.id.opcaoBocaDeLobo);
 		opcaoBocaDeLobo.setOnClickListener(this);
 		opcaoBocaDeLobo.setTypeface(FontUtils.getRegular(this));
+		
 		opcaoColetaEntulho = (TextView) findViewById(R.id.opcaoColetaEntulho);
 		opcaoColetaEntulho.setOnClickListener(this);
 		opcaoColetaEntulho.setTypeface(FontUtils.getRegular(this));
@@ -56,9 +59,11 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 		opcaoBocasDeLoboLocal = (TextView) findViewById(R.id.opcaoBocasDeLoboLocal);
 		opcaoBocasDeLoboLocal.setOnClickListener(this);
 		opcaoBocasDeLoboLocal.setTypeface(FontUtils.getRegular(this));
+		
 		opcaoPracasWifi = (TextView) findViewById(R.id.opcaoPracasWifi);
 		opcaoPracasWifi.setOnClickListener(this);
 		opcaoPracasWifi.setTypeface(FontUtils.getRegular(this));
+		
 		opcaoFlorestaUrbana = (TextView) findViewById(R.id.opcaoFlorestaUrbana);
 		opcaoFlorestaUrbana.setOnClickListener(this);
 		opcaoFlorestaUrbana.setTypeface(FontUtils.getRegular(this));
@@ -86,6 +91,59 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 		naoResolvidos = (TextView) findViewById(R.id.naoResolvidos);
 		naoResolvidos.setTypeface(FontUtils.getLight(this));
 		naoResolvidos.setOnClickListener(cliqueOpcao);
+		
+		ajustarOpcoes();
+	}
+
+	private void ajustarOpcoes() {
+		if (busca.isColetaDeEntulho()) {			
+			opcaoColetaEntulho.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_coleta_entulho_normal, 0, 0);
+			opcaoColetaEntulho.setTextColor(Color.BLACK);
+		}
+		
+		if (busca.isExibirBocasLobo()) {
+			opcaoBocasDeLoboLocal.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_boca_lobo_normal, 0, 0);
+			opcaoBocasDeLoboLocal.setTextColor(Color.BLACK);
+		}
+		
+		if (busca.isExibirFlorestaUrbana()) {
+			opcaoFlorestaUrbana.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_floresta_urbana_normal, 0, 0);
+			opcaoFlorestaUrbana.setTextColor(Color.BLACK);
+		}
+		
+		if (busca.isExibirPracasWifi()) {
+			opcaoPracasWifi.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_praca_wifi_normal, 0, 0);
+			opcaoPracasWifi.setTextColor(Color.BLACK);
+		}
+		
+		if (busca.isLimpezaBocaDeLobo()) {
+			opcaoBocaDeLobo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_boca_lobo_normal, 0, 0);
+			opcaoBocaDeLobo.setTextColor(Color.BLACK);
+		}
+	}
+	
+	private void unselectOpcoes() {
+		busca.setExibirBocasLobo(false);
+		opcaoBocasDeLoboLocal.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_boca_lobo, 0, 0);
+		opcaoBocasDeLoboLocal.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
+		
+		busca.setExibirPracasWifi(false);
+		opcaoPracasWifi.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_praca_wifi, 0, 0);
+		opcaoPracasWifi.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
+		
+		busca.setExibirFlorestaUrbana(false);
+		opcaoFlorestaUrbana.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_floresta_urbana, 0, 0);
+		opcaoFlorestaUrbana.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
+	}
+	
+	private void unselectRelatos() {
+		busca.setLimpezaBocaDeLobo(false);
+		opcaoBocaDeLobo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_boca_lobo, 0, 0);
+		opcaoBocaDeLobo.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
+		
+		busca.setColetaDeEntulho(false);
+		opcaoColetaEntulho.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_coleta_entulho, 0, 0);
+		opcaoColetaEntulho.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
 	}
 
 	@Override
@@ -119,6 +177,8 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 				busca.setLimpezaBocaDeLobo(true);
 				opcaoBocaDeLobo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_boca_lobo_normal, 0, 0);
 				opcaoBocaDeLobo.setTextColor(Color.BLACK);
+				
+				unselectOpcoes();
 			}
 			break;
 		case R.id.opcaoColetaEntulho:
@@ -130,6 +190,8 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 				busca.setColetaDeEntulho(true);
 				opcaoColetaEntulho.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_coleta_entulho_normal, 0, 0);
 				opcaoColetaEntulho.setTextColor(Color.BLACK);
+				
+				unselectOpcoes();
 			}
 			break;
 		case R.id.opcaoBocasDeLoboLocal:
@@ -141,6 +203,8 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 				busca.setExibirBocasLobo(true);
 				opcaoBocasDeLoboLocal.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_boca_lobo_normal, 0, 0);
 				opcaoBocasDeLoboLocal.setTextColor(Color.BLACK);
+				
+				unselectRelatos();
 			}
 			break;
 		case R.id.opcaoPracasWifi:
@@ -152,6 +216,8 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 				busca.setExibirPracasWifi(true);
 				opcaoPracasWifi.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_praca_wifi_normal, 0, 0);
 				opcaoPracasWifi.setTextColor(Color.BLACK);
+				
+				unselectRelatos();
 			}
 			break;
 		case R.id.opcaoFlorestaUrbana:
@@ -163,6 +229,8 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 				busca.setExibirFlorestaUrbana(true);
 				opcaoFlorestaUrbana.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_floresta_urbana_normal, 0, 0);
 				opcaoFlorestaUrbana.setTextColor(Color.BLACK);
+				
+				unselectRelatos();
 			}
 			break;
 		}

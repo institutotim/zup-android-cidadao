@@ -63,7 +63,7 @@
     <string name="email">E-mail</string>
     <string name="senha">Senha</string>
     <string name="confirme_a_senha">Confirme a senha</string>
-    <string name="appFacebook_id">471081976334725</string>
+    <string name="appFacebook_id">181443718719972</string>
     <string name="telefone">Telefone</string>
     <string name="cpf">CPF</string>
     <string name="endereco">Endereço</string>
@@ -85,6 +85,8 @@
     <string name="floresta_urbana">Floresta\nurbana</string>
     <string name="pracas_com_wifi">Praças com\nwifi</string>
     <string name="bocas_de_lobo">Bocas de\nlobo</string>
+    
+    <string name="pref_shared_session_key">SesssionSocialNetwork</string>
 
     <string-array name="foto_menu">
         <item>Escolher foto do álbum</item>
@@ -95,5 +97,8 @@
         <string name="esqueceu_a_senha">Esqueceu a senha?</string>
         <string name="enviar">Enviar</string>
         <string name="todos_os_bairros">Todos os bairros</string>
+        <string name="solicitaces_maiusculo">Solicitações</string>
+        <string name="comentarios_maiusculo">Comentários</string>
+        <string name="informacoes_maiusculo">Informações</string>
 
 </resources>
