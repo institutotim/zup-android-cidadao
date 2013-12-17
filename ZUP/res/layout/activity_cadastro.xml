@@ -46,13 +46,21 @@
             android:textSize="@dimen/topbar_button_font_size" />
     </RelativeLayout>
 
+    <View
+        android:id="@+id/separator1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/topbar"
+        android:background="#ccc" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/topbar"
+        android:layout_below="@id/separator1"
         android:background="#fff" >
 
         <LinearLayout
+            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -109,6 +117,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="10dp"
                 android:text="@string/ou_preencha_os_dados"
                 android:textColor="#000"
                 android:textSize="@dimen/navigation_text_size" />

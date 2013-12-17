@@ -79,13 +79,14 @@ public class ExploreFragment extends Fragment implements android.location.Locati
 			}
 		});
 
+		busca = new BuscaExplore();
+		busca.setColetaDeEntulho(true);
+		busca.setLimpezaBocaDeLobo(true);
+
 		if (map != null) {
 			map.getUiSettings().setZoomControlsEnabled(false);
 			map.setOnInfoWindowClickListener(this);
 			
-			busca = new BuscaExplore();
-			busca.setColetaDeEntulho(true);
-			busca.setLimpezaBocaDeLobo(true);
 			addMarkers(busca);
 			
 			Location location = getLocalizacao();

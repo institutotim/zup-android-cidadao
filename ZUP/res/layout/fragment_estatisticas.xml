@@ -38,7 +38,7 @@
             android:text="@string/estatisticas"
             android:textSize="@dimen/title_text_size" />
     </RelativeLayout>
-    
+
     <View
         android:id="@+id/separator1"
         android:layout_width="match_parent"
@@ -53,22 +53,26 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:paddingTop="15dp" >
 
             <LinearLayout
                 android:id="@+id/primeiraLinha"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
-                android:orientation="horizontal" >
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:weightSum="2" >
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="35dp"
+                    android:layout_weight="1"
                     android:gravity="center_horizontal"
-                    android:orientation="vertical" >
+                    android:orientation="vertical"
+                    android:paddingLeft="35dp" >
 
                     <com.todddavies.components.progressbar.ProgressWheel
                         android:id="@+id/spinnerResolvido"
@@ -101,10 +105,12 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:gravity="center_horizontal"
-                    android:orientation="vertical" >
+                    android:orientation="vertical"
+                    android:paddingRight="35dp" >
 
                     <com.todddavies.components.progressbar.ProgressWheel
                         android:id="@+id/spinnerAndamento"
@@ -138,19 +144,22 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/primeiraLinha"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="25dp"
-                android:orientation="horizontal" >
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:weightSum="2" >
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="35dp"
+                    android:layout_weight="1"
                     android:gravity="center_horizontal"
-                    android:orientation="vertical" >
+                    android:orientation="vertical"
+                    android:paddingLeft="35dp" >
 
                     <com.todddavies.components.progressbar.ProgressWheel
                         android:id="@+id/spinnerNaoResolvido"
@@ -184,10 +193,12 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:gravity="center_horizontal"
-                    android:orientation="vertical" >
+                    android:orientation="vertical"
+                    android:paddingRight="35dp" >
 
                     <com.todddavies.components.progressbar.ProgressWheel
                         android:id="@+id/spinnerEmAberto"
