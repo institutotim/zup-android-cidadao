@@ -3,29 +3,29 @@
     <item android:state_pressed="true">
         <shape>
             <solid
-                android:color="#888"/>
+                android:color="#888888"/>
             <stroke
                 android:width="0dp" />
             <corners
                 android:radius="5dp"/>
             <padding
-                android:left="@dimen/topbar_button_padding"
-                android:top="@dimen/topbar_button_padding"
-                android:right="@dimen/topbar_button_padding"
-                android:bottom="@dimen/topbar_button_padding"/>
+                android:left="@dimen/padding_default"
+                android:top="@dimen/padding_default"
+                android:right="@dimen/padding_default"
+                android:bottom="@dimen/padding_default"/>
         </shape>
     </item>
     <item>
         <shape>
-            <solid android:color="#333" />
+            <solid android:color="#333333" />
             <stroke
                 android:width="0dp" />
             <corners
                 android:radius="5dp"/>
-            <padding android:left="@dimen/topbar_button_padding"
-                android:top="@dimen/topbar_button_padding"
-                android:right="@dimen/topbar_button_padding"
-                android:bottom="@dimen/topbar_button_padding"/>
+            <padding android:left="@dimen/padding_default"
+                android:top="@dimen/padding_default"
+                android:right="@dimen/padding_default"
+                android:bottom="@dimen/padding_default"/>
         </shape>
     </item>
 </selector>

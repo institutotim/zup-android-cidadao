@@ -27,7 +27,10 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 	
 	private SessionSocialNetwork sessionSocialNetwork;
 	private SharedPreferences sharedPref;
-	
+	private SoliciteTipoFragment tipoFragment;
+	private SoliciteFotosFragment fotosFragment;
+	private SoliciteLocalFragment localFragment;
+	private SoliciteDetalhesFragment detalhesFragment;	
 
 	private enum Passo {
 		TIPO, LOCAL, FOTOS, COMENTARIOS
@@ -41,7 +44,6 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 		Context context = getApplicationContext();
 		SharedPreferences sharedPref = context.getSharedPreferences(
 		        getString(R.string.pref_shared_session_key), Context.MODE_PRIVATE);
-		
 
 		((TextView) findViewById(R.id.titulo)).setTypeface(FontUtils.getLight(this));
 
@@ -61,7 +63,9 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 			}
 		});
 
-		getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, new SoliciteTipoFragment()).commit();
+		tipoFragment = new SoliciteTipoFragment();		
+		
+		getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, tipoFragment).commit();
 	}
 
 	public void exibirBarraInferior(boolean exibir) {
@@ -70,8 +74,14 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 
 	public void setTipo(Solicitacao.Tipo tipo) {
 		solicitacao.setTipo(tipo);
-		getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, new SoliciteLocalFragment()).commit();
+		if (localFragment == null) {
+			localFragment = new SoliciteLocalFragment();
+			getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, localFragment).commit();
+		} else {
+			getSupportFragmentManager().beginTransaction().hide(tipoFragment).show(localFragment).commit();
+		}		
 		atual = Passo.LOCAL;
+		exibirBarraInferior(true);
 	}
 
 	public Solicitacao.Tipo getTipo() {
@@ -104,13 +114,23 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 	public void onClick(View v) {
 		if (v.getId() == botaoAvancar.getId()) {
 			if (atual.equals(Passo.LOCAL)) {
-				getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, new SoliciteFotosFragment()).commit();
+				if (fotosFragment == null) {
+					fotosFragment = new SoliciteFotosFragment();
+					getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, fotosFragment).commit();					
+				} else {
+					getSupportFragmentManager().beginTransaction().hide(localFragment).show(fotosFragment).commit();
+				}
 				atual = Passo.FOTOS;
 			} else if (atual.equals(Passo.FOTOS)) {
-				getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, new SoliciteDetalhesFragment()).commit();
+				if (detalhesFragment == null) {
+					detalhesFragment = new SoliciteDetalhesFragment();
+					getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, detalhesFragment).commit();					
+				} else {
+					getSupportFragmentManager().beginTransaction().hide(fotosFragment).show(detalhesFragment).commit();
+				}
 				botaoAvancar.setText(R.string.publicar);
 				atual = Passo.COMENTARIOS;
-			}else if (atual.equals(Passo.COMENTARIOS)){
+			} else if (atual.equals(Passo.COMENTARIOS)){
 				//Pega a sessão na Shared Preferences
 				Gson gson = new Gson();
 				sessionSocialNetwork = gson.fromJson(sharedPref.getString("sessionNetwork", ""), SessionSocialNetwork.class);
@@ -119,13 +139,14 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 		} else if (v.getId() == botaoVoltar.getId()) {
 			botaoAvancar.setText(R.string.proximo);
 			if (atual.equals(Passo.COMENTARIOS)) {
-				getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, new SoliciteFotosFragment()).commit();
+				getSupportFragmentManager().beginTransaction().hide(detalhesFragment).show(fotosFragment).commit();
 				atual = Passo.FOTOS;
 			} else if (atual.equals(Passo.FOTOS)) {
-				getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, new SoliciteLocalFragment()).commit();
+				getSupportFragmentManager().beginTransaction().hide(fotosFragment).show(localFragment).commit();
 				atual = Passo.LOCAL;
 			} else if (atual.equals(Passo.LOCAL)) {
-				getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, new SoliciteTipoFragment()).commit();
+				getSupportFragmentManager().beginTransaction().hide(localFragment).show(tipoFragment).commit();
+				exibirBarraInferior(false);
 				atual = Passo.TIPO;
 			}
 		}

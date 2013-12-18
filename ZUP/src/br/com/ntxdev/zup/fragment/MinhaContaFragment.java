@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import br.com.ntxdev.zup.OpeningActivity;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SolicitacaoDetalheActivity;
 import br.com.ntxdev.zup.domain.SolicitacaoListItem;
@@ -31,7 +32,14 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 		
 		botaoSair = (TextView) view.findViewById(R.id.botaoSair);
 		botaoSair.setTypeface(FontUtils.getRegular(getActivity()));
-		botaoSair.setOnClickListener(null);
+		botaoSair.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(getActivity(), OpeningActivity.class));
+				getActivity().finish();
+			}
+		});
 		
 		botaoEditar = (TextView) view.findViewById(R.id.botaoEditar);
 		botaoEditar.setTypeface(FontUtils.getRegular(getActivity()));

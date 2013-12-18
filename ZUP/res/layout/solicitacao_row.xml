@@ -15,7 +15,10 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/indicador"
         android:background="@drawable/list_bg"
-        android:padding="10dp" >
+        android:paddingBottom="18dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="18dp" >
 
         <TextView
             android:id="@+id/data"

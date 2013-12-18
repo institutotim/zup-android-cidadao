@@ -51,7 +51,6 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 		TextView comentarios = (TextView) findViewById(R.id.botaoComentarios);
 		comentarios.setTypeface(FontUtils.getLight(this));
 		comentarios.setOnClickListener(this);
-		
 
 		infoFragment = new InformacoesFragment();
 		infoFragment.setArguments(generateData());
@@ -61,10 +60,10 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 		getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, solFragment).add(R.id.fragments_place, infoFragment).add(R.id.fragments_place, comFragment).commit();
 			
 		if (getIntent().getStringExtra("title").startsWith("Árvore") || getIntent().getStringExtra("title").startsWith("Praça") || getIntent().getBooleanExtra("info_page", false)) {
-			if (!getIntent().getBooleanExtra("info_page", false)) {
+			
 				comentarios.setVisibility(View.GONE);
 				solicitacoes.setVisibility(View.GONE);
-			}
+			
 			((TextView) findViewById(R.id.botaoInformacoes)).setTextColor(getResources().getColorStateList(R.color.text_next_color));
 			((TextView) findViewById(R.id.botaoSolicitacoes)).setTextColor(getResources().getColorStateList(R.color.text_previous_color));
 			((TextView) findViewById(R.id.botaoComentarios)).setTextColor(getResources().getColorStateList(R.color.text_previous_color));

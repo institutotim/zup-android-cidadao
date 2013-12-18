@@ -8,7 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="30dp"
+        android:paddingLeft="75dp"
+        android:paddingRight="75dp"
         android:paddingTop="45dp" >
 
         <EditText
@@ -50,7 +51,7 @@
                 android:textColor="#333"
                 android:textSize="@dimen/navigation_text_size" />
         </RelativeLayout>
-        
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

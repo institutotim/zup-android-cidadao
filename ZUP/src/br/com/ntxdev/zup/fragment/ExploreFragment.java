@@ -144,7 +144,7 @@ public class ExploreFragment extends Fragment implements android.location.Locati
 		if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
 			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 30000, 100, this);
 		} else {
-			// Solicita ao usu‡rio para ligar o GPS
+			// Solicita ao usuário para ligar o GPS
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
 			alertDialogBuilder.setMessage(R.string.gps_off).setCancelable(false)
 					.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {

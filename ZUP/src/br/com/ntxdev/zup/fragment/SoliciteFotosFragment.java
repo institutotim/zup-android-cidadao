@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SoliciteActivity;
@@ -107,18 +108,38 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
             Bitmap bitmap = BitmapFactory.decodeFile(path);
             listaFotos.add(path);
             fotoFrame.setVisibility(View.GONE);
+            
+            RelativeLayout layout = new RelativeLayout(getActivity());
+            layout.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+            
             ImageView imgView = new ImageView(getActivity());
+            imgView.setId((int) System.currentTimeMillis());
             if (getResources().getDimension(R.dimen.image_resize) != 0) {
-	            imgView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, (int) (getResources().getDimension(R.dimen.image_resize) / getResources().getDisplayMetrics().density), 
-	            		(int) (getResources().getDimension(R.dimen.image_resize) / getResources().getDisplayMetrics().density), false));
-	        } else {
-	        	imgView.setImageBitmap(bitmap);
+            	imgView.setImageBitmap(Bitmap.createScaledBitmap(bitmap, (int) (getResources().getDimension(R.dimen.image_resize) / getResources().getDisplayMetrics().density), 
+            			(int) (getResources().getDimension(R.dimen.image_resize) / getResources().getDisplayMetrics().density), false));
+            } else {
+            	imgView.setImageBitmap(bitmap);
             }
-            imgView.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
-            imgView.setTag(path);
+            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+			layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            imgView.setLayoutParams(layoutParams);
+            
+            layout.addView(imgView);
+            
+            ImageView btn = new ImageView(getActivity());
+            btn.setClickable(true);
+            btn.setImageResource(R.drawable.btn_editar_foto);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            params.addRule(RelativeLayout.ALIGN_TOP, imgView.getId());
+            params.addRule(RelativeLayout.ALIGN_RIGHT, imgView.getId());
+            btn.setLayoutParams(params);
+            
+            layout.addView(btn);
+            layout.setTag(path);
+            
             containerFotos.setVisibility(View.VISIBLE);
             containerFotos.setWeightSum(listaFotos.size());
-            containerFotos.addView(imgView);
+            containerFotos.addView(layout);
 			break;
 		case GALLERY_RETURN:
 			Uri selectedImage = data.getData();

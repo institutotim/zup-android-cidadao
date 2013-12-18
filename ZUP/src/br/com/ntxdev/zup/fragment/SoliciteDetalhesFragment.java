@@ -34,6 +34,7 @@ public class SoliciteDetalhesFragment extends Fragment implements
 		View.OnClickListener {
 
 	private boolean publicar = false;
+	private boolean termos = false;
 	private SessionSocialNetwork sessaoRedeSocial;
 
 	private Session.StatusCallback statusCallback = new SessionStatusCallback();
@@ -52,6 +53,7 @@ public class SoliciteDetalhesFragment extends Fragment implements
 		View view = inflater.inflate(R.layout.fragment_solicite_detalhes,
 				container, false);
 		view.findViewById(R.id.seletor_postagem).setOnClickListener(this);
+		view.findViewById(R.id.seletor_termos).setOnClickListener(this);
 
 		TextView comentario = (TextView) view.findViewById(R.id.comentario);
 		comentario.setTypeface(FontUtils.getRegular(getActivity()));
@@ -70,6 +72,9 @@ public class SoliciteDetalhesFragment extends Fragment implements
 		redeSocial.setText(getString(R.string.compartilhar_rede_social,
 				"Facebook"));
 		redeSocial.setTypeface(FontUtils.getLight(getActivity()));
+		
+		TextView termos = (TextView) view.findViewById(R.id.termos);
+		termos.setTypeface(FontUtils.getLight(getActivity()));
 
 		sessaoRedeSocial = SessionSocialNetwork.getInstance();
 		publicarFacebook(savedInstanceState);
@@ -80,12 +85,22 @@ public class SoliciteDetalhesFragment extends Fragment implements
 
 	@Override
 	public void onClick(View v) {
-		publicar = !publicar;
-
-		if (publicar) {
-			((ImageView) v).setImageResource(R.drawable.switch_on);
-		} else {
-			((ImageView) v).setImageResource(R.drawable.switch_off);
+		if (v.getId() == R.id.seletor_postagem) {
+			publicar = !publicar;
+	
+			if (publicar) {
+				((ImageView) v).setImageResource(R.drawable.switch_on);
+			} else {
+				((ImageView) v).setImageResource(R.drawable.switch_off);
+			}
+		} else if (v.getId() == R.id.seletor_termos) {
+			termos = !termos;
+			
+			if (termos) {
+				((ImageView) v).setImageResource(R.drawable.switch_on);
+			} else {
+				((ImageView) v).setImageResource(R.drawable.switch_off);
+			}
 		}
 	}
 

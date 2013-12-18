@@ -1,16 +1,15 @@
 package br.com.ntxdev.zup;
 
-import br.com.ntxdev.zup.domain.BuscaExplore;
-import br.com.ntxdev.zup.util.FontUtils;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import br.com.ntxdev.zup.domain.BuscaExplore;
+import br.com.ntxdev.zup.util.FontUtils;
 
 public class FiltroEstatisticasActivity extends Activity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
