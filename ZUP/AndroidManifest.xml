@@ -55,7 +55,7 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>            
+            </intent-filter>
         </activity>
         <activity
             android:name="br.com.ntxdev.zup.SoliciteActivity"
@@ -64,6 +64,12 @@
         <activity
             android:name="br.com.ntxdev.zup.SolicitacaoDetalheActivity"
             android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="br.com.ntxdev.zup.TermosDeUsoActivity"
+            android:label="@string/termos_de_uso"
+            android:screenOrientation="portrait"
+            android:theme="@style/Popup" >
         </activity>
         <activity
             android:name="br.com.ntxdev.zup.CadastroActivity"

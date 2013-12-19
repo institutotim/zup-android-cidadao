@@ -94,14 +94,14 @@
         <android.support.v4.view.ViewPager
             android:id="@+id/pager"
             android:layout_width="match_parent"
-            android:layout_height="600dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentTop="true" />
 
         <com.viewpagerindicator.IconPageIndicator
             android:id="@+id/indicator"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/pager"
+            android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:padding="@dimen/circle_padding" />
     </RelativeLayout>

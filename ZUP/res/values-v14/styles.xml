@@ -8,5 +8,9 @@
     <style name="AppBaseTheme" parent="android:Theme.Holo.Light.NoActionBar">
         <!-- API 14 theme customizations can go here. -->
     </style>
+    
+    <style name="Popup" parent="android:Theme.Holo.Light.Dialog">
+        
+    </style>
 
 </resources>

@@ -7,8 +7,10 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -19,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SoliciteActivity;
+import br.com.ntxdev.zup.TermosDeUsoActivity;
 import br.com.ntxdev.zup.util.FontUtils;
 import br.com.ntxdev.zup.util.SessionSocialNetwork;
 
@@ -74,8 +77,15 @@ public class SoliciteDetalhesFragment extends Fragment implements
 		redeSocial.setTypeface(FontUtils.getLight(getActivity()));
 		
 		TextView termos = (TextView) view.findViewById(R.id.termos);
+		termos.setText(Html.fromHtml(getString(R.string.concordo_com_os_termos_de_uso)));
 		termos.setTypeface(FontUtils.getLight(getActivity()));
-
+		termos.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(getActivity(), TermosDeUsoActivity.class));				
+			}
+		});
+		
 		sessaoRedeSocial = SessionSocialNetwork.getInstance();
 		publicarFacebook(savedInstanceState);
 		publicarTwitter();

@@ -85,6 +85,15 @@
     <string name="floresta_urbana">Floresta\nurbana</string>
     <string name="pracas_com_wifi">Praças com\nwifi</string>
     <string name="bocas_de_lobo">Bocas de\nlobo</string>
+    <string name="entrar">Entrar</string>
+    <string name="esqueceu_a_senha">Esqueceu a senha?</string>
+    <string name="enviar">Enviar</string>
+    <string name="todos_os_bairros">Todos os bairros</string>
+    <string name="solicitaces_maiusculo">Solicitações</string>
+    <string name="comentarios_maiusculo">Comentários</string>
+    <string name="informacoes_maiusculo">Informações</string>
+    <string name="termos_de_uso">Termos de Uso</string>
+    <string name="concordo_com_os_termos_de_uso"><![CDATA[Concordo com os <font color=\"#94d9ed\">Termos de Uso</font>]]> </string>
     
     <string name="pref_shared_session_key">SesssionSocialNetwork</string>
 
@@ -93,13 +102,12 @@
         <item>Tirar foto</item>
         <item>Cancelar</item>
     </string-array>
-        <string name="entrar">Entrar</string>
-        <string name="esqueceu_a_senha">Esqueceu a senha?</string>
-        <string name="enviar">Enviar</string>
-        <string name="todos_os_bairros">Todos os bairros</string>
-        <string name="solicitaces_maiusculo">Solicitações</string>
-        <string name="comentarios_maiusculo">Comentários</string>
-        <string name="informacoes_maiusculo">Informações</string>
-        <string name="concordo_com_os_termos_de_uso">Concordo com os Termos de Uso</string>
+    
+    <string-array name="foto_menu_editar">
+        <item>Remover foto</item>
+        <item>Escolher foto do álbum</item>
+        <item>Tirar foto</item>
+        <item>Cancelar</item>
+    </string-array>
 
 </resources>
