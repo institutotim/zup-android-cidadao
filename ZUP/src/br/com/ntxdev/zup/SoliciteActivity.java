@@ -1,7 +1,5 @@
 package br.com.ntxdev.zup;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
@@ -12,9 +10,6 @@ import br.com.ntxdev.zup.fragment.SoliciteFotosFragment;
 import br.com.ntxdev.zup.fragment.SoliciteLocalFragment;
 import br.com.ntxdev.zup.fragment.SoliciteTipoFragment;
 import br.com.ntxdev.zup.util.FontUtils;
-import br.com.ntxdev.zup.util.SessionSocialNetwork;
-
-import com.google.gson.Gson;
 
 public class SoliciteActivity extends FragmentActivity implements View.OnClickListener {
 
@@ -25,8 +20,6 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 	private TextView botaoAvancar;
 	private TextView botaoVoltar;
 	
-	private SessionSocialNetwork sessionSocialNetwork;
-	private SharedPreferences sharedPref;
 	private SoliciteTipoFragment tipoFragment;
 	private SoliciteFotosFragment fotosFragment;
 	private SoliciteLocalFragment localFragment;
@@ -41,10 +34,6 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_solicite);
 		
-		Context context = getApplicationContext();
-		SharedPreferences sharedPref = context.getSharedPreferences(
-		        getString(R.string.pref_shared_session_key), Context.MODE_PRIVATE);
-
 		((TextView) findViewById(R.id.titulo)).setTypeface(FontUtils.getLight(this));
 
 		botaoAvancar = (TextView) findViewById(R.id.botaoAvancar);
@@ -131,9 +120,6 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 				botaoAvancar.setText(R.string.publicar);
 				atual = Passo.COMENTARIOS;
 			} else if (atual.equals(Passo.COMENTARIOS)){
-				//Pega a sessão na Shared Preferences
-				Gson gson = new Gson();
-				sessionSocialNetwork = gson.fromJson(sharedPref.getString("sessionNetwork", ""), SessionSocialNetwork.class);
 				//Publica na rede social
 			}
 		} else if (v.getId() == botaoVoltar.getId()) {

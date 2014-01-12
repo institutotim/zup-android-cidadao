@@ -1,9 +1,8 @@
-package br.com.ntxdex.zup.twitter;
+package br.com.ntxdev.zup.social.twitter;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
-
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.basic.DefaultOAuthProvider;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
@@ -12,12 +11,12 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.auth.AccessToken;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Handler;
 import android.os.Message;
 import android.view.Window;
-import android.widget.EditText;
 
 public class TwitterApp {
 	private Twitter mTwitter;
@@ -30,8 +29,6 @@ public class TwitterApp {
 	private ProgressDialog mProgressDlg;
 	private TwDialogListener mListener;
 	private Activity context;
-	private String nomeUsuario;
-	private String profileImage;
 
 	public static final String OAUTH_CALLBACK_SCHEME = "x-oauthflow-twitter";
 	public static final String OAUTH_CALLBACK_HOST = "callback";
@@ -99,8 +96,6 @@ public class TwitterApp {
 	public void updateStatus(String status) throws Exception {
 		try {
 			mTwitter.updateStatus(status);
-			// File f = new File("/mnt/sdcard/74.jpg");
-			// mTwitter.updateProfileImage(f);
 		} catch (TwitterException e) {
 			throw e;
 		}
@@ -141,21 +136,14 @@ public class TwitterApp {
 				int what = 1;
 
 				try {
-					mHttpOauthprovider.retrieveAccessToken(mHttpOauthConsumer,
-							verifier);
+					mHttpOauthprovider.retrieveAccessToken(mHttpOauthConsumer, verifier);
 
-					mAccessToken = new AccessToken(
-							mHttpOauthConsumer.getToken(),
-							mHttpOauthConsumer.getTokenSecret());
+					mAccessToken = new AccessToken(mHttpOauthConsumer.getToken(), mHttpOauthConsumer.getTokenSecret());
 
 					configureToken();
 
 					User user = mTwitter.verifyCredentials();
 					
-					//Seta os campos do perfil do usuário
-					nomeUsuario = (user.getName());
-					profileImage = (user.getProfileImageURL().toString());
-
 					mSession.storeAccessToken(mAccessToken, user.getName());
 
 					what = 0;
@@ -168,11 +156,11 @@ public class TwitterApp {
 		}.start();
 	}
 
+	@SuppressWarnings("deprecation")
 	private String getVerifier(String callbackUrl) {
 		String verifier = "";
 
 		try {
-			//callbackUrl = callbackUrl.replace("twitterapp", "http");
 			callbackUrl = callbackUrl.replace("x-oauthflow-twitter", "http");
 
 			URL url = new URL(callbackUrl);
@@ -211,6 +199,7 @@ public class TwitterApp {
 		new TwitterDialog(context, url, listener).show();
 	}
 
+	@SuppressLint("HandlerLeak")
 	private Handler mHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
@@ -235,14 +224,4 @@ public class TwitterApp {
 
 		public void onError(String value);
 	}
-	
-	public String getNomeUsuario(){
-		return this.nomeUsuario;
-	}
-	
-	public String getProfileImage(){
-		return this.profileImage;
-	}
-	
-
 }

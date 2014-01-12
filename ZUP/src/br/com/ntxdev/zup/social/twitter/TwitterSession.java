@@ -1,6 +1,7 @@
-package br.com.ntxdex.zup.twitter;
+package br.com.ntxdev.zup.social.twitter;
 
 import twitter4j.auth.AccessToken;
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.Context;
@@ -9,11 +10,12 @@ public class TwitterSession {
 	private SharedPreferences sharedPref;
 	private Editor editor;
 
-	private static final String TWEET_AUTH_KEY = "";
-	private static final String TWEET_AUTH_SECRET_KEY = "";
-	private static final String TWEET_USER_NAME = "";
+	private static final String TWEET_AUTH_KEY = "auth_key";
+	private static final String TWEET_AUTH_SECRET_KEY = "auth_secret_key";
+	private static final String TWEET_USER_NAME = "tw_username";
 	private static final String SHARED = "Twitter_Preferences";
 
+	@SuppressLint("CommitPrefEdits")
 	public TwitterSession(Context context) {
 		sharedPref = context.getSharedPreferences(SHARED, Context.MODE_PRIVATE);
 
@@ -24,14 +26,12 @@ public class TwitterSession {
 		editor.putString(TWEET_AUTH_KEY, accessToken.getToken());
 		editor.putString(TWEET_AUTH_SECRET_KEY, accessToken.getTokenSecret());
 		editor.putString(TWEET_USER_NAME, username);
-
 		editor.commit();
 	}
 
 	public void resetAccessToken() {
 		editor.putString(TWEET_AUTH_KEY, null);
 		editor.putString(TWEET_AUTH_SECRET_KEY, null);
-		editor.putString(TWEET_USER_NAME, null);
 
 		editor.commit();
 	}

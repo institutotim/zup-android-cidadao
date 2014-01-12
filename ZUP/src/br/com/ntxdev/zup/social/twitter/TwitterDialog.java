@@ -1,5 +1,6 @@
-package br.com.ntxdex.zup.twitter;
+package br.com.ntxdev.zup.social.twitter;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -16,18 +17,17 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import br.com.ntxdev.zup.R;
-import br.com.ntxdex.zup.twitter.TwitterApp.TwDialogListener;
-
-
+import br.com.ntxdev.zup.social.twitter.TwitterApp.TwDialogListener;
 
 public class TwitterDialog extends Dialog {
 
     static final float[] DIMENSIONS_LANDSCAPE = { 460, 260 };
     static final float[] DIMENSIONS_PORTRAIT = { 280, 420 };
     static final FrameLayout.LayoutParams FILL = new FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.FILL_PARENT,
-            ViewGroup.LayoutParams.FILL_PARENT);
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT);
     static final int MARGIN = 4;
     static final int PADDING = 2;
     private String mUrl;
@@ -45,7 +45,8 @@ public class TwitterDialog extends Dialog {
         mListener = listener;
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mSpinner = new ProgressDialog(getContext());
@@ -89,7 +90,8 @@ public class TwitterDialog extends Dialog {
         mContent.addView(mTitle);
     }
 
-    private void setUpWebView() {
+    @SuppressLint("SetJavaScriptEnabled")
+	private void setUpWebView() {
         mWebView = new WebView(getContext());
 
         mWebView.setVerticalScrollBarEnabled(false);

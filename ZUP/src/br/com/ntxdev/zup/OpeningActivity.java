@@ -2,12 +2,14 @@ package br.com.ntxdev.zup;
 
 import java.util.Arrays;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.TextView;
+import br.com.ntxdev.zup.service.LoginService;
 import br.com.ntxdev.zup.util.FontUtils;
 import br.com.ntxdev.zup.widget.ImagePagerAdapter;
 
@@ -15,6 +17,9 @@ import com.viewpagerindicator.IconPageIndicator;
 import com.viewpagerindicator.PageIndicator;
 
 public class OpeningActivity extends FragmentActivity {
+	
+	private static final int LOGIN_REQUEST = 1010;
+	private static final int REGISTER_REQUEST = 1011;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +54,7 @@ public class OpeningActivity extends FragmentActivity {
 		botaoCadastrar.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				startActivity(new Intent(OpeningActivity.this, CadastroActivity.class));
+				startActivityForResult(new Intent(OpeningActivity.this, CadastroActivity.class), REGISTER_REQUEST);
 			}			
 		});
 		
@@ -58,8 +63,21 @@ public class OpeningActivity extends FragmentActivity {
 		botaoLogin.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				startActivity(new Intent(OpeningActivity.this, LoginActivity.class));
+				startActivityForResult(new Intent(OpeningActivity.this, LoginActivity.class), LOGIN_REQUEST);
 			}			
 		});
+		
+		if (new LoginService().usuarioLogado(this)) {
+			startActivity(new Intent(this, MainActivity.class));
+			finish();
+		}
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if ((requestCode == LOGIN_REQUEST || requestCode == REGISTER_REQUEST) && resultCode == Activity.RESULT_OK) {
+			startActivity(new Intent(this, MainActivity.class));
+			finish();
+		}
 	}
 }

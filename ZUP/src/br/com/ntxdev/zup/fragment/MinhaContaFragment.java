@@ -19,6 +19,9 @@ import br.com.ntxdev.zup.OpeningActivity;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SolicitacaoDetalheActivity;
 import br.com.ntxdev.zup.domain.SolicitacaoListItem;
+import br.com.ntxdev.zup.domain.Usuario;
+import br.com.ntxdev.zup.service.LoginService;
+import br.com.ntxdev.zup.service.UsuarioService;
 import br.com.ntxdev.zup.util.FontUtils;
 
 public class MinhaContaFragment extends Fragment implements AdapterView.OnItemClickListener {
@@ -36,6 +39,7 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 			
 			@Override
 			public void onClick(View v) {
+				new LoginService().registrarLogout(getActivity());
 				startActivity(new Intent(getActivity(), OpeningActivity.class));
 				getActivity().finish();
 			}
@@ -52,6 +56,11 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 		((TextView) view.findViewById(R.id.minhaConta)).setTypeface(FontUtils.getLight(getActivity()));
 		TextView nomeUsuario = (TextView) view.findViewById(R.id.nomeUsuario);
 		nomeUsuario.setTypeface(FontUtils.getLight(getActivity()));
+		
+		Usuario usuario = new UsuarioService().getUsuarioAtivo(getActivity());
+		if (usuario != null) {
+			nomeUsuario.setText(usuario.getNome() != null ? usuario.getNome() : usuario.getEmail());
+		}
 		
 		SolicitacaoListItem item = new SolicitacaoListItem();
 		item.setData("há 2 dias atrás");

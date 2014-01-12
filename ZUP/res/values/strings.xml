@@ -93,6 +93,7 @@
     <string name="comentarios_maiusculo">Comentários</string>
     <string name="informacoes_maiusculo">Informações</string>
     <string name="termos_de_uso">Termos de Uso</string>
+    <string name="complete_seus_dados">Agora complete seus dados</string>
     <string name="concordo_com_os_termos_de_uso"><![CDATA[Concordo com os <font color=\"#94d9ed\">Termos de Uso</font>]]> </string>
     
     <string name="pref_shared_session_key">SesssionSocialNetwork</string>
