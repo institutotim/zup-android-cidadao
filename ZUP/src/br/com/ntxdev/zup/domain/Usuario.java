@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class Usuario implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	private Long id;
 	private String nome;
 	private String email;
 	private String telefone;
@@ -16,12 +17,20 @@ public class Usuario implements Serializable {
 	private String senha;
 	private String confirmacaoSenha;
 
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	public String getNome() {
 		return nome;
 	}
 
 	public void setNome(String nome) {
-		this.nome = nome;
+		if (nome != null && !nome.isEmpty() && !nome.equals("null")) this.nome = nome;
 	}
 
 	public String getEmail() {
@@ -29,7 +38,7 @@ public class Usuario implements Serializable {
 	}
 
 	public void setEmail(String email) {
-		this.email = email;
+		if (email != null && !email.isEmpty() && !email.equals("null")) this.email = email;
 	}
 
 	public String getTelefone() {
@@ -37,7 +46,7 @@ public class Usuario implements Serializable {
 	}
 
 	public void setTelefone(String telefone) {
-		this.telefone = telefone;
+		if (telefone != null && !telefone.isEmpty() && !telefone.equals("null")) this.telefone = telefone;
 	}
 
 	public String getCpf() {
@@ -45,7 +54,7 @@ public class Usuario implements Serializable {
 	}
 
 	public void setCpf(String cpf) {
-		this.cpf = cpf;
+		if (cpf != null && !cpf.isEmpty() && !cpf.equals("null")) this.cpf = cpf;
 	}
 
 	public String getEndereco() {
@@ -53,7 +62,7 @@ public class Usuario implements Serializable {
 	}
 
 	public void setEndereco(String endereco) {
-		this.endereco = endereco;
+		if (endereco != null && !endereco.isEmpty() && !endereco.equals("null")) this.endereco = endereco;
 	}
 
 	public String getComplemento() {
@@ -61,7 +70,7 @@ public class Usuario implements Serializable {
 	}
 
 	public void setComplemento(String complemento) {
-		this.complemento = complemento;
+		if (complemento != null && !complemento.isEmpty() && !complemento.equals("null")) this.complemento = complemento;
 	}
 
 	public String getCep() {
@@ -69,7 +78,7 @@ public class Usuario implements Serializable {
 	}
 
 	public void setCep(String cep) {
-		this.cep = cep;
+		if (cep != null && !cep.isEmpty() && !cep.equals("null")) this.cep = cep;
 	}
 
 	public String getBairro() {
@@ -77,7 +86,7 @@ public class Usuario implements Serializable {
 	}
 
 	public void setBairro(String bairro) {
-		this.bairro = bairro;
+		if (bairro != null && !bairro.isEmpty() && !bairro.equals("null")) this.bairro = bairro;
 	}
 
 	public String getSenha() {

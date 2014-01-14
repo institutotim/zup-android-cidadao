@@ -114,9 +114,9 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 			if (result != null) {
 				try {
 				JSONObject json = new JSONObject(result);
-				new LoginService().registrarLogin(LoginActivity.this, 
-						json.getJSONObject("user"), 
-						json.getString("token"));
+					new LoginService().registrarLogin(LoginActivity.this, 
+							json.getJSONObject("user"), 
+							json.getString("token"));
 				} catch (JSONException e) {
 					Log.e("ZUP", e.getMessage());
 				}

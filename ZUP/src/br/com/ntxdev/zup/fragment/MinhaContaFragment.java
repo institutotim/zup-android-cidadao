@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import br.com.ntxdev.zup.EditarContaActivity;
 import br.com.ntxdev.zup.OpeningActivity;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SolicitacaoDetalheActivity;
@@ -26,8 +28,12 @@ import br.com.ntxdev.zup.util.FontUtils;
 
 public class MinhaContaFragment extends Fragment implements AdapterView.OnItemClickListener {
 	
+	private static final int REQUEST_EDIT_USER = 1099;
+	
 	private TextView botaoSair;
 	private TextView botaoEditar;
+
+	private TextView nomeUsuario;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -47,14 +53,20 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 		
 		botaoEditar = (TextView) view.findViewById(R.id.botaoEditar);
 		botaoEditar.setTypeface(FontUtils.getRegular(getActivity()));
-		botaoEditar.setOnClickListener(null);
+		botaoEditar.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				startActivityForResult(new Intent(getActivity(), EditarContaActivity.class), REQUEST_EDIT_USER);				
+			}
+		});
 		
 		((TextView) view.findViewById(R.id.instrucoes)).setTypeface(FontUtils.getBold(getActivity()));
 
 		List<SolicitacaoListItem> items = new ArrayList<SolicitacaoListItem>();
 		
 		((TextView) view.findViewById(R.id.minhaConta)).setTypeface(FontUtils.getLight(getActivity()));
-		TextView nomeUsuario = (TextView) view.findViewById(R.id.nomeUsuario);
+		nomeUsuario = (TextView) view.findViewById(R.id.nomeUsuario);
 		nomeUsuario.setTypeface(FontUtils.getLight(getActivity()));
 		
 		Usuario usuario = new UsuarioService().getUsuarioAtivo(getActivity());
@@ -192,5 +204,15 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 		Intent intent = new Intent(getActivity(), SolicitacaoDetalheActivity.class);
 		intent.putExtra("solicitacao", item);
 		startActivity(intent);
+	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == REQUEST_EDIT_USER && resultCode == Activity.RESULT_OK) {
+			Usuario usuario = new UsuarioService().getUsuarioAtivo(getActivity());
+			if (usuario != null) {
+				nomeUsuario.setText(usuario.getNome() != null ? usuario.getNome() : usuario.getEmail());
+			}
+		}
 	}
 }

@@ -60,6 +60,10 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
+            android:name="br.com.ntxdev.zup.EditarContaActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
             android:name="br.com.ntxdev.zup.TermosDeUsoActivity"
             android:label="@string/termos_de_uso"
             android:screenOrientation="portrait"

@@ -110,5 +110,7 @@
         <item>Tirar foto</item>
         <item>Cancelar</item>
     </string-array>
+        <string name="editar_conta">Editar conta</string>
+        <string name="salvar">Salvar</string>
 
 </resources>

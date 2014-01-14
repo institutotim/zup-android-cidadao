@@ -31,6 +31,7 @@ public class UsuarioService {
 		u.setEndereco(j.optString("address"));
 		u.setNome(j.getString("name"));
 		u.setTelefone(j.getString("phone"));
+		u.setId(j.getLong("id"));
 		
 		return u;
 	}
