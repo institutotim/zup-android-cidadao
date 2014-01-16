@@ -1,14 +1,32 @@
 package br.com.ntxdev.zup;
 
+import java.io.File;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+import br.com.ntxdev.zup.core.Constantes;
 import br.com.ntxdev.zup.domain.Solicitacao;
 import br.com.ntxdev.zup.fragment.SoliciteDetalhesFragment;
 import br.com.ntxdev.zup.fragment.SoliciteFotosFragment;
 import br.com.ntxdev.zup.fragment.SoliciteLocalFragment;
 import br.com.ntxdev.zup.fragment.SoliciteTipoFragment;
+import br.com.ntxdev.zup.service.LoginService;
 import br.com.ntxdev.zup.util.FontUtils;
 
 public class SoliciteActivity extends FragmentActivity implements View.OnClickListener {
@@ -120,7 +138,9 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 				botaoAvancar.setText(R.string.publicar);
 				atual = Passo.COMENTARIOS;
 			} else if (atual.equals(Passo.COMENTARIOS)){
-				//Publica na rede social
+				solicitacao.setComentario(detalhesFragment.getComentario());
+				solicitacao.setLatitudeLongitude(localFragment.getLatitudeAtual(), localFragment.getLongitudeAtual());
+				enviarSolicitacao();
 			}
 		} else if (v.getId() == botaoVoltar.getId()) {
 			botaoAvancar.setText(R.string.proximo);
@@ -134,6 +154,67 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 				getSupportFragmentManager().beginTransaction().hide(localFragment).show(tipoFragment).commit();
 				exibirBarraInferior(false);
 				atual = Passo.TIPO;
+			}
+		}
+	}
+	
+	private void enviarSolicitacao() {
+		new Tasker().execute();
+	}
+	
+	public class Tasker extends AsyncTask<Void, Void, Boolean> {
+		
+		private ProgressDialog dialog;
+
+		@Override
+		protected void onPreExecute() {
+			dialog = new ProgressDialog(SoliciteActivity.this);
+			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			dialog.setIndeterminate(true);
+			dialog.setMessage("Enviando solicitação...");
+			dialog.show();
+		}
+
+		@Override
+		protected Boolean doInBackground(Void... params) {
+			try {
+				HttpClient client = new DefaultHttpClient();
+				HttpPost post = new HttpPost(Constantes.REST_URL + "/reports/2/items");
+				
+				MultipartEntityBuilder multipartEntity = MultipartEntityBuilder.create();
+				multipartEntity.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+				
+				multipartEntity.addTextBody("latitude", String.valueOf(solicitacao.getLatitude()));
+				multipartEntity.addTextBody("longitude", String.valueOf(solicitacao.getLongitude()));
+				multipartEntity.addTextBody("description", solicitacao.getComentario());
+				multipartEntity.addTextBody("address", localFragment.getEnderecoAtual());
+				multipartEntity.addTextBody("category_id", "2");
+				
+				for (String foto : solicitacao.getFotos()) {
+					multipartEntity.addPart("images[]", new FileBody(new File(foto)));
+				}
+				
+				post.setEntity(multipartEntity.build());
+				post.setHeader("X-App-Token", new LoginService().getToken(SoliciteActivity.this));
+				HttpResponse response = client.execute(post);
+				System.out.println(EntityUtils.toString(response.getEntity()));
+				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+					return Boolean.TRUE;
+				}
+			} catch (Exception e) {
+				Log.e("ZUP", e.getMessage());
+			}
+			return Boolean.FALSE;
+		}
+		
+		@Override
+		protected void onPostExecute(Boolean result) {
+			dialog.dismiss();
+			if (result) {
+				Toast.makeText(SoliciteActivity.this, "Solicitação enviada com sucesso!", Toast.LENGTH_LONG).show();
+				finish();
+			} else {
+				Toast.makeText(SoliciteActivity.this, "Falha no envio da solicitação", Toast.LENGTH_LONG).show();
 			}
 		}
 	}

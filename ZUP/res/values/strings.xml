@@ -112,5 +112,6 @@
     </string-array>
         <string name="editar_conta">Editar conta</string>
         <string name="salvar">Salvar</string>
+        <string name="pesquisar">Pesquisar</string>
 
 </resources>

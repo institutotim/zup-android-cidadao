@@ -162,7 +162,7 @@ public class SoliciteLocalFragment extends Fragment implements LocationListener 
 	}
 
 	public void atualizaEndereco() {
-		Geocoder geocoder = new Geocoder(getActivity().getApplicationContext());
+		Geocoder geocoder = new Geocoder(getActivity());
 		List<Address> addresses;
 		try {
 			addresses = geocoder.getFromLocation(latitudeAtual, longitudeAtual, 1);
@@ -177,5 +177,17 @@ public class SoliciteLocalFragment extends Fragment implements LocationListener 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public double getLatitudeAtual() {
+		return latitudeAtual;
+	}
+	
+	public double getLongitudeAtual() {
+		return longitudeAtual;
+	}
+	
+	public String getEnderecoAtual() {
+		return enderecoAtual.get("endereco");
 	}
 }

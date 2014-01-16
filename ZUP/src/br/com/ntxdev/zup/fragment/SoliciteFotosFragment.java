@@ -195,8 +195,8 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
 							.currentTimeMillis() + ".jpg")));
 			intent.putExtra(CropImage.ASPECT_X, 1);
 			intent.putExtra(CropImage.ASPECT_Y, 1);
-			intent.putExtra(CropImage.OUTPUT_X, 320);
-			intent.putExtra(CropImage.OUTPUT_Y, 320);
+			intent.putExtra(CropImage.OUTPUT_X, 800);
+			intent.putExtra(CropImage.OUTPUT_Y, 800);
 
 			startActivityForResult(intent, CROP_RETURN);
 			break;

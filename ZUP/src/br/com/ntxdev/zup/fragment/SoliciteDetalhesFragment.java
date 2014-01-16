@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,13 +32,6 @@ public class SoliciteDetalhesFragment extends Fragment implements View.OnClickLi
 
 		TextView comentario = (TextView) view.findViewById(R.id.comentario);
 		comentario.setTypeface(FontUtils.getRegular(getActivity()));
-		comentario.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-					@Override
-					public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-						((SoliciteActivity) getActivity()).setComentario(v.getText().toString());
-						return false;
-					}
-				});
 
 		TextView redeSocial = (TextView) view.findViewById(R.id.redeSocial);
 		redeSocial.setText(getString(R.string.compartilhar_rede_social, "Facebook"));
@@ -77,5 +69,9 @@ public class SoliciteDetalhesFragment extends Fragment implements View.OnClickLi
 				((ImageView) v).setImageResource(R.drawable.switch_off);
 			}
 		}
+	}
+	
+	public String getComentario() {
+		return ((TextView) getView().findViewById(R.id.comentario)).getText().toString();
 	}
 }

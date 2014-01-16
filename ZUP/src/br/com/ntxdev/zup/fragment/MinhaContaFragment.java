@@ -4,11 +4,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +27,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import br.com.ntxdev.zup.EditarContaActivity;
 import br.com.ntxdev.zup.OpeningActivity;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SolicitacaoDetalheActivity;
+import br.com.ntxdev.zup.SolicitacaoListItemAdapter;
+import br.com.ntxdev.zup.core.Constantes;
 import br.com.ntxdev.zup.domain.SolicitacaoListItem;
 import br.com.ntxdev.zup.domain.Usuario;
 import br.com.ntxdev.zup.service.LoginService;
@@ -145,6 +159,16 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 
 		return view;
 	}
+	
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		new Tasker().execute();
+	}
+	
+	private void preencherLista(List<SolicitacaoListItem> itens) {
+		
+	}
 
 	public class SolicitacaoAdapter extends ArrayAdapter<SolicitacaoListItem> {
 
@@ -212,6 +236,56 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 			Usuario usuario = new UsuarioService().getUsuarioAtivo(getActivity());
 			if (usuario != null) {
 				nomeUsuario.setText(usuario.getNome() != null ? usuario.getNome() : usuario.getEmail());
+			}
+		}
+	}
+	
+	public class Tasker extends AsyncTask<Void, Void, String> {
+		
+		private ProgressDialog dialog;
+
+		@Override
+		protected void onPreExecute() {
+			dialog = new ProgressDialog(getActivity());
+			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			dialog.setIndeterminate(true);
+			dialog.setMessage("Por favor, aguarde...");
+			dialog.show();
+		}
+
+		@Override
+		protected String doInBackground(Void... params) {
+			try {
+				HttpClient client = new DefaultHttpClient();
+				HttpGet get = new HttpGet(Constantes.REST_URL + "/reports/users/me/items");
+				get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
+				HttpResponse response = client.execute(get);
+				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+					return EntityUtils.toString(response.getEntity());
+				}
+			} catch (Exception e) {
+				Log.e("ZUP", e.getMessage());
+			}
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(String result) {
+			dialog.dismiss();
+			if (result != null) {
+				try {
+					JSONArray array = new JSONArray(result);
+					List<SolicitacaoListItem> itens = new ArrayList<SolicitacaoListItem>();
+					for (int i = 0; i < array.length(); i++) {
+						itens.add(SolicitacaoListItemAdapter.adapt(array.getJSONObject(i)));
+					}
+					preencherLista(itens);
+				} catch (Exception e) {
+					Log.e("ZUP", e.getMessage());
+					Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos", Toast.LENGTH_LONG).show();
+				}
+			} else {
+				Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos", Toast.LENGTH_LONG).show();
 			}
 		}
 	}

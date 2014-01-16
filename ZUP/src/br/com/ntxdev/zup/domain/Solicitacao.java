@@ -13,8 +13,8 @@ public class Solicitacao implements Serializable {
 	}
 
 	private Tipo tipo;
-	private float latitude;
-	private float longitude;
+	private double latitude;
+	private double longitude;
 	private List<String> fotos = new ArrayList<String>();
 	private String comentario;
 	private boolean redeSocial = false;
@@ -27,15 +27,15 @@ public class Solicitacao implements Serializable {
 		this.tipo = tipo;
 	}
 
-	public float getLatitude() {
+	public double getLatitude() {
 		return latitude;
 	}
 
-	public float getLongitude() {
+	public double getLongitude() {
 		return longitude;
 	}
 	
-	public void setLatitudeLongitude(float latitude, float longitude) {
+	public void setLatitudeLongitude(double latitude, double longitude) {
 		this.latitude = latitude;
 		this.longitude = longitude;
 	}
