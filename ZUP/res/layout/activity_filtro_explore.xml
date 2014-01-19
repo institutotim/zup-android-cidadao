@@ -64,46 +64,27 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
 
-            <LinearLayout
-                android:id="@+id/seletor_tipo"
+            <HorizontalScrollView
+                android:id="@+id/categorias_relatos"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_centerInParent="true"
-                android:orientation="horizontal"
-                android:padding="35dp"
-                android:weightSum="2" >
+                android:scrollbars="none" >
 
-                <TextView
-                    android:id="@+id/opcaoBocaDeLobo"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:id="@+id/seletor_tipo"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:drawableTop="@drawable/icon_boca_lobo"
-                    android:gravity="center"
-                    android:drawablePadding="10dp"
-                    android:text="@string/limpeza_de_boca_de_lobo"
-                    android:textColor="@color/icon_text_color" />
-
-                <TextView
-                    android:id="@+id/opcaoColetaEntulho"
-                    android:layout_width="0dp"
-                    android:drawablePadding="10dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:drawableTop="@drawable/icon_coleta_entulho"
-                    android:gravity="center"
-                    android:text="@string/coleta_de_entulho"
-                    android:textColor="@color/icon_text_color" />
-            </LinearLayout>
+                    android:orientation="horizontal"
+                    android:padding="35dp" />
+            </HorizontalScrollView>
 
             <View
                 android:id="@+id/separator1"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_below="@id/seletor_tipo"
+                android:layout_below="@id/categorias_relatos"
                 android:background="#ccc" />
 
             <br.com.ntxdev.zup.widget.SeekbarWithIntervals
@@ -225,54 +206,21 @@
                     android:textSize="@dimen/instruction_text_size" />
             </RelativeLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <HorizontalScrollView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/separatorBar"
-                android:background="#f3f3f3"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal"
-                android:padding="35dp"
-                android:weightSum="3" >
+                android:layout_centerHorizontal="true"
+                android:scrollbars="none" >
 
-                <TextView
-                    android:id="@+id/opcaoFlorestaUrbana"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:id="@+id/categorias_inventario"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:drawablePadding="10dp"
-                    android:drawableTop="@drawable/icon_floresta_urbana"
-                    android:gravity="center"
-                    android:text="@string/floresta_urbana"
-                    android:textColor="@color/icon_text_color" />
-
-                <TextView
-                    android:id="@+id/opcaoPracasWifi"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:drawableTop="@drawable/icon_praca_wifi"
-                    android:gravity="center"
-                    android:drawablePadding="10dp"
-                    android:text="@string/pracas_com_wifi"
-                    android:textColor="@color/icon_text_color" />
-
-                <TextView
-                    android:id="@+id/opcaoBocasDeLoboLocal"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:drawablePadding="10dp"
-                    android:drawableTop="@drawable/icon_boca_lobo"
-                    android:gravity="center"
-                    android:text="@string/bocas_de_lobo"
-                    android:textColor="@color/icon_text_color" />
-            </LinearLayout>
+                    android:background="#f3f3f3"
+                    android:orientation="horizontal"
+                    android:padding="35dp" />
+            </HorizontalScrollView>
         </RelativeLayout>
     </ScrollView>
 

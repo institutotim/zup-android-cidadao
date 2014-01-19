@@ -82,8 +82,6 @@ public class ExploreFragment extends Fragment implements OnInfoWindowClickListen
 		});
 
 		busca = new BuscaExplore();
-		busca.setColetaDeEntulho(true);
-		busca.setLimpezaBocaDeLobo(true);
 
 		if (map != null) {
 			map.setMyLocationEnabled(true);
@@ -114,31 +112,31 @@ public class ExploreFragment extends Fragment implements OnInfoWindowClickListen
 	}
 
 	private void addMarkers(BuscaExplore busca) {
-		if (busca.isExibirBocasLobo())		
-			pontoBocaLobo = map.addMarker(new MarkerOptions()
-					.position(new LatLng(-23.551102912885938, -46.635670783080855))
-					.title("Boca de lobo 4758268")
-					.icon(BitmapDescriptorFactory.fromResource(R.drawable.ponto_bocalobo)));
-		if (busca.isLimpezaBocaDeLobo())
-			map.addMarker(new MarkerOptions()
-					.position(new LatLng(-23.551102912885938, -46.635670783080855))
-					.title("Boca de lobo 4758268")
-					.icon(BitmapDescriptorFactory.fromResource(R.drawable.map_pin_boca_lobo)));
-		if (busca.isColetaDeEntulho())
-			relatoEntulho = map.addMarker(new MarkerOptions()
-					.position(new LatLng(-23.549126029339284, -46.63785946563701))
-					.title("Coleta de entulho")
-					.icon(BitmapDescriptorFactory.fromResource(R.drawable.map_pin_entulho)));	
-		if (busca.isExibirFlorestaUrbana())
-			map.addMarker(new MarkerOptions()
-					.position(new LatLng(-23.5512602754729, -46.63378250793437))
-					.title("Árvore 07828-00034-r-1-01")
-					.icon(BitmapDescriptorFactory.fromResource(R.drawable.ponto_floresta_urbana)));
-		if (busca.isExibirPracasWifi())
-			map.addMarker(new MarkerOptions()
-					.position(new LatLng(-23.552843726018978, -46.63550985053996))
-					.title("Praça Dom José Gaspar")
-					.icon(BitmapDescriptorFactory.fromResource(R.drawable.ponto_praca_wifi)));		
+//		if (busca.isExibirBocasLobo())		
+//			pontoBocaLobo = map.addMarker(new MarkerOptions()
+//					.position(new LatLng(-23.551102912885938, -46.635670783080855))
+//					.title("Boca de lobo 4758268")
+//					.icon(BitmapDescriptorFactory.fromResource(R.drawable.ponto_bocalobo)));
+//		if (busca.isLimpezaBocaDeLobo())
+//			map.addMarker(new MarkerOptions()
+//					.position(new LatLng(-23.551102912885938, -46.635670783080855))
+//					.title("Boca de lobo 4758268")
+//					.icon(BitmapDescriptorFactory.fromResource(R.drawable.map_pin_boca_lobo)));
+//		if (busca.isColetaDeEntulho())
+//			relatoEntulho = map.addMarker(new MarkerOptions()
+//					.position(new LatLng(-23.549126029339284, -46.63785946563701))
+//					.title("Coleta de entulho")
+//					.icon(BitmapDescriptorFactory.fromResource(R.drawable.map_pin_entulho)));	
+//		if (busca.isExibirFlorestaUrbana())
+//			map.addMarker(new MarkerOptions()
+//					.position(new LatLng(-23.5512602754729, -46.63378250793437))
+//					.title("Árvore 07828-00034-r-1-01")
+//					.icon(BitmapDescriptorFactory.fromResource(R.drawable.ponto_floresta_urbana)));
+//		if (busca.isExibirPracasWifi())
+//			map.addMarker(new MarkerOptions()
+//					.position(new LatLng(-23.552843726018978, -46.63550985053996))
+//					.title("Praça Dom José Gaspar")
+//					.icon(BitmapDescriptorFactory.fromResource(R.drawable.ponto_praca_wifi)));		
 	}
 
 	@Override

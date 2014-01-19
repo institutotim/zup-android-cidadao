@@ -1,61 +1,87 @@
 package br.com.ntxdev.zup.fragment;
 
+import java.util.List;
+
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SoliciteActivity;
-import br.com.ntxdev.zup.domain.Solicitacao;
+import br.com.ntxdev.zup.domain.CategoriaRelato;
+import br.com.ntxdev.zup.service.CategoriaRelatoService;
 import br.com.ntxdev.zup.util.FontUtils;
+import br.com.ntxdev.zup.util.ImageUtils;
 
 public class SoliciteTipoFragment extends Fragment implements View.OnClickListener {
 
-	private TextView opcaoColetaEntulho;
-	private TextView opcaoBocaDeLobo;
-	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_solicite_tipo, container, false);
-		
+
 		((SoliciteActivity) getActivity()).exibirBarraInferior(false);
 		((SoliciteActivity) getActivity()).setInfo(R.string.selecione_a_categoria);
-		
-		opcaoBocaDeLobo = (TextView) view.findViewById(R.id.opcaoBocaDeLobo);
-		opcaoBocaDeLobo.setOnClickListener(this);
-		opcaoBocaDeLobo.setTypeface(FontUtils.getRegular(getActivity()));
-		opcaoColetaEntulho = (TextView) view.findViewById(R.id.opcaoColetaEntulho);
-		opcaoColetaEntulho.setOnClickListener(this);
-		opcaoColetaEntulho.setTypeface(FontUtils.getRegular(getActivity()));
-		
+
 		return view;
 	}
 
 	@Override
-	public void onClick(View v) {		
-		select(v.getId());
-		
-		if (v.getId() == R.id.opcaoBocaDeLobo) {
-			((SoliciteActivity) getActivity()).setTipo(Solicitacao.Tipo.BOCA_LOBO);
-		} else if (v.getId() == R.id.opcaoColetaEntulho) {
-			((SoliciteActivity) getActivity()).setTipo(Solicitacao.Tipo.COLETA_ENTULHO);
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		montarCategoriasRelatos();
+		montarCategoriasRelatos();
+		montarCategoriasRelatos();
+	}
+
+	@Override
+	public void onClick(View v) {
+		unselectAll();
+		CategoriaRelato categoria = (CategoriaRelato) v.getTag();
+		TextView view = (TextView) v;
+		view.setTextColor(Color.BLACK);
+		view.setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getResources(), ImageUtils.getScaled(getActivity(), ((CategoriaRelato) categoria).getIcone())), null, null);
+	}
+
+	private void montarCategoriasRelatos() {
+		List<CategoriaRelato> categorias = new CategoriaRelatoService().getCategorias(getActivity());
+		LinearLayout ll = (LinearLayout) getView().findViewById(R.id.container);
+
+		LinearLayout container = null;
+
+		for (int i = 0; i < categorias.size(); i++) {
+			if (i % 3 == 0) {
+				if (container != null) ll.addView(container);
+				container = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.linearlayout_row, null);
+			}
+
+			TextView view = (TextView) getActivity().getLayoutInflater().inflate(R.layout.categoria_filtro_item, container, false);
+			view.setTag(categorias.get(i));
+			view.setText(categorias.get(i).getNome());
+			view.setTypeface(FontUtils.getRegular(getActivity()));
+			view.setCompoundDrawablesWithIntrinsicBounds(null,
+					ImageUtils.getStateListDrawable(getActivity(), categorias.get(i).getIcone()), null, null);
+			view.setOnClickListener(this);
+			container.addView(view);
 		}
+
+		if (container != null)
+			ll.addView(container);
 	}
 	
-	private void select(int id) {
-		if (id == R.id.opcaoBocaDeLobo) {
-			opcaoBocaDeLobo.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.icon_boca_lobo_normal), null, null);
-			opcaoBocaDeLobo.setTextColor(Color.BLACK);
-			opcaoColetaEntulho.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.icon_coleta_entulho_disabled), null, null);
-			opcaoColetaEntulho.setTextColor(Color.rgb(0x99, 0x99, 0x99));
-		} else if (id == R.id.opcaoColetaEntulho) {
-			opcaoBocaDeLobo.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.icon_boca_lobo_disabled), null, null);
-			opcaoBocaDeLobo.setTextColor(Color.rgb(0x99, 0x99, 0x99));
-			opcaoColetaEntulho.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.icon_coleta_entulho_normal), null, null);
-			opcaoColetaEntulho.setTextColor(Color.BLACK);
+	private void unselectAll() {
+		LinearLayout container = (LinearLayout) getView().findViewById(R.id.container);
+		for (int i = 0; i < container.getChildCount(); i++) {
+			LinearLayout view = (LinearLayout) container.getChildAt(i);
+			for (int j = 0; j < view.getChildCount(); j++) {
+				TextView txt = (TextView) view.getChildAt(j);
+				CategoriaRelato categoria = (CategoriaRelato) txt.getTag();
+				txt.setCompoundDrawablesWithIntrinsicBounds(null, ImageUtils.getStateListDrawable(getActivity(), categoria.getIcone()), null, null);
+				txt.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
+			}
 		}
 	}
 }

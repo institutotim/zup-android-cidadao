@@ -39,7 +39,7 @@ public class Updater {
 	}
 	
 	private void saveCategories(Context context, String json, String type) throws Exception {
-		JSONArray array = type.equals("inventory") ? new JSONObject(json).getJSONArray("categories") : new JSONArray(json);
+		JSONArray array = new JSONObject(json).getJSONArray("categories");
 		for (int i = 0; i < array.length(); i++) {
 			String markerUrl = array.getJSONObject(i).getJSONObject("marker").getString("url");
 			FileUtils.downloadImage(markerUrl);

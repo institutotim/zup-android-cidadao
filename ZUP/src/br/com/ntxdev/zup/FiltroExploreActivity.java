@@ -1,21 +1,30 @@
 package br.com.ntxdev.zup;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import br.com.ntxdev.zup.domain.BuscaExplore;
+import br.com.ntxdev.zup.domain.CategoriaInventario;
+import br.com.ntxdev.zup.domain.CategoriaRelato;
+import br.com.ntxdev.zup.service.CategoriaInventarioService;
+import br.com.ntxdev.zup.service.CategoriaRelatoService;
 import br.com.ntxdev.zup.util.FontUtils;
+import br.com.ntxdev.zup.util.ImageUtils;
 
 public class FiltroExploreActivity extends Activity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
 	private TextView botaoConcluido;
-	private TextView opcaoBocaDeLobo;
-	private TextView opcaoColetaEntulho;
 	private TextView status;
 	private TextView todosStatus;
 	private TextView resolvidos;
@@ -23,9 +32,9 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 	private TextView naoResolvidos;
 	private TextView emAberto;
 	private LinearLayout opcoes;
-	private TextView opcaoBocasDeLoboLocal;
-	private TextView opcaoPracasWifi;
-	private TextView opcaoFlorestaUrbana;
+	
+	private List<CategoriaInventario> inventarios = new ArrayList<CategoriaInventario>();
+	private List<CategoriaRelato> relatos = new ArrayList<CategoriaRelato>();
 
 	private BuscaExplore busca = new BuscaExplore();
 
@@ -41,32 +50,18 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 		((TextView) findViewById(R.id.textView)).setTypeface(FontUtils.getBold(this));
 		View seekBar = findViewById(R.id.seekBar);
 		((SeekBar) seekBar.findViewById(R.id.seekbar)).setOnSeekBarChangeListener(this);
+		
+		// AllTextCaps não funciona antes do Android 4.0... então vamos fazer na mão mesmo!
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			((TextView) findViewById(R.id.instrucoes)).setText(((TextView) findViewById(R.id.instrucoes)).getText().toString().toUpperCase(Locale.US));
+			((TextView) findViewById(R.id.textView)).setText(((TextView) findViewById(R.id.textView)).getText().toString().toUpperCase(Locale.US));
+		}
 
 		opcoes = (LinearLayout) findViewById(R.id.opcoes);
 
 		botaoConcluido = (TextView) findViewById(R.id.botaoConcluido);
 		botaoConcluido.setTypeface(FontUtils.getRegular(this));
 		botaoConcluido.setOnClickListener(this);
-
-		opcaoBocaDeLobo = (TextView) findViewById(R.id.opcaoBocaDeLobo);
-		opcaoBocaDeLobo.setOnClickListener(this);
-		opcaoBocaDeLobo.setTypeface(FontUtils.getRegular(this));
-		
-		opcaoColetaEntulho = (TextView) findViewById(R.id.opcaoColetaEntulho);
-		opcaoColetaEntulho.setOnClickListener(this);
-		opcaoColetaEntulho.setTypeface(FontUtils.getRegular(this));
-
-		opcaoBocasDeLoboLocal = (TextView) findViewById(R.id.opcaoBocasDeLoboLocal);
-		opcaoBocasDeLoboLocal.setOnClickListener(this);
-		opcaoBocasDeLoboLocal.setTypeface(FontUtils.getRegular(this));
-		
-		opcaoPracasWifi = (TextView) findViewById(R.id.opcaoPracasWifi);
-		opcaoPracasWifi.setOnClickListener(this);
-		opcaoPracasWifi.setTypeface(FontUtils.getRegular(this));
-		
-		opcaoFlorestaUrbana = (TextView) findViewById(R.id.opcaoFlorestaUrbana);
-		opcaoFlorestaUrbana.setOnClickListener(this);
-		opcaoFlorestaUrbana.setTypeface(FontUtils.getRegular(this));
 
 		status = (TextView) findViewById(R.id.status);
 		status.setTypeface(FontUtils.getLight(this));
@@ -92,58 +87,32 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 		naoResolvidos.setTypeface(FontUtils.getLight(this));
 		naoResolvidos.setOnClickListener(cliqueOpcao);
 		
-		ajustarOpcoes();
+		montarCategoriasRelatos();
+		montarCategoriasInventario();
 	}
-
-	private void ajustarOpcoes() {
-		if (busca.isColetaDeEntulho()) {			
-			opcaoColetaEntulho.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_coleta_entulho_normal, 0, 0);
-			opcaoColetaEntulho.setTextColor(Color.BLACK);
-		}
-		
-		if (busca.isExibirBocasLobo()) {
-			opcaoBocasDeLoboLocal.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_boca_lobo_normal, 0, 0);
-			opcaoBocasDeLoboLocal.setTextColor(Color.BLACK);
-		}
-		
-		if (busca.isExibirFlorestaUrbana()) {
-			opcaoFlorestaUrbana.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_floresta_urbana_normal, 0, 0);
-			opcaoFlorestaUrbana.setTextColor(Color.BLACK);
-		}
-		
-		if (busca.isExibirPracasWifi()) {
-			opcaoPracasWifi.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_praca_wifi_normal, 0, 0);
-			opcaoPracasWifi.setTextColor(Color.BLACK);
-		}
-		
-		if (busca.isLimpezaBocaDeLobo()) {
-			opcaoBocaDeLobo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_boca_lobo_normal, 0, 0);
-			opcaoBocaDeLobo.setTextColor(Color.BLACK);
+	
+	private void unselectCategoriasInventario() {
+		LinearLayout container = (LinearLayout) findViewById(R.id.categorias_inventario);
+		for (int i = 0; i < container.getChildCount(); i++) {
+			TextView view = (TextView) container.getChildAt(i);
+			CategoriaInventario categoria = (CategoriaInventario) view.getTag();
+			view.setCompoundDrawablesWithIntrinsicBounds(null, ImageUtils.getStateListDrawable(this, categoria.getIcone()), null, null);
+			view.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
+			
+			inventarios.clear();
 		}
 	}
 	
-	private void unselectOpcoes() {
-		busca.setExibirBocasLobo(false);
-		opcaoBocasDeLoboLocal.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_boca_lobo, 0, 0);
-		opcaoBocasDeLoboLocal.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
-		
-		busca.setExibirPracasWifi(false);
-		opcaoPracasWifi.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_praca_wifi, 0, 0);
-		opcaoPracasWifi.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
-		
-		busca.setExibirFlorestaUrbana(false);
-		opcaoFlorestaUrbana.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_floresta_urbana, 0, 0);
-		opcaoFlorestaUrbana.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
-	}
-	
-	private void unselectRelatos() {
-		busca.setLimpezaBocaDeLobo(false);
-		opcaoBocaDeLobo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_boca_lobo, 0, 0);
-		opcaoBocaDeLobo.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
-		
-		busca.setColetaDeEntulho(false);
-		opcaoColetaEntulho.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_coleta_entulho, 0, 0);
-		opcaoColetaEntulho.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
+	private void unselectCategoriasRelatos() {
+		LinearLayout container = (LinearLayout) findViewById(R.id.seletor_tipo);
+		for (int i = 0; i < container.getChildCount(); i++) {
+			TextView view = (TextView) container.getChildAt(i);
+			CategoriaRelato categoria = (CategoriaRelato) view.getTag();
+			view.setCompoundDrawablesWithIntrinsicBounds(null, ImageUtils.getStateListDrawable(this, categoria.getIcone()), null, null);
+			view.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
+			
+			relatos.clear();
+		}
 	}
 
 	@Override
@@ -166,73 +135,31 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 			finish();
 			return;
 		}
-
-		switch (v.getId()) {
-		case R.id.opcaoBocaDeLobo:
-			if (busca.isLimpezaBocaDeLobo()) {
-				busca.setLimpezaBocaDeLobo(false);
-				opcaoBocaDeLobo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_boca_lobo, 0, 0);
-				opcaoBocaDeLobo.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
+		
+		Object categoria = v.getTag();
+		TextView view = (TextView) v;
+		if (categoria instanceof CategoriaInventario) {
+			unselectCategoriasRelatos();
+			if (inventarios.contains(categoria)) {
+				inventarios.remove(categoria);
+				view.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
+				view.setCompoundDrawablesWithIntrinsicBounds(null, ImageUtils.getStateListDrawable(this, ((CategoriaInventario) categoria).getIcone()), null, null);
 			} else {
-				busca.setLimpezaBocaDeLobo(true);
-				opcaoBocaDeLobo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_boca_lobo_normal, 0, 0);
-				opcaoBocaDeLobo.setTextColor(Color.BLACK);
-				
-				unselectOpcoes();
+				inventarios.add((CategoriaInventario) categoria);
+				view.setTextColor(Color.BLACK);
+				view.setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getResources(), ImageUtils.getScaled(this, ((CategoriaInventario) categoria).getIcone())), null, null);
 			}
-			break;
-		case R.id.opcaoColetaEntulho:
-			if (busca.isColetaDeEntulho()) {
-				busca.setColetaDeEntulho(false);
-				opcaoColetaEntulho.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_coleta_entulho, 0, 0);
-				opcaoColetaEntulho.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
+		} else if (categoria instanceof CategoriaRelato) {
+			unselectCategoriasInventario();
+			if (relatos.contains(categoria)) {
+				relatos.remove(categoria);
+				view.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
+				view.setCompoundDrawablesWithIntrinsicBounds(null, ImageUtils.getStateListDrawable(this, ((CategoriaRelato) categoria).getIcone()), null, null);
 			} else {
-				busca.setColetaDeEntulho(true);
-				opcaoColetaEntulho.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_coleta_entulho_normal, 0, 0);
-				opcaoColetaEntulho.setTextColor(Color.BLACK);
-				
-				unselectOpcoes();
+				relatos.add((CategoriaRelato) categoria);
+				view.setTextColor(Color.BLACK);
+				view.setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getResources(), ImageUtils.getScaled(this, ((CategoriaRelato) categoria).getIcone())), null, null);
 			}
-			break;
-		case R.id.opcaoBocasDeLoboLocal:
-			if (busca.isExibirBocasLobo()) {
-				busca.setExibirBocasLobo(false);
-				opcaoBocasDeLoboLocal.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_boca_lobo, 0, 0);
-				opcaoBocasDeLoboLocal.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
-			} else {
-				busca.setExibirBocasLobo(true);
-				opcaoBocasDeLoboLocal.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_boca_lobo_normal, 0, 0);
-				opcaoBocasDeLoboLocal.setTextColor(Color.BLACK);
-				
-				unselectRelatos();
-			}
-			break;
-		case R.id.opcaoPracasWifi:
-			if (busca.isExibirPracasWifi()) {
-				busca.setExibirPracasWifi(false);
-				opcaoPracasWifi.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_praca_wifi, 0, 0);
-				opcaoPracasWifi.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
-			} else {
-				busca.setExibirPracasWifi(true);
-				opcaoPracasWifi.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_praca_wifi_normal, 0, 0);
-				opcaoPracasWifi.setTextColor(Color.BLACK);
-				
-				unselectRelatos();
-			}
-			break;
-		case R.id.opcaoFlorestaUrbana:
-			if (busca.isExibirFlorestaUrbana()) {
-				busca.setExibirFlorestaUrbana(false);
-				opcaoFlorestaUrbana.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_floresta_urbana, 0, 0);
-				opcaoFlorestaUrbana.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
-			} else {
-				busca.setExibirFlorestaUrbana(true);
-				opcaoFlorestaUrbana.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.icon_floresta_urbana_normal, 0, 0);
-				opcaoFlorestaUrbana.setTextColor(Color.BLACK);
-				
-				unselectRelatos();
-			}
-			break;
 		}
 	}
 
@@ -297,5 +224,35 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {		
+	}
+	
+	private void montarCategoriasRelatos() {
+		List<CategoriaRelato> categorias = new CategoriaRelatoService().getCategorias(this);
+		LinearLayout container = (LinearLayout) findViewById(R.id.seletor_tipo);
+		
+		for (CategoriaRelato categoria : categorias) {
+			TextView view = (TextView) getLayoutInflater().inflate(R.layout.categoria_filtro_item, container, false);
+			view.setTag(categoria);
+			view.setText(categoria.getNome());
+			view.setTypeface(FontUtils.getRegular(this));
+			view.setCompoundDrawablesWithIntrinsicBounds(null, ImageUtils.getStateListDrawable(this, categoria.getIcone()), null, null);
+			view.setOnClickListener(this);
+			container.addView(view);
+		}
+	}
+	
+	private void montarCategoriasInventario() {
+		List<CategoriaInventario> categorias = new CategoriaInventarioService().getCategorias(this);
+		LinearLayout container = (LinearLayout) findViewById(R.id.categorias_inventario);
+		
+		for (CategoriaInventario categoria : categorias) {
+			TextView view = (TextView) getLayoutInflater().inflate(R.layout.categoria_filtro_item, container, false);
+			view.setTag(categoria);
+			view.setText(categoria.getNome());
+			view.setTypeface(FontUtils.getRegular(this));
+			view.setCompoundDrawablesWithIntrinsicBounds(null, ImageUtils.getStateListDrawable(this, categoria.getIcone()), null, null);
+			view.setOnClickListener(this);
+			container.addView(view);
+		}
 	}
 }

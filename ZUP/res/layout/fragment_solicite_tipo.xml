@@ -3,35 +3,16 @@
     android:layout_height="match_parent"
     android:background="#fff" >
 
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <ScrollView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:orientation="horizontal"
-        android:padding="15dp"
-        android:weightSum="2" >
+        android:layout_centerInParent="true" >
 
-        <TextView
-            android:id="@+id/opcaoBocaDeLobo"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:clickable="true"
-            android:drawableTop="@drawable/icon_boca_lobo"
-            android:gravity="center"
-            android:text="@string/limpeza_de_boca_de_lobo"
-            android:textColor="@color/icon_text_color" />
-
-        <TextView
-            android:id="@+id/opcaoColetaEntulho"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:clickable="true"
-            android:drawableTop="@drawable/icon_coleta_entulho"
-            android:gravity="center"
-            android:text="@string/coleta_de_entulho"
-            android:textColor="@color/icon_text_color" />
-    </LinearLayout>
+            android:orientation="vertical" />
+    </ScrollView>
 
 </RelativeLayout>
