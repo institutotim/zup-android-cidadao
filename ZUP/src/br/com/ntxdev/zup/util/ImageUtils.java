@@ -28,6 +28,7 @@ public class ImageUtils {
 		cm.setSaturation(0);
 		ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);
 		paint.setColorFilter(f);
+		paint.setAlpha(100);
 		c.drawBitmap(srcBitmap, 0, 0, paint);
 		return bmpGrayscale;
 	}

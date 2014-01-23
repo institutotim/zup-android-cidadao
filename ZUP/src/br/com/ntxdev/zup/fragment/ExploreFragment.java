@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
+import android.widget.Toast;
 import br.com.ntxdev.zup.DetalheMapaActivity;
 import br.com.ntxdev.zup.FiltroExploreActivity;
 import br.com.ntxdev.zup.R;
@@ -95,7 +96,9 @@ public class ExploreFragment extends Fragment implements OnInfoWindowClickListen
 					CameraPosition position = new CameraPosition.Builder().target(new LatLng(location.getLatitude(),
 							location.getLongitude())).zoom(15).build();
 					CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
-					map.animateCamera(update);					
+					map.animateCamera(update);
+					map.setOnMyLocationChangeListener(null);
+					Toast.makeText(getActivity(), location.getLatitude() + " " + location.getLongitude(), Toast.LENGTH_SHORT).show();
 				}
 			});
 			
@@ -183,7 +186,6 @@ public class ExploreFragment extends Fragment implements OnInfoWindowClickListen
 			String str = (String) adapterView.getItemAtPosition(position);
 			Address addr = new Geocoder(getActivity()).getFromLocationName(str, 1).get(0);
 			
-			map.setOnMyLocationChangeListener(null);
 			if (pontoBusca != null) {
 				pontoBusca.remove();
 			}

@@ -1,6 +1,7 @@
 package br.com.ntxdev.zup;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -53,6 +54,9 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 		setContentView(R.layout.activity_editar_conta);
 		
 		((TextView) findViewById(R.id.editarConta)).setTypeface(FontUtils.getLight(this));
+		((TextView) findViewById(R.id.instrucoes)).setTypeface(FontUtils.getBold(this));
+		((TextView) findViewById(R.id.instrucoes_dados)).setTypeface(FontUtils.getBold(this));
+		((TextView) findViewById(R.id.textView1)).setTypeface(FontUtils.getLight(this));
 		
 		botaoCancelar = (TextView) findViewById(R.id.botaoCancelar);
 		botaoCancelar.setTypeface(FontUtils.getRegular(this));
@@ -102,8 +106,14 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 
 	@Override
 	public void onClick(View v) {
-		montarUsuario();
-		new Tasker().execute();
+		limparFundoCampos();
+		List<Integer> validadores = validar();
+		if (validadores.isEmpty()) {
+			montarUsuario();
+			new Tasker().execute();			
+		} else {
+			destacarCampos(validadores);
+		}
 	}
 	
 	private Usuario montarUsuario() {
@@ -190,5 +200,37 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 				Toast.makeText(EditarContaActivity.this, "Falha no atualização dos dados", Toast.LENGTH_LONG).show();
 			}
 		}
+	}
+	
+	private void destacarCampos(List<Integer> campos) {
+		for (Integer id : campos) {
+			((TextView) findViewById(id)).setBackgroundResource(R.drawable.textbox_red);
+		}
+		Toast.makeText(this, "Complete ou corrija os campos indicados", Toast.LENGTH_LONG).show();
+	}
+	
+	private void limparFundoCampos() {
+		for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF, R.id.campoTelefone,
+				R.id.campoEndereco, R.id.campoComplemento, R.id.campoCEP, R.id.campoBairro, R.id.campoSenha, R.id.campoConfirmarSenha)) {
+			((TextView) findViewById(id)).setBackgroundResource(R.drawable.textbox_bg);
+		}
+	}
+	
+	private List<Integer> validar() {
+		List<Integer> campos = new ArrayList<Integer>();
+		if (!campoSenha.getText().toString().trim().isEmpty() && !campoConfirmarSenha.getText().toString().trim().isEmpty() 
+				&& !campoSenha.getText().toString().equals(campoConfirmarSenha.getText().toString())) {
+			campos.add(campoSenha.getId());
+			campos.add(campoConfirmarSenha.getId());
+		}		
+		
+		for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF, R.id.campoTelefone,
+				R.id.campoEndereco, R.id.campoComplemento, R.id.campoCEP, R.id.campoBairro)) {
+			if (((TextView) findViewById(id)).getText().toString().trim().isEmpty()) {
+				campos.add(id);
+			}
+		}
+		
+		return campos;
 	}
 }

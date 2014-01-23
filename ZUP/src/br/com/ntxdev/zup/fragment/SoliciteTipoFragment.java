@@ -33,8 +33,6 @@ public class SoliciteTipoFragment extends Fragment implements View.OnClickListen
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		montarCategoriasRelatos();
-		montarCategoriasRelatos();
-		montarCategoriasRelatos();
 	}
 
 	@Override

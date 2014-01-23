@@ -1,6 +1,7 @@
 package br.com.ntxdev.zup;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,25 +22,22 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import br.com.ntxdev.zup.core.Constantes;
 import br.com.ntxdev.zup.domain.Usuario;
 import br.com.ntxdev.zup.service.LoginService;
 import br.com.ntxdev.zup.service.UsuarioService;
-import br.com.ntxdev.zup.social.FacebookAuth;
-import br.com.ntxdev.zup.social.GooglePlusAuth;
-import br.com.ntxdev.zup.social.TwitterAuth;
 import br.com.ntxdev.zup.util.FontUtils;
 
 public class CadastroActivity extends Activity implements OnClickListener {
 
-	private static final int REQUEST_CODE = 9999;
+	private static final int REQUEST_SOCIAL = 9876;
 	
 	private TextView botaoCancelar;
 	private TextView botaoCriar;
@@ -55,18 +53,12 @@ public class CadastroActivity extends Activity implements OnClickListener {
 	private EditText campoCEP;
 	private EditText campoBairro;
 	
-	private ImageButton botaoTwitter;
-	private ImageButton botaoFacebook;
-	private ImageButton botaoGooglePlus;
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_cadastro);
 
 		((TextView) findViewById(R.id.novaConta)).setTypeface(FontUtils.getLight(this));
-		((TextView) findViewById(R.id.textView1)).setTypeface(FontUtils.getLight(this));
-		((TextView) findViewById(R.id.textView2)).setTypeface(FontUtils.getLight(this));
 
 		botaoCancelar = (TextView) findViewById(R.id.botaoCancelar);
 		botaoCancelar.setTypeface(FontUtils.getRegular(this));
@@ -110,54 +102,48 @@ public class CadastroActivity extends Activity implements OnClickListener {
 		campoBairro = (EditText) findViewById(R.id.campoBairro);
 		campoBairro.setTypeface(FontUtils.getLight(this));
 		
-		botaoFacebook = (ImageButton) findViewById(R.id.botao_logar_facebook);
-		botaoFacebook.setOnClickListener(this);
-		botaoTwitter = (ImageButton) findViewById(R.id.botao_logar_twitter);
-		botaoTwitter.setOnClickListener(this);
-		botaoGooglePlus = (ImageButton) findViewById(R.id.botao_logar_google);
-		botaoGooglePlus.setOnClickListener(this);
+		TextView termos = (TextView) findViewById(R.id.termos);
+		termos.setText(Html.fromHtml(getString(R.string.termos_de_uso_cadastro)));
+		termos.setTypeface(FontUtils.getLight(this));
+		termos.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(CadastroActivity.this, TermosDeUsoActivity.class));				
+			}
+		});
 	}
 
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-		case R.id.botao_logar_twitter:
-			startActivityForResult(new Intent(this, TwitterAuth.class), REQUEST_CODE);
-			break;
-		case R.id.botao_logar_facebook:
-			startActivityForResult(new Intent(this, FacebookAuth.class), REQUEST_CODE);
-			break;
-		case R.id.botao_logar_google:
-			startActivityForResult(new Intent(this, GooglePlusAuth.class), REQUEST_CODE);
-			break;
 		case R.id.botaoCriar:
-			if (validar()) cadastrar();
+			limparFundoCampos();
+			List<Integer> validadores = validar();
+			if (validadores.isEmpty()) {
+				startActivityForResult(new Intent(this, RedesSociaisCadastroActivity.class), REQUEST_SOCIAL);
+			} else {
+				destacarCampos(validadores);
+			}
 			break;
 		}
 	}
 	
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == REQUEST_CODE) {
-			if (resultCode == Activity.RESULT_OK) {
-				Usuario usuario = (Usuario) data.getSerializableExtra("usuario");
-				campoNome.setText(usuario.getNome());
-				campoEmail.setText(usuario.getEmail());
-				
-				botaoTwitter.setVisibility(View.GONE);
-				botaoFacebook.setVisibility(View.GONE);
-				botaoGooglePlus.setVisibility(View.GONE);
-				((TextView) findViewById(R.id.textView1)).setText(R.string.complete_seus_dados);
-				((TextView) findViewById(R.id.textView2)).setVisibility(View.GONE);
+	private List<Integer> validar() {
+		List<Integer> campos = new ArrayList<Integer>();
+		if (campoSenha.getText().toString().trim().isEmpty() || campoConfirmarSenha.getText().toString().trim().isEmpty() || 
+				!campoSenha.getText().toString().equals(campoConfirmarSenha.getText().toString())) {
+			campos.add(campoSenha.getId());
+			campos.add(campoConfirmarSenha.getId());
+		}		
+		
+		for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF, R.id.campoTelefone,
+				R.id.campoEndereco, R.id.campoComplemento, R.id.campoCEP, R.id.campoBairro)) {
+			if (((TextView) findViewById(id)).getText().toString().trim().isEmpty()) {
+				campos.add(id);
 			}
 		}
-	}
-	
-	private boolean validar() {
-		if (!campoSenha.getText().toString().equals(campoConfirmarSenha.getText().toString())) {
-			return false;
-		}		
-		return true;
+		
+		return campos;
 	}
 	
 	private void cadastrar() {
@@ -238,6 +224,27 @@ public class CadastroActivity extends Activity implements OnClickListener {
 			} else {
 				Toast.makeText(CadastroActivity.this, "Falha no cadastro", Toast.LENGTH_LONG).show();
 			}
+		}
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == REQUEST_SOCIAL && resultCode == Activity.RESULT_OK) {
+			cadastrar();
+		}
+	}
+	
+	private void destacarCampos(List<Integer> campos) {
+		for (Integer id : campos) {
+			((TextView) findViewById(id)).setBackgroundResource(R.drawable.textbox_red);
+		}
+		Toast.makeText(this, "Complete ou corrija os campos indicados", Toast.LENGTH_LONG).show();
+	}
+	
+	private void limparFundoCampos() {
+		for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF, R.id.campoTelefone,
+				R.id.campoEndereco, R.id.campoComplemento, R.id.campoCEP, R.id.campoBairro, R.id.campoSenha, R.id.campoConfirmarSenha)) {
+			((TextView) findViewById(id)).setBackgroundResource(R.drawable.textbox_bg);
 		}
 	}
 }
