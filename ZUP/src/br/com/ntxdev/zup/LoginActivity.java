@@ -100,7 +100,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 				post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 				HttpResponse response = client.execute(post);
 				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
-					return EntityUtils.toString(response.getEntity());
+					return EntityUtils.toString(response.getEntity(), "UTF-8");
 				}
 			} catch (Exception e) {
 				Log.e("ZUP", e.getMessage());

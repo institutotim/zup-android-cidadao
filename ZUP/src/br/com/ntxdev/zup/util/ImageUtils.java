@@ -3,6 +3,7 @@ package br.com.ntxdev.zup.util;
 import java.io.File;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -12,8 +13,11 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 
 public class ImageUtils {
 
@@ -114,5 +118,19 @@ public class ImageUtils {
 			}
 		}
 		return bmOut;
+	}
+	
+	public static float dpToPx(Context context, int dp) {
+	    return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
+	}
+	
+	public static Drawable getStatusBackground(Context context, int color) {
+		GradientDrawable gd = new GradientDrawable();
+		gd.setColor(color);
+		gd.setStroke(0, Color.WHITE);
+		float tenDp = ImageUtils.dpToPx(context, 15);
+		gd.setCornerRadii(new float[] {tenDp, tenDp, 
+				tenDp, tenDp, tenDp, tenDp, tenDp, tenDp });
+		return gd;
 	}
 }

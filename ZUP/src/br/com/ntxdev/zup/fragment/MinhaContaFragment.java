@@ -1,7 +1,6 @@
 package br.com.ntxdev.zup.fragment;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -11,12 +10,15 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -38,7 +40,9 @@ import br.com.ntxdev.zup.domain.SolicitacaoListItem;
 import br.com.ntxdev.zup.domain.Usuario;
 import br.com.ntxdev.zup.service.LoginService;
 import br.com.ntxdev.zup.service.UsuarioService;
+import br.com.ntxdev.zup.util.FileUtils;
 import br.com.ntxdev.zup.util.FontUtils;
+import br.com.ntxdev.zup.util.ImageUtils;
 
 public class MinhaContaFragment extends Fragment implements AdapterView.OnItemClickListener {
 	
@@ -88,70 +92,6 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 			nomeUsuario.setText(usuario.getNome() != null ? usuario.getNome() : usuario.getEmail());
 		}
 		
-		SolicitacaoListItem item = new SolicitacaoListItem();
-		item.setData("há 2 dias atrás");
-		item.setProtocolo("1746352803");
-		item.setTitulo("Limpeza de boca de lobo");
-		item.setStatus(SolicitacaoListItem.Status.EM_ABERTO);
-		item.setFotos(Arrays.asList(R.drawable.bocalobo2));
-		item.setEndereco("Av. 9 de julho, 1522, Bela Vista, São Paulo");
-		item.setComentario("Hoje choveu e com a boca de lobo entupida, a água não pode escoar, causando alagamento e transtornos para pedestres como eu.");
-		items.add(item);	
-		
-		item = new SolicitacaoListItem();
-		item.setData("há 4 dias atrás");
-		item.setProtocolo("1844356633");
-		item.setTitulo("Coleta de entulho");
-		item.setStatus(SolicitacaoListItem.Status.EM_ABERTO);
-		item.setFotos(Arrays.asList(R.drawable.entulho1, R.drawable.entulho2));
-		item.setEndereco("Rua Hermílio Lemos, 498, Cambuci, São Paulo");
-		item.setComentario("Apesar da placa, o pessoal vive enchendo a calçada de entulho, cansei de ter que desviar pela rua. Pior quando chove e esse entulho começa a se espalhar.");
-		items.add(item);
-		
-		item = new SolicitacaoListItem();
-		item.setData("há 8 dias atrás");
-		item.setProtocolo("1746352824");
-		item.setTitulo("Limpeza de boca de lobo");
-		item.setStatus(SolicitacaoListItem.Status.EM_ANDAMENTO);
-		item.setFotos(Arrays.asList(R.drawable.bocalobo3));
-		item.setEndereco("Rua Paim, 133, Bela Vista, São Paulo");
-		item.setComentario("Manutenção urgente nessa boca de lobo!");
-		items.add(item);
-		
-		item = new SolicitacaoListItem();
-		item.setData("há 13 dias atrás");
-		item.setProtocolo("1544356612");
-		item.setTitulo("Coleta de entulho");
-		item.setStatus(SolicitacaoListItem.Status.EM_ANDAMENTO);
-		item.setFotos(Arrays.asList(R.drawable.entulho3));
-		item.setEndereco("Rua Sebastião Pereira, 274, Santa Cecília, São Paulo");
-		item.setComentario("");
-		items.add(item);
-		
-		item = new SolicitacaoListItem();
-		item.setData("há 15 dias atrás");
-		item.setProtocolo("1444352824");
-		item.setTitulo("Limpeza de boca de lobo");
-		item.setStatus(SolicitacaoListItem.Status.RESOLVIDO);
-		item.setFotos(Arrays.asList(R.drawable.bocalobo5));
-		item.setEndereco("Rua dos Estudantes, 31, Liberdade, São Paulo");
-		item.setComentario("Há varios dias passo por aqui e a situação não muda. Mandem alguém limpar essa boca de lobo por favor.");
-		items.add(item);
-		
-		item = new SolicitacaoListItem();
-		item.setData("há 22 dias atrás");
-		item.setProtocolo("1544356612");
-		item.setTitulo("Coleta de entulho");
-		item.setStatus(SolicitacaoListItem.Status.RESOLVIDO);
-		item.setFotos(Arrays.asList(R.drawable.entulho4));
-		item.setEndereco("Rua José Paulino, 741, Bom Retiro, São Paulo");
-		item.setComentario("Numa rua tão movimentada não sei como tem coragem de deixar esse entulho ai");
-		items.add(item);		
-
-		ListView list = (ListView) view.findViewById(R.id.listaSolicitacoes);
-		list.setOnItemClickListener(this);
-		list.setAdapter(new SolicitacaoAdapter(getActivity(), items));
-		
 		TextView solicitacoes = (TextView) view.findViewById(R.id.solicitacoes);
 		solicitacoes.setTypeface(FontUtils.getBold(getActivity()));
 		solicitacoes.setText(items.size() + " " + 
@@ -167,7 +107,14 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 	}
 	
 	private void preencherLista(List<SolicitacaoListItem> itens) {
+		ListView list = (ListView) getView().findViewById(R.id.listaSolicitacoes);
+		list.setOnItemClickListener(this);
+		list.setAdapter(new SolicitacaoAdapter(getActivity(), itens));
 		
+		TextView solicitacoes = (TextView) getView().findViewById(R.id.solicitacoes);
+		solicitacoes.setTypeface(FontUtils.getBold(getActivity()));
+		solicitacoes.setText(itens.size() + " " + 
+				(itens.size() == 1 ? getString(R.string.solicitacao) : getString(R.string.solicitacoes)));
 	}
 
 	public class SolicitacaoAdapter extends ArrayAdapter<SolicitacaoListItem> {
@@ -179,6 +126,8 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 			items = objects;
 		}
 
+		@SuppressLint("NewApi")
+		@SuppressWarnings("deprecation")
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View row = getActivity().getLayoutInflater().inflate(R.layout.solicitacao_row, parent, false);
@@ -196,27 +145,18 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 			protocolo.setText(getString(R.string.protocolo) + " " + item.getProtocolo());
 			protocolo.setTypeface(FontUtils.getRegular(getContext()));
 			
-			row.findViewById(R.id.bg).setBackgroundColor(item.getStatus().getColor());
+			row.findViewById(R.id.bg).setBackgroundColor(item.getStatus().getCor());
 			TextView indicadorStatus = (TextView) row.findViewById(R.id.indicadorStatus);
 			indicadorStatus.setTypeface(FontUtils.getBold(getContext()));
-			switch (item.getStatus()) {
-			case EM_ABERTO:
-				indicadorStatus.setText(R.string.em_aberto);
-				indicadorStatus.setBackgroundResource(R.drawable.status_red_bg);
-				break;
-			case EM_ANDAMENTO:
-				indicadorStatus.setText(R.string.em_andamento);
-				indicadorStatus.setBackgroundResource(R.drawable.status_orange_bg);
-				break;
-			case RESOLVIDO:
-				indicadorStatus.setText(R.string.resolvido);
-				indicadorStatus.setBackgroundResource(R.drawable.status_green_bg);
-				break;
-			case NAO_RESOLVIDO:
-				indicadorStatus.setText(R.string.nao_resolvido);
-				indicadorStatus.setBackgroundResource(R.drawable.status_gray_bg);
-				break;
+			int fiveDp = (int) ImageUtils.dpToPx(getActivity(), 5);
+			int tenDp = (int) ImageUtils.dpToPx(getActivity(), 10);
+			indicadorStatus.setPadding(tenDp, fiveDp, tenDp, fiveDp);
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+				indicadorStatus.setBackgroundDrawable(ImageUtils.getStatusBackground(getActivity(), item.getStatus().getCor()));
+			} else {
+				indicadorStatus.setBackground(ImageUtils.getStatusBackground(getActivity(), item.getStatus().getCor()));
 			}
+			indicadorStatus.setText(item.getStatus().getNome());
 
 			return row;
 		}
@@ -261,7 +201,9 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 				get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
 				HttpResponse response = client.execute(get);
 				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-					return EntityUtils.toString(response.getEntity());
+					String json = EntityUtils.toString(response.getEntity(), "UTF-8");
+					baixarFotos(json);
+					return json;
 				}
 			} catch (Exception e) {
 				Log.e("ZUP", e.getMessage());
@@ -274,7 +216,7 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 			dialog.dismiss();
 			if (result != null) {
 				try {
-					JSONArray array = new JSONArray(result);
+					JSONArray array = new JSONObject(result).getJSONArray("reports");
 					List<SolicitacaoListItem> itens = new ArrayList<SolicitacaoListItem>();
 					for (int i = 0; i < array.length(); i++) {
 						itens.add(SolicitacaoListItemAdapter.adapt(array.getJSONObject(i)));
@@ -286,6 +228,16 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 				}
 			} else {
 				Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos", Toast.LENGTH_LONG).show();
+			}
+		}
+		
+		private void baixarFotos(String json) throws Exception {
+			JSONArray array = new JSONObject(json).getJSONArray("reports");
+			for (int i = 0; i < array.length(); i++) {
+				JSONArray fotos = array.getJSONObject(i).getJSONArray("images");
+				for (int j = 0; j < fotos.length(); j++) {
+					FileUtils.downloadImage(fotos.getJSONObject(j).getString("url"));
+				}				
 			}
 		}
 	}

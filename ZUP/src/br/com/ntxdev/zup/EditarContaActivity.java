@@ -176,7 +176,7 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 				put.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 				HttpResponse response = client.execute(put);
 				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-					return EntityUtils.toString(response.getEntity());
+					return EntityUtils.toString(response.getEntity(), "UTF-8");
 				}
 			} catch (Exception e) {
 				Log.e("ZUP", e.getMessage());

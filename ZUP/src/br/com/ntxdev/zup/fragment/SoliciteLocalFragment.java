@@ -22,7 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SoliciteActivity;
-import br.com.ntxdev.zup.domain.Solicitacao;
+import br.com.ntxdev.zup.util.ImageUtils;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -84,9 +84,8 @@ public class SoliciteLocalFragment extends Fragment implements LocationListener 
 			LatLng latLng = new LatLng(latitudeAtual, longitudeAtual);
 			
 			map.addMarker(new MarkerOptions().anchor(0.0f, 1.0f)
-					// Anchors the marker on the bottom left
 					.position(new LatLng(latitudeAtual, longitudeAtual))
-					.icon(BitmapDescriptorFactory.fromResource(((SoliciteActivity) getActivity()).getTipo().equals(Solicitacao.Tipo.BOCA_LOBO) ? R.drawable.map_pin_boca_lobo : R.drawable.map_pin_entulho))
+					.icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(getActivity(), ((SoliciteActivity) getActivity()).getCategoria().getMarcador())))
 					.draggable(true));
 
 			map.setOnMarkerDragListener(new OnMarkerDragListener() {

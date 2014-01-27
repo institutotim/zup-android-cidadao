@@ -2,6 +2,8 @@ package br.com.ntxdev.zup.domain;
 
 import java.util.List;
 
+import android.graphics.Color;
+
 public class CategoriaRelato {
 
 	@Override
@@ -75,8 +77,16 @@ public class CategoriaRelato {
 
 	public static class Status {
 		private long id;
-		private String cor;
+		private int cor;
 		private String nome;
+		
+		public Status() {
+		}
+		
+		public Status(String nome, String corHtml) {
+			this.nome = nome;
+			this.cor = Color.parseColor(corHtml);
+		}
 
 		public long getId() {
 			return id;
@@ -86,11 +96,11 @@ public class CategoriaRelato {
 			this.id = id;
 		}
 
-		public String getCor() {
+		public int getCor() {
 			return cor;
 		}
 
-		public void setCor(String cor) {
+		public void setCor(int cor) {
 			this.cor = cor;
 		}
 

@@ -25,13 +25,13 @@ public class Updater {
 			HttpResponse response = client.execute(get);
 			
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-				saveCategories(context, EntityUtils.toString(response.getEntity()), "reports");
+				saveCategories(context, EntityUtils.toString(response.getEntity(), "UTF-8"), "reports");
 			}
 			
 			get = new HttpGet(Constantes.REST_URL + "/inventory/categories");
 			response = client.execute(get);
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-				saveCategories(context, EntityUtils.toString(response.getEntity()), "inventory");
+				saveCategories(context, EntityUtils.toString(response.getEntity(), "UTF-8"), "inventory");
 			}
 		} catch (Exception e) {
 			Log.e("ZUP", e.getMessage());

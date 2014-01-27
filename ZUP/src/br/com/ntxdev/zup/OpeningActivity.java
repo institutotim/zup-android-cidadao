@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.TextView;
 import br.com.ntxdev.zup.service.LoginService;
 import br.com.ntxdev.zup.util.FontUtils;
-import br.com.ntxdev.zup.widget.ImagePagerAdapter;
+import br.com.ntxdev.zup.widget.ImageResourcePagerAdapter;
 
 import com.viewpagerindicator.IconPageIndicator;
 import com.viewpagerindicator.PageIndicator;
@@ -26,7 +26,7 @@ public class OpeningActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_opening);
 		
-		ImagePagerAdapter mAdapter = new ImagePagerAdapter(getSupportFragmentManager(), 
+		ImageResourcePagerAdapter mAdapter = new ImageResourcePagerAdapter(getSupportFragmentManager(), 
 				Arrays.asList(R.drawable.tour_img1, R.drawable.tour_img2, R.drawable.tour_img3,
 						R.drawable.tour_img4, R.drawable.tour_img5));
 

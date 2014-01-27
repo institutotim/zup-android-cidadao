@@ -1,11 +1,13 @@
 package br.com.ntxdev.zup;
 
 import java.io.File;
+import java.nio.charset.Charset;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
@@ -21,6 +23,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 import br.com.ntxdev.zup.core.Constantes;
+import br.com.ntxdev.zup.domain.CategoriaRelato;
 import br.com.ntxdev.zup.domain.Solicitacao;
 import br.com.ntxdev.zup.fragment.SoliciteDetalhesFragment;
 import br.com.ntxdev.zup.fragment.SoliciteFotosFragment;
@@ -78,9 +81,9 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 	public void exibirBarraInferior(boolean exibir) {
 		findViewById(R.id.barra_navegacao).setVisibility(exibir ? View.VISIBLE : View.GONE);
 	}
-
-	public void setTipo(Solicitacao.Tipo tipo) {
-		solicitacao.setTipo(tipo);
+	
+	public void setCategoria(CategoriaRelato categoria) {
+		solicitacao.setCategoria(categoria);
 		if (localFragment == null) {
 			localFragment = new SoliciteLocalFragment();
 			getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, localFragment).commit();
@@ -91,8 +94,8 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 		exibirBarraInferior(true);
 	}
 
-	public Solicitacao.Tipo getTipo() {
-		return solicitacao.getTipo();
+	public CategoriaRelato getCategoria() {
+		return solicitacao.getCategoria();
 	}
 
 	public void setInfo(int string) {
@@ -102,7 +105,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 	}
 
 	public void setComentario(String comentario) {
-		solicitacao.setComentario(comentario);
+		solicitacao.setComentario(comentario.trim());
 	}
 
 	public void setRedeSocial(boolean publicar) {
@@ -179,16 +182,17 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 		protected Boolean doInBackground(Void... params) {
 			try {
 				HttpClient client = new DefaultHttpClient();
-				HttpPost post = new HttpPost(Constantes.REST_URL + "/reports/2/items");
+				HttpPost post = new HttpPost(Constantes.REST_URL + "/reports/" + solicitacao.getCategoria().getId() + "/items");
 				
 				MultipartEntityBuilder multipartEntity = MultipartEntityBuilder.create();
 				multipartEntity.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+				multipartEntity.setCharset(Charset.forName("UTF-8"));
 				
 				multipartEntity.addTextBody("latitude", String.valueOf(solicitacao.getLatitude()));
 				multipartEntity.addTextBody("longitude", String.valueOf(solicitacao.getLongitude()));
-				multipartEntity.addTextBody("description", solicitacao.getComentario());
-				multipartEntity.addTextBody("address", localFragment.getEnderecoAtual());
-				multipartEntity.addTextBody("category_id", "2");
+				multipartEntity.addTextBody("description", solicitacao.getComentario(), ContentType.APPLICATION_JSON);
+				multipartEntity.addTextBody("address", localFragment.getEnderecoAtual(), ContentType.APPLICATION_JSON);
+				multipartEntity.addTextBody("category_id", String.valueOf(solicitacao.getCategoria().getId()));
 				
 				for (String foto : solicitacao.getFotos()) {
 					multipartEntity.addPart("images[]", new FileBody(new File(foto)));
@@ -197,7 +201,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 				post.setEntity(multipartEntity.build());
 				post.setHeader("X-App-Token", new LoginService().getToken(SoliciteActivity.this));
 				HttpResponse response = client.execute(post);
-				System.out.println(EntityUtils.toString(response.getEntity()));
+				System.out.println(EntityUtils.toString(response.getEntity(), "UTF-8"));
 				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
 					return Boolean.TRUE;
 				}

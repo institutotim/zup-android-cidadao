@@ -12,6 +12,7 @@ public class Solicitacao implements Serializable {
 		BOCA_LOBO, COLETA_ENTULHO
 	}
 
+	private CategoriaRelato categoria;
 	private Tipo tipo;
 	private double latitude;
 	private double longitude;
@@ -66,5 +67,13 @@ public class Solicitacao implements Serializable {
 
 	public void setRedeSocial(boolean redeSocial) {
 		this.redeSocial = redeSocial;
+	}
+
+	public CategoriaRelato getCategoria() {
+		return categoria;
+	}
+
+	public void setCategoria(CategoriaRelato categoria) {
+		this.categoria = categoria;
 	}
 }

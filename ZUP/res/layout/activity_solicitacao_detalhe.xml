@@ -115,7 +115,8 @@
                 android:clickable="true"
                 android:padding="15dp"
                 android:textAllCaps="true"
-                android:textColor="#2ab4dc" />
+                android:textColor="#2ab4dc"
+                android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
 

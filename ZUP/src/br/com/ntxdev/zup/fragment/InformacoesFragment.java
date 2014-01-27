@@ -18,7 +18,7 @@ import br.com.ntxdev.zup.domain.BocaDeLobo;
 import br.com.ntxdev.zup.domain.Local;
 import br.com.ntxdev.zup.domain.Wifi;
 import br.com.ntxdev.zup.util.FontUtils;
-import br.com.ntxdev.zup.widget.ImagePagerAdapter;
+import br.com.ntxdev.zup.widget.ImageResourcePagerAdapter;
 
 import com.viewpagerindicator.IconPageIndicator;
 import com.viewpagerindicator.PageIndicator;
@@ -37,7 +37,7 @@ public class InformacoesFragment extends Fragment {
 		
 		preencherDados();
 		
-		ImagePagerAdapter mAdapter = new ImagePagerAdapter(getActivity().getSupportFragmentManager(), local.getImagens());
+		ImageResourcePagerAdapter mAdapter = new ImageResourcePagerAdapter(getActivity().getSupportFragmentManager(), local.getImagens());
 
 		ViewPager mPager = (ViewPager) view.findViewById(R.id.pager);
 		mPager.setAdapter(mAdapter);

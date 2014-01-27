@@ -129,6 +129,7 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 		}
 
 		if (v.getId() == botaoConcluido.getId()) {
+			prepararObjetoRetorno();
 			Intent i = new Intent();
 			i.putExtra("busca", busca);
 			setResult(Activity.RESULT_OK, i);
@@ -253,6 +254,16 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 			view.setCompoundDrawablesWithIntrinsicBounds(null, ImageUtils.getStateListDrawable(this, categoria.getIcone()), null, null);
 			view.setOnClickListener(this);
 			container.addView(view);
+		}
+	}
+	
+	private void prepararObjetoRetorno() {
+		for (CategoriaInventario ci : inventarios) {
+			busca.getIdsCategoriaInventario().add(ci.getId());
+		}
+		
+		for (CategoriaRelato cr : relatos) {
+			busca.getIdsCategoriaRelato().add(cr.getId());
 		}
 	}
 }

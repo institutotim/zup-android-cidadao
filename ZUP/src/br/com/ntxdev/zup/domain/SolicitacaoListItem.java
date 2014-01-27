@@ -1,7 +1,7 @@
 package br.com.ntxdev.zup.domain;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.ArrayList;
 
 import android.graphics.Color;
 
@@ -9,31 +9,49 @@ public class SolicitacaoListItem implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public enum Status {
-		EM_ABERTO(Color.rgb(0xff, 0x60, 0x49)),
-		EM_ANDAMENTO(Color.rgb(0xff, 0xac, 0x2d)),
-		RESOLVIDO(Color.rgb(0x78, 0xc9, 0x53)),
-		NAO_RESOLVIDO(Color.rgb(0x99, 0x99, 0x99));
+	public static class Status implements Serializable {
+		private static final long serialVersionUID = 1L;
+		private String nome;
+		private int cor;
 		
-		private int color;
-
-		Status(int color) {
-			this.color = color;
+		public Status() {
 		}
 		
-		public int getColor() {
-			return color;
+		public Status(String nome, String corHtml) {
+			this.nome = nome;
+			this.cor = Color.parseColor(corHtml);
+		}
+		
+		public Status(String nome, int cor) {
+			this.nome = nome;
+			this.cor = cor;
+		}
+
+		public String getNome() {
+			return nome;
+		}
+
+		public void setNome(String nome) {
+			this.nome = nome;
+		}
+
+		public int getCor() {
+			return cor;
+		}
+
+		public void setCor(int cor) {
+			this.cor = cor;
 		}
 	}
-	
+
 	private String protocolo;
 	private String titulo;
 	private String data;
 	private Status status;
 	private String comentario;
 	private String endereco;
-	
-	private List<Integer> fotos;
+
+	private ArrayList<String> fotos;
 
 	public String getProtocolo() {
 		return protocolo;
@@ -75,11 +93,11 @@ public class SolicitacaoListItem implements Serializable {
 		this.comentario = comentario;
 	}
 
-	public List<Integer> getFotos() {
+	public ArrayList<String> getFotos() {
 		return fotos;
 	}
 
-	public void setFotos(List<Integer> fotos) {
+	public void setFotos(ArrayList<String> fotos) {
 		this.fotos = fotos;
 	}
 

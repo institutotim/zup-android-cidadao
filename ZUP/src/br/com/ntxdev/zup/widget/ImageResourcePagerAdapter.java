@@ -7,26 +7,26 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import br.com.ntxdev.zup.R;
-import br.com.ntxdev.zup.fragment.ImageViewFragment;
+import br.com.ntxdev.zup.fragment.ImageViewResourceFragment;
 
 import com.viewpagerindicator.IconPagerAdapter;
 
-public class ImagePagerAdapter extends FragmentPagerAdapter implements IconPagerAdapter {
+public class ImageResourcePagerAdapter extends FragmentPagerAdapter implements IconPagerAdapter {
 
-	protected List<String> imagens = new ArrayList<String>();
+	protected List<Integer> imagens = new ArrayList<Integer>();
 
-	public ImagePagerAdapter(FragmentManager fm) {
+	public ImageResourcePagerAdapter(FragmentManager fm) {
 		super(fm);
 	}
 	
-	public ImagePagerAdapter(FragmentManager fm, List<String> images) {
+	public ImageResourcePagerAdapter(FragmentManager fm, List<Integer> images) {
 		super(fm);
 		imagens = images;
 	}
 
 	@Override
 	public Fragment getItem(int position) {
-		return ImageViewFragment.newInstance(imagens.get(position));
+		return ImageViewResourceFragment.newInstance(imagens.get(position));
 	}
 
 	@Override

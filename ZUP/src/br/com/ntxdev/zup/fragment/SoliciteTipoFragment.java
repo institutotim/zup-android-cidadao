@@ -42,6 +42,7 @@ public class SoliciteTipoFragment extends Fragment implements View.OnClickListen
 		TextView view = (TextView) v;
 		view.setTextColor(Color.BLACK);
 		view.setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getResources(), ImageUtils.getScaled(getActivity(), ((CategoriaRelato) categoria).getIcone())), null, null);
+		((SoliciteActivity) getActivity()).setCategoria(categoria);
 	}
 
 	private void montarCategoriasRelatos() {
