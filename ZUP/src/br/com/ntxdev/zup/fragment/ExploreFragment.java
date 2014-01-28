@@ -73,8 +73,6 @@ public class ExploreFragment extends Fragment implements OnInfoWindowClickListen
 	private double latitude, longitude;
 	
 	private TextView botaoFiltrar;
-	private Marker pontoBocaLobo;
-	private Marker relatoEntulho;
 	private BuscaExplore busca;
 	
 	private Map<Marker, Object> marcadores = new HashMap<Marker, Object>();
@@ -164,9 +162,7 @@ public class ExploreFragment extends Fragment implements OnInfoWindowClickListen
 		Object marcador = marcadores.get(marker);
 		if (marcador instanceof ItemInventario) {
 			intent = new Intent(getActivity(), DetalheMapaActivity.class);
-			intent.putExtra("item", (ItemInventario) marcador);
-			startActivity(intent);
-			return;
+			intent.putExtra("item", (ItemInventario) marcador);			
 		} else if (marcador instanceof ItemRelato) {
 			ItemRelato ir = (ItemRelato) marcador;
 			SolicitacaoListItem item = new SolicitacaoListItem();
@@ -183,29 +179,7 @@ public class ExploreFragment extends Fragment implements OnInfoWindowClickListen
 				}
 			}			
 			intent = new Intent(getActivity(), SolicitacaoDetalheActivity.class);
-			intent.putExtra("solicitacao", item);
-			startActivity(intent);
-			return;
-		}
-		
-		if (marker.equals(relatoEntulho)) {
-			SolicitacaoListItem item = new SolicitacaoListItem();
-			item.setTitulo(marker.getTitle());
-			item.setComentario("Apesar da placa, o pessoal vive enchendo a calçada de entulho, cansei de ter que desviar pela rua. Pior quando chove e esse entulho começa a se espalhar.");
-			item.setData("há 4 dias");
-			item.setEndereco("Rua Hermílio Lemos, 498, Cambuci, São Paulo");
-			//item.setFotos(Arrays.asList(R.drawable.entulho1, R.drawable.entulho2));
-			item.setProtocolo("1844356633");
-			//item.setStatus(SolicitacaoListItem.Status.EM_ANDAMENTO);
-			intent = new Intent(getActivity(), SolicitacaoDetalheActivity.class);
-			intent.putExtra("solicitacao", item);
-		} else {
-			intent = new Intent(getActivity(), DetalheMapaActivity.class);
-			intent.putExtra("title", marker.getTitle());
-		}
-		
-		if (marker.equals(pontoBocaLobo)) {
-			intent.putExtra("info_page", true);
+			intent.putExtra("solicitacao", item);			
 		}
 		
 		startActivity(intent);		
@@ -386,7 +360,7 @@ public class ExploreFragment extends Fragment implements OnInfoWindowClickListen
 			try {
 				HttpClient client = new DefaultHttpClient();
 				HttpGet get = new HttpGet(Constantes.REST_URL + "/inventory/items?position[latitude]=" + 
-						latitude + "&position[longitude]=" + longitude + "&position[distance]=10000&max_items=100");
+						latitude + "&position[longitude]=" + longitude + "&position[distance]=15000&max_items=100");
 				get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
 				HttpResponse response = client.execute(get);
 				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
@@ -394,7 +368,7 @@ public class ExploreFragment extends Fragment implements OnInfoWindowClickListen
 				}
 				
 				get = new HttpGet(Constantes.REST_URL + "/reports/items?position[latitude]=" + 
-						latitude + "&position[longitude]=" + longitude + "&position[distance]=10000&max_items=100");
+						latitude + "&position[longitude]=" + longitude + "&position[distance]=15000&max_items=100");
 				get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
 				response = client.execute(get);
 				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {

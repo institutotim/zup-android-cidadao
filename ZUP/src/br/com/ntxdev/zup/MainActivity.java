@@ -13,6 +13,7 @@ import br.com.ntxdev.zup.domain.BuscaExplore;
 import br.com.ntxdev.zup.fragment.EstatisticasFragment;
 import br.com.ntxdev.zup.fragment.ExploreFragment;
 import br.com.ntxdev.zup.fragment.MinhaContaFragment;
+import br.com.ntxdev.zup.service.LoginService;
 import br.com.ntxdev.zup.util.FontUtils;
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
@@ -60,6 +61,11 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 			return;
 		}
 		
+		if (!new LoginService().usuarioLogado(this) && (v.getId() == R.id.soliciteButton || v.getId() == R.id.minhaContaButton)) {
+			startActivity(new Intent(this, LoginActivity.class));
+			return;
+		}
+		
 		if (v.getId() == R.id.soliciteButton) {
 			startActivityForResult(new Intent(this, SoliciteActivity.class), SOLICITACAO_REQUEST_CODE);
 			return;
@@ -91,7 +97,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 				activeFragment(exploreFragment);
 			}
 			break;
-		case R.id.minhaContaButton:
+		case R.id.minhaContaButton:			
 			view.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.tabbar_icon_conta_active), null, null);
 			if (minhaContaFragment == null) {
 				minhaContaFragment = new MinhaContaFragment();

@@ -1,18 +1,10 @@
 package br.com.ntxdev.zup.fragment;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -20,6 +12,7 @@ import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SoliciteActivity;
 import br.com.ntxdev.zup.util.ImageUtils;
@@ -27,24 +20,19 @@ import br.com.ntxdev.zup.util.ImageUtils;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
-public class SoliciteLocalFragment extends Fragment implements LocationListener {
+public class SoliciteLocalFragment extends Fragment {
 
 	private static final String TAG = "ExploreFragment";
 	private static View view;
 	private SupportMapFragment mapFragment;
 	private GoogleMap map;
 	
-	private double latitudeAtual = -23.536726;
-	private double longitudeAtual = -46.639841;
-	private HashMap<String, String> enderecoAtual;
+	private double latitude, longitude;
+	private String file;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -63,8 +51,6 @@ public class SoliciteLocalFragment extends Fragment implements LocationListener 
 			Log.w(TAG, e.getMessage());
 		}
 
-		enderecoAtual = new HashMap<String, String>();
-
 		mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.mapaLocal);
 		map = mapFragment.getMap();
 		if (map != null) {
@@ -72,121 +58,64 @@ public class SoliciteLocalFragment extends Fragment implements LocationListener 
 		}
 
 		if (map != null) {
-			Location location = getLocalizacao();
-			if(location != null){
-				latitudeAtual = location.getLatitude();
-				longitudeAtual = location.getLongitude();
-			}
-			atualizaEndereco();
-
-			map.clear();
-			map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-			LatLng latLng = new LatLng(latitudeAtual, longitudeAtual);
-			
-			map.addMarker(new MarkerOptions().anchor(0.0f, 1.0f)
-					.position(new LatLng(latitudeAtual, longitudeAtual))
-					.icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(getActivity(), ((SoliciteActivity) getActivity()).getCategoria().getMarcador())))
-					.draggable(true));
-
-			map.setOnMarkerDragListener(new OnMarkerDragListener() {
+			map.setMyLocationEnabled(true);
+			map.getUiSettings().setMyLocationButtonEnabled(false);
+			map.getUiSettings().setZoomControlsEnabled(false);
+			map.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+				
 				@Override
-				public void onMarkerDrag(Marker arg0) {
-					Log.i("System out", "onMarkerDrag...");
-				}
-
-				@Override
-				public void onMarkerDragEnd(Marker arg0) {
-					latitudeAtual = arg0.getPosition().latitude;
-					longitudeAtual = arg0.getPosition().longitude;
-					atualizaEndereco();
-					Log.d("System out", "onMarkerDragEnd..." + arg0.getPosition().latitude + "..." + arg0.getPosition().longitude);
-					map.animateCamera(CameraUpdateFactory.newLatLng(arg0.getPosition()));
-				}
-
-				@Override
-				public void onMarkerDragStart(Marker arg0) {
-					Log.d("System out", "onMarkerDragStart..." + arg0.getPosition().latitude + "..." + arg0.getPosition().longitude);
+				public void onMyLocationChange(Location location) {
+					CameraPosition position = new CameraPosition.Builder().target(new LatLng(location.getLatitude(),
+							location.getLongitude())).zoom(15).build();
+					CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+					map.moveCamera(update);
+					map.setOnMyLocationChangeListener(null);
+					latitude = location.getLatitude();
+					longitude = location.getLongitude();
 				}
 			});
-
-			final CameraPosition position = new CameraPosition.Builder().target(latLng).zoom(17).build();
-			CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
-			map.animateCamera(update);
+			map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+				
+				@Override
+				public void onCameraChange(CameraPosition cameraPosition) {
+					latitude = cameraPosition.target.latitude;
+					longitude = cameraPosition.target.longitude;
+				}
+			});
+			
+			map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 		}
 
 		return view;
 	}
-
+	
 	@Override
-	public void onLocationChanged(Location location) {
-		LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-		map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
-	}
-
-	@Override
-	public void onProviderDisabled(String provider) {
-	}
-
-	@Override
-	public void onProviderEnabled(String provider) {
-	}
-
-	@Override
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-	}
-
-	public Location getLocalizacao() {
-		LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-		if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 30000, 100, this);
-		} else {
-			// Solicita ao usu‡rio para ligar o GPS
-			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-			alertDialogBuilder.setMessage(R.string.gps_off).setCancelable(false)
-					.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							Intent callGPSSettingIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-							startActivity(callGPSSettingIntent);
-						}
-					});
-			alertDialogBuilder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) {
-					dialog.cancel();
-				}
-			});
-			AlertDialog alert = alertDialogBuilder.create();
-			alert.show();
-		}
-		return locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-	}
-
-	public void atualizaEndereco() {
-		Geocoder geocoder = new Geocoder(getActivity());
-		List<Address> addresses;
-		try {
-			addresses = geocoder.getFromLocation(latitudeAtual, longitudeAtual, 1);
-			enderecoAtual.put("endereco", addresses.get(0).getAddressLine(0));
-			enderecoAtual.put("cidade", addresses.get(0).getAddressLine(1));
-			enderecoAtual.put("cep", addresses.get(0).getAddressLine(2));
-			enderecoAtual.put("pais", addresses.get(0).getAddressLine(3));
-			enderecoAtual.put("siglaPais", addresses.get(0).getCountryCode());
-			enderecoAtual.put("estado", addresses.get(0).getAdminArea());
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		((ImageView) getView().findViewById(R.id.marcador)).setImageBitmap(ImageUtils.getScaled(getActivity(), file));
 	}
 	
 	public double getLatitudeAtual() {
-		return latitudeAtual;
+		return latitude;
 	}
 	
 	public double getLongitudeAtual() {
-		return longitudeAtual;
+		return longitude;
+	}
+	
+	public void setMarcador(String file) {
+		this.file = file;		
 	}
 	
 	public String getEnderecoAtual() {
-		return enderecoAtual.get("endereco");
+		Geocoder geocoder = new Geocoder(getActivity());
+		try {
+			List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+			if (!addresses.isEmpty()) {
+				return addresses.get(0).getAddressLine(0);
+			}
+		} catch (Exception e) {
+			Log.e("ZUP", e.getMessage(), e);
+		}
+		return "";
 	}
 }

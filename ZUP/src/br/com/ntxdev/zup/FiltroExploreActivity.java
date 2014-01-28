@@ -36,7 +36,7 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 	private List<CategoriaInventario> inventarios = new ArrayList<CategoriaInventario>();
 	private List<CategoriaRelato> relatos = new ArrayList<CategoriaRelato>();
 
-	private BuscaExplore busca = new BuscaExplore();
+	private BuscaExplore busca;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +89,8 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 		
 		montarCategoriasRelatos();
 		montarCategoriasInventario();
+		
+		aplicarFiltroInicial();
 	}
 	
 	private void unselectCategoriasInventario() {
@@ -258,12 +260,40 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 	}
 	
 	private void prepararObjetoRetorno() {
+		busca.getIdsCategoriaInventario().clear();
 		for (CategoriaInventario ci : inventarios) {
 			busca.getIdsCategoriaInventario().add(ci.getId());
 		}
 		
+		busca.getIdsCategoriaRelato().clear();
 		for (CategoriaRelato cr : relatos) {
 			busca.getIdsCategoriaRelato().add(cr.getId());
+		}
+	}
+	
+	private void aplicarFiltroInicial() {
+		LinearLayout container = (LinearLayout) findViewById(R.id.categorias_inventario);
+		for (Long id : busca.getIdsCategoriaInventario()) {			
+			for (int i = 0; i < container.getChildCount(); i++) {
+				View v = container.getChildAt(i);
+				if (((CategoriaInventario) v.getTag()).getId() == id) {
+					inventarios.add((CategoriaInventario) v.getTag());
+					((TextView) v).setTextColor(Color.BLACK);
+					((TextView) v).setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getResources(), ImageUtils.getScaled(this, ((CategoriaInventario) v.getTag()).getIcone())), null, null);
+				}
+			}
+		}
+		
+		container = (LinearLayout) findViewById(R.id.seletor_tipo);
+		for (Long id : busca.getIdsCategoriaRelato()) {
+			for (int i = 0; i < container.getChildCount(); i++) {
+				View v = container.getChildAt(i);
+				if (((CategoriaRelato) v.getTag()).getId() == id) {
+					relatos.add((CategoriaRelato) v.getTag());
+					((TextView) v).setTextColor(Color.BLACK);
+					((TextView) v).setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getResources(), ImageUtils.getScaled(this, ((CategoriaRelato) v.getTag()).getIcone())), null, null);
+				}
+			}
 		}
 	}
 }

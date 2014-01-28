@@ -91,7 +91,8 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 			getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, localFragment).commit();
 		} else {
 			getSupportFragmentManager().beginTransaction().hide(tipoFragment).show(localFragment).commit();
-		}		
+		}
+		localFragment.setMarcador(categoria.getMarcador());
 		atual = Passo.LOCAL;
 		exibirBarraInferior(true);
 	}

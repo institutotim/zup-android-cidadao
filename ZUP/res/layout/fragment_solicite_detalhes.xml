@@ -51,33 +51,14 @@
                 android:textSize="@dimen/navigation_text_size" />
         </RelativeLayout>
 
-        <RelativeLayout
+        <TextView
+            android:id="@+id/termos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp" >
-
-            <ImageView
-                android:id="@+id/seletor_termos"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:clickable="true"
-                android:contentDescription="@string/seletor_on_off"
-                android:src="@drawable/switch_off" />
-
-            <TextView
-                android:id="@+id/termos"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:layout_toLeftOf="@id/seletor_termos"
-                android:gravity="left"
-                android:text="@string/concordo_com_os_termos_de_uso"
-                android:textColor="#333"
-                android:textSize="@dimen/navigation_text_size" />
-        </RelativeLayout>
+            android:layout_marginTop="25dp"
+            android:gravity="left"
+            android:textColor="#333"
+            android:textSize="@dimen/navigation_text_size" />
     </LinearLayout>
 
 </ScrollView>

@@ -10,6 +10,13 @@ public class CategoriaInventario implements Serializable {
 	private String marcador;
 	private String nome;
 
+	public CategoriaInventario() {
+	}
+	
+	public CategoriaInventario(long id) {
+		this.id = id;
+	}
+	
 	public long getId() {
 		return id;
 	}
