@@ -14,6 +14,7 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -69,6 +70,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 		botaoCancelar.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				setResult(Activity.RESULT_CANCELED);
 				finish();
 			}
 		});
@@ -216,6 +218,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 			dialog.dismiss();
 			if (result) {
 				Toast.makeText(SoliciteActivity.this, "Solicitação enviada com sucesso!", Toast.LENGTH_LONG).show();
+				setResult(Activity.RESULT_OK);
 				finish();
 			} else {
 				Toast.makeText(SoliciteActivity.this, "Falha no envio da solicitação", Toast.LENGTH_LONG).show();

@@ -1,12 +1,15 @@
 package br.com.ntxdev.zup;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.TextView;
+import br.com.ntxdev.zup.domain.BuscaExplore;
 import br.com.ntxdev.zup.fragment.EstatisticasFragment;
 import br.com.ntxdev.zup.fragment.ExploreFragment;
 import br.com.ntxdev.zup.fragment.MinhaContaFragment;
@@ -14,7 +17,16 @@ import br.com.ntxdev.zup.util.FontUtils;
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
 	
+	private static final int SOLICITACAO_REQUEST_CODE = 1010;
+	public static final int FILTRO_CODE = 1007;
+	
 	private TextView current;
+	
+	private EstatisticasFragment estatisticasFragment;
+	private ExploreFragment exploreFragment;
+	private MinhaContaFragment minhaContaFragment;
+	
+	private Fragment atual;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +50,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 		estatisticasButton.setTypeface(FontUtils.getRegular(this));
 		
 		current = exploreButton;
-		setFragment(new ExploreFragment());
+		exploreFragment = new ExploreFragment();
+		setFragment(exploreFragment);
 	}
 
 	@Override
@@ -48,7 +61,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 		}
 		
 		if (v.getId() == R.id.soliciteButton) {
-			startActivity(new Intent(this, SoliciteActivity.class));
+			startActivityForResult(new Intent(this, SoliciteActivity.class), SOLICITACAO_REQUEST_CODE);
 			return;
 		}
 		
@@ -62,22 +75,47 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 		switch (id) {		
 		case R.id.estatisticasButton:
 			view.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.tabbar_icon_estatisticas_active), null, null);
-			setFragment(new EstatisticasFragment());
+			if (estatisticasFragment == null) {
+				estatisticasFragment = new EstatisticasFragment();
+				setFragment(estatisticasFragment);
+			} else {
+				activeFragment(estatisticasFragment);
+			}
 			break;
 		case R.id.exploreButton:
 			view.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.tabbar_icon_explore_active), null, null);
-			setFragment(new ExploreFragment());
+			if (exploreFragment == null) {
+				exploreFragment = new ExploreFragment();
+				setFragment(exploreFragment);
+			} else {
+				activeFragment(exploreFragment);
+			}
 			break;
 		case R.id.minhaContaButton:
 			view.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.tabbar_icon_conta_active), null, null);
-			setFragment(new MinhaContaFragment());
+			if (minhaContaFragment == null) {
+				minhaContaFragment = new MinhaContaFragment();
+				setFragment(minhaContaFragment);
+			} else {
+				activeFragment(minhaContaFragment);
+			}
 			break;				
 		}
 		current = view;
 	}
 
 	private void setFragment(Fragment fragment) {
-		getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, fragment).commit();
+		FragmentTransaction fm = getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, fragment);
+		if (atual != null) {
+			fm.hide(atual);
+		}
+		fm.commit();
+		atual = fragment;
+	}
+	
+	private void activeFragment(Fragment fragment) {
+		getSupportFragmentManager().beginTransaction().hide(atual).show(fragment).commit();
+		atual = fragment;
 	}
 
 	private void unselectCurrent() {
@@ -92,6 +130,15 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 		case R.id.minhaContaButton:
 			current.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.tabbar_icon_conta), null, null);
 			break;
+		}
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == SOLICITACAO_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+			exploreFragment.refresh();
+		} else if (requestCode == FILTRO_CODE && resultCode == Activity.RESULT_OK) {
+			exploreFragment.aplicarFiltro((BuscaExplore) data.getSerializableExtra("busca"));
 		}
 	}
 }

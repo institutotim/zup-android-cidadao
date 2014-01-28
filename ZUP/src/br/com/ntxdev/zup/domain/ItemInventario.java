@@ -1,7 +1,10 @@
 package br.com.ntxdev.zup.domain;
 
-public class ItemInventario {
+import java.io.Serializable;
 
+public class ItemInventario implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	private long id;
 	private double latitude;
 	private double longitude;

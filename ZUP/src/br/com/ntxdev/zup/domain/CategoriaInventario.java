@@ -1,8 +1,10 @@
 package br.com.ntxdev.zup.domain;
 
+import java.io.Serializable;
 
-public class CategoriaInventario {
+public class CategoriaInventario implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private long id;
 	private String icone;
 	private String marcador;

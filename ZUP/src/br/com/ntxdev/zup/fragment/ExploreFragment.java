@@ -15,7 +15,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.location.Address;
@@ -35,6 +34,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import br.com.ntxdev.zup.DetalheMapaActivity;
 import br.com.ntxdev.zup.FiltroExploreActivity;
+import br.com.ntxdev.zup.MainActivity;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SolicitacaoDetalheActivity;
 import br.com.ntxdev.zup.core.Constantes;
@@ -66,7 +66,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class ExploreFragment extends Fragment implements OnInfoWindowClickListener, AdapterView.OnItemClickListener {
 
 	private static final String TAG = "ExploreFragment";
-	private static int FILTRO_CODE = 1507;
 	private static View view;
 	private SupportMapFragment mapFragment;
 	private GoogleMap map;
@@ -107,7 +106,7 @@ public class ExploreFragment extends Fragment implements OnInfoWindowClickListen
 			public void onClick(View v) {
 				Intent intent = new Intent(getActivity(), FiltroExploreActivity.class);
 				intent.putExtra("busca", busca);
-				startActivityForResult(intent, FILTRO_CODE);
+				getActivity().startActivityForResult(intent, MainActivity.FILTRO_CODE);
 			}
 		});
 
@@ -164,7 +163,9 @@ public class ExploreFragment extends Fragment implements OnInfoWindowClickListen
 		
 		Object marcador = marcadores.get(marker);
 		if (marcador instanceof ItemInventario) {
-			//ItemInventario ii = (ItemInventario) marcador;
+			intent = new Intent(getActivity(), DetalheMapaActivity.class);
+			intent.putExtra("item", (ItemInventario) marcador);
+			startActivity(intent);
 			return;
 		} else if (marcador instanceof ItemRelato) {
 			ItemRelato ir = (ItemRelato) marcador;
@@ -210,13 +211,10 @@ public class ExploreFragment extends Fragment implements OnInfoWindowClickListen
 		startActivity(intent);		
 	}
 	
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == FILTRO_CODE && resultCode == Activity.RESULT_OK) {
-			map.clear();
-			busca = (BuscaExplore) data.getSerializableExtra("busca");
-			new Searcher(busca.getIdsCategoriaRelato(), busca.getIdsCategoriaInventario()).execute();		
-		}
+	public void aplicarFiltro(BuscaExplore busca) {		
+		map.clear();
+		this.busca = busca;
+		new Searcher(busca.getIdsCategoriaRelato(), busca.getIdsCategoriaInventario()).execute();
 	}
 
 	@Override
@@ -273,7 +271,7 @@ public class ExploreFragment extends Fragment implements OnInfoWindowClickListen
 				
 				for (Long id : inventarios) {
 					get = new HttpGet(Constantes.REST_URL + "/inventory/items?position[latitude]=" + 
-							latitude + "&position[longitude]=" + longitude + "&position[distance]=10000&max_items=100&inventory_category_id=" + id);
+							latitude + "&position[longitude]=" + longitude + "&position[distance]=15000&max_items=100&inventory_category_id=" + id);
 					get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
 					response = client.execute(get);
 					if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
@@ -283,7 +281,7 @@ public class ExploreFragment extends Fragment implements OnInfoWindowClickListen
 				
 				for (Long id : relatos) {
 					get = new HttpGet(Constantes.REST_URL + "/reports/items?position[latitude]=" + 
-							latitude + "&position[longitude]=" + longitude + "&position[distance]=10000&max_items=100&category_id=" + id);
+							latitude + "&position[longitude]=" + longitude + "&position[distance]=15000&max_items=100&category_id=" + id);
 					get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
 					response = client.execute(get);
 					if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
@@ -471,6 +469,17 @@ public class ExploreFragment extends Fragment implements OnInfoWindowClickListen
 				}
 				
 				itensRelato.add(item);
+			}
+		}
+	}
+	
+	public void refresh() {
+		if (map != null) {
+			map.clear();
+			if (busca.getIdsCategoriaInventario().isEmpty() && busca.getIdsCategoriaRelato().isEmpty()) {
+				new Tasker(latitude, longitude).execute();
+			} else {
+				new Searcher(busca.getIdsCategoriaRelato(), busca.getIdsCategoriaInventario()).execute();
 			}
 		}
 	}
