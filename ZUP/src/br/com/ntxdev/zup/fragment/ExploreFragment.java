@@ -390,7 +390,6 @@ public class ExploreFragment extends Fragment implements OnInfoWindowClickListen
 					}
 					
 					for (ItemRelato item : itensRelato) {
-						if (!item.getFotos().isEmpty())
 						adicionarMarker(item);
 					}
 				} catch (Exception e) {
