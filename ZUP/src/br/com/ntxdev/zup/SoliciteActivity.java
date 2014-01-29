@@ -2,7 +2,6 @@ package br.com.ntxdev.zup;
 
 import java.io.File;
 import java.nio.charset.Charset;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -13,10 +12,11 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -88,11 +88,13 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 		solicitacao.setCategoria(categoria);
 		if (localFragment == null) {
 			localFragment = new SoliciteLocalFragment();
+			localFragment.setMarcador(categoria.getMarcador());
 			getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, localFragment).commit();
 		} else {
 			getSupportFragmentManager().beginTransaction().hide(tipoFragment).show(localFragment).commit();
+			localFragment.setMarcador(categoria.getMarcador());
 		}
-		localFragment.setMarcador(categoria.getMarcador());
+		
 		atual = Passo.LOCAL;
 		exibirBarraInferior(true);
 	}
@@ -164,8 +166,13 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 		}
 	}
 	
+	@SuppressLint("NewApi")
 	private void enviarSolicitacao() {
-		new Tasker().execute();
+		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+			new Tasker().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new Void[]{});
+        } else {
+        	new Tasker().execute();
+        }
 	}
 	
 	public class Tasker extends AsyncTask<Void, Void, Boolean> {

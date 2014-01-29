@@ -65,11 +65,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class ExploreFragment extends Fragment implements OnInfoWindowClickListener, AdapterView.OnItemClickListener {
 
-	private static final String TAG = "ExploreFragment";
-	private static View view;
 	private SupportMapFragment mapFragment;
 	private GoogleMap map;
-	
+	private static View view;
 	private double latitude, longitude;
 	
 	private TextView botaoFiltrar;
@@ -83,15 +81,14 @@ public class ExploreFragment extends Fragment implements OnInfoWindowClickListen
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		if (view != null) {
 			ViewGroup parent = (ViewGroup) view.getParent();
-			if (parent != null) {
+			if (parent != null)
 				parent.removeView(view);
-			}
 		}
-
+		
 		try {
 			view = inflater.inflate(R.layout.fragment_explore, container, false);
 		} catch (InflateException e) {
-			Log.w(TAG, e.getMessage());
+			Log.w("ZUP", e.getMessage());
 		}
 
 		mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map);

@@ -211,7 +211,7 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 	
 	private void limparFundoCampos() {
 		for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF, R.id.campoTelefone,
-				R.id.campoEndereco, R.id.campoComplemento, R.id.campoCEP, R.id.campoBairro, R.id.campoSenha, R.id.campoConfirmarSenha)) {
+				R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro, R.id.campoSenha, R.id.campoConfirmarSenha)) {
 			((TextView) findViewById(id)).setBackgroundResource(R.drawable.textbox_bg);
 		}
 	}
@@ -225,7 +225,7 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 		}		
 		
 		for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF, R.id.campoTelefone,
-				R.id.campoEndereco, R.id.campoComplemento, R.id.campoCEP, R.id.campoBairro)) {
+				R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro)) {
 			if (((TextView) findViewById(id)).getText().toString().trim().isEmpty()) {
 				campos.add(id);
 			}
