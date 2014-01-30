@@ -112,7 +112,9 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
 	
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
-		((ImageView) view.findViewById(R.id.marcador)).setImageBitmap(ImageUtils.getScaled(getActivity(), file));
+		if (file != null && !file.isEmpty()) {
+			((ImageView) view.findViewById(R.id.marcador)).setImageBitmap(ImageUtils.getScaled(getActivity(), file));
+		}
 	}
 	
 	@Override
@@ -130,7 +132,7 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
 	}
 	
 	public void setMarcador(String file) {
-		if (this.file != null) {
+		if (file != null && !file.isEmpty()) {
 			((ImageView) view.findViewById(R.id.marcador)).setImageBitmap(ImageUtils.getScaled(getActivity(), file));
 		}
 		this.file = file;		

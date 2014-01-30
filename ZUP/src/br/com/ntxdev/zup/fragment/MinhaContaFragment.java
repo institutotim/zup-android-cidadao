@@ -101,6 +101,14 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 	}
 	
 	@Override
+	public void onHiddenChanged(boolean hidden) {
+		super.onHiddenChanged(hidden);
+		if (!hidden) {
+			new Tasker().execute();
+		}
+	}
+	
+	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		new Tasker().execute();

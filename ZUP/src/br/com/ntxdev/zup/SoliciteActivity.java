@@ -2,6 +2,8 @@ package br.com.ntxdev.zup;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.util.Locale;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -12,6 +14,7 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -107,6 +110,10 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 		TextView info = (TextView) findViewById(R.id.instrucoes);
 		info.setText(string);
 		info.setTypeface(FontUtils.getBold(this));
+		
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			info.setText(info.getText().toString().toUpperCase(Locale.US));
+		}
 	}
 
 	public void setComentario(String comentario) {

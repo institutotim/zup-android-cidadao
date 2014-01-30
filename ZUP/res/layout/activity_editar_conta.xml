@@ -166,6 +166,7 @@
                 android:layout_marginTop="15dp"
                 android:background="@drawable/textbox_bg"
                 android:hint="@string/nome_completo"
+                android:inputType="textNoSuggestions"
                 android:padding="12dp"
                 android:textColor="#000"
                 android:textSize="@dimen/navigation_text_size" />
@@ -222,7 +223,7 @@
                 android:orientation="horizontal"
                 android:weightSum="2" >
 
-                <EditText
+                <br.com.ntxdev.zup.widget.PhoneEditText
                     android:id="@+id/campoTelefone"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -230,12 +231,11 @@
                     android:layout_weight="1"
                     android:background="@drawable/textbox_bg"
                     android:hint="@string/telefone"
-                    android:inputType="phone"
                     android:padding="12dp"
                     android:textColor="#000"
                     android:textSize="@dimen/navigation_text_size" />
 
-                <EditText
+                <br.com.ntxdev.zup.widget.CpfEditText
                     android:id="@+id/campoCPF"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -255,6 +255,7 @@
                 android:layout_margin="5dp"
                 android:background="@drawable/textbox_bg"
                 android:hint="@string/endereco"
+                android:inputType="textNoSuggestions"
                 android:padding="12dp"
                 android:textColor="#000"
                 android:textSize="@dimen/navigation_text_size" />
@@ -273,11 +274,12 @@
                     android:layout_weight="1"
                     android:background="@drawable/textbox_bg"
                     android:hint="@string/complemento"
+                    android:inputType="textNoSuggestions"
                     android:padding="12dp"
                     android:textColor="#000"
                     android:textSize="@dimen/navigation_text_size" />
 
-                <EditText
+                <br.com.ntxdev.zup.widget.CepEditText
                     android:id="@+id/campoCEP"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -297,6 +299,7 @@
                 android:layout_margin="5dp"
                 android:background="@drawable/textbox_bg"
                 android:hint="@string/bairro"
+                android:inputType="textNoSuggestions"
                 android:padding="12dp"
                 android:textColor="#000"
                 android:textSize="@dimen/navigation_text_size" />

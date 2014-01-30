@@ -44,7 +44,7 @@ public class DateUtils {
 		Calendar hoje = Calendar.getInstance();
 		
 		int contador = 0;
-		while (calendar.before(hoje)) {
+		while (calendar.get(Calendar.DAY_OF_YEAR) < hoje.get(Calendar.DAY_OF_YEAR)) {
 			contador++;
 			calendar.add(Calendar.DAY_OF_YEAR, 1);
 		}
