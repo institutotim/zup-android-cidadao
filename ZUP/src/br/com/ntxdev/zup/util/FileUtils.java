@@ -26,6 +26,15 @@ public class FileUtils {
 		return new File(Environment.getExternalStorageDirectory() + File.separator + "ZUP" + File.separator + "images");
 	}
 	
+	public static File getTempImagesFolder() {
+		File imagesFolder = new File(Environment.getExternalStorageDirectory() + File.separator + "ZUP" + File.separator + "temp");
+		if (!imagesFolder.exists()) {
+			imagesFolder.mkdirs();
+		}
+		
+		return imagesFolder;
+	}
+	
 	public static void downloadImage(String url) throws Exception {
 		String[] parts = url.split("/");
 		String filename = parts[parts.length - 1];

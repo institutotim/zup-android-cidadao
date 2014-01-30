@@ -1,6 +1,7 @@
 package br.com.ntxdev.zup.fragment;
 
 import java.util.List;
+
 import android.annotation.SuppressLint;
 import android.location.Address;
 import android.location.Geocoder;
@@ -22,6 +23,7 @@ import br.com.ntxdev.zup.SoliciteActivity;
 import br.com.ntxdev.zup.util.FontUtils;
 import br.com.ntxdev.zup.util.ImageUtils;
 import br.com.ntxdev.zup.widget.AutoCompleteAdapter;
+
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -118,6 +120,16 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
 	}
 	
 	@Override
+	public void onHiddenChanged(boolean hidden) {
+		super.onHiddenChanged(hidden);
+		if (!hidden) {
+			if (file != null && !file.isEmpty()) {
+				((ImageView) view.findViewById(R.id.marcador)).setImageBitmap(ImageUtils.getScaled(getActivity(), file));
+			}
+		}
+	}
+	
+	@Override
 	public void onDestroy() {
 		task.cancel(true);
 		super.onDestroy();
@@ -132,9 +144,6 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
 	}
 	
 	public void setMarcador(String file) {
-		if (file != null && !file.isEmpty()) {
-			((ImageView) view.findViewById(R.id.marcador)).setImageBitmap(ImageUtils.getScaled(getActivity(), file));
-		}
 		this.file = file;		
 	}
 	

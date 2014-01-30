@@ -13,7 +13,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -25,6 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SoliciteActivity;
+import br.com.ntxdev.zup.util.FileUtils;
 import br.com.ntxdev.zup.util.FontUtils;
 import eu.janmuller.android.simplecropimage.CropImage;
 
@@ -44,6 +44,10 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		((SoliciteActivity) getActivity()).setInfo(R.string.adicione_fotos);
+		
+		if (savedInstanceState != null) {
+			imagemTemporaria = Uri.fromFile(new File(savedInstanceState.getString("file")));
+		}
 
 		View view = inflater.inflate(R.layout.fragment_solicite_fotos, container, false);
 
@@ -76,6 +80,12 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
 			}
 		}).show();
 	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString("file", imagemTemporaria.getPath());
+	}
 
 	private void selecionarFoto() {
 		Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -85,8 +95,7 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
 	private void tirarFoto() {
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 		// Arquivo temporário
-		imagemTemporaria = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "tmp_image_"
-				+ String.valueOf(System.currentTimeMillis()) + ".jpg"));
+		imagemTemporaria = Uri.fromFile(new File(FileUtils.getTempImagesFolder(), "tmp_image_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
 		intent.putExtra(MediaStore.EXTRA_OUTPUT, imagemTemporaria);
 		intent.putExtra("return-data", true);
 		startActivityForResult(intent, CAMERA_RETURN);
@@ -189,10 +198,7 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
 			Intent intent = new Intent(getActivity(), CropImage.class);
 			intent.putExtra(CropImage.IMAGE_PATH, imagemTemporaria.getPath());
 			intent.putExtra(CropImage.SCALE, true);
-			intent.putExtra(
-					MediaStore.EXTRA_OUTPUT,
-					Uri.fromFile(new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), System
-							.currentTimeMillis() + ".jpg")));
+			intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(FileUtils.getTempImagesFolder(), System.currentTimeMillis() + ".jpg")));
 			intent.putExtra(CropImage.ASPECT_X, 1);
 			intent.putExtra(CropImage.ASPECT_Y, 1);
 			intent.putExtra(CropImage.OUTPUT_X, 800);
