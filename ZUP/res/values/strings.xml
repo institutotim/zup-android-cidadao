@@ -120,6 +120,10 @@
         <item>Tirar foto</item>
         <item>Cancelar</item>
     </string-array>
+        <string name="deseja_realmente_sair_da_sua_conta">Deseja realmente sair da sua conta?</string>
+        <string name="sim">Sim</string>
+        <string name="nao">Não</string>
+        <string name="todas_as_categorias">Todas as categorias</string>
         
         
 

@@ -1,17 +1,19 @@
 package br.com.ntxdev.zup.domain;
 
-import java.util.List;
+import java.io.Serializable;
+import java.util.ArrayList;
 
 import android.graphics.Color;
 
-public class CategoriaRelato {
+public class CategoriaRelato implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private long id;
 	private String icone;
 	private String marcador;
 	private String nome;
 
-	private List<Status> status;
+	private ArrayList<Status> status;
 	
 	public CategoriaRelato() {
 	}
@@ -20,11 +22,11 @@ public class CategoriaRelato {
 		this.id = id;
 	}
 
-	public List<Status> getStatus() {
+	public ArrayList<Status> getStatus() {
 		return status;
 	}
 
-	public void setStatus(List<Status> status) {
+	public void setStatus(ArrayList<Status> status) {
 		this.status = status;
 	}
 
@@ -68,6 +70,12 @@ public class CategoriaRelato {
 		public Status() {
 		}
 		
+		public Status(long id, String nome, String corHtml) {
+			this.id = id;
+			this.nome = nome;
+			this.cor = Color.parseColor(corHtml);
+		}
+		
 		public Status(String nome, String corHtml) {
 			this.nome = nome;
 			this.cor = Color.parseColor(corHtml);
@@ -95,6 +103,28 @@ public class CategoriaRelato {
 
 		public void setNome(String nome) {
 			this.nome = nome;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + (int) (id ^ (id >>> 32));
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Status other = (Status) obj;
+			if (id != other.id)
+				return false;
+			return true;
 		}
 	}
 	

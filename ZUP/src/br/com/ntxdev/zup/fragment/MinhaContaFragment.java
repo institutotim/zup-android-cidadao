@@ -14,8 +14,10 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -63,9 +65,24 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 			
 			@Override
 			public void onClick(View v) {
-				new LoginService().registrarLogout(getActivity());
-				startActivity(new Intent(getActivity(), OpeningActivity.class));
-				getActivity().finish();
+				new AlertDialog.Builder(getActivity())
+						.setMessage(R.string.deseja_realmente_sair_da_sua_conta)
+						.setPositiveButton(R.string.sim, new DialogInterface.OnClickListener() {							
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								new LoginService().registrarLogout(getActivity());
+								startActivity(new Intent(getActivity(), OpeningActivity.class));
+								getActivity().finish();								
+							}
+						})
+						.setNegativeButton(R.string.nao, new DialogInterface.OnClickListener() {							
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								dialog.dismiss();								
+							}
+						})
+						.show();
+				
 			}
 		});
 		
@@ -106,12 +123,6 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 		if (!hidden) {
 			new Tasker().execute();
 		}
-	}
-	
-	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-		new Tasker().execute();
 	}
 	
 	private void preencherLista(List<SolicitacaoListItem> itens) {
@@ -248,5 +259,11 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 				}				
 			}
 		}
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		new Tasker().execute();
 	}
 }

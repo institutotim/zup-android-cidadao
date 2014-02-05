@@ -9,10 +9,12 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.TextView;
+import br.com.ntxdev.zup.domain.BuscaEstatisticas;
 import br.com.ntxdev.zup.domain.BuscaExplore;
 import br.com.ntxdev.zup.fragment.EstatisticasFragment;
 import br.com.ntxdev.zup.fragment.ExploreFragment;
 import br.com.ntxdev.zup.fragment.MinhaContaFragment;
+import br.com.ntxdev.zup.service.CategoriaRelatoService;
 import br.com.ntxdev.zup.service.LoginService;
 import br.com.ntxdev.zup.util.FontUtils;
 
@@ -50,6 +52,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 		estatisticasButton.setOnClickListener(this);
 		estatisticasButton.setTypeface(FontUtils.getRegular(this));
 		
+		if (new CategoriaRelatoService().getCategorias(this).isEmpty()) {
+			findViewById(R.id.footer).setVisibility(View.GONE);
+		}
+		
 		current = exploreButton;
 		exploreFragment = new ExploreFragment();
 		setFragment(exploreFragment);
@@ -61,7 +67,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 			return;
 		}
 		
-		if (!new LoginService().usuarioLogado(this) && (v.getId() == R.id.soliciteButton || v.getId() == R.id.minhaContaButton)) {
+		if (!new LoginService().usuarioLogado(this) && v.getId() == R.id.minhaContaButton) {
 			startActivity(new Intent(this, LoginActivity.class));
 			return;
 		}
@@ -145,6 +151,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 			exploreFragment.refresh();
 		} else if (requestCode == FILTRO_CODE && resultCode == Activity.RESULT_OK) {
 			exploreFragment.aplicarFiltro((BuscaExplore) data.getSerializableExtra("busca"));
+		} else if (requestCode == EstatisticasFragment.REQUEST_FILTRO && resultCode == Activity.RESULT_OK) {
+			estatisticasFragment.aplicarFiltro((BuscaEstatisticas) data.getSerializableExtra("busca"));
 		}
 	}
 }

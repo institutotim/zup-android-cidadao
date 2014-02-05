@@ -1,25 +1,28 @@
 package br.com.ntxdev.zup;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.view.View;
 import android.widget.Toast;
 import br.com.ntxdev.zup.task.Updater;
 import br.com.ntxdev.zup.util.NetworkUtils;
 
 public class SplashActivity extends Activity {
 
+	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ImageView image = new ImageView(this);
-		image.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-		image.setImageResource(R.drawable.ic_splash);
-		setContentView(image);
+		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+			getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+		}
+		
+		setContentView(R.layout.activity_splash);
 
 		new CategoriaUpdater().execute();
 	}

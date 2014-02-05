@@ -28,5 +28,9 @@
     <style name="Popup" parent="android:Theme.Dialog">
         
     </style>
+    
+    <style name="ZupProgressBar" parent="android:Widget.ProgressBar">
+        
+    </style>
 
 </resources>

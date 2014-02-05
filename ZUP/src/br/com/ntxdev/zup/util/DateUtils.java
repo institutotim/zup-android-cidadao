@@ -7,6 +7,10 @@ import java.util.Locale;
 
 public class DateUtils {
 
+	public static String getIsoString(Date date) {
+		return new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZ", Locale.US).format(date);
+	}
+	
 	public static Date parseRFC3339Date(String datestring) throws Exception {
 		Date d = new Date();
 

@@ -68,7 +68,7 @@
                 android:drawablePadding="15dp"
                 android:drawableRight="@drawable/seta_expandir"
                 android:padding="25dp"
-                android:text="@string/todos_os_status"
+                android:text="@string/todas_as_categorias"
                 android:textSize="@dimen/navigation_text_size" />
 
             <View
@@ -85,84 +85,8 @@
                 android:layout_below="@id/separator3"
                 android:background="#fff"
                 android:orientation="vertical"
-                android:visibility="gone" >
-
-                <TextView
-                    android:id="@+id/todosStatus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:clickable="true"
-                    android:padding="15dp"
-                    android:text="@string/todos_os_status"
-                    android:textColor="#2ab4dc"
-                    android:textSize="@dimen/navigation_text_size" />
-
-                <TextView
-                    android:id="@+id/resolvidos"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:clickable="true"
-                    android:padding="15dp"
-                    android:text="@string/resolvidos"
-                    android:textColor="@color/text_option_color"
-                    android:textSize="@dimen/navigation_text_size" />
-
-                <TextView
-                    android:id="@+id/emAndamento"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:clickable="true"
-                    android:padding="15dp"
-                    android:text="@string/em_andamento"
-                    android:textColor="@color/text_option_color"
-                    android:textSize="@dimen/navigation_text_size" />
-
-                <TextView
-                    android:id="@+id/emAberto"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:clickable="true"
-                    android:padding="15dp"
-                    android:text="@string/em_aberto"
-                    android:textColor="@color/text_option_color"
-                    android:textSize="@dimen/navigation_text_size" />
-
-                <TextView
-                    android:id="@+id/naoResolvidos"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:clickable="true"
-                    android:padding="15dp"
-                    android:text="@string/nao_resolvidos"
-                    android:textColor="@color/text_option_color"
-                    android:textSize="@dimen/navigation_text_size" />
-            </LinearLayout>
-            
-            <TextView
-                android:id="@+id/bairros"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/opcoes"
-                android:layout_centerHorizontal="true"
-                android:clickable="true"
-                android:drawablePadding="15dp"
-                android:drawableRight="@drawable/seta_expandir"
-                android:padding="25dp"
-                android:text="@string/todos_os_bairros"
-                android:textSize="@dimen/navigation_text_size" />
-
-            <View
-                android:id="@+id/separator4"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_below="@id/bairros"
-                android:background="#ccc" />
+                android:visibility="gone" />
+                
         </RelativeLayout>
     </ScrollView>
-
 </RelativeLayout>

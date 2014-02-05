@@ -1,29 +1,29 @@
 package br.com.ntxdev.zup;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import br.com.ntxdev.zup.domain.BuscaExplore;
+import br.com.ntxdev.zup.domain.BuscaEstatisticas;
+import br.com.ntxdev.zup.domain.CategoriaRelato;
+import br.com.ntxdev.zup.domain.Periodo;
+import br.com.ntxdev.zup.service.CategoriaRelatoService;
 import br.com.ntxdev.zup.util.FontUtils;
 
 public class FiltroEstatisticasActivity extends Activity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
 	private TextView status;
-	private TextView todosStatus;
-	private TextView resolvidos;
-	private TextView emAndamento;
-	private TextView emAberto;
-	private TextView naoResolvidos;
 	private LinearLayout opcoes;
 	
-	private BuscaExplore busca = new BuscaExplore();
+	private BuscaEstatisticas busca = new BuscaEstatisticas();
 	private TextView botaoConcluido;
-	private TextView bairros;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,32 +45,25 @@ public class FiltroEstatisticasActivity extends Activity implements View.OnClick
 		status.setTypeface(FontUtils.getLight(this));
 		status.setOnClickListener(this);
 		
-		bairros = (TextView) findViewById(R.id.bairros);
-		bairros.setTypeface(FontUtils.getLight(this));
-
-		todosStatus = (TextView) findViewById(R.id.todosStatus);
-		todosStatus.setTypeface(FontUtils.getLight(this));
-		todosStatus.setOnClickListener(cliqueOpcao);
-
-		resolvidos = (TextView) findViewById(R.id.resolvidos);
-		resolvidos.setTypeface(FontUtils.getLight(this));
-		resolvidos.setOnClickListener(cliqueOpcao);
-
-		emAndamento = (TextView) findViewById(R.id.emAndamento);
-		emAndamento.setTypeface(FontUtils.getLight(this));
-		emAndamento.setOnClickListener(cliqueOpcao);
-
-		emAberto = (TextView) findViewById(R.id.emAberto);
-		emAberto.setTypeface(FontUtils.getLight(this));
-		emAberto.setOnClickListener(cliqueOpcao);
-
-		naoResolvidos = (TextView) findViewById(R.id.naoResolvidos);
-		naoResolvidos.setTypeface(FontUtils.getLight(this));
-		naoResolvidos.setOnClickListener(cliqueOpcao);
+		popularListCategorias();
 	}
 
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+		switch (progress) {
+		case 0:
+			busca.setPeriodo(Periodo.ULTIMOS_6_MESES);
+			break;
+		case 1:
+			busca.setPeriodo(Periodo.ULTIMOS_3_MESES);
+			break;
+		case 2:
+			busca.setPeriodo(Periodo.ULTIMO_MES);
+			break;
+		case 3:
+			busca.setPeriodo(Periodo.ULTIMA_SEMANA);
+			break;
+		}
 	}
 
 	@Override
@@ -107,11 +100,9 @@ public class FiltroEstatisticasActivity extends Activity implements View.OnClick
 
 		@Override
 		public void onClick(View v) {
-			todosStatus.setTextColor(getResources().getColorStateList(R.color.text_option_color));
-			resolvidos.setTextColor(getResources().getColorStateList(R.color.text_option_color));
-			emAndamento.setTextColor(getResources().getColorStateList(R.color.text_option_color));
-			emAberto.setTextColor(getResources().getColorStateList(R.color.text_option_color));
-			naoResolvidos.setTextColor(getResources().getColorStateList(R.color.text_option_color));
+			for (int i = 0; i < opcoes.getChildCount(); i++) {
+				((TextView) opcoes.getChildAt(i)).setTextColor(getResources().getColorStateList(R.color.text_option_color));
+			}
 
 			TextView selecionado = (TextView) v;
 			status.setText(selecionado.getText());
@@ -119,23 +110,38 @@ public class FiltroEstatisticasActivity extends Activity implements View.OnClick
 			opcoes.setVisibility(View.GONE);
 			status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.seta_expandir, 0);
 
-			switch (v.getId()) {
-			case R.id.todosStatus:
-				busca.setStatus(BuscaExplore.Status.TODOS);
-				break;
-			case R.id.resolvidos:
-				busca.setStatus(BuscaExplore.Status.RESOLVIDOS);
-				break;
-			case R.id.emAndamento:
-				busca.setStatus(BuscaExplore.Status.EM_ANDAMENTO);
-				break;
-			case R.id.emAberto:
-				busca.setStatus(BuscaExplore.Status.EM_ABERTO);
-				break;
-			case R.id.naoResolvidos:
-				busca.setStatus(BuscaExplore.Status.NAO_RESOLVIDOS);
-				break;
-			}
+			CategoriaRelato categoria = (CategoriaRelato) v.getTag();
+			busca.setCategoria(categoria.getId());
 		}
 	};
+	
+	private void popularListCategorias() {		
+		List<CategoriaRelato> categorias = new CategoriaRelatoService().getCategorias(this);		
+		
+		LayoutInflater inflater = LayoutInflater.from(this);
+		
+		TextView tv = (TextView) inflater.inflate(R.layout.status_textview, opcoes, false);
+		tv.setTypeface(FontUtils.getLight(this));
+		tv.setText("Todas as categorias");
+		tv.setOnClickListener(cliqueOpcao);
+		opcoes.addView(tv);		
+		
+		for (CategoriaRelato categoria : categorias) {
+
+			tv = (TextView) inflater.inflate(R.layout.status_textview, opcoes, false);
+			tv.setTypeface(FontUtils.getLight(this));
+			tv.setTag(categoria);
+			tv.setText(categoria.getNome());
+			tv.setOnClickListener(cliqueOpcao);
+			if (categoria.equals(busca.getCategoria())) {
+				tv.setTextColor(Color.parseColor("#2ab4dc"));
+			}
+			opcoes.addView(tv);
+
+		}
+		
+		if (busca.getCategoria() == null) {
+			((TextView) opcoes.getChildAt(0)).setTextColor(Color.parseColor("#2ab4dc"));
+		}
+	}
 }

@@ -1,8 +1,10 @@
 package br.com.ntxdev.zup;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -10,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -17,6 +20,7 @@ import android.widget.TextView;
 import br.com.ntxdev.zup.domain.BuscaExplore;
 import br.com.ntxdev.zup.domain.CategoriaInventario;
 import br.com.ntxdev.zup.domain.CategoriaRelato;
+import br.com.ntxdev.zup.domain.Periodo;
 import br.com.ntxdev.zup.service.CategoriaInventarioService;
 import br.com.ntxdev.zup.service.CategoriaRelatoService;
 import br.com.ntxdev.zup.util.FontUtils;
@@ -26,12 +30,8 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 
 	private TextView botaoConcluido;
 	private TextView status;
-	private TextView todosStatus;
-	private TextView resolvidos;
-	private TextView emAndamento;
-	private TextView naoResolvidos;
-	private TextView emAberto;
 	private LinearLayout opcoes;
+	private SeekBar seekBar;
 	
 	private List<CategoriaInventario> inventarios = new ArrayList<CategoriaInventario>();
 	private List<CategoriaRelato> relatos = new ArrayList<CategoriaRelato>();
@@ -48,8 +48,8 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 		((TextView) findViewById(R.id.filtros)).setTypeface(FontUtils.getLight(this));
 		((TextView) findViewById(R.id.instrucoes)).setTypeface(FontUtils.getBold(this));
 		((TextView) findViewById(R.id.textView)).setTypeface(FontUtils.getBold(this));
-		View seekBar = findViewById(R.id.seekBar);
-		((SeekBar) seekBar.findViewById(R.id.seekbar)).setOnSeekBarChangeListener(this);
+		seekBar = (SeekBar) findViewById(R.id.seekBar).findViewById(R.id.seekbar);
+		seekBar.setOnSeekBarChangeListener(this);
 		
 		// AllTextCaps não funciona antes do Android 4.0... então vamos fazer na mão mesmo!
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -66,29 +66,10 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 		status = (TextView) findViewById(R.id.status);
 		status.setTypeface(FontUtils.getLight(this));
 		status.setOnClickListener(this);
-
-		todosStatus = (TextView) findViewById(R.id.todosStatus);
-		todosStatus.setTypeface(FontUtils.getLight(this));
-		todosStatus.setOnClickListener(cliqueOpcao);
-
-		resolvidos = (TextView) findViewById(R.id.resolvidos);
-		resolvidos.setTypeface(FontUtils.getLight(this));
-		resolvidos.setOnClickListener(cliqueOpcao);
-
-		emAndamento = (TextView) findViewById(R.id.emAndamento);
-		emAndamento.setTypeface(FontUtils.getLight(this));
-		emAndamento.setOnClickListener(cliqueOpcao);
-
-		emAberto = (TextView) findViewById(R.id.emAberto);
-		emAberto.setTypeface(FontUtils.getLight(this));
-		emAberto.setOnClickListener(cliqueOpcao);
-
-		naoResolvidos = (TextView) findViewById(R.id.naoResolvidos);
-		naoResolvidos.setTypeface(FontUtils.getLight(this));
-		naoResolvidos.setOnClickListener(cliqueOpcao);
 		
 		montarCategoriasRelatos();
 		montarCategoriasInventario();
+		popularListStatus();
 		
 		aplicarFiltroInicial();
 	}
@@ -143,6 +124,7 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 		TextView view = (TextView) v;
 		if (categoria instanceof CategoriaInventario) {
 			unselectCategoriasRelatos();
+			seekBar.setEnabled(false);
 			if (inventarios.contains(categoria)) {
 				inventarios.remove(categoria);
 				view.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
@@ -154,6 +136,7 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 			}
 		} else if (categoria instanceof CategoriaRelato) {
 			unselectCategoriasInventario();
+			seekBar.setEnabled(true);
 			if (relatos.contains(categoria)) {
 				relatos.remove(categoria);
 				view.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
@@ -163,6 +146,7 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 				view.setTextColor(Color.BLACK);
 				view.setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getResources(), ImageUtils.getScaled(this, ((CategoriaRelato) categoria).getIcone())), null, null);
 			}
+			popularListStatus();
 		}
 	}
 
@@ -170,11 +154,9 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 
 		@Override
 		public void onClick(View v) {
-			todosStatus.setTextColor(getResources().getColorStateList(R.color.text_option_color));
-			resolvidos.setTextColor(getResources().getColorStateList(R.color.text_option_color));
-			emAndamento.setTextColor(getResources().getColorStateList(R.color.text_option_color));
-			emAberto.setTextColor(getResources().getColorStateList(R.color.text_option_color));
-			naoResolvidos.setTextColor(getResources().getColorStateList(R.color.text_option_color));
+			for (int i = 0; i < opcoes.getChildCount(); i++) {
+				((TextView) opcoes.getChildAt(i)).setTextColor(getResources().getColorStateList(R.color.text_option_color));
+			}
 
 			TextView selecionado = (TextView) v;
 			status.setText(selecionado.getText());
@@ -182,41 +164,25 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 			opcoes.setVisibility(View.GONE);
 			status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.seta_expandir, 0);
 
-			switch (v.getId()) {
-			case R.id.todosStatus:
-				busca.setStatus(BuscaExplore.Status.TODOS);
-				break;
-			case R.id.resolvidos:
-				busca.setStatus(BuscaExplore.Status.RESOLVIDOS);
-				break;
-			case R.id.emAndamento:
-				busca.setStatus(BuscaExplore.Status.EM_ANDAMENTO);
-				break;
-			case R.id.emAberto:
-				busca.setStatus(BuscaExplore.Status.EM_ABERTO);
-				break;
-			case R.id.naoResolvidos:
-				busca.setStatus(BuscaExplore.Status.NAO_RESOLVIDOS);
-				break;
-			}
+			CategoriaRelato.Status status = (CategoriaRelato.Status) v.getTag();
+			busca.setStatus(status);
 		}
 	};
 
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-		System.out.println(progress);
 		switch (progress) {
 		case 0:
-			busca.setPeriodo(BuscaExplore.Periodo.ULTIMOS_6_MESES);
+			busca.setPeriodo(Periodo.ULTIMOS_6_MESES);
 			break;
 		case 1:
-			busca.setPeriodo(BuscaExplore.Periodo.ULTIMOS_3_MESES);
+			busca.setPeriodo(Periodo.ULTIMOS_3_MESES);
 			break;
 		case 2:
-			busca.setPeriodo(BuscaExplore.Periodo.ULTIMO_MES);
+			busca.setPeriodo(Periodo.ULTIMO_MES);
 			break;
 		case 3:
-			busca.setPeriodo(BuscaExplore.Periodo.ULTIMA_SEMANA);
+			busca.setPeriodo(Periodo.ULTIMA_SEMANA);
 			break;
 		}	
 	}
@@ -232,6 +198,14 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 	private void montarCategoriasRelatos() {
 		List<CategoriaRelato> categorias = new CategoriaRelatoService().getCategorias(this);
 		LinearLayout container = (LinearLayout) findViewById(R.id.seletor_tipo);
+		
+		if (categorias.isEmpty()) {
+			container.setVisibility(View.GONE);
+			findViewById(R.id.seekBar).setVisibility(View.GONE);
+			findViewById(R.id.status).setVisibility(View.GONE);
+			findViewById(R.id.instrucoes).setVisibility(View.GONE);
+			return;
+		}
 		
 		for (CategoriaRelato categoria : categorias) {
 			TextView view = (TextView) getLayoutInflater().inflate(R.layout.categoria_filtro_item, container, false);
@@ -294,6 +268,66 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 					((TextView) v).setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getResources(), ImageUtils.getScaled(this, ((CategoriaRelato) v.getTag()).getIcone())), null, null);
 				}
 			}
+		}
+		
+		switch (busca.getPeriodo()) {
+		case ULTIMOS_6_MESES:
+			seekBar.setProgress(0);
+			break;
+		case ULTIMOS_3_MESES:
+			seekBar.setProgress(1);
+			break;
+		case ULTIMO_MES:
+			seekBar.setProgress(2);
+			break;
+		case ULTIMA_SEMANA:
+			seekBar.setProgress(3);
+			break;
+		}
+	}
+	
+	private void popularListStatus() {
+		CategoriaRelatoService service = new CategoriaRelatoService();
+		List<CategoriaRelato.Status> status = new ArrayList<CategoriaRelato.Status>();
+		for (CategoriaRelato categoria : relatos) {
+			status.addAll(service.getStatus(this, categoria.getId()));
+		}
+		
+		LayoutInflater inflater = LayoutInflater.from(this);
+		opcoes.removeAllViews();
+		
+		TextView tv = (TextView) inflater.inflate(R.layout.status_textview, opcoes, false);
+		tv.setTypeface(FontUtils.getLight(this));
+		tv.setText("Todos os status");
+		tv.setOnClickListener(cliqueOpcao);
+		opcoes.addView(tv);
+		
+		// Verificando se o status atualmente selecionado não foi removido
+		if (busca.getStatus() != null && !status.contains(busca.getStatus())) {
+			this.status.setText("Todos os status");
+			this.status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.seta_expandir, 0);
+			opcoes.setVisibility(View.GONE);
+			busca.setStatus(null);
+		}
+		
+		Set<Long> ids = new HashSet<Long>();
+		for (CategoriaRelato.Status s : status) {
+			if (!ids.contains(s.getId())) {
+				tv = (TextView) inflater.inflate(R.layout.status_textview, opcoes, false);
+				tv.setTypeface(FontUtils.getLight(this));
+				tv.setTag(s);
+				tv.setText(s.getNome());
+				tv.setOnClickListener(cliqueOpcao);
+				if (s.equals(busca.getStatus())) {
+					tv.setTextColor(Color.parseColor("#2ab4dc"));
+				}
+				opcoes.addView(tv);
+				ids.add(s.getId());
+			}
+		}
+		
+		if (busca.getStatus() == null) {
+			((TextView) opcoes.getChildAt(0)).setTextColor(Color.parseColor("#2ab4dc"));
 		}
 	}
 }

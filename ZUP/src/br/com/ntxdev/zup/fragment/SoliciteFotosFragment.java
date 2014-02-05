@@ -26,6 +26,7 @@ import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SoliciteActivity;
 import br.com.ntxdev.zup.util.FileUtils;
 import br.com.ntxdev.zup.util.FontUtils;
+import br.com.ntxdev.zup.util.ImageUtils;
 import eu.janmuller.android.simplecropimage.CropImage;
 
 public class SoliciteFotosFragment extends Fragment implements View.OnClickListener {
@@ -83,13 +84,13 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
 	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
 		outState.putString("file", imagemTemporaria.getPath());
+		super.onSaveInstanceState(outState);
 	}
 
 	private void selecionarFoto() {
 		Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-		startActivityForResult(intent, GALLERY_RETURN);
+		getActivity().startActivityForResult(intent, GALLERY_RETURN);
 	}
 
 	private void tirarFoto() {
@@ -98,7 +99,7 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
 		imagemTemporaria = Uri.fromFile(new File(FileUtils.getTempImagesFolder(), "tmp_image_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
 		intent.putExtra(MediaStore.EXTRA_OUTPUT, imagemTemporaria);
 		intent.putExtra("return-data", true);
-		startActivityForResult(intent, CAMERA_RETURN);
+		getActivity().startActivityForResult(intent, CAMERA_RETURN);
 	}
 
 	@Override
@@ -119,15 +120,26 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
 			removerFoto(temp);
 
 			((SoliciteActivity) getActivity()).adicionarFoto(path);
+			((SoliciteActivity) getActivity()).assertFragmentVisibility();
 			Bitmap bitmap = BitmapFactory.decodeFile(path);
 			listaFotos.add(path);
+			if (listaFotos.size() == 3) {
+				fotoButton.setEnabled(false);
+			}
+			
 			fotoFrame.setVisibility(View.GONE);
 
 			RelativeLayout layout = new RelativeLayout(getActivity());
-			layout.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+			
+			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+			if (listaFotos.size() > 1) {
+				lp.setMargins((int) ImageUtils.dpToPx(getActivity(), 5), 0, 0, 0);
+			}
+			layout.setLayoutParams(lp);
 
 			ImageView imgView = new ImageView(getActivity());
 			imgView.setId((int) System.currentTimeMillis());
+			
 			if (getResources().getDimension(R.dimen.image_resize) != 0) {
 				imgView.setImageBitmap(Bitmap.createScaledBitmap(bitmap,
 						(int) (getResources().getDimension(R.dimen.image_resize) / getResources().getDisplayMetrics().density),
@@ -135,9 +147,10 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
 			} else {
 				imgView.setImageBitmap(bitmap);
 			}
-			RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
+			RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
 					RelativeLayout.LayoutParams.WRAP_CONTENT);
 			layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+			
 			imgView.setLayoutParams(layoutParams);
 
 			layout.addView(imgView);
@@ -155,6 +168,7 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
 							switch (item) {
 							case 0:
 								removerFoto((View) v.getParent());
+								fotoButton.setEnabled(true);
 								break;
 							case 1:
 								temp = (View) v.getParent();
@@ -204,7 +218,7 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
 			intent.putExtra(CropImage.OUTPUT_X, 800);
 			intent.putExtra(CropImage.OUTPUT_Y, 800);
 
-			startActivityForResult(intent, CROP_RETURN);
+			getActivity().startActivityForResult(intent, CROP_RETURN);
 			break;
 		}
 	}

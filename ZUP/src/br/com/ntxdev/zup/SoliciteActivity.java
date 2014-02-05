@@ -2,6 +2,8 @@ package br.com.ntxdev.zup;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
 
 import org.apache.http.HttpResponse;
@@ -14,10 +16,15 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,15 +36,22 @@ import android.widget.Toast;
 import br.com.ntxdev.zup.core.Constantes;
 import br.com.ntxdev.zup.domain.CategoriaRelato;
 import br.com.ntxdev.zup.domain.Solicitacao;
+import br.com.ntxdev.zup.domain.SolicitacaoListItem;
 import br.com.ntxdev.zup.fragment.SoliciteDetalhesFragment;
 import br.com.ntxdev.zup.fragment.SoliciteFotosFragment;
 import br.com.ntxdev.zup.fragment.SoliciteLocalFragment;
 import br.com.ntxdev.zup.fragment.SoliciteTipoFragment;
 import br.com.ntxdev.zup.service.LoginService;
+import br.com.ntxdev.zup.service.UsuarioService;
+import br.com.ntxdev.zup.util.DateUtils;
+import br.com.ntxdev.zup.util.FileUtils;
 import br.com.ntxdev.zup.util.FontUtils;
+import br.com.ntxdev.zup.util.NetworkUtils;
 
 public class SoliciteActivity extends FragmentActivity implements View.OnClickListener {
 
+	public static final int LOGIN_REQUEST = 1578;
+	
 	private TextView botaoCancelar;
 	private Passo atual = Passo.TIPO;
 	private Solicitacao solicitacao = new Solicitacao();
@@ -89,12 +103,17 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 	
 	public void setCategoria(CategoriaRelato categoria) {
 		solicitacao.setCategoria(categoria);
+		if (new UsuarioService().getUsuarioAtivo(this) == null) {
+			startActivityForResult(new Intent(this, LoginActivity.class), LOGIN_REQUEST);
+			return;
+		}
+		
 		if (localFragment == null) {
 			localFragment = new SoliciteLocalFragment();
 			localFragment.setMarcador(categoria.getMarcador());
-			getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, localFragment).commit();
+			getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, localFragment).commitAllowingStateLoss();
 		} else {
-			getSupportFragmentManager().beginTransaction().hide(tipoFragment).show(localFragment).commit();
+			getSupportFragmentManager().beginTransaction().hide(tipoFragment).show(localFragment).commitAllowingStateLoss();
 			localFragment.setMarcador(categoria.getMarcador());
 		}
 		
@@ -175,6 +194,17 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 	
 	@SuppressLint("NewApi")
 	private void enviarSolicitacao() {
+		if (!NetworkUtils.isInternetPresent(this)) {
+			new AlertDialog.Builder(this).setMessage("Sua conexão com a Internet encontra-se indisponível. Verifique a conexão e tente novamente")
+				.setNeutralButton("OK", new DialogInterface.OnClickListener() {					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();						
+					}
+				}).show();
+			return;
+		}
+		
 		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
 			new Tasker().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new Void[]{});
         } else {
@@ -182,7 +212,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         }
 	}
 	
-	public class Tasker extends AsyncTask<Void, Void, Boolean> {
+	public class Tasker extends AsyncTask<Void, Void, SolicitacaoListItem> {
 		
 		private ProgressDialog dialog;
 
@@ -196,7 +226,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 		}
 
 		@Override
-		protected Boolean doInBackground(Void... params) {
+		protected SolicitacaoListItem doInBackground(Void... params) {
 			try {
 				HttpClient client = new DefaultHttpClient();
 				HttpPost post = new HttpPost(Constantes.REST_URL + "/reports/" + solicitacao.getCategoria().getId() + "/items");
@@ -207,7 +237,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 				
 				multipartEntity.addTextBody("latitude", String.valueOf(solicitacao.getLatitude()));
 				multipartEntity.addTextBody("longitude", String.valueOf(solicitacao.getLongitude()));
-				multipartEntity.addTextBody("description", solicitacao.getComentario(), ContentType.APPLICATION_JSON);
+				multipartEntity.addTextBody("description", solicitacao.getComentario().trim(), ContentType.APPLICATION_JSON);
 				multipartEntity.addTextBody("address", localFragment.getEnderecoAtual(), ContentType.APPLICATION_JSON);
 				multipartEntity.addTextBody("category_id", String.valueOf(solicitacao.getCategoria().getId()));
 				
@@ -218,26 +248,63 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 				post.setEntity(multipartEntity.build());
 				post.setHeader("X-App-Token", new LoginService().getToken(SoliciteActivity.this));
 				HttpResponse response = client.execute(post);
-				System.out.println(EntityUtils.toString(response.getEntity(), "UTF-8"));
 				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
-					return Boolean.TRUE;
+					return getSolicitacao(EntityUtils.toString(response.getEntity(), "UTF-8"));
 				}
 			} catch (Exception e) {
 				Log.e("ZUP", e.getMessage());
 			}
-			return Boolean.FALSE;
+			return null;
 		}
 		
 		@Override
-		protected void onPostExecute(Boolean result) {
+		protected void onPostExecute(SolicitacaoListItem result) {
 			dialog.dismiss();
-			if (result) {
+			if (result != null) {
 				Toast.makeText(SoliciteActivity.this, "Solicitação enviada com sucesso!", Toast.LENGTH_LONG).show();
+				
+				Intent i = new Intent(SoliciteActivity.this, SolicitacaoDetalheActivity.class);
+				i.putExtra("solicitacao", result);
+				startActivity(i);
+				
 				setResult(Activity.RESULT_OK);
 				finish();
 			} else {
 				Toast.makeText(SoliciteActivity.this, "Falha no envio da solicitação", Toast.LENGTH_LONG).show();
 			}
 		}
+	}
+	
+	public void assertFragmentVisibility() {
+		getSupportFragmentManager().beginTransaction().hide(localFragment).show(fotosFragment).commitAllowingStateLoss();
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == LOGIN_REQUEST && resultCode == Activity.RESULT_OK) {
+			setCategoria(solicitacao.getCategoria());
+		} else if (resultCode == Activity.RESULT_OK) {
+			fotosFragment.onActivityResult(requestCode, resultCode, data);
+		}
+	}
+	
+	private SolicitacaoListItem getSolicitacao(String retorno) throws Exception {
+		SolicitacaoListItem item = new SolicitacaoListItem();
+		JSONObject json = new JSONObject(retorno).getJSONObject("report");
+		
+		item.setComentario(json.getString("description"));
+		item.setData(DateUtils.getIntervaloTempo(new Date()));		
+		item.setFotos(new ArrayList<String>());
+		JSONArray fotos = json.getJSONArray("images");
+		for (int i = 0; i < fotos.length(); i++) {
+			JSONObject foto = fotos.getJSONObject(i);
+			FileUtils.downloadImage(foto.getString("url"));
+			String[] parts = foto.getString("url").split("/");
+			item.getFotos().add(parts[parts.length - 1]);
+		}
+		item.setProtocolo(json.getString("protocol"));
+		item.setStatus(new SolicitacaoListItem.Status(json.getJSONObject("status").getString("title"), json.getJSONObject("status").getString("color")));
+		item.setTitulo(json.getJSONObject("category").getString("title"));
+		return item;
 	}
 }

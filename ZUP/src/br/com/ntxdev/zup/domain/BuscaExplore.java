@@ -10,11 +10,7 @@ public class BuscaExplore implements Serializable {
 	private ArrayList<Long> idsCategoriaInventario = new ArrayList<Long>();
 	private ArrayList<Long> idsCategoriaRelato = new ArrayList<Long>();
 	private Periodo periodo = Periodo.ULTIMOS_6_MESES;
-	private Status status = Status.TODOS;
-
-	public enum Periodo {
-		ULTIMOS_6_MESES, ULTIMOS_3_MESES, ULTIMO_MES, ULTIMA_SEMANA
-	}
+	private CategoriaRelato.Status status;
 
 	public enum Status {
 		TODOS, RESOLVIDOS, EM_ANDAMENTO, EM_ABERTO, NAO_RESOLVIDOS
@@ -28,11 +24,11 @@ public class BuscaExplore implements Serializable {
 		this.periodo = periodo;
 	}
 
-	public Status getStatus() {
+	public CategoriaRelato.Status getStatus() {
 		return status;
 	}
 
-	public void setStatus(Status status) {
+	public void setStatus(CategoriaRelato.Status status) {
 		this.status = status;
 	}
 
