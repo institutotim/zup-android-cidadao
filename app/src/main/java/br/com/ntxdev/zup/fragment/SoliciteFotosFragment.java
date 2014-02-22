@@ -46,10 +46,6 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		((SoliciteActivity) getActivity()).setInfo(R.string.adicione_fotos);
-		
-		if (savedInstanceState != null) {
-			imagemTemporaria = Uri.fromFile(new File(savedInstanceState.getString("file")));
-		}
 
 		View view = inflater.inflate(R.layout.fragment_solicite_fotos, container, false);
 
