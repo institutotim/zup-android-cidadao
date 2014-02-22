@@ -28,10 +28,13 @@ public class CategoriaInventarioService {
 				JSONObject obj = array.getJSONObject(i);
 				if (obj.getLong("id") == id) {
 					CategoriaInventario categoria = new CategoriaInventario();
-					String[] file = obj.getJSONObject("icon").getString("url").split("/");
-					categoria.setIcone(file[file.length - 1]);
+                    JSONObject icon = obj.getJSONObject("icon").getJSONObject("default").getJSONObject("mobile");
+                    String[] file = icon.getString("active").split("/");
+                    categoria.setIconeAtivo(file[file.length - 1]);
+                    file = icon.getString("disabled").split("/");
+                    categoria.setIconeInativo(file[file.length - 1]);
 					categoria.setId(obj.getLong("id"));
-					file = obj.getJSONObject("marker").getString("url").split("/");
+					file = obj.getJSONObject("marker").getJSONObject("default").getString("mobile").split("/");
 					categoria.setMarcador(file[file.length - 1]);
 					categoria.setNome(obj.getString("title"));
 					return categoria;
@@ -57,10 +60,13 @@ public class CategoriaInventarioService {
 			for (int i = 0; i < array.length(); i++) {
 				JSONObject obj = array.getJSONObject(i);
 				CategoriaInventario categoria = new CategoriaInventario();
-				String[] file = obj.getJSONObject("icon").getString("url").split("/");
-				categoria.setIcone(file[file.length - 1]);
+                JSONObject icon = obj.getJSONObject("icon").getJSONObject("default").getJSONObject("mobile");
+				String[] file = icon.getString("active").split("/");
+				categoria.setIconeAtivo(file[file.length - 1]);
+                file = icon.getString("disabled").split("/");
+                categoria.setIconeInativo(file[file.length - 1]);
 				categoria.setId(obj.getLong("id"));
-				file = obj.getJSONObject("marker").getString("url").split("/");
+				file = obj.getJSONObject("marker").getJSONObject("default").getString("mobile").split("/");
 				categoria.setMarcador(file[file.length - 1]);
 				categoria.setNome(obj.getString("title"));
 				categorias.add(categoria);

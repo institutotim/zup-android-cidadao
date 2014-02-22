@@ -44,6 +44,7 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 		setContentView(R.layout.activity_filtro_explore);
 		
 		busca = (BuscaExplore) getIntent().getSerializableExtra("busca");
+        if (busca == null) busca = new BuscaExplore();
 
 		((TextView) findViewById(R.id.filtros)).setTypeface(FontUtils.getLight(this));
 		((TextView) findViewById(R.id.instrucoes)).setTypeface(FontUtils.getBold(this));
@@ -79,7 +80,7 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 		for (int i = 0; i < container.getChildCount(); i++) {
 			TextView view = (TextView) container.getChildAt(i);
 			CategoriaInventario categoria = (CategoriaInventario) view.getTag();
-			view.setCompoundDrawablesWithIntrinsicBounds(null, ImageUtils.getStateListDrawable(this, categoria.getIcone()), null, null);
+			view.setCompoundDrawablesWithIntrinsicBounds(null, ImageUtils.getStateListDrawable(this, categoria.getIconeAtivo(), categoria.getIconeInativo()), null, null);
 			view.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
 			
 			inventarios.clear();
@@ -91,7 +92,7 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 		for (int i = 0; i < container.getChildCount(); i++) {
 			TextView view = (TextView) container.getChildAt(i);
 			CategoriaRelato categoria = (CategoriaRelato) view.getTag();
-			view.setCompoundDrawablesWithIntrinsicBounds(null, ImageUtils.getStateListDrawable(this, categoria.getIcone()), null, null);
+			view.setCompoundDrawablesWithIntrinsicBounds(null, ImageUtils.getStateListDrawable(this, categoria.getIconeAtivo(), categoria.getIconeInativo()), null, null);
 			view.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
 			
 			relatos.clear();
@@ -128,11 +129,11 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 			if (inventarios.contains(categoria)) {
 				inventarios.remove(categoria);
 				view.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
-				view.setCompoundDrawablesWithIntrinsicBounds(null, ImageUtils.getStateListDrawable(this, ((CategoriaInventario) categoria).getIcone()), null, null);
+				view.setCompoundDrawablesWithIntrinsicBounds(null, ImageUtils.getStateListDrawable(this, ((CategoriaInventario) categoria).getIconeAtivo()), null, null);
 			} else {
 				inventarios.add((CategoriaInventario) categoria);
 				view.setTextColor(Color.BLACK);
-				view.setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getResources(), ImageUtils.getScaled(this, ((CategoriaInventario) categoria).getIcone())), null, null);
+				view.setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getResources(), ImageUtils.getScaled(this, ((CategoriaInventario) categoria).getIconeAtivo())), null, null);
 			}
 		} else if (categoria instanceof CategoriaRelato) {
 			unselectCategoriasInventario();
@@ -140,11 +141,11 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 			if (relatos.contains(categoria)) {
 				relatos.remove(categoria);
 				view.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
-				view.setCompoundDrawablesWithIntrinsicBounds(null, ImageUtils.getStateListDrawable(this, ((CategoriaRelato) categoria).getIcone()), null, null);
+				view.setCompoundDrawablesWithIntrinsicBounds(null, ImageUtils.getStateListDrawable(this, ((CategoriaRelato) categoria).getIconeAtivo()), null, null);
 			} else {
 				relatos.add((CategoriaRelato) categoria);
 				view.setTextColor(Color.BLACK);
-				view.setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getResources(), ImageUtils.getScaled(this, ((CategoriaRelato) categoria).getIcone())), null, null);
+				view.setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getResources(), ImageUtils.getScaled(this, ((CategoriaRelato) categoria).getIconeAtivo())), null, null);
 			}
 			popularListStatus();
 		}
@@ -212,7 +213,7 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 			view.setTag(categoria);
 			view.setText(categoria.getNome());
 			view.setTypeface(FontUtils.getRegular(this));
-			view.setCompoundDrawablesWithIntrinsicBounds(null, ImageUtils.getStateListDrawable(this, categoria.getIcone()), null, null);
+			view.setCompoundDrawablesWithIntrinsicBounds(null, ImageUtils.getStateListDrawable(this, categoria.getIconeAtivo(), categoria.getIconeInativo()), null, null);
 			view.setOnClickListener(this);
 			container.addView(view);
 		}
@@ -227,7 +228,7 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 			view.setTag(categoria);
 			view.setText(categoria.getNome());
 			view.setTypeface(FontUtils.getRegular(this));
-			view.setCompoundDrawablesWithIntrinsicBounds(null, ImageUtils.getStateListDrawable(this, categoria.getIcone()), null, null);
+			view.setCompoundDrawablesWithIntrinsicBounds(null, ImageUtils.getStateListDrawable(this, categoria.getIconeAtivo(), categoria.getIconeInativo()), null, null);
 			view.setOnClickListener(this);
 			container.addView(view);
 		}
@@ -253,7 +254,7 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 				if (((CategoriaInventario) v.getTag()).getId() == id) {
 					inventarios.add((CategoriaInventario) v.getTag());
 					((TextView) v).setTextColor(Color.BLACK);
-					((TextView) v).setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getResources(), ImageUtils.getScaled(this, ((CategoriaInventario) v.getTag()).getIcone())), null, null);
+					((TextView) v).setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getResources(), ImageUtils.getScaled(this, ((CategoriaInventario) v.getTag()).getIconeAtivo())), null, null);
 				}
 			}
 		}
@@ -265,7 +266,7 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 				if (((CategoriaRelato) v.getTag()).getId() == id) {
 					relatos.add((CategoriaRelato) v.getTag());
 					((TextView) v).setTextColor(Color.BLACK);
-					((TextView) v).setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getResources(), ImageUtils.getScaled(this, ((CategoriaRelato) v.getTag()).getIcone())), null, null);
+					((TextView) v).setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getResources(), ImageUtils.getScaled(this, ((CategoriaRelato) v.getTag()).getIconeAtivo())), null, null);
 				}
 			}
 		}

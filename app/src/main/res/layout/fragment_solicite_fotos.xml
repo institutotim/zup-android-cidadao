@@ -12,15 +12,23 @@
         android:contentDescription="@string/adicionar_foto"
         android:src="@drawable/solicite_foto_frame" />
 
-    <LinearLayout
-        android:id="@+id/containerFotos"
+    <HorizontalScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:orientation="horizontal"
-        android:padding="2dp"
-        android:visibility="gone" >
-    </LinearLayout>
+        android:layout_centerInParent="true">
+
+        <LinearLayout
+            android:id="@+id/containerFotos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:padding="2dp"
+            android:visibility="gone" >
+        </LinearLayout>
+
+    </HorizontalScrollView>
+
 
     <TextView
         android:id="@+id/fotoButton"

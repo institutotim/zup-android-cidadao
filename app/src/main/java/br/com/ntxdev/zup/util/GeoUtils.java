@@ -2,6 +2,7 @@ package br.com.ntxdev.zup.util;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.VisibleRegion;
 
 public class GeoUtils {
 
@@ -23,4 +24,8 @@ public class GeoUtils {
 		double c = 2 * Math.asin(Math.sqrt(a));
 		return (long) (6366000 * c);
 	}
+
+    public static boolean isVisible(VisibleRegion visibleRegion, LatLng position) {
+        return visibleRegion.latLngBounds.contains(position);
+    }
 }

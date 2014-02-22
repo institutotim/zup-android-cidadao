@@ -26,6 +26,7 @@ public class AutoCompleteAdapter extends ArrayAdapter<String> implements Filtera
 
 	@Override
 	public int getCount() {
+        if (resultList == null) return 0;
 		return resultList.size();
 	}
 

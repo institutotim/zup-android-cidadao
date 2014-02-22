@@ -71,6 +71,15 @@ public class ImageUtils {
 		return states;
 	}
 
+    public static StateListDrawable getStateListDrawable(Activity activity, String activeFilename, String disabledFilename) {
+        Bitmap active = ImageUtils.getScaled(activity, ImageUtils.loadFromFile(activeFilename));
+        Bitmap disabled = ImageUtils.getScaled(activity, ImageUtils.loadFromFile(disabledFilename));
+        StateListDrawable states = new StateListDrawable();
+        states.addState(new int[] { android.R.attr.state_pressed }, new BitmapDrawable(activity.getResources(), active));
+        states.addState(new int[] {}, new BitmapDrawable(activity.getResources(), disabled));
+        return states;
+    }
+
 	public static Bitmap adjustedContrast(Bitmap src, double value) {
 		int width = src.getWidth();
 		int height = src.getHeight();

@@ -1,9 +1,32 @@
 package br.com.ntxdev.zup.fragment;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.util.SparseArray;
+import android.view.InflateException;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
+import android.widget.TextView;
+
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -15,23 +38,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.ProgressDialog;
-import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.InflateException;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AutoCompleteTextView;
-import android.widget.TextView;
-import android.widget.Toast;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import br.com.ntxdev.zup.DetalheMapaActivity;
 import br.com.ntxdev.zup.FiltroExploreActivity;
 import br.com.ntxdev.zup.MainActivity;
@@ -49,408 +63,398 @@ import br.com.ntxdev.zup.service.LoginService;
 import br.com.ntxdev.zup.util.DateUtils;
 import br.com.ntxdev.zup.util.FileUtils;
 import br.com.ntxdev.zup.util.FontUtils;
+import br.com.ntxdev.zup.util.GeoUtils;
 import br.com.ntxdev.zup.util.ImageUtils;
+import br.com.ntxdev.zup.util.PreferenceUtils;
 import br.com.ntxdev.zup.widget.AutoCompleteAdapter;
 
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMyLocationChangeListener,
+        GoogleMap.OnCameraChangeListener, AdapterView.OnItemClickListener {
 
-public class ExploreFragment extends Fragment implements OnInfoWindowClickListener, AdapterView.OnItemClickListener {
+    private class Request {
+        double latitude, longitude;
+        long raio;
+    }
 
-	private SupportMapFragment mapFragment;
-	private GoogleMap map;
-	private static View view;
-	private double latitude, longitude;
-	
-	private TextView botaoFiltrar;
-	private BuscaExplore busca;
-	
-	private Map<Marker, Object> marcadores = new HashMap<Marker, Object>();
-	
-	private Marker pontoBusca;
+    private static final int MAX_ITEMS_PER_REQUEST = 50;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		if (view != null) {
-			ViewGroup parent = (ViewGroup) view.getParent();
-			if (parent != null)
-				parent.removeView(view);
-		}
-		
-		try {
-			view = inflater.inflate(R.layout.fragment_explore, container, false);
-		} catch (InflateException e) {
-			Log.w("ZUP", e.getMessage());
-		}
+    private Request request = null;
 
-		mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
-		map = mapFragment.getMap();
+    private GoogleMap map;
+    private static View view;
+    private BuscaExplore busca;
+    private int zoom = 2;
+    private double latitude = 0.0, longitude = 0.0;
 
-		botaoFiltrar = (TextView) view.findViewById(R.id.botaoFiltrar);
-		botaoFiltrar.setTypeface(FontUtils.getRegular(getActivity()));
-		botaoFiltrar.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(getActivity(), FiltroExploreActivity.class);
-				intent.putExtra("busca", busca);
-				getActivity().startActivityForResult(intent, MainActivity.FILTRO_CODE);
-			}
-		});
+    private SparseArray<Set<Object>> itens = new SparseArray<Set<Object>>();
+    private SparseArray<Map<Marker, Object>> marcadores = new SparseArray<Map<Marker, Object>>();
 
-		busca = new BuscaExplore();
+    private Marker pontoBusca;
+    private long raio = 0l;
 
-		if (map != null) {
-			map.setMyLocationEnabled(true);
-			map.getUiSettings().setMyLocationButtonEnabled(false);
-			map.getUiSettings().setZoomControlsEnabled(false);
-			map.setOnInfoWindowClickListener(this);
-			map.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-				
-				@Override
-				public void onMyLocationChange(Location location) {
-					CameraPosition position = new CameraPosition.Builder().target(new LatLng(location.getLatitude(),
-							location.getLongitude())).zoom(15).build();
-					CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
-					map.animateCamera(update);
-					map.setOnMyLocationChangeListener(null);
-					latitude = location.getLatitude();
-					longitude = location.getLongitude();
-					new Tasker(location.getLatitude(), location.getLongitude()).execute();
-				}
-			});
-					
-			map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-		}
-		
-		AutoCompleteTextView autoCompView = (AutoCompleteTextView) view.findViewById(R.id.autocomplete);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        if (view != null) {
+            ViewGroup parent = (ViewGroup) view.getParent();
+            if (parent != null)
+                parent.removeView(view);
+        }
+
+        try {
+            view = inflater.inflate(R.layout.fragment_explore, container, false);
+        } catch (InflateException e) {
+            Log.w("ZUP", e.getMessage());
+        }
+
+        map = ((SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+
+        TextView botaoFiltrar = (TextView) view.findViewById(R.id.botaoFiltrar);
+        botaoFiltrar.setTypeface(FontUtils.getRegular(getActivity()));
+        botaoFiltrar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), FiltroExploreActivity.class);
+                intent.putExtra("busca", busca);
+                getActivity().startActivityForResult(intent, MainActivity.FILTRO_CODE);
+            }
+        });
+
+        busca = PreferenceUtils.obterBuscaExplore(getActivity());
+        if (busca == null) {
+            busca = new BuscaExplore();
+            CategoriaRelatoService service = new CategoriaRelatoService();
+            for (CategoriaRelato categoria : service.getCategorias(getActivity())) {
+                busca.getIdsCategoriaRelato().add(categoria.getId());
+            }
+        }
+
+        if (map != null) {
+            map.setMyLocationEnabled(true);
+            map.getUiSettings().setMyLocationButtonEnabled(false);
+            map.getUiSettings().setZoomControlsEnabled(false);
+            map.setOnInfoWindowClickListener(this);
+            map.setOnMyLocationChangeListener(this);
+            map.setOnCameraChangeListener(this);
+            map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        }
+
+        AutoCompleteTextView autoCompView = (AutoCompleteTextView) view.findViewById(R.id.autocomplete);
         autoCompView.setAdapter(new AutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item));
         autoCompView.setTypeface(FontUtils.getRegular(getActivity()));
         autoCompView.setOnItemClickListener(this);
 
-		return view;
-	}
-	
-	private void adicionarMarker(ItemInventario item) {
-		marcadores.put(map.addMarker(new MarkerOptions()
-				.position(new LatLng(item.getLatitude(), item.getLongitude()))
-				.icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(getActivity(), item.getCategoria().getMarcador())))
-				.title(item.getCategoria().getNome())), item);
-	}
-	
-	private void adicionarMarker(ItemRelato item) {
-		marcadores.put(map.addMarker(new MarkerOptions()
-				.position(new LatLng(item.getLatitude(), item.getLongitude()))
-				.icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(getActivity(), item.getCategoria().getMarcador())))
-				.title(item.getCategoria().getNome())), item);
-	}
+        return view;
+    }
 
-	@Override
-	public void onInfoWindowClick(Marker marker) {
-		Intent intent = null;
-		
-		Object marcador = marcadores.get(marker);
-		if (marcador instanceof ItemInventario) {
-			intent = new Intent(getActivity(), DetalheMapaActivity.class);
-			intent.putExtra("item", (ItemInventario) marcador);			
-		} else if (marcador instanceof ItemRelato) {
-			ItemRelato ir = (ItemRelato) marcador;
-			SolicitacaoListItem item = new SolicitacaoListItem();
-			item.setTitulo(marker.getTitle());
-			item.setComentario(ir.getDescricao());
-			item.setData(ir.getData());
-			item.setEndereco(ir.getEndereco());
-			item.setFotos(ir.getFotos());
-			item.setProtocolo(ir.getProtocolo());
-			item.setStatus(new SolicitacaoListItem.Status());
-			for (CategoriaRelato.Status status : ir.getCategoria().getStatus()) {
-				if (status.getId() == ir.getIdStatus()) {
-					item.setStatus(new SolicitacaoListItem.Status(status.getNome(), status.getCor()));
-				}
-			}			
-			intent = new Intent(getActivity(), SolicitacaoDetalheActivity.class);
-			intent.putExtra("solicitacao", item);			
-		}
-		
-		startActivity(intent);		
-	}
-	
-	public void aplicarFiltro(BuscaExplore busca) {		
-		map.clear();
-		this.busca = busca;
-		new Searcher(busca.getIdsCategoriaRelato(), busca.getIdsCategoriaInventario()).execute();
-	}
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+            new Timer().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else {
+            new Timer().execute();
+        }
+    }
 
-	@Override
-	public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-		try {
-			String str = (String) adapterView.getItemAtPosition(position);
-			Address addr = new Geocoder(getActivity()).getFromLocationName(str, 1).get(0);
-			
-			if (pontoBusca != null) {
-				pontoBusca.remove();
-			}
-			
-			pontoBusca = map.addMarker(new MarkerOptions()
-				.position(new LatLng(addr.getLatitude(), addr.getLongitude()))
-				.icon(BitmapDescriptorFactory.defaultMarker()));
-			
-			CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
-					addr.getLongitude())).zoom(15).build();
-			CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
-			map.animateCamera(update);
-		} catch (Exception e) {
-			Log.e("ZUP", e.getMessage());
-		}
-	}
-	
-	public class Searcher extends AsyncTask<Void, Void, Boolean> {
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        Intent intent = null;
 
-		private ProgressDialog dialog;
-		private List<Long> relatos;
-		private List<Long> inventarios;
-		private List<ItemInventario> itensInventario = new ArrayList<ItemInventario>();
-		private List<ItemRelato> itensRelato = new ArrayList<ItemRelato>();
+        Object marcador = marcadores.get(zoom).get(marker);
+        if (marcador instanceof ItemInventario) {
+            intent = new Intent(getActivity(), DetalheMapaActivity.class);
+            intent.putExtra("item", (ItemInventario) marcador);
+        } else if (marcador instanceof ItemRelato) {
+            ItemRelato ir = (ItemRelato) marcador;
+            SolicitacaoListItem item = new SolicitacaoListItem();
+            item.setTitulo(marker.getTitle());
+            item.setComentario(ir.getDescricao());
+            item.setData(ir.getData());
+            item.setEndereco(ir.getEndereco());
+            item.setFotos(ir.getFotos());
+            item.setProtocolo(ir.getProtocolo());
+            item.setStatus(new SolicitacaoListItem.Status());
+            item.setLatitude(ir.getLatitude());
+            item.setLongitude(ir.getLongitude());
+            for (CategoriaRelato.Status status : ir.getCategoria().getStatus()) {
+                if (status.getId() == ir.getIdStatus()) {
+                    item.setStatus(new SolicitacaoListItem.Status(status.getNome(), status.getCor()));
+                }
+            }
+            intent = new Intent(getActivity(), SolicitacaoDetalheActivity.class);
+            intent.putExtra("solicitacao", item);
+        }
 
-		public Searcher(List<Long> relatos, List<Long> inventarios) {
-			this.relatos = relatos;
-			this.inventarios = inventarios;			
-		}
-		
-		@Override
-		protected void onPreExecute() {
-			dialog = new ProgressDialog(getActivity());
-			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			dialog.setIndeterminate(true);
-			dialog.setMessage("Por favor, aguarde...");
-			dialog.show();
-		}
-		
-		@Override
-		protected Boolean doInBackground(Void... params) {
-			try {
-				HttpClient client = new DefaultHttpClient();
-				HttpGet get;
-				HttpResponse response;
-				
-				for (Long id : inventarios) {
-					get = new HttpGet(Constantes.REST_URL + "/inventory/items?position[latitude]=" + 
-							latitude + "&position[longitude]=" + longitude + "&position[distance]=15000&max_items=100&inventory_category_id=" + id);
-					get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
-					response = client.execute(get);
-					if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-						extrairItensInventario(EntityUtils.toString(response.getEntity(), "UTF-8"));					
-					}
-				}
-				
-				for (Long id : relatos) {
-					get = new HttpGet(Constantes.REST_URL + "/reports/items?position[latitude]=" + 
-							latitude + "&position[longitude]=" + longitude + "&position[distance]=15000&max_items=100&category_id=" + id);
-					get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
-					response = client.execute(get);
-					if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-						extrairItensRelato(EntityUtils.toString(response.getEntity(), "UTF-8"));					
-					}
-				}
-				return Boolean.TRUE;
-			} catch (Exception e) {
-				Log.e("ZUP", e.getMessage());
-			}
-			return Boolean.FALSE;
-		}
-		
-		@Override
-		protected void onPostExecute(Boolean result) {			
-			if (result) {
-				try {
-					for (ItemInventario item : itensInventario) {
-						adicionarMarker(item);
-					}
-					
-					for (ItemRelato item : itensRelato) {
-						adicionarMarker(item);
-					}
-				} catch (Exception e) {
-					Log.e("ZUP", e.getMessage());
-					Toast.makeText(getActivity(), "N�o foi poss�vel obter sua lista de relatos", Toast.LENGTH_LONG).show();
-				}
-			} else {
-				Toast.makeText(getActivity(), "N�o foi poss�vel obter sua lista de relatos", Toast.LENGTH_LONG).show();
-			}
-			dialog.dismiss();
-		}
-		
-		private void extrairItensInventario(String raw) throws JSONException {
-			CategoriaInventarioService service = new CategoriaInventarioService();
-			JSONArray array = new JSONObject(raw).getJSONArray("items");
-			for (int i = 0; i < array.length(); i++) {
-				JSONObject json = array.getJSONObject(i);
-				ItemInventario item = new ItemInventario();
-				item.setCategoria(service.getById(getActivity(), json.getLong("inventory_category_id")));
-				item.setId(json.getLong("id"));
-				item.setLatitude(json.getJSONObject("position").getDouble("latitude"));
-				item.setLongitude(json.getJSONObject("position").getDouble("longitude"));
-				itensInventario.add(item);
-			}
-		}
-		
-		private void extrairItensRelato(String raw) throws Exception {
-			CategoriaRelatoService service = new CategoriaRelatoService();
-			JSONArray array = new JSONObject(raw).getJSONArray("reports");
-			for (int i = 0; i < array.length(); i++) {
-				JSONObject json = array.getJSONObject(i);
-				ItemRelato item = new ItemRelato();
-				item.setId(json.getLong("id"));
-				item.setDescricao(json.getString("description"));
-				item.setProtocolo(json.getString("protocol"));
-				item.setEndereco(json.getString("address"));
-				item.setData(DateUtils.getIntervaloTempo(DateUtils.parseRFC3339Date(json.getString("created_at"))));
-				item.setCategoria(service.getById(getActivity(), json.getLong("category_id")));
-				item.setLatitude(json.getJSONObject("position").getDouble("latitude"));
-				item.setLongitude(json.getJSONObject("position").getDouble("longitude"));
-				item.setIdItemInventario(json.optLong("inventory_item_id", -1));
-				item.setIdStatus(json.optLong("status_id", -1));
-				
-				JSONArray fotos = json.getJSONArray("images");
-				for (int j = 0; j < fotos.length(); j++) {
-					String url = fotos.getJSONObject(j).getString("url");
-					FileUtils.downloadImage(url);
-					String[] parts = url.split("/");
-					item.getFotos().add(parts[parts.length - 1]);
-				}
-				
-				itensRelato.add(item);
-			}
-		}
-	}
-	
-	public class Tasker extends AsyncTask<Void, Void, Boolean> {
-		
-		private ProgressDialog dialog;
-		private List<ItemInventario> itensInventario = new ArrayList<ItemInventario>();
-		private List<ItemRelato> itensRelato = new ArrayList<ItemRelato>();
-		private double latitude, longitude;
-		
-		public Tasker(double latitude, double longitude) {
-			this.latitude = latitude;
-			this.longitude = longitude;
-		}
-		
-		@Override
-		protected void onPreExecute() {
-			dialog = new ProgressDialog(getActivity());
-			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			dialog.setIndeterminate(true);
-			dialog.setMessage("Por favor, aguarde...");
-			dialog.show();
-		}
+        startActivity(intent);
+    }
 
-		@Override
-		protected Boolean doInBackground(Void... params) {
-			try {
-				HttpClient client = new DefaultHttpClient();
-				HttpGet get = new HttpGet(Constantes.REST_URL + "/inventory/items?position[latitude]=" + 
-						latitude + "&position[longitude]=" + longitude + "&position[distance]=15000&max_items=100");
-				get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
-				HttpResponse response = client.execute(get);
-				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-					extrairItensInventario(EntityUtils.toString(response.getEntity(), "UTF-8"));					
-				}
-				
-				get = new HttpGet(Constantes.REST_URL + "/reports/items?position[latitude]=" + 
-						latitude + "&position[longitude]=" + longitude + "&position[distance]=15000&max_items=100");
-				get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
-				response = client.execute(get);
-				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-					extrairItensRelato(EntityUtils.toString(response.getEntity(), "UTF-8"));					
-				}
-				return Boolean.TRUE;
-			} catch (Exception e) {
-				Log.e("ZUP", e.getMessage());
-			}
-			return Boolean.FALSE;
-		}
-		
-		@Override
-		protected void onPostExecute(Boolean result) {			
-			if (result) {
-				try {
-					for (ItemInventario item : itensInventario) {
-						adicionarMarker(item);
-					}
-					
-					for (ItemRelato item : itensRelato) {
-						adicionarMarker(item);
-					}
-				} catch (Exception e) {
-					Log.e("ZUP", e.getMessage());
-					Toast.makeText(getActivity(), "N�o foi poss�vel obter sua lista de relatos", Toast.LENGTH_LONG).show();
-				}
-			} else {
-				Toast.makeText(getActivity(), "N�o foi poss�vel obter sua lista de relatos", Toast.LENGTH_LONG).show();
-			}
-			dialog.dismiss();
-		}
-		
-		private void extrairItensInventario(String raw) throws JSONException {
-			CategoriaInventarioService service = new CategoriaInventarioService();
-			JSONArray array = new JSONObject(raw).getJSONArray("items");
-			for (int i = 0; i < array.length(); i++) {
-				JSONObject json = array.getJSONObject(i);
-				ItemInventario item = new ItemInventario();
-				item.setCategoria(service.getById(getActivity(), json.getLong("inventory_category_id")));
-				item.setId(json.getLong("id"));
-				item.setLatitude(json.getJSONObject("position").getDouble("latitude"));
-				item.setLongitude(json.getJSONObject("position").getDouble("longitude"));
-				itensInventario.add(item);
-			}
-		}
-		
-		private void extrairItensRelato(String raw) throws Exception {
-			CategoriaRelatoService service = new CategoriaRelatoService();
-			JSONArray array = new JSONObject(raw).getJSONArray("reports");
-			for (int i = 0; i < array.length(); i++) {
-				JSONObject json = array.getJSONObject(i);
-				ItemRelato item = new ItemRelato();
-				item.setId(json.getLong("id"));
-				item.setDescricao(json.getString("description"));
-				item.setProtocolo(json.getString("protocol"));
-				item.setEndereco(json.getString("address"));
-				item.setData(DateUtils.getIntervaloTempo(DateUtils.parseRFC3339Date(json.getString("created_at"))));
-				item.setCategoria(service.getById(getActivity(), json.getLong("category_id")));
-				item.setLatitude(json.getJSONObject("position").getDouble("latitude"));
-				item.setLongitude(json.getJSONObject("position").getDouble("longitude"));
-				item.setIdItemInventario(json.optLong("inventory_item_id", -1));
-				item.setIdStatus(json.optLong("status_id", -1));
-				
-				JSONArray fotos = json.getJSONArray("images");
-				for (int j = 0; j < fotos.length(); j++) {
-					String url = fotos.getJSONObject(j).getString("url");
-					FileUtils.downloadImage(url);
-					String[] parts = url.split("/");
-					item.getFotos().add(parts[parts.length - 1]);
-				}
-				
-				itensRelato.add(item);
-			}
-		}
-	}
-	
-	public void refresh() {
-		if (map != null) {
-			map.clear();
-			if (busca.getIdsCategoriaInventario().isEmpty() && busca.getIdsCategoriaRelato().isEmpty()) {
-				new Tasker(latitude, longitude).execute();
-			} else {
-				new Searcher(busca.getIdsCategoriaRelato(), busca.getIdsCategoriaInventario()).execute();
-			}
-		}
-	}
+    private void adicionarMarker(ItemInventario item) {
+        if (itens.get(zoom) == null) itens.put(zoom, new HashSet<Object>());
+        if (marcadores.get(zoom) == null) marcadores.put(zoom, new HashMap<Marker, Object>());
+
+        itens.get(zoom).add(item);
+        marcadores.get(zoom).put(map.addMarker(new MarkerOptions()
+                .position(new LatLng(item.getLatitude(), item.getLongitude()))
+                .icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(getActivity(), item.getCategoria().getMarcador())))
+                .title(item.getCategoria().getNome())), item);
+    }
+
+    private void adicionarMarker(ItemRelato item) {
+        if (itens.get(zoom) == null) itens.put(zoom, new HashSet<Object>());
+        if (marcadores.get(zoom) == null) marcadores.put(zoom, new HashMap<Marker, Object>());
+
+        itens.get(zoom).add(item);
+        marcadores.get(zoom).put(map.addMarker(new MarkerOptions()
+                .position(new LatLng(item.getLatitude(), item.getLongitude()))
+                .icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(getActivity(), item.getCategoria().getMarcador())))
+                .title(item.getCategoria().getNome())), item);
+    }
+
+    @Override
+    public void onMyLocationChange(Location location) {
+        zoom = 15;
+        CameraPosition position = new CameraPosition.Builder().target(new LatLng(location.getLatitude(),
+                location.getLongitude())).zoom(zoom).build();
+        CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+        map.animateCamera(update);
+        map.setOnMyLocationChangeListener(null);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        try {
+            String str = (String) adapterView.getItemAtPosition(i);
+            Address addr = new Geocoder(getActivity()).getFromLocationName(str, 1).get(0);
+
+            if (pontoBusca != null) {
+                pontoBusca.remove();
+            }
+
+            pontoBusca = map.addMarker(new MarkerOptions()
+                    .position(new LatLng(addr.getLatitude(), addr.getLongitude()))
+                    .icon(BitmapDescriptorFactory.defaultMarker()));
+
+            CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
+                    addr.getLongitude())).zoom(15).build();
+            CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
+            map.animateCamera(update);
+        } catch (Exception e) {
+            Log.e("ZUP", e.getMessage());
+        }
+    }
+
+    @Override
+    public void onCameraChange(CameraPosition cameraPosition) {
+        if (cameraPosition.target.latitude == 0.0 && cameraPosition.target.longitude == 0.0) return;
+
+        int zoom = (int) cameraPosition.zoom;
+        if (zoom != this.zoom) {
+            this.zoom = zoom;
+            removerTodosItensMapa();
+        }
+        latitude = cameraPosition.target.latitude;
+        longitude = cameraPosition.target.longitude;
+        raio = GeoUtils.getVisibleRadius(map);
+        removerItensMapa();
+        exibirElementos();
+        refresh();
+    }
+
+    private void exibirElementos() {
+        if (itens.get(zoom) == null) return;
+
+        for (Object pontoMapa : itens.get(zoom)) {
+            if (pontoMapa instanceof ItemRelato) {
+                ItemRelato item = (ItemRelato) pontoMapa;
+                if (busca.getIdsCategoriaRelato().contains(item.getId())) {
+                    adicionarMarker(item);
+                }
+            } else if (pontoMapa instanceof ItemInventario) {
+                ItemInventario item = (ItemInventario) pontoMapa;
+                if (busca.getIdsCategoriaInventario().contains(item.getId())) {
+                    adicionarMarker(item);
+                }
+            }
+        }
+    }
+
+    private void removerItensMapa() {
+        if (marcadores.get(zoom) == null) return;
+
+        Iterator<Marker> it = marcadores.get(zoom).keySet().iterator();
+        while (it.hasNext()) {
+            Marker marker = it.next();
+            if (!GeoUtils.isVisible(map.getProjection().getVisibleRegion(), marker.getPosition())) {
+                marker.setVisible(false);
+                it.remove();
+            }
+        }
+    }
+
+    private void removerTodosItensMapa() {
+        map.clear();
+        marcadores.clear();
+    }
+
+    public void aplicarFiltro(BuscaExplore busca) {
+        this.busca = busca;
+        removerTodosItensMapa();
+        exibirElementos();
+        refresh();
+    }
+
+    public void refresh() {
+        Request request = new Request();
+        request.latitude = latitude;
+        request.longitude = longitude;
+        request.raio = raio;
+        this.request = request;
+    }
+
+    private class Timer extends AsyncTask<Void, Void, Void> {
+
+        private boolean run = true;
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            while (run) {
+                try {
+                    Thread.sleep(400);
+                    if (request != null) {
+                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+                            new MarkerRetriever(request).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        } else {
+                            new MarkerRetriever(request).execute();
+                        }
+                        request = null;
+                    }
+                } catch (Exception e) {
+                    Log.e("ZUP", e.getMessage(), e);
+                }
+            }
+            return null;
+        }
+    }
+
+    private class MarkerRetriever extends AsyncTask<Void, Object, Void> {
+
+        private List<ItemInventario> itensInventario = new CopyOnWriteArrayList<ItemInventario>();
+        private List<ItemRelato> itensRelato = new CopyOnWriteArrayList<ItemRelato>();
+
+        private Request request;
+
+        public MarkerRetriever(Request request) {
+            this.request = request;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            Log.i("ZUP", "Request started");
+            try {
+                HttpClient client = new DefaultHttpClient();
+                HttpGet get;
+                HttpResponse response;
+
+                for (Long id : busca.getIdsCategoriaInventario()) {
+                    get = new HttpGet(Constantes.REST_URL + "/inventory/items?position[latitude]=" + request.latitude + "&position[longitude]="
+                            + request.longitude + "&position[distance]=" + request.raio + "&max_items=" + MAX_ITEMS_PER_REQUEST + "&inventory_category_id=" + id);
+                    get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
+                    response = client.execute(get);
+                    if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                        extrairItensInventario(EntityUtils.toString(response.getEntity(), "UTF-8"));
+                    }
+                }
+
+                for (Long id : busca.getIdsCategoriaRelato()) {
+                    String query = Constantes.REST_URL + "/reports/items?position[latitude]=" + request.latitude + "&position[longitude]="
+                            + request.longitude + "&position[distance]=" + request.raio + "&max_items=" + MAX_ITEMS_PER_REQUEST + "&category_id=" + id + "&begin_date="
+                            + busca.getPeriodo().getDateString();
+                    if (busca.getStatus() != null) {
+                        query += "&statuses=" + busca.getStatus().getId();
+                    }
+                    get = new HttpGet(query);
+                    get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
+                    response = client.execute(get);
+                    if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                        extrairItensRelato(EntityUtils.toString(response.getEntity(), "UTF-8"));
+                    }
+                }
+            } catch (Exception e) {
+                Log.e("ZUP", e.getMessage());
+            }
+
+            for (ItemInventario item : itensInventario) {
+                if (marcadores.get(zoom) == null || !marcadores.get(zoom).containsValue(item)) {
+                    publishProgress(item);
+                }
+            }
+
+            for (ItemRelato item : itensRelato) {
+                if (marcadores.get(zoom) == null || !marcadores.get(zoom).containsValue(item)) {
+                    publishProgress(item);
+                }
+            }
+
+            Log.i("ZUP", "Request completed");
+
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Object... values) {
+            if (values[0] instanceof ItemInventario)
+                adicionarMarker((ItemInventario) values[0]);
+            else if (values[0] instanceof ItemRelato)
+                adicionarMarker((ItemRelato) values[0]);
+        }
+
+        private void extrairItensInventario(String raw) throws JSONException {
+            CategoriaInventarioService service = new CategoriaInventarioService();
+            JSONArray array = new JSONObject(raw).getJSONArray("items");
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject json = array.getJSONObject(i);
+                ItemInventario item = new ItemInventario();
+                item.setCategoria(service.getById(getActivity(), json.getLong("inventory_category_id")));
+                item.setId(json.getLong("id"));
+                item.setLatitude(json.getJSONObject("position").getDouble("latitude"));
+                item.setLongitude(json.getJSONObject("position").getDouble("longitude"));
+                itensInventario.add(item);
+            }
+        }
+
+        private void extrairItensRelato(String raw) throws Exception {
+            CategoriaRelatoService service = new CategoriaRelatoService();
+            JSONArray array = new JSONObject(raw).getJSONArray("reports");
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject json = array.getJSONObject(i);
+                ItemRelato item = new ItemRelato();
+                item.setId(json.getLong("id"));
+                item.setDescricao(json.getString("description"));
+                item.setProtocolo(json.getString("protocol"));
+                item.setEndereco(json.getString("address"));
+                item.setData(DateUtils.getIntervaloTempo(DateUtils.parseRFC3339Date(json.getString("created_at"))));
+                item.setCategoria(service.getById(getActivity(), json.getLong("category_id")));
+                item.setLatitude(json.getJSONObject("position").getDouble("latitude"));
+                item.setLongitude(json.getJSONObject("position").getDouble("longitude"));
+                item.setIdItemInventario(json.optLong("inventory_item_id", -1));
+                item.setIdStatus(json.optLong("status_id", -1));
+
+                JSONArray fotos = json.getJSONArray("images");
+                for (int j = 0; j < fotos.length(); j++) {
+                    String url = fotos.getJSONObject(j).getString("url");
+                    FileUtils.downloadImage(url);
+                    String[] parts = url.split("/");
+                    item.getFotos().add(parts[parts.length - 1]);
+                }
+
+                itensRelato.add(item);
+            }
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        PreferenceUtils.salvarBusca(getActivity(), busca);
+        super.onDestroy();
+    }
 }

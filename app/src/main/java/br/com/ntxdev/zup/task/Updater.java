@@ -41,10 +41,11 @@ public class Updater {
 	private void saveCategories(Context context, String json, String type) throws Exception {
 		JSONArray array = new JSONObject(json).getJSONArray("categories");
 		for (int i = 0; i < array.length(); i++) {
-			String markerUrl = array.getJSONObject(i).getJSONObject("marker").getString("url");
+			String markerUrl = array.getJSONObject(i).getJSONObject("marker").getJSONObject("default").getString("mobile");
 			FileUtils.downloadImage(markerUrl);
-			String iconUrl = array.getJSONObject(i).getJSONObject("icon").getString("url");
-			FileUtils.downloadImage(iconUrl);
+			JSONObject iconUrl = array.getJSONObject(i).getJSONObject("icon").getJSONObject("default").getJSONObject("mobile");
+			FileUtils.downloadImage(iconUrl.getString("active"));
+            FileUtils.downloadImage(iconUrl.getString("disabled"));
 		}
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		prefs.edit().putString(type, json).commit();

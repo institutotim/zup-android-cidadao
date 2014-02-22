@@ -50,6 +50,8 @@ public class SolicitacaoListItem implements Serializable {
 	private Status status;
 	private String comentario;
 	private String endereco;
+    private Double latitude;
+    private Double longitude;
 
 	private ArrayList<String> fotos;
 
@@ -108,4 +110,20 @@ public class SolicitacaoListItem implements Serializable {
 	public void setEndereco(String endereco) {
 		this.endereco = endereco;
 	}
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
 }

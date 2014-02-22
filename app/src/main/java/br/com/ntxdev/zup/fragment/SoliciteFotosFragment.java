@@ -24,6 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SoliciteActivity;
+import br.com.ntxdev.zup.domain.Solicitacao;
 import br.com.ntxdev.zup.util.FileUtils;
 import br.com.ntxdev.zup.util.FontUtils;
 import br.com.ntxdev.zup.util.ImageUtils;
@@ -62,7 +63,30 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
 		return view;
 	}
 
-	@Override
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        ArrayList<String> fotos = null;
+        if (getArguments() != null) {
+            Solicitacao solicitacao = (Solicitacao) getArguments().getSerializable("solicitacao");
+            if (solicitacao != null) {
+                fotos = solicitacao.getFotos();
+            }
+        }
+
+        if (fotos == null || fotos.isEmpty()) {
+            fotos = ((SoliciteActivity) getActivity()).getFotos();
+        }
+
+        if (fotos != null) {
+            for (String foto : fotos) {
+                adicionarFoto(foto);
+            }
+        }
+    }
+
+    @Override
 	public void onClick(View v) {
 		new AlertDialog.Builder(getActivity()).setItems(R.array.foto_menu, new DialogInterface.OnClickListener() {
 			@Override
@@ -84,7 +108,7 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
 	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putString("file", imagemTemporaria.getPath());
+		//outState.putString("file", imagemTemporaria.getPath());
 		super.onSaveInstanceState(outState);
 	}
 
@@ -121,83 +145,7 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
 
 			((SoliciteActivity) getActivity()).adicionarFoto(path);
 			((SoliciteActivity) getActivity()).assertFragmentVisibility();
-			Bitmap bitmap = BitmapFactory.decodeFile(path);
-			listaFotos.add(path);
-			if (listaFotos.size() == 3) {
-				fotoButton.setEnabled(false);
-			}
-			
-			fotoFrame.setVisibility(View.GONE);
-
-			RelativeLayout layout = new RelativeLayout(getActivity());
-			
-			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-			if (listaFotos.size() > 1) {
-				lp.setMargins((int) ImageUtils.dpToPx(getActivity(), 5), 0, 0, 0);
-			}
-			layout.setLayoutParams(lp);
-
-			ImageView imgView = new ImageView(getActivity());
-			imgView.setId((int) System.currentTimeMillis());
-			
-			if (getResources().getDimension(R.dimen.image_resize) != 0) {
-				imgView.setImageBitmap(Bitmap.createScaledBitmap(bitmap,
-						(int) (getResources().getDimension(R.dimen.image_resize) / getResources().getDisplayMetrics().density),
-						(int) (getResources().getDimension(R.dimen.image_resize) / getResources().getDisplayMetrics().density), false));
-			} else {
-				imgView.setImageBitmap(bitmap);
-			}
-			RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
-					RelativeLayout.LayoutParams.WRAP_CONTENT);
-			layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-			
-			imgView.setLayoutParams(layoutParams);
-
-			layout.addView(imgView);
-
-			ImageView btn = new ImageView(getActivity());
-			btn.setClickable(true);
-			btn.setImageResource(R.drawable.btn_editar_foto);
-			btn.setOnClickListener(new View.OnClickListener() {
-
-				@Override
-				public void onClick(final View v) {
-					new AlertDialog.Builder(getActivity()).setItems(R.array.foto_menu_editar, new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int item) {
-							switch (item) {
-							case 0:
-								removerFoto((View) v.getParent());
-								fotoButton.setEnabled(true);
-								break;
-							case 1:
-								temp = (View) v.getParent();
-								selecionarFoto();
-								break;
-							case 2:
-								temp = (View) v.getParent();
-								tirarFoto();
-								break;
-							case 3:
-								dialog.dismiss();
-								break;
-							}
-						}
-					}).show();
-				}
-			});
-			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-					RelativeLayout.LayoutParams.WRAP_CONTENT);
-			params.addRule(RelativeLayout.ALIGN_TOP, imgView.getId());
-			params.addRule(RelativeLayout.ALIGN_RIGHT, imgView.getId());
-			btn.setLayoutParams(params);
-
-			layout.addView(btn);
-			layout.setTag(path);
-
-			containerFotos.setVisibility(View.VISIBLE);
-			containerFotos.setWeightSum(listaFotos.size());
-			containerFotos.addView(layout);
+			adicionarFoto(path);
 			break;
 		case GALLERY_RETURN:
 			Uri selectedImage = data.getData();
@@ -237,4 +185,84 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
 			containerFotos.setWeightSum(listaFotos.size());
 		}
 	}
+
+    private void adicionarFoto(String foto) {
+        Bitmap bitmap = BitmapFactory.decodeFile(foto);
+        listaFotos.add(foto);
+        if (listaFotos.size() == 3) {
+            fotoButton.setEnabled(false);
+        }
+
+        fotoFrame.setVisibility(View.GONE);
+
+        RelativeLayout layout = new RelativeLayout(getActivity());
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+        if (listaFotos.size() > 1) {
+            lp.setMargins((int) ImageUtils.dpToPx(getActivity(), 5), 0, 0, 0);
+        }
+        layout.setLayoutParams(lp);
+
+        ImageView imgView = new ImageView(getActivity());
+        imgView.setId((int) System.currentTimeMillis());
+
+        if (getResources().getDimension(R.dimen.image_resize) != 0) {
+            imgView.setImageBitmap(Bitmap.createScaledBitmap(bitmap,
+                    (int) (getResources().getDimension(R.dimen.image_resize) / getResources().getDisplayMetrics().density),
+                    (int) (getResources().getDimension(R.dimen.image_resize) / getResources().getDisplayMetrics().density), false));
+        } else {
+            imgView.setImageBitmap(bitmap);
+        }
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+
+        imgView.setLayoutParams(layoutParams);
+
+        layout.addView(imgView);
+
+        ImageView btn = new ImageView(getActivity());
+        btn.setClickable(true);
+        btn.setImageResource(R.drawable.btn_editar_foto);
+        btn.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(final View v) {
+                new AlertDialog.Builder(getActivity()).setItems(R.array.foto_menu_editar, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int item) {
+                        switch (item) {
+                            case 0:
+                                removerFoto((View) v.getParent());
+                                fotoButton.setEnabled(true);
+                                break;
+                            case 1:
+                                temp = (View) v.getParent();
+                                selecionarFoto();
+                                break;
+                            case 2:
+                                temp = (View) v.getParent();
+                                tirarFoto();
+                                break;
+                            case 3:
+                                dialog.dismiss();
+                                break;
+                        }
+                    }
+                }).show();
+            }
+        });
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        params.addRule(RelativeLayout.ALIGN_TOP, imgView.getId());
+        params.addRule(RelativeLayout.ALIGN_RIGHT, imgView.getId());
+        btn.setLayoutParams(params);
+
+        layout.addView(btn);
+        layout.setTag(foto);
+
+        containerFotos.setVisibility(View.VISIBLE);
+        containerFotos.setWeightSum(listaFotos.size());
+        containerFotos.addView(layout);
+    }
 }

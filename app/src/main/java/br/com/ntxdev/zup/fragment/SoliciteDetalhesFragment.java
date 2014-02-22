@@ -12,6 +12,7 @@ import android.widget.TextView;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SoliciteActivity;
 import br.com.ntxdev.zup.TermosDeUsoActivity;
+import br.com.ntxdev.zup.domain.Solicitacao;
 import br.com.ntxdev.zup.util.FontUtils;
 
 public class SoliciteDetalhesFragment extends Fragment implements View.OnClickListener {
@@ -45,7 +46,17 @@ public class SoliciteDetalhesFragment extends Fragment implements View.OnClickLi
 		return view;
 	}
 
-	@Override
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (getArguments() != null) {
+            Solicitacao solicitacao = (Solicitacao) getArguments().getSerializable("solicitacao");
+            TextView comentario = (TextView) getView().findViewById(R.id.comentario);
+            comentario.setText(solicitacao.getComentario());
+        }
+    }
+
+    @Override
 	public void onClick(View v) {
 		publicar = !publicar;
 

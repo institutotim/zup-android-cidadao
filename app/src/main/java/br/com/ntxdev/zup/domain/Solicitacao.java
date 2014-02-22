@@ -2,7 +2,6 @@ package br.com.ntxdev.zup.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Solicitacao implements Serializable {
 
@@ -16,7 +15,7 @@ public class Solicitacao implements Serializable {
 	private Tipo tipo;
 	private double latitude;
 	private double longitude;
-	private List<String> fotos = new ArrayList<String>();
+	private ArrayList<String> fotos = new ArrayList<String>();
 	private String comentario;
 	private boolean redeSocial = false;
 
@@ -41,7 +40,7 @@ public class Solicitacao implements Serializable {
 		this.longitude = longitude;
 	}
 	
-	public List<String> getFotos() {
+	public ArrayList<String> getFotos() {
 		return fotos;
 	}
 	

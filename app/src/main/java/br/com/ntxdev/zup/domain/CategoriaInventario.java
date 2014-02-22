@@ -6,7 +6,8 @@ public class CategoriaInventario implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private long id;
-	private String icone;
+	private String iconeAtivo;
+    private String iconeInativo;
 	private String marcador;
 	private String nome;
 
@@ -25,15 +26,23 @@ public class CategoriaInventario implements Serializable {
 		this.id = id;
 	}
 
-	public String getIcone() {
-		return icone;
-	}
+    public String getIconeInativo() {
+        return iconeInativo;
+    }
 
-	public void setIcone(String icone) {
-		this.icone = icone;
-	}
+    public void setIconeInativo(String iconeInativo) {
+        this.iconeInativo = iconeInativo;
+    }
 
-	public String getMarcador() {
+    public String getIconeAtivo() {
+        return iconeAtivo;
+    }
+
+    public void setIconeAtivo(String iconeAtivo) {
+        this.iconeAtivo = iconeAtivo;
+    }
+
+    public String getMarcador() {
 		return marcador;
 	}
 

@@ -37,6 +37,10 @@ public class SolicitacaoDetalheActivity extends FragmentActivity {
 		titulo.setText(solicitacao.getTitulo());
 		titulo.setTypeface(FontUtils.getLight(this));
 
+        TextView endereco = (TextView) findViewById(R.id.endereco);
+        endereco.setText(solicitacao.getEndereco());
+        endereco.setTypeface(FontUtils.getLight(this));
+
 		TextView data = (TextView) findViewById(R.id.data);
 		data.setText(getString(R.string.enviada) + " " + solicitacao.getData());
 		data.setTypeface(FontUtils.getBold(this));
