@@ -12,6 +12,8 @@ import br.com.ntxdev.zup.util.FontUtils;
 import br.com.ntxdev.zup.util.ImageUtils;
 import br.com.ntxdev.zup.widget.ImagePagerAdapter;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.viewpagerindicator.IconPageIndicator;
 import com.viewpagerindicator.PageIndicator;
 

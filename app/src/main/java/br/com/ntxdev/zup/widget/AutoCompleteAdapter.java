@@ -16,6 +16,7 @@ import android.widget.Filterable;
 import android.widget.TextView;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.util.FontUtils;
+import br.com.ntxdev.zup.util.GeoUtils;
 
 public class AutoCompleteAdapter extends ArrayAdapter<String> implements Filterable {
 	private List<Address> resultList;
@@ -32,11 +33,15 @@ public class AutoCompleteAdapter extends ArrayAdapter<String> implements Filtera
 
 	@Override
 	public String getItem(int index) {
+        if (index > resultList.size() - 1) return "";
+
 		return resultList.get(index).getAddressLine(0);
 	}
 	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+        if (position > resultList.size() - 1) return new View(getContext());
+
 		View view = LayoutInflater.from(getContext()).inflate(R.layout.autocomplete_list_item, parent, false);
 		TextView text = (TextView) view.findViewById(R.id.text);
 		text.setText(resultList.get(position).getAddressLine(0));
@@ -75,8 +80,8 @@ public class AutoCompleteAdapter extends ArrayAdapter<String> implements Filtera
 		try {
 			return new Geocoder(getContext()).getFromLocationName(input, 4);
 		} catch (Exception e) {
-			Log.e("ZUP", e.getMessage());
-			return new ArrayList<Address>();
+            Log.w("ZUP", e.getMessage());
+            return new ArrayList<Address>();
 		}
 	}
 }

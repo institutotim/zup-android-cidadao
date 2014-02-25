@@ -14,6 +14,7 @@ import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
@@ -70,6 +71,10 @@ import br.com.ntxdev.zup.widget.AutoCompleteAdapter;
 
 public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMyLocationChangeListener,
         GoogleMap.OnCameraChangeListener, AdapterView.OnItemClickListener {
+
+    // Local inicial: São Paulo
+    private static final double INITIAL_LATITUDE = -23.6824124;
+    private static final double INITIAL_LONGITUDE = -46.5952992;
 
     private class Request {
         double latitude, longitude;
@@ -136,6 +141,11 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
             map.setOnMyLocationChangeListener(this);
             map.setOnCameraChangeListener(this);
             map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+            CameraPosition p = new CameraPosition.Builder().target(new LatLng(INITIAL_LATITUDE,
+                    INITIAL_LONGITUDE)).zoom(15).build();
+            CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
+            map.moveCamera(update);
         }
 
         AutoCompleteTextView autoCompView = (AutoCompleteTextView) view.findViewById(R.id.autocomplete);
@@ -149,6 +159,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
             new Timer().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
@@ -380,7 +391,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                     }
                 }
             } catch (Exception e) {
-                Log.e("ZUP", e.getMessage());
+                Log.e("ZUP", e.getMessage() != null ? e.getMessage() : "null", e);
+                return null;
             }
 
             for (ItemInventario item : itensInventario) {

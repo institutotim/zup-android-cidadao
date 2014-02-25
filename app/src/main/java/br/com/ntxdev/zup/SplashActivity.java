@@ -2,6 +2,8 @@ package br.com.ntxdev.zup;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -46,6 +48,7 @@ public class SplashActivity extends Activity {
 	private class CategoriaUpdater extends AsyncTask<Void, Void, Boolean> {
 
 		long start, finish;
+        boolean error = false;
 
 		@Override
 		protected void onPreExecute() {
@@ -57,7 +60,12 @@ public class SplashActivity extends Activity {
 			if (!NetworkUtils.isInternetPresent(SplashActivity.this))
 				return Boolean.FALSE;
 
-			new Updater().update(SplashActivity.this);
+            try {
+			    new Updater().update(SplashActivity.this);
+            } catch (Exception e) {
+                error = true;
+                return Boolean.FALSE;
+            }
 			return Boolean.TRUE;
 		}
 
@@ -74,7 +82,28 @@ public class SplashActivity extends Activity {
 				Intent intent = new Intent(SplashActivity.this, OpeningActivity.class);
 				startActivity(intent);
 			} else {
-				Toast.makeText(getApplicationContext(), "Conexão com a Internet indisponível", Toast.LENGTH_SHORT).show();
+                if (error) {
+                    new AlertDialog.Builder(SplashActivity.this)
+                            .setTitle("Falha na sincronização")
+                            .setMessage("Não foi possível realizar o sincronismo de dados. Deseja tentar novamente?")
+                            .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    new CategoriaUpdater().execute();
+                                }
+                            })
+                            .setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    finish();
+                                }
+                            })
+                            .show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Conexão com a Internet indisponível", Toast.LENGTH_SHORT).show();
+                }
 			}
 			finish();
 		}
@@ -84,8 +113,7 @@ public class SplashActivity extends Activity {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
-                        9000).show();
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this, 9000).show();
             } else {
                 Log.i("ZUP", "Dispositivo não suportado.");
                 finish();

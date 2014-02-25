@@ -54,14 +54,22 @@ public class EstatisticasFragment extends Fragment {
 				startActivityForResult(new Intent(getActivity(), FiltroEstatisticasActivity.class), REQUEST_FILTRO);				
 			}
 		});
-		
-		new Tasker().execute();
+
+        new Tasker().execute();
 		
 		return view;
 	}
-	
-	public void aplicarFiltro(BuscaEstatisticas busca) {		
-		new Tasker(busca).execute();		
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            new Tasker().execute();
+        }
+    }
+
+    public void aplicarFiltro(BuscaEstatisticas busca) {
+		new Tasker(busca).execute();
 	}
 	
 	public class Tasker extends AsyncTask<Void, Void, String> {

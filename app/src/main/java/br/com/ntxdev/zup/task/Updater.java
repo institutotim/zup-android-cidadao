@@ -18,7 +18,7 @@ import br.com.ntxdev.zup.util.FileUtils;
 
 public class Updater {
 
-	public void update(Context context) {
+	public void update(Context context) throws Exception {
 		try {
 			HttpClient client = new DefaultHttpClient();
 			HttpGet get = new HttpGet(Constantes.REST_URL + "/reports/categories");
@@ -34,7 +34,8 @@ public class Updater {
 				saveCategories(context, EntityUtils.toString(response.getEntity(), "UTF-8"), "inventory");
 			}
 		} catch (Exception e) {
-			Log.e("ZUP", e.getMessage());
+			Log.e("ZUP", e.getMessage(), e);
+            throw e;
 		}
 	}
 	

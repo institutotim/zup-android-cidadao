@@ -33,9 +33,9 @@ import eu.janmuller.android.simplecropimage.CropImage;
 public class SoliciteFotosFragment extends Fragment implements View.OnClickListener {
 
 	private TextView fotoButton;
-	private final int CAMERA_RETURN = 1406;
-	private final int CROP_RETURN = 1407;
-	private final int GALLERY_RETURN = 1408;
+	private static final int CAMERA_RETURN = 1406;
+	private static final int CROP_RETURN = 1407;
+	private static final int GALLERY_RETURN = 1408;
 	private Uri imagemTemporaria;
 	private ImageView fotoFrame;
 	private LinearLayout containerFotos;
@@ -146,7 +146,9 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
 		case GALLERY_RETURN:
 			Uri selectedImage = data.getData();
 			String[] filePathColumn = { MediaStore.Images.Media.DATA };
+            if (selectedImage == null) return;
 			Cursor cursor = getActivity().getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+            if (cursor == null) return;
 			cursor.moveToFirst();
 			int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
 			String picturePath = cursor.getString(columnIndex);
@@ -185,9 +187,7 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
     private void adicionarFoto(String foto) {
         Bitmap bitmap = BitmapFactory.decodeFile(foto);
         listaFotos.add(foto);
-        if (listaFotos.size() == 3) {
-            fotoButton.setEnabled(false);
-        }
+        desabilitarBotaoAdicionar(listaFotos.size() == 3);
 
         fotoFrame.setVisibility(View.GONE);
 
@@ -260,5 +260,9 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
         containerFotos.setVisibility(View.VISIBLE);
         containerFotos.setWeightSum(listaFotos.size());
         containerFotos.addView(layout);
+    }
+
+    private void desabilitarBotaoAdicionar(boolean desabilitar) {
+        getView().findViewById(R.id.fotoButton).setVisibility(desabilitar ? View.GONE : View.VISIBLE);
     }
 }

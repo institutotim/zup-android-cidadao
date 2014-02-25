@@ -35,6 +35,10 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class SoliciteLocalFragment extends Fragment implements AdapterView.OnItemClickListener, GoogleMap.OnMyLocationChangeListener {
 
+    // Local inicial: São Paulo
+    private static final double INITIAL_LATITUDE = -23.6824124;
+    private static final double INITIAL_LONGITUDE = -46.5952992;
+
     private SupportMapFragment mapFragment;
     private GoogleMap map;
     private static View view;
@@ -84,6 +88,11 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
             });
 
             map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+            CameraPosition p = new CameraPosition.Builder().target(new LatLng(INITIAL_LATITUDE,
+                    INITIAL_LONGITUDE)).zoom(15).build();
+            CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
+            map.moveCamera(update);
         }
 
         autoCompView = (AutoCompleteTextView) view.findViewById(R.id.autocomplete);

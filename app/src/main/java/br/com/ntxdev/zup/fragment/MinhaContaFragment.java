@@ -49,52 +49,49 @@ import br.com.ntxdev.zup.util.ImageUtils;
 public class MinhaContaFragment extends Fragment implements AdapterView.OnItemClickListener {
 	
 	private static final int REQUEST_EDIT_USER = 1099;
-	
-	private TextView botaoSair;
-	private TextView botaoEditar;
 
-	private TextView nomeUsuario;
+    private TextView nomeUsuario;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_minha_conta, container, false);
-		
-		botaoSair = (TextView) view.findViewById(R.id.botaoSair);
+
+        TextView botaoSair = (TextView) view.findViewById(R.id.botaoSair);
 		botaoSair.setTypeface(FontUtils.getRegular(getActivity()));
 		botaoSair.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				new AlertDialog.Builder(getActivity())
-						.setMessage(R.string.deseja_realmente_sair_da_sua_conta)
-						.setPositiveButton(R.string.sim, new DialogInterface.OnClickListener() {							
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								new LoginService().registrarLogout(getActivity());
-								startActivity(new Intent(getActivity(), OpeningActivity.class));
-								getActivity().finish();								
-							}
-						})
-						.setNegativeButton(R.string.nao, new DialogInterface.OnClickListener() {							
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								dialog.dismiss();								
-							}
-						})
-						.show();
-				
-			}
-		});
-		
-		botaoEditar = (TextView) view.findViewById(R.id.botaoEditar);
+
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(getActivity())
+                        .setMessage(R.string.deseja_realmente_sair_da_sua_conta)
+                        .setPositiveButton(R.string.sim, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                new LoginService().registrarLogout(getActivity());
+                                startActivity(new Intent(getActivity(), OpeningActivity.class));
+                                getActivity().finish();
+                            }
+                        })
+                        .setNegativeButton(R.string.nao, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
+
+            }
+        });
+
+        TextView botaoEditar = (TextView) view.findViewById(R.id.botaoEditar);
 		botaoEditar.setTypeface(FontUtils.getRegular(getActivity()));
 		botaoEditar.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				startActivityForResult(new Intent(getActivity(), EditarContaActivity.class), REQUEST_EDIT_USER);				
-			}
-		});
+
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(new Intent(getActivity(), EditarContaActivity.class), REQUEST_EDIT_USER);
+            }
+        });
 		
 		((TextView) view.findViewById(R.id.instrucoes)).setTypeface(FontUtils.getBold(getActivity()));
 
@@ -113,6 +110,8 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 		solicitacoes.setTypeface(FontUtils.getBold(getActivity()));
 		solicitacoes.setText(items.size() + " " + 
 				(items.size() == 1 ? getString(R.string.solicitacao) : getString(R.string.solicitacoes)));
+
+        new Tasker().execute();
 
 		return view;
 	}
@@ -259,11 +258,5 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 				}				
 			}
 		}
-	}
-	
-	@Override
-	public void onResume() {
-		super.onResume();
-		new Tasker().execute();
 	}
 }
