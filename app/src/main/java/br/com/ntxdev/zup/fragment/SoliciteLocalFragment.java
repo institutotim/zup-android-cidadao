@@ -12,18 +12,22 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.InflateException;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SoliciteActivity;
 import br.com.ntxdev.zup.domain.Solicitacao;
 import br.com.ntxdev.zup.util.FontUtils;
 import br.com.ntxdev.zup.util.ImageUtils;
+import br.com.ntxdev.zup.util.ViewUtils;
 import br.com.ntxdev.zup.widget.AutoCompleteAdapter;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -99,6 +103,18 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
         autoCompView.setAdapter(new AutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item));
         autoCompView.setTypeface(FontUtils.getRegular(getActivity()));
         autoCompView.setOnItemClickListener(this);
+        autoCompView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    realizarBuscaAutocomplete(v.getText().toString());
+                    ViewUtils.hideKeyboard(getActivity(), v);
+                    handled = true;
+                }
+                return handled;
+            }
+        });
 
         task = new TimerEndereco();
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
@@ -114,19 +130,21 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if (getArguments() != null) {
-            Log.i("ZUP", "arguments is not null");
-            Solicitacao solicitacao = (Solicitacao) getArguments().getSerializable("solicitacao");
-            if (solicitacao != null) {
-                file = solicitacao.getCategoria().getMarcador();
-                CameraPosition p = new CameraPosition.Builder().target(new LatLng(solicitacao.getLatitude(),
-                        solicitacao.getLongitude())).zoom(15).build();
-                CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
-                map.moveCamera(update);
+        if (map != null) {
+            if (getArguments() != null) {
+                Log.i("ZUP", "arguments is not null");
+                Solicitacao solicitacao = (Solicitacao) getArguments().getSerializable("solicitacao");
+                if (solicitacao != null) {
+                    file = solicitacao.getCategoria().getMarcador();
+                    CameraPosition p = new CameraPosition.Builder().target(new LatLng(solicitacao.getLatitude(),
+                            solicitacao.getLongitude())).zoom(15).build();
+                    CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
+                    map.moveCamera(update);
+                }
+            } else {
+                Log.i("ZUP", "arguments is null");
+                map.setOnMyLocationChangeListener(this);
             }
-        } else {
-            Log.i("ZUP", "arguments is null");
-            map.setOnMyLocationChangeListener(this);
         }
 
         if (file != null && !file.isEmpty()) {
@@ -168,8 +186,11 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        realizarBuscaAutocomplete((String) adapterView.getItemAtPosition(position));
+    }
+
+    private void realizarBuscaAutocomplete(String str) {
         try {
-            String str = (String) adapterView.getItemAtPosition(position);
             Address addr = new Geocoder(getActivity()).getFromLocationName(str, 1).get(0);
 
             CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),

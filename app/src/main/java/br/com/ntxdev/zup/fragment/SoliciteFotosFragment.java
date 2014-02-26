@@ -84,6 +84,19 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
 
     @Override
 	public void onClick(View v) {
+        if (listaFotos != null && listaFotos.size() == 3) {
+            new AlertDialog.Builder(getActivity())
+                    .setMessage("É possível adicionar apenas 3 fotos para um relato")
+                    .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .show();
+            return;
+        }
+
 		new AlertDialog.Builder(getActivity()).setItems(R.array.foto_menu, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int item) {
@@ -100,12 +113,6 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
 				}
 			}
 		}).show();
-	}
-	
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		//outState.putString("file", imagemTemporaria.getPath());
-		super.onSaveInstanceState(outState);
 	}
 
 	private void selecionarFoto() {
@@ -187,7 +194,6 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
     private void adicionarFoto(String foto) {
         Bitmap bitmap = BitmapFactory.decodeFile(foto);
         listaFotos.add(foto);
-        desabilitarBotaoAdicionar(listaFotos.size() == 3);
 
         fotoFrame.setVisibility(View.GONE);
 
@@ -260,9 +266,5 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
         containerFotos.setVisibility(View.VISIBLE);
         containerFotos.setWeightSum(listaFotos.size());
         containerFotos.addView(layout);
-    }
-
-    private void desabilitarBotaoAdicionar(boolean desabilitar) {
-        getView().findViewById(R.id.fotoButton).setVisibility(desabilitar ? View.GONE : View.VISIBLE);
     }
 }

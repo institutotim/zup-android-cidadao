@@ -190,13 +190,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
                 botaoAvancar.setText(R.string.publicar);
                 atual = Passo.COMENTARIOS;
             } else if (atual.equals(Passo.COMENTARIOS)){
-                solicitacao.setComentario(detalhesFragment.getComentario());
-                if (solicitacao.getComentario().length() > 800) {
-                    alertarTamanhoComentario();
-                    return;
-                }
-                solicitacao.setLatitudeLongitude(localFragment.getLatitudeAtual(), localFragment.getLongitudeAtual());
-                enviarSolicitacao();
+                solicitar();
             }
         } else if (v.getId() == R.id.botaoVoltar) {
             botaoAvancar.setText(R.string.proximo);
@@ -212,6 +206,16 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
                 atual = Passo.TIPO;
             }
         }
+    }
+
+    public void solicitar() {
+        solicitacao.setComentario(detalhesFragment.getComentario());
+        if (solicitacao.getComentario().length() > 800) {
+            alertarTamanhoComentario();
+            return;
+        }
+        solicitacao.setLatitudeLongitude(localFragment.getLatitudeAtual(), localFragment.getLongitudeAtual());
+        enviarSolicitacao();
     }
 
     private void alertarTamanhoComentario() {

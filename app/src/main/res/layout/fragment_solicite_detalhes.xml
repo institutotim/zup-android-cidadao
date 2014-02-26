@@ -12,6 +12,7 @@
         android:paddingTop="45dp" >
 
         <EditText
+            android:imeOptions="actionSend"
             android:id="@+id/comentario"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

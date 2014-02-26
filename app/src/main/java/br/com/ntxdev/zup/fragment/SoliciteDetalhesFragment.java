@@ -4,9 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import br.com.ntxdev.zup.R;
@@ -26,8 +29,19 @@ public class SoliciteDetalhesFragment extends Fragment implements View.OnClickLi
 		View view = inflater.inflate(R.layout.fragment_solicite_detalhes, container, false);
 		view.findViewById(R.id.seletor_postagem).setOnClickListener(this);
 
-		TextView comentario = (TextView) view.findViewById(R.id.comentario);
+		EditText comentario = (EditText) view.findViewById(R.id.comentario);
 		comentario.setTypeface(FontUtils.getRegular(getActivity()));
+        comentario.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_GO) {
+                    ((SoliciteActivity) getActivity()).solicitar();
+                    handled = true;
+                }
+                return handled;
+            }
+        });
 
 		TextView redeSocial = (TextView) view.findViewById(R.id.redeSocial);
 		redeSocial.setText(getString(R.string.compartilhar_rede_social, "Facebook"));

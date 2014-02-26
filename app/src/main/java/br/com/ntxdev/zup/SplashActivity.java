@@ -20,6 +20,8 @@ import br.com.ntxdev.zup.util.NetworkUtils;
 
 public class SplashActivity extends Activity {
 
+
+
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,18 +32,10 @@ public class SplashActivity extends Activity {
 		
 		setContentView(R.layout.activity_splash);
 
-        if (checkPlayServices()) {
-            new CategoriaUpdater().execute();
-        }
+        new CategoriaUpdater().execute();
 	}
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        checkPlayServices();
-    }
-
-	@Override
 	public void onBackPressed() {
 	}
 
@@ -81,6 +75,7 @@ public class SplashActivity extends Activity {
 					}
 				Intent intent = new Intent(SplashActivity.this, OpeningActivity.class);
 				startActivity(intent);
+                finish();
 			} else {
                 if (error) {
                     new AlertDialog.Builder(SplashActivity.this)
@@ -103,23 +98,9 @@ public class SplashActivity extends Activity {
                             .show();
                 } else {
                     Toast.makeText(getApplicationContext(), "Conexão com a Internet indisponível", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
 			}
-			finish();
 		}
 	}
-
-    private boolean checkPlayServices() {
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                GooglePlayServicesUtil.getErrorDialog(resultCode, this, 9000).show();
-            } else {
-                Log.i("ZUP", "Dispositivo não suportado.");
-                finish();
-            }
-            return false;
-        }
-        return true;
-    }
 }

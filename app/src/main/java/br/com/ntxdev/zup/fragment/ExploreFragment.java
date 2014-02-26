@@ -11,10 +11,12 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.InflateException;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
@@ -67,6 +69,7 @@ import br.com.ntxdev.zup.util.FontUtils;
 import br.com.ntxdev.zup.util.GeoUtils;
 import br.com.ntxdev.zup.util.ImageUtils;
 import br.com.ntxdev.zup.util.PreferenceUtils;
+import br.com.ntxdev.zup.util.ViewUtils;
 import br.com.ntxdev.zup.widget.AutoCompleteAdapter;
 
 public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMyLocationChangeListener,
@@ -152,6 +155,18 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         autoCompView.setAdapter(new AutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item));
         autoCompView.setTypeface(FontUtils.getRegular(getActivity()));
         autoCompView.setOnItemClickListener(this);
+        autoCompView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    realizarBuscaAutocomplete(v.getText().toString());
+                    ViewUtils.hideKeyboard(getActivity(), v);
+                    handled = true;
+                }
+                return handled;
+            }
+        });
 
         return view;
     }
@@ -233,8 +248,11 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        realizarBuscaAutocomplete((String) adapterView.getItemAtPosition(i));
+    }
+
+    private void realizarBuscaAutocomplete(String str) {
         try {
-            String str = (String) adapterView.getItemAtPosition(i);
             Address addr = new Geocoder(getActivity()).getFromLocationName(str, 1).get(0);
 
             if (pontoBusca != null) {

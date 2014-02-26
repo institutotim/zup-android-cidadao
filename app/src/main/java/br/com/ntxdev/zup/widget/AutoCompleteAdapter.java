@@ -44,7 +44,8 @@ public class AutoCompleteAdapter extends ArrayAdapter<String> implements Filtera
 
 		View view = LayoutInflater.from(getContext()).inflate(R.layout.autocomplete_list_item, parent, false);
 		TextView text = (TextView) view.findViewById(R.id.text);
-		text.setText(resultList.get(position).getAddressLine(0));
+        if (position > resultList.size() - 1) return new View(getContext());
+		    text.setText(resultList.get(position).getAddressLine(0));
 		text.setTypeface(FontUtils.getRegular(getContext()));
 		return view;
 	}
@@ -81,7 +82,13 @@ public class AutoCompleteAdapter extends ArrayAdapter<String> implements Filtera
 			return new Geocoder(getContext()).getFromLocationName(input, 4);
 		} catch (Exception e) {
             Log.w("ZUP", e.getMessage());
-            return new ArrayList<Address>();
+            try {
+                return GeoUtils.getFromLocationName(input, 4);
+
+            } catch (Exception e1) {
+                Log.e("ZUP", e1.getMessage());
+                return new ArrayList<Address>();
+            }
 		}
 	}
 }

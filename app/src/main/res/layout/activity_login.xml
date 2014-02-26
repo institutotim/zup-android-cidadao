@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    android:scrollbars="vertical" >
+    android:scrollbars="vertical">
 
     <RelativeLayout
         android:id="@+id/topbar"
@@ -13,7 +13,7 @@
         android:paddingBottom="10dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
-        android:paddingTop="10dp" >
+        android:paddingTop="10dp">
 
         <TextView
             android:id="@+id/login"
@@ -54,6 +54,7 @@
         android:background="#ccc" />
 
     <EditText
+        android:imeOptions="actionNext"
         android:id="@+id/campoEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -67,6 +68,7 @@
         android:textSize="@dimen/navigation_text_size" />
 
     <EditText
+        android:imeOptions="actionGo"
         android:id="@+id/campoSenha"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

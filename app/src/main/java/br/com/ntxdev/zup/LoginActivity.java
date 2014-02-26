@@ -1,7 +1,17 @@
 package br.com.ntxdev.zup;
 
-import java.util.ArrayList;
-import java.util.List;
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -15,16 +25,9 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
+import java.util.ArrayList;
+import java.util.List;
+
 import br.com.ntxdev.zup.core.Constantes;
 import br.com.ntxdev.zup.service.LoginService;
 import br.com.ntxdev.zup.util.FontUtils;
@@ -62,6 +65,17 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 		
 		campoSenha = (EditText) findViewById(R.id.campoSenha);
 		campoSenha.setTypeface(FontUtils.getLight(this));
+        campoSenha.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_GO) {
+                    new Tasker().execute();
+                    handled = true;
+                }
+                return handled;
+            }
+        });
 		
 		campoEmail = (EditText) findViewById(R.id.campoEmail);
 		campoEmail.setTypeface(FontUtils.getLight(this));

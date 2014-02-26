@@ -7,12 +7,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import br.com.ntxdev.zup.service.LoginService;
 import br.com.ntxdev.zup.util.FontUtils;
 import br.com.ntxdev.zup.widget.ImageResourcePagerAdapter;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.viewpagerindicator.IconPageIndicator;
 import com.viewpagerindicator.PageIndicator;
 
@@ -20,6 +25,8 @@ public class OpeningActivity extends FragmentActivity {
 	
 	private static final int LOGIN_REQUEST = 1010;
 	private static final int REGISTER_REQUEST = 1011;
+
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,12 +73,20 @@ public class OpeningActivity extends FragmentActivity {
 				startActivityForResult(new Intent(OpeningActivity.this, LoginActivity.class), LOGIN_REQUEST);
 			}			
 		});
-		
-		if (new LoginService().usuarioLogado(this)) {
-			startActivity(new Intent(this, MainActivity.class));
-			finish();
-		}
+
+        if (checkPlayServices()) {
+            if (new LoginService().usuarioLogado(this)) {
+                startActivity(new Intent(this, MainActivity.class));
+                finish();
+            }
+        }
 	}
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkPlayServices();
+    }
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -80,4 +95,20 @@ public class OpeningActivity extends FragmentActivity {
 			finish();
 		}
 	}
+
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.i("ZUP", "This device is not supported.");
+                Toast.makeText(this, "Dispositivo não suportado", Toast.LENGTH_LONG).show();
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
 }

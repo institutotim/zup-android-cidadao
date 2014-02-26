@@ -17,13 +17,8 @@
 package eu.janmuller.android.simplecropimage;
 
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.concurrent.CountDownLatch;
-
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -49,9 +44,15 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.concurrent.CountDownLatch;
 
 
 /**
@@ -103,6 +104,8 @@ public class CropImage extends MonitoredActivity {
     private final BitmapManager.ThreadSet mDecodingThreads =
             new BitmapManager.ThreadSet();
 
+    @SuppressLint("NewApi")
+    @TargetApi(Build.VERSION_CODES.DONUT)
     @Override
     public void onCreate(Bundle icicle) {
 
@@ -122,7 +125,7 @@ public class CropImage extends MonitoredActivity {
 
             if (extras.getString(CIRCLE_CROP) != null) {
 
-        	if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
+        	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             		mImageView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         	}
 

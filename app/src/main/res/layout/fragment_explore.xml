@@ -47,9 +47,11 @@
         android:layout_below="@id/header"
         android:layout_margin="10dp"
         android:background="@drawable/search_results"
+        android:ellipsize="end"
         android:hint="@string/pesquisar"
-        android:lines="1"
         android:padding="12dp"
-        android:textColor="#000" />
+        android:singleLine="true"
+        android:textColor="#000"
+        android:imeOptions="actionSearch"/>
 
 </RelativeLayout>

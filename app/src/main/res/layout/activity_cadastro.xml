@@ -67,6 +67,7 @@
             android:paddingBottom="15dp" >
 
             <EditText
+                android:imeOptions="actionNext"
                 android:id="@+id/campoNome"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -80,6 +81,7 @@
                 android:textSize="@dimen/navigation_text_size" />
 
             <EditText
+                android:imeOptions="actionNext"
                 android:id="@+id/campoEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -98,6 +100,7 @@
                 android:weightSum="2" >
 
                 <EditText
+                    android:imeOptions="actionNext"
                     android:id="@+id/campoSenha"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -111,6 +114,7 @@
                     android:textSize="@dimen/navigation_text_size" />
 
                 <EditText
+                    android:imeOptions="actionNext"
                     android:id="@+id/campoConfirmarSenha"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -132,6 +136,7 @@
                 android:weightSum="2" >
 
                 <br.com.ntxdev.zup.widget.PhoneEditText
+                    android:imeOptions="actionNext"
                     android:id="@+id/campoTelefone"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -144,6 +149,7 @@
                     android:textSize="@dimen/navigation_text_size" />
 
                 <br.com.ntxdev.zup.widget.CpfEditText
+                    android:imeOptions="actionNext"
                     android:id="@+id/campoCPF"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -157,6 +163,7 @@
             </LinearLayout>
 
             <EditText
+                android:imeOptions="actionNext"
                 android:id="@+id/campoEndereco"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -175,6 +182,7 @@
                 android:weightSum="2" >
 
                 <EditText
+                    android:imeOptions="actionNext"
                     android:id="@+id/campoComplemento"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -188,6 +196,7 @@
                     android:textSize="@dimen/navigation_text_size" />
 
                 <br.com.ntxdev.zup.widget.CepEditText
+                    android:imeOptions="actionNext"
                     android:id="@+id/campoCEP"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -201,6 +210,7 @@
             </LinearLayout>
 
             <EditText
+                android:imeOptions="actionGo"
                 android:id="@+id/campoBairro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -36,6 +36,7 @@
         android:hint="@string/pesquisar"
         android:padding="12dp"
         android:singleLine="true"
-        android:textColor="#000" />
+        android:textColor="#000"
+        android:imeOptions="actionSearch"/>
 
 </RelativeLayout>
