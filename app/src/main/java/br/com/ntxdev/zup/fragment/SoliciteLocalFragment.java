@@ -1,10 +1,7 @@
 package br.com.ntxdev.zup.fragment;
 
-import java.util.List;
-
 import android.annotation.SuppressLint;
 import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -22,14 +19,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import br.com.ntxdev.zup.R;
-import br.com.ntxdev.zup.SoliciteActivity;
-import br.com.ntxdev.zup.domain.Solicitacao;
-import br.com.ntxdev.zup.util.FontUtils;
-import br.com.ntxdev.zup.util.ImageUtils;
-import br.com.ntxdev.zup.util.ViewUtils;
-import br.com.ntxdev.zup.widget.AutoCompleteAdapter;
-
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -37,20 +26,33 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 
+import br.com.ntxdev.zup.R;
+import br.com.ntxdev.zup.SoliciteActivity;
+import br.com.ntxdev.zup.domain.Place;
+import br.com.ntxdev.zup.domain.Solicitacao;
+import br.com.ntxdev.zup.util.FontUtils;
+import br.com.ntxdev.zup.util.GeoUtils;
+import br.com.ntxdev.zup.util.ImageUtils;
+import br.com.ntxdev.zup.util.ViewUtils;
+import br.com.ntxdev.zup.widget.PlacesAutoCompleteAdapter;
+
 public class SoliciteLocalFragment extends Fragment implements AdapterView.OnItemClickListener, GoogleMap.OnMyLocationChangeListener {
 
     // Local inicial: São Paulo
     private static final double INITIAL_LATITUDE = -23.6824124;
     private static final double INITIAL_LONGITUDE = -46.5952992;
 
-    private SupportMapFragment mapFragment;
     private GoogleMap map;
     private static View view;
-    private double latitude, longitude;
+    public static double latitude, longitude;
     private String file;
     private String endereco = "";
     private TimerEndereco task;
     private AutoCompleteTextView autoCompView;
+
+    public void snapshotMap(GoogleMap.SnapshotReadyCallback callback) {
+        map.snapshot(callback);
+    }
 
     @SuppressLint("NewApi")
     @Override
@@ -71,8 +73,7 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
             Log.w("ZUP", e.getMessage());
         }
 
-        mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.mapaLocal);
-        map = mapFragment.getMap();
+        map = ((SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.mapaLocal)).getMap();
         if (map != null) {
             map.getUiSettings().setZoomControlsEnabled(false);
         }
@@ -100,7 +101,7 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
         }
 
         autoCompView = (AutoCompleteTextView) view.findViewById(R.id.autocomplete);
-        autoCompView.setAdapter(new AutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item));
+        autoCompView.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, SoliciteLocalFragment.class));
         autoCompView.setTypeface(FontUtils.getRegular(getActivity()));
         autoCompView.setOnItemClickListener(this);
         autoCompView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -118,7 +119,7 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
 
         task = new TimerEndereco();
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
-            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new Void[]{});
+            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             task.execute();
         }
@@ -186,47 +187,36 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        realizarBuscaAutocomplete((String) adapterView.getItemAtPosition(position));
+        realizarBuscaAutocomplete((Place) adapterView.getItemAtPosition(position));
+        ViewUtils.hideKeyboard(getActivity(), autoCompView);
     }
 
-    private void realizarBuscaAutocomplete(String str) {
-        try {
-            Address addr = new Geocoder(getActivity()).getFromLocationName(str, 1).get(0);
+    private void realizarBuscaAutocomplete(Place place) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+            new GeocoderTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, place);
+        } else {
+            new GeocoderTask().execute(place);
+        }
+    }
 
-            CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
-                    addr.getLongitude())).zoom(15).build();
-            CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
-            map.animateCamera(update);
-        } catch (Exception e) {
-            Log.e("ZUP", e.getMessage());
+    private void realizarBuscaAutocomplete(String query) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+            new SearchTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, query);
+        } else {
+            new SearchTask().execute(query);
         }
     }
 
     private void atualizarEndereco() {
-        try {
-            Geocoder geocoder = new Geocoder(getActivity());
-            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
-            if (!addresses.isEmpty()) {
-                endereco = addresses.get(0).getAddressLine(0);
-                autoCompView.setText(endereco);
-            }
-        } catch (Exception e) {
-            Log.e("ZUP", e.getMessage(), e);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+            new AddressTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else {
+            new AddressTask().execute();
         }
     }
 
     private String getEndereco() {
-        Geocoder geocoder = new Geocoder(getActivity());
-        try {
-            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
-            if (!addresses.isEmpty()) {
-                return addresses.get(0).getAddressLine(0);
-            }
-        } catch (Exception e) {
-            Log.e("ZUP", e.getMessage(), e);
-        }
-
-        return "";
+        return endereco;
     }
 
     @Override
@@ -272,6 +262,73 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
         @Override
         protected void onProgressUpdate(String... values) {
             autoCompView.setText(values[0]);
+        }
+    }
+
+    private class GeocoderTask extends AsyncTask<Place, Void, Address> {
+
+        @Override
+        protected Address doInBackground(Place... params) {
+            try {
+                return GeoUtils.getFromPlace(params[0]);
+            } catch (Exception e) {
+                Log.e("ZUP", e.getMessage(), e);
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Address addr) {
+            if (addr != null) {
+                CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
+                        addr.getLongitude())).zoom(15).build();
+                CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
+                map.animateCamera(update);
+            }
+        }
+    }
+
+    private class AddressTask extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected String doInBackground(Void... params) {
+            try {
+                return GeoUtils.getFromLocation(latitude, longitude, 1).get(0).getAddressLine(0);
+            } catch (Exception e) {
+                Log.e("ZUP", e.getMessage(), e);
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String addr) {
+            if (addr != null) {
+                endereco = addr;
+                autoCompView.setText(endereco);
+            }
+        }
+    }
+
+    private class SearchTask extends AsyncTask<String, Void, Address> {
+
+        @Override
+        protected Address doInBackground(String... params) {
+            try {
+                return GeoUtils.search(params[0], latitude, longitude);
+            } catch (Exception e) {
+                Log.e("ZUP", e.getMessage(), e);
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Address addr) {
+            if (addr != null) {
+                CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
+                        addr.getLongitude())).zoom(15).build();
+                CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
+                map.animateCamera(update);
+            }
         }
     }
 }

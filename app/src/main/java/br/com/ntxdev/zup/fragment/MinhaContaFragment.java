@@ -36,7 +36,7 @@ import br.com.ntxdev.zup.EditarContaActivity;
 import br.com.ntxdev.zup.OpeningActivity;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SolicitacaoDetalheActivity;
-import br.com.ntxdev.zup.SolicitacaoListItemAdapter;
+import br.com.ntxdev.zup.widget.SolicitacaoListItemAdapter;
 import br.com.ntxdev.zup.core.Constantes;
 import br.com.ntxdev.zup.domain.SolicitacaoListItem;
 import br.com.ntxdev.zup.domain.Usuario;

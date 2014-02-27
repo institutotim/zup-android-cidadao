@@ -29,6 +29,7 @@ import br.com.ntxdev.zup.fragment.InformacoesFragment;
 import br.com.ntxdev.zup.fragment.SolicitacoesFragment;
 import br.com.ntxdev.zup.service.LoginService;
 import br.com.ntxdev.zup.util.FontUtils;
+import br.com.ntxdev.zup.widget.SolicitacaoListItemAdapter;
 
 public class DetalheMapaActivity extends FragmentActivity implements View.OnClickListener {
 

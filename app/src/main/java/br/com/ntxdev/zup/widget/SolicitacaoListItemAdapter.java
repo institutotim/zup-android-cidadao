@@ -1,4 +1,4 @@
-package br.com.ntxdev.zup;
+package br.com.ntxdev.zup.widget;
 
 import java.util.ArrayList;
 

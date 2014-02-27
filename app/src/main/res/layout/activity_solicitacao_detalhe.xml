@@ -62,6 +62,7 @@
         android:layout_below="@id/info_label" >
 
         <LinearLayout
+            android:background="#fff"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
@@ -97,6 +98,12 @@
                     android:textSize="@dimen/small_text_size" />
             </RelativeLayout>
 
+            <fragment
+                android:id="@+id/map"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/map_size"
+                class="com.google.android.gms.maps.SupportMapFragment" />
+
             <android.support.v4.view.ViewPager
                 android:id="@+id/pager"
                 android:layout_width="match_parent"
@@ -113,8 +120,8 @@
                 android:id="@+id/comentario"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp" />
+                android:layout_marginTop="10dp"
+                android:padding="15dp" />
 
             <TextView
                 android:id="@+id/linkLocal"

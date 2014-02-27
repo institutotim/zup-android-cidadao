@@ -12,23 +12,27 @@ import br.com.ntxdev.zup.util.FontUtils;
 import br.com.ntxdev.zup.util.ImageUtils;
 import br.com.ntxdev.zup.widget.ImagePagerAdapter;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.viewpagerindicator.IconPageIndicator;
 import com.viewpagerindicator.PageIndicator;
 
 public class SolicitacaoDetalheActivity extends FragmentActivity {
 
-	private SolicitacaoListItem solicitacao;
-
-	@SuppressWarnings("deprecation")
+    @SuppressWarnings("deprecation")
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_solicitacao_detalhe);
 
-		solicitacao = (SolicitacaoListItem) getIntent().getExtras().getSerializable("solicitacao");
+        SolicitacaoListItem solicitacao = (SolicitacaoListItem) getIntent().getExtras().getSerializable("solicitacao");
 		boolean alterarLabel = getIntent().getExtras().getBoolean("alterar_botao", false);
 
 		TextView protocolo = (TextView) findViewById(R.id.protocolo);
@@ -50,7 +54,23 @@ public class SolicitacaoDetalheActivity extends FragmentActivity {
 		ViewPager mPager = (ViewPager) findViewById(R.id.pager);
 		if (solicitacao.getFotos().isEmpty()) {
 			mPager.setVisibility(View.GONE);
+            findViewById(R.id.indicator).setVisibility(View.GONE);
+
+            GoogleMap map = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+            map.getUiSettings().setAllGesturesEnabled(false);
+            map.getUiSettings().setMyLocationButtonEnabled(false);
+            map.getUiSettings().setZoomControlsEnabled(false);
+
+            CameraPosition p = new CameraPosition.Builder().target(new LatLng(solicitacao.getLatitude(),
+                    solicitacao.getLongitude())).zoom(15).build();
+            CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
+            map.moveCamera(update);
+
+            map.addMarker(new MarkerOptions()
+                    .position(new LatLng(solicitacao.getLatitude(), solicitacao.getLongitude()))
+                    .icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(this, solicitacao.getCategoria().getMarcador()))));
 		} else {
+            findViewById(R.id.map).setVisibility(View.GONE);
 			ImagePagerAdapter mAdapter = new ImagePagerAdapter(getSupportFragmentManager(), solicitacao.getFotos());
 			mPager.setAdapter(mAdapter);
 			PageIndicator mIndicator = (IconPageIndicator) findViewById(R.id.indicator);

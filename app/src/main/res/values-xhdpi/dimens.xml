@@ -26,6 +26,7 @@
     <dimen name="row_status">12sp</dimen>
 
     <dimen name="view_pager_size">400dp</dimen>
+    <dimen name="map_size">400dp</dimen>
     
     <dimen name="splash_margin">400dp</dimen>
 </resources>

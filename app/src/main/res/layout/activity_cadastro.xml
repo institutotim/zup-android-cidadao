@@ -210,7 +210,7 @@
             </LinearLayout>
 
             <EditText
-                android:imeOptions="actionGo"
+                android:imeOptions="actionDone"
                 android:id="@+id/campoBairro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

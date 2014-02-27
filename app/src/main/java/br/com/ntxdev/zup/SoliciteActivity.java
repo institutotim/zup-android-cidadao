@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.gson.Gson;
 
 import org.apache.http.HttpResponse;
@@ -52,7 +54,7 @@ import br.com.ntxdev.zup.util.FileUtils;
 import br.com.ntxdev.zup.util.FontUtils;
 import br.com.ntxdev.zup.util.NetworkUtils;
 
-public class SoliciteActivity extends FragmentActivity implements View.OnClickListener {
+public class SoliciteActivity extends FragmentActivity implements View.OnClickListener, GoogleMap.SnapshotReadyCallback {
 
     public static final int LOGIN_REQUEST = 1578;
 
@@ -65,6 +67,11 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
     private SoliciteFotosFragment fotosFragment;
     private SoliciteLocalFragment localFragment;
     private SoliciteDetalhesFragment detalhesFragment;
+
+    @Override
+    public void onSnapshotReady(Bitmap bitmap) {
+
+    }
 
     private enum Passo {
         TIPO, LOCAL, FOTOS, COMENTARIOS
@@ -213,6 +220,9 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         if (solicitacao.getComentario().length() > 800) {
             alertarTamanhoComentario();
             return;
+        }
+        if (solicitacao.getFotos().isEmpty()) {
+            localFragment.snapshotMap(this);
         }
         solicitacao.setLatitudeLongitude(localFragment.getLatitudeAtual(), localFragment.getLongitudeAtual());
         enviarSolicitacao();

@@ -71,7 +71,7 @@ public class CategoriaRelato implements Serializable {
 		this.nome = nome;
 	}
 
-	public static class Status {
+	public static class Status implements Serializable {
 		private long id;
 		private int cor;
 		private String nome;
@@ -128,7 +128,7 @@ public class CategoriaRelato implements Serializable {
 				return true;
 			if (obj == null)
 				return false;
-			if (getClass() != obj.getClass())
+			if (this.getClass() != obj.getClass())
 				return false;
 			Status other = (Status) obj;
 			if (id != other.id)
@@ -151,7 +151,7 @@ public class CategoriaRelato implements Serializable {
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (this.getClass() != obj.getClass())
 			return false;
 		CategoriaRelato other = (CategoriaRelato) obj;
 		if (id != other.id)

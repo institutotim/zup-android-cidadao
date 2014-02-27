@@ -2,7 +2,6 @@ package br.com.ntxdev.zup.fragment;
 
 import android.content.Intent;
 import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -59,6 +58,7 @@ import br.com.ntxdev.zup.domain.BuscaExplore;
 import br.com.ntxdev.zup.domain.CategoriaRelato;
 import br.com.ntxdev.zup.domain.ItemInventario;
 import br.com.ntxdev.zup.domain.ItemRelato;
+import br.com.ntxdev.zup.domain.Place;
 import br.com.ntxdev.zup.domain.SolicitacaoListItem;
 import br.com.ntxdev.zup.service.CategoriaInventarioService;
 import br.com.ntxdev.zup.service.CategoriaRelatoService;
@@ -70,7 +70,7 @@ import br.com.ntxdev.zup.util.GeoUtils;
 import br.com.ntxdev.zup.util.ImageUtils;
 import br.com.ntxdev.zup.util.PreferenceUtils;
 import br.com.ntxdev.zup.util.ViewUtils;
-import br.com.ntxdev.zup.widget.AutoCompleteAdapter;
+import br.com.ntxdev.zup.widget.PlacesAutoCompleteAdapter;
 
 public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMyLocationChangeListener,
         GoogleMap.OnCameraChangeListener, AdapterView.OnItemClickListener {
@@ -88,11 +88,13 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
     private Request request = null;
 
+    private AutoCompleteTextView autoCompView;
+
     private GoogleMap map;
     private static View view;
     private BuscaExplore busca;
     private int zoom = 2;
-    private double latitude = 0.0, longitude = 0.0;
+    public static double latitude = 0.0, longitude = 0.0;
 
     private SparseArray<Set<Object>> itens = new SparseArray<Set<Object>>();
     private SparseArray<Map<Marker, Object>> marcadores = new SparseArray<Map<Marker, Object>>();
@@ -151,8 +153,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
             map.moveCamera(update);
         }
 
-        AutoCompleteTextView autoCompView = (AutoCompleteTextView) view.findViewById(R.id.autocomplete);
-        autoCompView.setAdapter(new AutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item));
+        autoCompView = (AutoCompleteTextView) view.findViewById(R.id.autocomplete);
+        autoCompView.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, ExploreFragment.class));
         autoCompView.setTypeface(FontUtils.getRegular(getActivity()));
         autoCompView.setOnItemClickListener(this);
         autoCompView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -202,6 +204,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
             item.setStatus(new SolicitacaoListItem.Status());
             item.setLatitude(ir.getLatitude());
             item.setLongitude(ir.getLongitude());
+            item.setCategoria(ir.getCategoria());
             for (CategoriaRelato.Status status : ir.getCategoria().getStatus()) {
                 if (status.getId() == ir.getIdStatus()) {
                     item.setStatus(new SolicitacaoListItem.Status(status.getNome(), status.getCor()));
@@ -248,27 +251,23 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        realizarBuscaAutocomplete((String) adapterView.getItemAtPosition(i));
+        realizarBuscaAutocomplete((Place) adapterView.getItemAtPosition(i));
+        ViewUtils.hideKeyboard(getActivity(), autoCompView);
     }
 
-    private void realizarBuscaAutocomplete(String str) {
-        try {
-            Address addr = new Geocoder(getActivity()).getFromLocationName(str, 1).get(0);
+    private void realizarBuscaAutocomplete(Place place) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+            new GeocoderTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, place);
+        } else {
+            new GeocoderTask().execute(place);
+        }
+    }
 
-            if (pontoBusca != null) {
-                pontoBusca.remove();
-            }
-
-            pontoBusca = map.addMarker(new MarkerOptions()
-                    .position(new LatLng(addr.getLatitude(), addr.getLongitude()))
-                    .icon(BitmapDescriptorFactory.defaultMarker()));
-
-            CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
-                    addr.getLongitude())).zoom(15).build();
-            CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
-            map.animateCamera(update);
-        } catch (Exception e) {
-            Log.e("ZUP", e.getMessage());
+    private void realizarBuscaAutocomplete(String query) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+            new SearchTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, query);
+        } else {
+            new SearchTask().execute(query);
         }
     }
 
@@ -486,5 +485,67 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
     public void onDestroy() {
         PreferenceUtils.salvarBusca(getActivity(), busca);
         super.onDestroy();
+    }
+
+    private class GeocoderTask extends AsyncTask<Place, Void, Address> {
+
+        @Override
+        protected Address doInBackground(Place... params) {
+            try {
+                return GeoUtils.getFromPlace(params[0]);
+            } catch (Exception e) {
+                Log.e("ZUP", e.getMessage(), e);
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Address addr) {
+            if (addr != null) {
+                if (pontoBusca != null) {
+                    pontoBusca.remove();
+                }
+
+                pontoBusca = map.addMarker(new MarkerOptions()
+                        .position(new LatLng(addr.getLatitude(), addr.getLongitude()))
+                        .icon(BitmapDescriptorFactory.defaultMarker()));
+
+                CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
+                        addr.getLongitude())).zoom(15).build();
+                CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
+                map.animateCamera(update);
+            }
+        }
+    }
+
+    private class SearchTask extends AsyncTask<String, Void, Address> {
+
+        @Override
+        protected Address doInBackground(String... params) {
+            try {
+                return GeoUtils.search(params[0], latitude, longitude);
+            } catch (Exception e) {
+                Log.e("ZUP", e.getMessage(), e);
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Address addr) {
+            if (addr != null) {
+                if (pontoBusca != null) {
+                    pontoBusca.remove();
+                }
+
+                pontoBusca = map.addMarker(new MarkerOptions()
+                        .position(new LatLng(addr.getLatitude(), addr.getLongitude()))
+                        .icon(BitmapDescriptorFactory.defaultMarker()));
+
+                CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
+                        addr.getLongitude())).zoom(15).build();
+                CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
+                map.animateCamera(update);
+            }
+        }
     }
 }

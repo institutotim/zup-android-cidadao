@@ -52,8 +52,17 @@ public class SolicitacaoListItem implements Serializable {
 	private String endereco;
     private Double latitude;
     private Double longitude;
+    private CategoriaRelato categoria;
 
 	private ArrayList<String> fotos;
+
+    public CategoriaRelato getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(CategoriaRelato categoria) {
+        this.categoria = categoria;
+    }
 
 	public String getProtocolo() {
 		return protocolo;
