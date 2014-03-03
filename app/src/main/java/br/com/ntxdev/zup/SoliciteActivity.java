@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,7 +16,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.GoogleMap;
 import com.google.gson.Gson;
 
 import org.apache.http.HttpResponse;
@@ -54,7 +52,7 @@ import br.com.ntxdev.zup.util.FileUtils;
 import br.com.ntxdev.zup.util.FontUtils;
 import br.com.ntxdev.zup.util.NetworkUtils;
 
-public class SoliciteActivity extends FragmentActivity implements View.OnClickListener, GoogleMap.SnapshotReadyCallback {
+public class SoliciteActivity extends FragmentActivity implements View.OnClickListener {
 
     public static final int LOGIN_REQUEST = 1578;
 
@@ -67,11 +65,6 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
     private SoliciteFotosFragment fotosFragment;
     private SoliciteLocalFragment localFragment;
     private SoliciteDetalhesFragment detalhesFragment;
-
-    @Override
-    public void onSnapshotReady(Bitmap bitmap) {
-
-    }
 
     private enum Passo {
         TIPO, LOCAL, FOTOS, COMENTARIOS
@@ -104,7 +97,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         if (savedInstanceState != null) {
             solicitacao = new Gson().fromJson(savedInstanceState.getString("solicitacao"), Solicitacao.class);
             atual = new Gson().fromJson(savedInstanceState.getString("passo"), Passo.class);
-            restoreFragmentsStates();
+            restoreFragmentsStates(savedInstanceState.getString("imagemTemporaria"));
         } else {
             tipoFragment = new SoliciteTipoFragment();
             getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, tipoFragment).commit();
@@ -116,6 +109,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         super.onSaveInstanceState(outState);
         outState.putString("solicitacao", new Gson().toJson(solicitacao));
         outState.putString("passo", new Gson().toJson(atual));
+        outState.putString("imagemTemporaria", fotosFragment.getImagemTemporaria());
     }
 
     public void exibirBarraInferior(boolean exibir) {
@@ -220,9 +214,6 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         if (solicitacao.getComentario().length() > 800) {
             alertarTamanhoComentario();
             return;
-        }
-        if (solicitacao.getFotos().isEmpty()) {
-            localFragment.snapshotMap(this);
         }
         solicitacao.setLatitudeLongitude(localFragment.getLatitudeAtual(), localFragment.getLongitudeAtual());
         enviarSolicitacao();
@@ -339,7 +330,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         SolicitacaoListItem item = new SolicitacaoListItem();
         JSONObject json = new JSONObject(retorno).getJSONObject("report");
 
-        item.setComentario(json.getString("description"));
+        item.setComentario(solicitacao.getComentario());
         item.setData(DateUtils.getIntervaloTempo(new Date()));
         item.setFotos(new ArrayList<String>());
         JSONArray fotos = json.getJSONArray("images");
@@ -352,11 +343,17 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         item.setProtocolo(json.getString("protocol"));
         item.setStatus(new SolicitacaoListItem.Status(json.getJSONObject("status").getString("title"), json.getJSONObject("status").getString("color")));
         item.setTitulo(json.getJSONObject("category").getString("title"));
+        item.setCategoria(solicitacao.getCategoria());
+        item.setLatitude(solicitacao.getLatitude());
+        item.setLongitude(solicitacao.getLongitude());
+        item.setEndereco(json.getString("address"));
         return item;
     }
 
-    private void restoreFragmentsStates() {
+    private void restoreFragmentsStates(String imagemTemporaria) {
         Bundle params = new Bundle();
+        params.putSerializable("solicitacao", solicitacao);
+        params.putString("imagemTemporaria", imagemTemporaria);
         params.putSerializable("solicitacao", solicitacao);
         tipoFragment = new SoliciteTipoFragment();
         tipoFragment.setArguments(params);
@@ -368,18 +365,20 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         detalhesFragment.setArguments(params);
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.fragments_place, tipoFragment).add(R.id.fragments_place, localFragment);
+        ft.add(R.id.fragments_place, fotosFragment).add(R.id.fragments_place, detalhesFragment);
         switch (atual) {
             case COMENTARIOS:
-                ft.replace(R.id.fragments_place, detalhesFragment);
+                ft.show(detalhesFragment).hide(tipoFragment).hide(localFragment).hide(fotosFragment);
                 break;
             case FOTOS:
-                ft.replace(R.id.fragments_place, fotosFragment);
+                ft.hide(detalhesFragment).hide(tipoFragment).hide(localFragment).show(fotosFragment);
                 break;
             case LOCAL:
-                ft.replace(R.id.fragments_place, localFragment);
+                ft.hide(detalhesFragment).hide(tipoFragment).show(localFragment).hide(fotosFragment);
                 break;
             case TIPO:
-                ft.replace(R.id.fragments_place, tipoFragment);
+                ft.hide(detalhesFragment).show(tipoFragment).hide(localFragment).hide(fotosFragment);
                 break;
         }
         ft.commitAllowingStateLoss();

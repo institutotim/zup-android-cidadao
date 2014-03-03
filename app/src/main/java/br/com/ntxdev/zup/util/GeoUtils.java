@@ -99,7 +99,6 @@ public class GeoUtils {
         try {
             response = client.execute(httpGet);
             JSONObject jsonObject = new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8"));
-            Log.d("ZUP", jsonObject.toString());
 
             if ("OK".equalsIgnoreCase(jsonObject.getString("status"))) {
                 JSONObject result = jsonObject.getJSONObject("result");
@@ -132,7 +131,6 @@ public class GeoUtils {
         try {
             response = client.execute(httpGet);
             JSONObject jsonObject = new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8"));
-            Log.d("ZUP", jsonObject.toString());
 
             retList = new ArrayList<Address>();
 

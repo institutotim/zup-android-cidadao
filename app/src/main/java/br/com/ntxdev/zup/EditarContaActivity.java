@@ -31,6 +31,7 @@ import br.com.ntxdev.zup.domain.Usuario;
 import br.com.ntxdev.zup.service.LoginService;
 import br.com.ntxdev.zup.service.UsuarioService;
 import br.com.ntxdev.zup.util.FontUtils;
+import br.com.ntxdev.zup.util.ViewUtils;
 
 public class EditarContaActivity extends Activity implements View.OnClickListener {
 
@@ -63,6 +64,7 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 		botaoCancelar.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+                ViewUtils.hideKeyboard(EditarContaActivity.this, v.getWindowToken());
 				finish();				
 			}
 		});

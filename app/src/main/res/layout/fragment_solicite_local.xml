@@ -25,18 +25,36 @@
         android:layout_centerHorizontal="true"
         android:contentDescription="@string/marcador" />
 
-    <AutoCompleteTextView
-        android:id="@+id/autocomplete"
+    <RelativeLayout
+        android:layout_margin="10dp"
+        android:layout_below="@id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/header"
-        android:layout_margin="10dp"
         android:background="@drawable/search_results"
-        android:ellipsize="end"
-        android:hint="@string/pesquisar"
-        android:padding="12dp"
-        android:singleLine="true"
-        android:textColor="#000"
-        android:imeOptions="actionSearch"/>
+        android:padding="12dp">
+
+        <ImageView
+            android:id="@+id/clean"
+            android:clickable="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:padding="8dp"
+            android:src="@drawable/map_searchbox_btn_delete" />
+
+        <AutoCompleteTextView
+            android:layout_toLeftOf="@id/clean"
+            android:id="@+id/autocomplete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:ellipsize="end"
+            android:hint="@string/pesquisar"
+            android:singleLine="true"
+            android:textColor="#000"
+            android:imeOptions="actionSearch" />
+
+    </RelativeLayout>
 
 </RelativeLayout>

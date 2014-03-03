@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SoliciteActivity;
 import br.com.ntxdev.zup.domain.Solicitacao;
@@ -32,36 +34,40 @@ import eu.janmuller.android.simplecropimage.CropImage;
 
 public class SoliciteFotosFragment extends Fragment implements View.OnClickListener {
 
-	private TextView fotoButton;
-	private static final int CAMERA_RETURN = 1406;
-	private static final int CROP_RETURN = 1407;
-	private static final int GALLERY_RETURN = 1408;
-	private Uri imagemTemporaria;
-	private ImageView fotoFrame;
-	private LinearLayout containerFotos;
-	private List<String> listaFotos = new ArrayList<String>();
-	
-	private View temp = null;
+    private TextView fotoButton;
+    private static final int CAMERA_RETURN = 1406;
+    private static final int CROP_RETURN = 1407;
+    private static final int GALLERY_RETURN = 1408;
+    private Uri imagemTemporaria;
+    private ImageView fotoFrame;
+    private LinearLayout containerFotos;
+    private List<String> listaFotos = new ArrayList<String>();
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		((SoliciteActivity) getActivity()).setInfo(R.string.adicione_fotos);
+    private View temp = null;
 
-		View view = inflater.inflate(R.layout.fragment_solicite_fotos, container, false);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        ((SoliciteActivity) getActivity()).setInfo(R.string.adicione_fotos);
 
-		fotoFrame = (ImageView) view.findViewById(R.id.fotoFrame);
-		containerFotos = (LinearLayout) view.findViewById(R.id.containerFotos);
+        View view = inflater.inflate(R.layout.fragment_solicite_fotos, container, false);
 
-		fotoButton = (TextView) view.findViewById(R.id.fotoButton);
-		fotoButton.setOnClickListener(this);
-		fotoButton.setTypeface(FontUtils.getRegular(getActivity()));
+        fotoFrame = (ImageView) view.findViewById(R.id.fotoFrame);
+        containerFotos = (LinearLayout) view.findViewById(R.id.containerFotos);
 
-		return view;
-	}
+        fotoButton = (TextView) view.findViewById(R.id.fotoButton);
+        fotoButton.setOnClickListener(this);
+        fotoButton.setTypeface(FontUtils.getRegular(getActivity()));
+
+        return view;
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        if (getArguments() != null && getArguments().containsKey("imagemTemporaria")) {
+            imagemTemporaria = Uri.parse(getArguments().getString("imagemTemporaria"));
+        }
 
         ArrayList<String> fotos = null;
         if (getArguments() != null) {
@@ -83,7 +89,7 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
     }
 
     @Override
-	public void onClick(View v) {
+    public void onClick(View v) {
         if (listaFotos != null && listaFotos.size() == 3) {
             new AlertDialog.Builder(getActivity())
                     .setMessage("É possível adicionar apenas 3 fotos para um relato")
@@ -97,99 +103,103 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
             return;
         }
 
-		new AlertDialog.Builder(getActivity()).setItems(R.array.foto_menu, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int item) {
-				switch (item) {
-				case 0:
-					selecionarFoto();
-					break;
-				case 1:
-					tirarFoto();
-					break;
-				case 2:
-					dialog.dismiss();
-					break;
-				}
-			}
-		}).show();
-	}
+        new AlertDialog.Builder(getActivity()).setItems(R.array.foto_menu, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                switch (item) {
+                    case 0:
+                        selecionarFoto();
+                        break;
+                    case 1:
+                        tirarFoto();
+                        break;
+                    case 2:
+                        dialog.dismiss();
+                        break;
+                }
+            }
+        }).show();
+    }
 
-	private void selecionarFoto() {
-		Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-		getActivity().startActivityForResult(intent, GALLERY_RETURN);
-	}
+    private void selecionarFoto() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        getActivity().startActivityForResult(intent, GALLERY_RETURN);
+    }
 
-	private void tirarFoto() {
-		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-		// Arquivo temporário
-		imagemTemporaria = Uri.fromFile(new File(FileUtils.getTempImagesFolder(), "tmp_image_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
-		intent.putExtra(MediaStore.EXTRA_OUTPUT, imagemTemporaria);
-		intent.putExtra("return-data", true);
-		getActivity().startActivityForResult(intent, CAMERA_RETURN);
-	}
+    private void tirarFoto() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Arquivo temporário
+        imagemTemporaria = Uri.fromFile(new File(FileUtils.getTempImagesFolder(), "tmp_image_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imagemTemporaria);
+        intent.putExtra("return-data", true);
+        getActivity().startActivityForResult(intent, CAMERA_RETURN);
+    }
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (resultCode != Activity.RESULT_OK) {
-			temp = null;
-			return;
-		}
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_OK) {
+            temp = null;
+            return;
+        }
 
-		switch (requestCode) {
-		case CROP_RETURN:
-			String path = data.getStringExtra(CropImage.IMAGE_PATH);
-			if (path == null) {
-				temp = null;
-				return;
-			}
-			
-			removerFoto(temp);
+        switch (requestCode) {
+            case CROP_RETURN:
+                String path = data.getStringExtra(CropImage.IMAGE_PATH);
+                if (path == null) {
+                    temp = null;
+                    return;
+                }
 
-			((SoliciteActivity) getActivity()).adicionarFoto(path);
-			((SoliciteActivity) getActivity()).assertFragmentVisibility();
-			adicionarFoto(path);
-			break;
-		case GALLERY_RETURN:
-			Uri selectedImage = data.getData();
-			String[] filePathColumn = { MediaStore.Images.Media.DATA };
-            if (selectedImage == null) return;
-			Cursor cursor = getActivity().getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-            if (cursor == null) return;
-			cursor.moveToFirst();
-			int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-			String picturePath = cursor.getString(columnIndex);
-			cursor.close();
-			imagemTemporaria = Uri.fromFile(new File(picturePath));
-		case CAMERA_RETURN:
-			Intent intent = new Intent(getActivity(), CropImage.class);
-			intent.putExtra(CropImage.IMAGE_PATH, imagemTemporaria.getPath());
-			intent.putExtra(CropImage.SCALE, true);
-			intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(FileUtils.getTempImagesFolder(), System.currentTimeMillis() + ".jpg")));
-			intent.putExtra(CropImage.ASPECT_X, 1);
-			intent.putExtra(CropImage.ASPECT_Y, 1);
-			intent.putExtra(CropImage.OUTPUT_X, 800);
-			intent.putExtra(CropImage.OUTPUT_Y, 800);
+                removerFoto(temp);
 
-			getActivity().startActivityForResult(intent, CROP_RETURN);
-			break;
-		}
-	}
+                ((SoliciteActivity) getActivity()).adicionarFoto(path);
+                ((SoliciteActivity) getActivity()).assertFragmentVisibility();
+                adicionarFoto(path);
+                break;
+            case GALLERY_RETURN:
+                Uri selectedImage = data.getData();
+                String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                if (selectedImage == null) return;
+                Cursor cursor = getActivity().getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+                if (cursor == null) return;
+                cursor.moveToFirst();
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                String picturePath = cursor.getString(columnIndex);
+                cursor.close();
+                imagemTemporaria = Uri.fromFile(new File(picturePath));
+            case CAMERA_RETURN:
+                Intent intent = new Intent(getActivity(), CropImage.class);
+                intent.putExtra(CropImage.IMAGE_PATH, imagemTemporaria.getPath());
+                intent.putExtra(CropImage.SCALE, true);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(FileUtils.getTempImagesFolder(), System.currentTimeMillis() + ".jpg")));
+                intent.putExtra(CropImage.ASPECT_X, 1);
+                intent.putExtra(CropImage.ASPECT_Y, 1);
+                intent.putExtra(CropImage.OUTPUT_X, 800);
+                intent.putExtra(CropImage.OUTPUT_Y, 800);
 
-	private void removerFoto(View view) {
-		if (view == null) return;
-		
-		String foto = (String) view.getTag();
-		containerFotos.removeView(view);
-		listaFotos.remove(foto);
-		
-		if (listaFotos.isEmpty()) {
-			fotoFrame.setVisibility(View.VISIBLE);
-			containerFotos.setVisibility(View.GONE);
-		} else {
-			containerFotos.setWeightSum(listaFotos.size());
-		}
-	}
+                getActivity().startActivityForResult(intent, CROP_RETURN);
+                break;
+        }
+    }
+
+    public String getImagemTemporaria() {
+        return imagemTemporaria != null ? imagemTemporaria.getPath() : "";
+    }
+
+    private void removerFoto(View view) {
+        if (view == null) return;
+
+        String foto = (String) view.getTag();
+        containerFotos.removeView(view);
+        listaFotos.remove(foto);
+
+        if (listaFotos.isEmpty()) {
+            fotoFrame.setVisibility(View.VISIBLE);
+            containerFotos.setVisibility(View.GONE);
+        } else {
+            containerFotos.setWeightSum(listaFotos.size());
+        }
+    }
 
     private void adicionarFoto(String foto) {
         Bitmap bitmap = BitmapFactory.decodeFile(foto);

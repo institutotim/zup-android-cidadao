@@ -124,6 +124,7 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 		Object categoria = v.getTag();
 		TextView view = (TextView) v;
 		if (categoria instanceof CategoriaInventario) {
+            unselectCategoriasInventario();
 			unselectCategoriasRelatos();
 			seekBar.setEnabled(false);
 			if (inventarios.contains(categoria)) {

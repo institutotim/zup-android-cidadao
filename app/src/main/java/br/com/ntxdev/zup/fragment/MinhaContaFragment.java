@@ -32,6 +32,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.common.collect.Lists;
+
 import br.com.ntxdev.zup.EditarContaActivity;
 import br.com.ntxdev.zup.OpeningActivity;
 import br.com.ntxdev.zup.R;
@@ -237,9 +240,9 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 					JSONArray array = new JSONObject(result).getJSONArray("reports");
 					List<SolicitacaoListItem> itens = new ArrayList<SolicitacaoListItem>();
 					for (int i = 0; i < array.length(); i++) {
-						itens.add(SolicitacaoListItemAdapter.adapt(array.getJSONObject(i)));
+						itens.add(SolicitacaoListItemAdapter.adapt(getActivity(), array.getJSONObject(i)));
 					}
-					preencherLista(itens);
+					preencherLista(Lists.reverse(itens));
 				} catch (Exception e) {
 					Log.e("ZUP", e.getMessage());
 					Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos", Toast.LENGTH_LONG).show();

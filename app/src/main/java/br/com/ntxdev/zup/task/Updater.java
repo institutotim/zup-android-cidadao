@@ -21,7 +21,7 @@ public class Updater {
 	public void update(Context context) throws Exception {
 		try {
 			HttpClient client = new DefaultHttpClient();
-			HttpGet get = new HttpGet(Constantes.REST_URL + "/reports/categories");
+			HttpGet get = new HttpGet(Constantes.REST_URL + "/reports/categories?display_type=full");
 			HttpResponse response = client.execute(get);
 			
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {

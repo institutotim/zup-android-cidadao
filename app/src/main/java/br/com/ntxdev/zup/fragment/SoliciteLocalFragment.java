@@ -39,8 +39,8 @@ import br.com.ntxdev.zup.widget.PlacesAutoCompleteAdapter;
 public class SoliciteLocalFragment extends Fragment implements AdapterView.OnItemClickListener, GoogleMap.OnMyLocationChangeListener {
 
     // Local inicial: São Paulo
-    private static final double INITIAL_LATITUDE = -23.6824124;
-    private static final double INITIAL_LONGITUDE = -46.5952992;
+    private static final double INITIAL_LATITUDE = -23.5501283;
+    private static final double INITIAL_LONGITUDE = -46.6338553;
 
     private GoogleMap map;
     private static View view;
@@ -57,7 +57,6 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
     @SuppressLint("NewApi")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.i("ZUP", "onCreateView called");
         if (view != null) {
             ViewGroup parent = (ViewGroup) view.getParent();
             if (parent != null)
@@ -75,13 +74,10 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
 
         map = ((SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.mapaLocal)).getMap();
         if (map != null) {
-            map.getUiSettings().setZoomControlsEnabled(false);
-        }
-
-        if (map != null) {
             map.setMyLocationEnabled(true);
             map.getUiSettings().setMyLocationButtonEnabled(false);
             map.getUiSettings().setZoomControlsEnabled(false);
+            map.setOnMyLocationChangeListener(this);
 
             map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
 
@@ -95,7 +91,7 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
             map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
             CameraPosition p = new CameraPosition.Builder().target(new LatLng(INITIAL_LATITUDE,
-                    INITIAL_LONGITUDE)).zoom(15).build();
+                    INITIAL_LONGITUDE)).zoom(12).build();
             CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
             map.moveCamera(update);
         }
@@ -116,6 +112,12 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
                 return handled;
             }
         });
+        view.findViewById(R.id.clean).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                autoCompView.setText("");
+            }
+        });
 
         task = new TimerEndereco();
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
@@ -133,7 +135,6 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
 
         if (map != null) {
             if (getArguments() != null) {
-                Log.i("ZUP", "arguments is not null");
                 Solicitacao solicitacao = (Solicitacao) getArguments().getSerializable("solicitacao");
                 if (solicitacao != null) {
                     file = solicitacao.getCategoria().getMarcador();
@@ -143,7 +144,7 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
                     map.moveCamera(update);
                 }
             } else {
-                Log.i("ZUP", "arguments is null");
+                Log.d("ZUP", "setting location listener");
                 map.setOnMyLocationChangeListener(this);
             }
         }
@@ -251,6 +252,7 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
                 }
 
                 if (lat != latitude && lon != longitude) {
+                    atualizarEndereco();
                     lat = latitude;
                     lon = longitude;
                     publishProgress(getEndereco());
@@ -261,7 +263,10 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
 
         @Override
         protected void onProgressUpdate(String... values) {
+            endereco = values[0];
             autoCompView.setText(values[0]);
+            //autoCompView.setAdapter(null);
+            autoCompView.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, SoliciteLocalFragment.class));
         }
     }
 
@@ -305,6 +310,10 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
             if (addr != null) {
                 endereco = addr;
                 autoCompView.setText(endereco);
+                //autoCompView.setAdapter(null);
+                if (getActivity() != null) {
+                    autoCompView.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, SoliciteLocalFragment.class));
+                }
             }
         }
     }

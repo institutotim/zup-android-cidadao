@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.InflateException;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -18,6 +17,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -76,8 +76,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         GoogleMap.OnCameraChangeListener, AdapterView.OnItemClickListener {
 
     // Local inicial: São Paulo
-    private static final double INITIAL_LATITUDE = -23.6824124;
-    private static final double INITIAL_LONGITUDE = -46.5952992;
+    private static final double INITIAL_LATITUDE = -23.5501283;
+    private static final double INITIAL_LONGITUDE = -46.6338553;
 
     private class Request {
         double latitude, longitude;
@@ -93,14 +93,15 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
     private GoogleMap map;
     private static View view;
     private BuscaExplore busca;
-    private int zoom = 2;
     public static double latitude = 0.0, longitude = 0.0;
 
-    private SparseArray<Set<Object>> itens = new SparseArray<Set<Object>>();
-    private SparseArray<Map<Marker, Object>> marcadores = new SparseArray<Map<Marker, Object>>();
+    private Set<Object> itens = new HashSet<Object>();
+    private Map<Marker, Object> marcadores = new HashMap<Marker, Object>();
 
     private Marker pontoBusca;
     private long raio = 0l;
+
+    private ProgressBar progressBar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -129,6 +130,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
             }
         });
 
+        progressBar = (ProgressBar) view.findViewById(R.id.loading);
+
         busca = PreferenceUtils.obterBuscaExplore(getActivity());
         if (busca == null) {
             busca = new BuscaExplore();
@@ -148,7 +151,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
             map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
             CameraPosition p = new CameraPosition.Builder().target(new LatLng(INITIAL_LATITUDE,
-                    INITIAL_LONGITUDE)).zoom(15).build();
+                    INITIAL_LONGITUDE)).zoom(12).build();
             CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
             map.moveCamera(update);
         }
@@ -167,6 +170,12 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                     handled = true;
                 }
                 return handled;
+            }
+        });
+        view.findViewById(R.id.clean).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                autoCompView.setText("");
             }
         });
 
@@ -188,7 +197,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
     public void onInfoWindowClick(Marker marker) {
         Intent intent = null;
 
-        Object marcador = marcadores.get(zoom).get(marker);
+        Object marcador = marcadores.get(marker);
         if (marcador instanceof ItemInventario) {
             intent = new Intent(getActivity(), DetalheMapaActivity.class);
             intent.putExtra("item", (ItemInventario) marcador);
@@ -218,22 +227,16 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
     }
 
     private void adicionarMarker(ItemInventario item) {
-        if (itens.get(zoom) == null) itens.put(zoom, new HashSet<Object>());
-        if (marcadores.get(zoom) == null) marcadores.put(zoom, new HashMap<Marker, Object>());
-
-        itens.get(zoom).add(item);
-        marcadores.get(zoom).put(map.addMarker(new MarkerOptions()
+        itens.add(item);
+        marcadores.put(map.addMarker(new MarkerOptions()
                 .position(new LatLng(item.getLatitude(), item.getLongitude()))
                 .icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(getActivity(), item.getCategoria().getMarcador())))
                 .title(item.getCategoria().getNome())), item);
     }
 
     private void adicionarMarker(ItemRelato item) {
-        if (itens.get(zoom) == null) itens.put(zoom, new HashSet<Object>());
-        if (marcadores.get(zoom) == null) marcadores.put(zoom, new HashMap<Marker, Object>());
-
-        itens.get(zoom).add(item);
-        marcadores.get(zoom).put(map.addMarker(new MarkerOptions()
+        itens.add(item);
+        marcadores.put(map.addMarker(new MarkerOptions()
                 .position(new LatLng(item.getLatitude(), item.getLongitude()))
                 .icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(getActivity(), item.getCategoria().getMarcador())))
                 .title(item.getCategoria().getNome())), item);
@@ -241,9 +244,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
     @Override
     public void onMyLocationChange(Location location) {
-        zoom = 15;
         CameraPosition position = new CameraPosition.Builder().target(new LatLng(location.getLatitude(),
-                location.getLongitude())).zoom(zoom).build();
+                location.getLongitude())).zoom(15).build();
         CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
         map.animateCamera(update);
         map.setOnMyLocationChangeListener(null);
@@ -275,11 +277,6 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
     public void onCameraChange(CameraPosition cameraPosition) {
         if (cameraPosition.target.latitude == 0.0 && cameraPosition.target.longitude == 0.0) return;
 
-        int zoom = (int) cameraPosition.zoom;
-        if (zoom != this.zoom) {
-            this.zoom = zoom;
-            removerTodosItensMapa();
-        }
         latitude = cameraPosition.target.latitude;
         longitude = cameraPosition.target.longitude;
         raio = GeoUtils.getVisibleRadius(map);
@@ -289,9 +286,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
     }
 
     private void exibirElementos() {
-        if (itens.get(zoom) == null) return;
-
-        for (Object pontoMapa : itens.get(zoom)) {
+        for (Object pontoMapa : itens) {
             if (pontoMapa instanceof ItemRelato) {
                 ItemRelato item = (ItemRelato) pontoMapa;
                 if (busca.getIdsCategoriaRelato().contains(item.getId())) {
@@ -307,9 +302,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
     }
 
     private void removerItensMapa() {
-        if (marcadores.get(zoom) == null) return;
-
-        Iterator<Marker> it = marcadores.get(zoom).keySet().iterator();
+        Iterator<Marker> it = marcadores.keySet().iterator();
         while (it.hasNext()) {
             Marker marker = it.next();
             if (!GeoUtils.isVisible(map.getProjection().getVisibleRegion(), marker.getPosition())) {
@@ -376,6 +369,26 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         }
 
         @Override
+        protected void onPreExecute() {
+            progressBar.post(new Runnable() {
+                @Override
+                public void run() {
+                    progressBar.setVisibility(View.VISIBLE);
+                }
+            });
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            progressBar.post(new Runnable() {
+                @Override
+                public void run() {
+                    progressBar.setVisibility(View.GONE);
+                }
+            });
+        }
+
+        @Override
         protected Void doInBackground(Void... voids) {
             Log.i("ZUP", "Request started");
             try {
@@ -413,13 +426,13 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
             }
 
             for (ItemInventario item : itensInventario) {
-                if (marcadores.get(zoom) == null || !marcadores.get(zoom).containsValue(item)) {
+                if (!marcadores.containsValue(item)) {
                     publishProgress(item);
                 }
             }
 
             for (ItemRelato item : itensRelato) {
-                if (marcadores.get(zoom) == null || !marcadores.get(zoom).containsValue(item)) {
+                if (!marcadores.containsValue(item)) {
                     publishProgress(item);
                 }
             }

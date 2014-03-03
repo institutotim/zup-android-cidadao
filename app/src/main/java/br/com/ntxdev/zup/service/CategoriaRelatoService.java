@@ -13,6 +13,8 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
+import br.com.ntxdev.zup.domain.CategoriaInventario;
 import br.com.ntxdev.zup.domain.CategoriaRelato;
 
 public class CategoriaRelatoService {
@@ -131,6 +133,8 @@ public class CategoriaRelatoService {
 				categoria.setMarcador(file[file.length - 1]);
 				categoria.setNome(obj.getString("title"));
 				categoria.setStatus(extrairStatus(obj.getJSONArray("statuses")));
+                categoria.setPosicaoArbitraria(obj.getBoolean("allows_arbitrary_position"));
+                categoria.setCategoriasInventario(extrairCategoriasInventario(context, obj.getJSONArray("inventory_categories")));
 				categorias.add(categoria);
 			}
 			return categorias;
@@ -139,6 +143,17 @@ public class CategoriaRelatoService {
 			return Collections.emptyList();
 		}
 	}
+
+    private ArrayList<CategoriaInventario> extrairCategoriasInventario(Context context, JSONArray array) throws JSONException {
+        ArrayList<CategoriaInventario> categorias = new ArrayList<CategoriaInventario>();
+
+        CategoriaInventarioService service = new CategoriaInventarioService();
+        for (int i = 0; i < array.length(); i++) {
+            categorias.add(service.getById(context, array.getJSONObject(i).getLong("id")));
+        }
+
+        return categorias;
+    }
 	
 	private ArrayList<CategoriaRelato.Status> extrairStatus(JSONArray lista) throws JSONException {
 		ArrayList<CategoriaRelato.Status> status = new ArrayList<CategoriaRelato.Status>();

@@ -105,7 +105,7 @@ public class SocialUtil {
 							try {
 								postId = graphResponse.getString("id");
 							} catch (JSONException e) {
-								Log.i("Social Me", "JSON error " + e.getMessage());
+								Log.e("Social Me", "JSON error " + e.getMessage());
 							}
 							FacebookRequestError error = response.getError();
 							if (error != null) {

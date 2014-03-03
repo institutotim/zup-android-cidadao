@@ -10,5 +10,6 @@
     <dimen name="chart_radius">140dp</dimen>
     <dimen name="navigation_text_size">22sp</dimen>
     <dimen name="instruction_text_size">16sp</dimen>
+    <dimen name="image_resize">200dp</dimen>
 
 </resources>

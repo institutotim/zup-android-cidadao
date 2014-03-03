@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <RelativeLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:background="#fff" >
+        android:background="#fff">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -40,18 +40,45 @@
         android:layout_below="@id/header"
         class="com.google.android.gms.maps.SupportMapFragment" />
 
-    <AutoCompleteTextView
-        android:id="@+id/autocomplete"
+    <RelativeLayout
+        android:layout_margin="10dp"
+        android:layout_below="@id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/header"
-        android:layout_margin="10dp"
         android:background="@drawable/search_results"
-        android:ellipsize="end"
-        android:hint="@string/pesquisar"
-        android:padding="12dp"
-        android:singleLine="true"
-        android:textColor="#000"
-        android:imeOptions="actionSearch"/>
+        android:padding="12dp">
+
+        <ImageView
+            android:clickable="true"
+            android:id="@+id/clean"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:padding="8dp"
+            android:src="@drawable/map_searchbox_btn_delete" />
+
+        <AutoCompleteTextView
+            android:layout_toLeftOf="@id/clean"
+            android:id="@+id/autocomplete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:ellipsize="end"
+            android:hint="@string/pesquisar"
+            android:singleLine="true"
+            android:textColor="#000"
+            android:imeOptions="actionSearch" />
+    </RelativeLayout>
+
+    <ProgressBar
+        android:id="@+id/loading"
+        android:visibility="gone"
+        style="@style/ZupProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:padding="10dp" />
 
 </RelativeLayout>
