@@ -27,6 +27,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -49,11 +50,21 @@ import br.com.ntxdev.zup.util.FileUtils;
 import br.com.ntxdev.zup.util.FontUtils;
 import br.com.ntxdev.zup.util.ImageUtils;
 
-public class MinhaContaFragment extends Fragment implements AdapterView.OnItemClickListener {
+public class MinhaContaFragment extends Fragment implements AdapterView.OnItemClickListener,
+        AbsListView.OnScrollListener {
 	
 	private static final int REQUEST_EDIT_USER = 1099;
 
     private TextView nomeUsuario;
+
+    private boolean isLoading = false;
+    private Tasker task;
+    private SolicitacaoAdapter adapter;
+    private int lastPageLoaded = 0;
+    private boolean shouldContinueLoading = true;
+    private String lastResult = "";
+
+    List<SolicitacaoListItem> listaSolicitacoes = new ArrayList<SolicitacaoListItem>();
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -114,7 +125,17 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 		solicitacoes.setText(items.size() + " " + 
 				(items.size() == 1 ? getString(R.string.solicitacao) : getString(R.string.solicitacoes)));
 
-        new Tasker().execute();
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+            new Tasker().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else {
+            new Tasker().execute();
+        }
+
+        ListView list = (ListView) view.findViewById(R.id.listaSolicitacoes);
+        list.setOnItemClickListener(this);
+        adapter = new SolicitacaoAdapter(getActivity(), listaSolicitacoes);
+        list.setAdapter(adapter);
+        list.setOnScrollListener(this);
 
 		return view;
 	}
@@ -123,22 +144,48 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 	public void onHiddenChanged(boolean hidden) {
 		super.onHiddenChanged(hidden);
 		if (!hidden) {
-			new Tasker().execute();
+            lastPageLoaded = 0;
+            shouldContinueLoading = true;
+            lastResult = "";
+            adapter.clear();
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+                new Tasker().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                new Tasker().execute();
+            }
 		}
 	}
 	
 	private void preencherLista(List<SolicitacaoListItem> itens) {
-		ListView list = (ListView) getView().findViewById(R.id.listaSolicitacoes);
-		list.setOnItemClickListener(this);
-		list.setAdapter(new SolicitacaoAdapter(getActivity(), itens));
-		
+        listaSolicitacoes.addAll(itens);
+        adapter.notifyDataSetChanged();
+
 		TextView solicitacoes = (TextView) getView().findViewById(R.id.solicitacoes);
 		solicitacoes.setTypeface(FontUtils.getBold(getActivity()));
-		solicitacoes.setText(itens.size() + " " + 
+		solicitacoes.setText(listaSolicitacoes.size() + " " +
 				(itens.size() == 1 ? getString(R.string.solicitacao) : getString(R.string.solicitacoes)));
 	}
 
-	public class SolicitacaoAdapter extends ArrayAdapter<SolicitacaoListItem> {
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        int loadedItems = firstVisibleItem + visibleItemCount;
+        if ((loadedItems == totalItemCount) && !isLoading) {
+            if ((task != null && (task.getStatus() == AsyncTask.Status.FINISHED)) || task == null) {
+                task = new Tasker();
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                } else {
+                    task.execute();
+                }
+            }
+        }
+    }
+
+    public class SolicitacaoAdapter extends ArrayAdapter<SolicitacaoListItem> {
 
 		private List<SolicitacaoListItem> items;
 
@@ -207,49 +254,70 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 
 		@Override
 		protected void onPreExecute() {
-			dialog = new ProgressDialog(getActivity());
-			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			dialog.setIndeterminate(true);
-			dialog.setMessage("Por favor, aguarde...");
-			dialog.show();
+            if (shouldContinueLoading) {
+                dialog = new ProgressDialog(getActivity());
+                dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                dialog.setIndeterminate(true);
+                dialog.setMessage("Por favor, aguarde...");
+                dialog.show();
+            }
 		}
 
 		@Override
 		protected String doInBackground(Void... params) {
-			try {
-				HttpClient client = new DefaultHttpClient();
-				HttpGet get = new HttpGet(Constantes.REST_URL + "/reports/users/me/items");
-				get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
-				HttpResponse response = client.execute(get);
-				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-					String json = EntityUtils.toString(response.getEntity(), "UTF-8");
-					baixarFotos(json);
-					return json;
-				}
-			} catch (Exception e) {
-				Log.e("ZUP", e.getMessage());
-			}
+            if (shouldContinueLoading) {
+                try {
+                    isLoading = true;
+                    HttpClient client = new DefaultHttpClient();
+                    HttpGet get = new HttpGet(Constantes.REST_URL + "/reports/users/me/items?per_page=10&page=" + (lastPageLoaded + 1));
+                    get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
+                    HttpResponse response = client.execute(get);
+                    if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                        String json = EntityUtils.toString(response.getEntity(), "UTF-8");
+
+                        if (lastResult.equals(json)) {
+                            shouldContinueLoading = false;
+                            return null;
+                        } else {
+                            lastResult = json;
+                        }
+
+                        baixarFotos(json);
+                        return json;
+                    }
+                } catch (Exception e) {
+                    Log.e("ZUP", e.getMessage(), e);
+                }
+            }
 			return null;
 		}
 		
 		@Override
 		protected void onPostExecute(String result) {
-			dialog.dismiss();
-			if (result != null) {
-				try {
-					JSONArray array = new JSONObject(result).getJSONArray("reports");
-					List<SolicitacaoListItem> itens = new ArrayList<SolicitacaoListItem>();
-					for (int i = 0; i < array.length(); i++) {
-						itens.add(SolicitacaoListItemAdapter.adapt(getActivity(), array.getJSONObject(i)));
-					}
-					preencherLista(Lists.reverse(itens));
-				} catch (Exception e) {
-					Log.e("ZUP", e.getMessage());
-					Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos", Toast.LENGTH_LONG).show();
-				}
-			} else {
-				Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos", Toast.LENGTH_LONG).show();
-			}
+            isLoading = false;
+            if (dialog != null) dialog.dismiss();
+            if (shouldContinueLoading) {
+                if (result != null) {
+                    try {
+                        JSONObject obj = new JSONObject(result);
+                        Log.d("ZUP", obj.toString(4));
+                        JSONArray array = obj.getJSONArray("reports");
+                        List<SolicitacaoListItem> itens = new ArrayList<SolicitacaoListItem>();
+                        for (int i = 0; i < array.length(); i++) {
+                            itens.add(SolicitacaoListItemAdapter.adapt(getActivity(), array.getJSONObject(i)));
+                        }
+
+                        if (itens.isEmpty()) shouldContinueLoading = false;
+                        lastPageLoaded++;
+                        preencherLista(Lists.reverse(itens));
+                    } catch (Exception e) {
+                        Log.e("ZUP", e.getMessage(), e);
+                        Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos", Toast.LENGTH_LONG).show();
+                }
+            }
 		}
 		
 		private void baixarFotos(String json) throws Exception {

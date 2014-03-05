@@ -14,9 +14,12 @@ public class UsuarioService {
 	public Usuario getUsuarioAtivo(Context context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		try {
-			return extrairDoJSON(new JSONObject(prefs.getString("raw_user", "")));
+            String json = prefs.getString("raw_user", "");
+            if ("".equals(json)) return null;
+
+			return extrairDoJSON(new JSONObject(json));
 		} catch (Exception e) {
-			Log.e("ZUP", e.getMessage());
+			Log.e("ZUP", e.getMessage(), e);
 			return null;
 		}
 	}

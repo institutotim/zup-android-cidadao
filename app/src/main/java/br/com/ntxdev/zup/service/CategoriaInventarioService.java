@@ -41,7 +41,7 @@ public class CategoriaInventarioService {
 				}
 			}
 		} catch (Exception e) {
-			Log.e("ZUP", e.getMessage());
+			Log.e("ZUP", e.getMessage(), e);
 		}
 
 		return null;
@@ -73,7 +73,7 @@ public class CategoriaInventarioService {
 			}
 			return categorias;
 		} catch (Exception e) {
-			Log.e("ZUP", e.getMessage());
+			Log.e("ZUP", e.getMessage(), e);
 			return Collections.emptyList();
 		}
 	}

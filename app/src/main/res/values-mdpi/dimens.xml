@@ -25,6 +25,7 @@
     <dimen name="row_status">10sp</dimen>
 
     <dimen name="view_pager_size">300dp</dimen>
+    <dimen name="comments_box_size">150dp</dimen>
     <dimen name="map_size">300dp</dimen>
     
     <dimen name="splash_margin">275dp</dimen>

@@ -181,7 +181,7 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 					return EntityUtils.toString(response.getEntity(), "UTF-8");
 				}
 			} catch (Exception e) {
-				Log.e("ZUP", e.getMessage());
+				Log.e("ZUP", e.getMessage(), e);
 			}
 			return null;
 		}
@@ -193,7 +193,7 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 				try {
 					new LoginService().atualizarUsuario(EditarContaActivity.this, new UsuarioService().converterParaJSON(usuario));
 				} catch (JSONException e) {
-					Log.e("ZUP", e.getMessage());
+					Log.e("ZUP", e.getMessage(), e);
 				}
 				Toast.makeText(EditarContaActivity.this, "Dados atualizados com sucesso", Toast.LENGTH_LONG).show();
 				setResult(Activity.RESULT_OK);

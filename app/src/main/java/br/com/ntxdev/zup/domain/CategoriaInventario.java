@@ -72,7 +72,7 @@ public class CategoriaInventario implements Serializable {
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof CategoriaInventario))
 			return false;
 		CategoriaInventario other = (CategoriaInventario) obj;
 		if (id != other.id)

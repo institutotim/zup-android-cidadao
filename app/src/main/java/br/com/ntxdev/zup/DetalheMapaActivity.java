@@ -154,7 +154,7 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 				montarHashMap(categoria, itemInventario);
 				return Boolean.TRUE;
 			} catch (Exception e) {
-				Log.e("ZUP", e.getMessage());
+				Log.e("ZUP", e.getMessage(), e);
 				return Boolean.FALSE;
 			}
 		}

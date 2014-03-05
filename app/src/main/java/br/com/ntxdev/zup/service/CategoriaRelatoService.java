@@ -42,7 +42,7 @@ public class CategoriaRelatoService {
 				}
 			}
 		} catch (Exception e) {
-			Log.e("ZUP", e.getMessage());
+			Log.e("ZUP", e.getMessage(), e);
 		}
 		
 		return status;
@@ -71,7 +71,7 @@ public class CategoriaRelatoService {
 				}
 			}
 		} catch (Exception e) {
-			Log.e("ZUP", e.getMessage());
+			Log.e("ZUP", e.getMessage(), e);
 		}
 
 		return null;
@@ -100,11 +100,12 @@ public class CategoriaRelatoService {
 					categoria.setMarcador(file[file.length - 1]);
 					categoria.setNome(obj.getString("title"));
 					categoria.setStatus(extrairStatus(obj.getJSONArray("statuses")));
+                    categoria.setCategoriasInventario(extrairCategoriasInventario(context, obj.getJSONArray("inventory_categories")));
 					return categoria;
 				}
 			}
 		} catch (Exception e) {
-			Log.e("ZUP", e.getMessage());
+			Log.e("ZUP", e.getMessage(), e);
 		}
 
 		return null;
@@ -133,13 +134,12 @@ public class CategoriaRelatoService {
 				categoria.setMarcador(file[file.length - 1]);
 				categoria.setNome(obj.getString("title"));
 				categoria.setStatus(extrairStatus(obj.getJSONArray("statuses")));
-                categoria.setPosicaoArbitraria(obj.getBoolean("allows_arbitrary_position"));
                 categoria.setCategoriasInventario(extrairCategoriasInventario(context, obj.getJSONArray("inventory_categories")));
 				categorias.add(categoria);
 			}
 			return categorias;
 		} catch (Exception e) {
-			Log.e("ZUP", e.getMessage());
+			Log.e("ZUP", e.getMessage(), e);
 			return Collections.emptyList();
 		}
 	}

@@ -13,7 +13,6 @@ public class CategoriaRelato implements Serializable {
     private String iconeInativo;
 	private String marcador;
 	private String nome;
-    private boolean posicaoArbitraria;
     private ArrayList<CategoriaInventario> categoriasInventario;
 
 	private ArrayList<Status> status;
@@ -31,14 +30,6 @@ public class CategoriaRelato implements Serializable {
 
     public void setCategoriasInventario(ArrayList<CategoriaInventario> categoriasInventario) {
         this.categoriasInventario = categoriasInventario;
-    }
-
-    public boolean isPosicaoArbitraria() {
-        return posicaoArbitraria;
-    }
-
-    public void setPosicaoArbitraria(boolean posicaoArbitraria) {
-        this.posicaoArbitraria = posicaoArbitraria;
     }
 
 	public ArrayList<Status> getStatus() {
@@ -146,7 +137,7 @@ public class CategoriaRelato implements Serializable {
 				return true;
 			if (obj == null)
 				return false;
-			if (this.getClass() != obj.getClass())
+			if (!(obj instanceof Status))
 				return false;
 			Status other = (Status) obj;
 			if (id != other.id)
@@ -169,7 +160,7 @@ public class CategoriaRelato implements Serializable {
 			return true;
 		if (obj == null)
 			return false;
-		if (this.getClass() != obj.getClass())
+		if (!(obj instanceof CategoriaRelato))
 			return false;
 		CategoriaRelato other = (CategoriaRelato) obj;
 		if (id != other.id)

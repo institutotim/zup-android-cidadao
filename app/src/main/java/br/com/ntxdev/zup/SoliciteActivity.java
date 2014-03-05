@@ -44,6 +44,7 @@ import br.com.ntxdev.zup.domain.SolicitacaoListItem;
 import br.com.ntxdev.zup.fragment.SoliciteDetalhesFragment;
 import br.com.ntxdev.zup.fragment.SoliciteFotosFragment;
 import br.com.ntxdev.zup.fragment.SoliciteLocalFragment;
+import br.com.ntxdev.zup.fragment.SolicitePontoFragment;
 import br.com.ntxdev.zup.fragment.SoliciteTipoFragment;
 import br.com.ntxdev.zup.service.LoginService;
 import br.com.ntxdev.zup.service.UsuarioService;
@@ -64,6 +65,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
     private SoliciteTipoFragment tipoFragment;
     private SoliciteFotosFragment fotosFragment;
     private SoliciteLocalFragment localFragment;
+    private SolicitePontoFragment pontoFragment;
     private SoliciteDetalhesFragment detalhesFragment;
 
     private enum Passo {
@@ -97,7 +99,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         if (savedInstanceState != null) {
             solicitacao = new Gson().fromJson(savedInstanceState.getString("solicitacao"), Solicitacao.class);
             atual = new Gson().fromJson(savedInstanceState.getString("passo"), Passo.class);
-            restoreFragmentsStates(savedInstanceState.getString("imagemTemporaria"));
+            restoreFragmentsStates(savedInstanceState);
         } else {
             tipoFragment = new SoliciteTipoFragment();
             getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, tipoFragment).commit();
@@ -109,7 +111,15 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         super.onSaveInstanceState(outState);
         outState.putString("solicitacao", new Gson().toJson(solicitacao));
         outState.putString("passo", new Gson().toJson(atual));
-        outState.putString("imagemTemporaria", fotosFragment.getImagemTemporaria());
+        if (fotosFragment != null) {
+            outState.putString("imagemTemporaria", fotosFragment.getImagemTemporaria());
+        }
+
+        outState.putBoolean("tipo", tipoFragment != null);
+        outState.putBoolean("fotos", fotosFragment != null);
+        outState.putBoolean("local", localFragment != null);
+        outState.putBoolean("ponto", pontoFragment != null);
+        outState.putBoolean("detalhes", detalhesFragment != null);
     }
 
     public void exibirBarraInferior(boolean exibir) {
@@ -123,17 +133,40 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
     public void setCategoria(CategoriaRelato categoria) {
         solicitacao.setCategoria(categoria);
         if (new UsuarioService().getUsuarioAtivo(this) == null) {
-            startActivityForResult(new Intent(this, LoginActivity.class), LOGIN_REQUEST);
+            startActivityForResult(new Intent(this, WarningActivity.class), LOGIN_REQUEST);
             return;
         }
 
-        if (localFragment == null) {
-            localFragment = new SoliciteLocalFragment();
-            localFragment.setMarcador(categoria.getMarcador());
-            getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, localFragment).hide(tipoFragment).commitAllowingStateLoss();
+        if (!categoria.getCategoriasInventario().isEmpty()) {
+            if (pontoFragment == null) {
+                pontoFragment = new SolicitePontoFragment();
+                pontoFragment.setCategoria(categoria);
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                if (localFragment != null) {
+                    ft.remove(localFragment).commit();
+                    ft = getSupportFragmentManager().beginTransaction();
+                    localFragment = null;
+                }
+                ft.add(R.id.fragments_place, pontoFragment).hide(tipoFragment).commitAllowingStateLoss();
+            } else {
+                getSupportFragmentManager().beginTransaction().hide(tipoFragment).show(pontoFragment).commitAllowingStateLoss();
+                pontoFragment.setCategoria(categoria);
+            }
         } else {
-            getSupportFragmentManager().beginTransaction().hide(tipoFragment).show(localFragment).commitAllowingStateLoss();
-            localFragment.setMarcador(categoria.getMarcador());
+            if (localFragment == null) {
+                localFragment = new SoliciteLocalFragment();
+                localFragment.setMarcador(categoria.getMarcador());
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                if (pontoFragment != null) {
+                    ft.remove(pontoFragment).commit();
+                    ft = getSupportFragmentManager().beginTransaction();
+                    pontoFragment = null;
+                }
+                ft.add(R.id.fragments_place, localFragment).hide(tipoFragment).commitAllowingStateLoss();
+            } else {
+                getSupportFragmentManager().beginTransaction().hide(tipoFragment).show(localFragment).commitAllowingStateLoss();
+                localFragment.setMarcador(categoria.getMarcador());
+            }
         }
 
         atual = Passo.LOCAL;
@@ -154,14 +187,6 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         }
     }
 
-    public void setComentario(String comentario) {
-        solicitacao.setComentario(comentario.trim());
-    }
-
-    public void setRedeSocial(boolean publicar) {
-        solicitacao.setRedeSocial(publicar);
-    }
-
     public void adicionarFoto(String foto) {
         solicitacao.adicionarFoto(foto);
     }
@@ -174,17 +199,25 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
     public void onClick(View v) {
         if (v.getId() == R.id.botaoAvancar) {
             if (atual.equals(Passo.LOCAL)) {
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                if (!getCategoria().getCategoriasInventario().isEmpty()) {
+                    ft.hide(pontoFragment);
+                    solicitacao.setIdItemInventario(pontoFragment.getCategoriaId());
+                } else {
+                    ft.hide(localFragment);
+                }
+
                 if (fotosFragment == null) {
                     fotosFragment = new SoliciteFotosFragment();
-                    getSupportFragmentManager().beginTransaction().hide(localFragment).add(R.id.fragments_place, fotosFragment).commit();
+                    ft.add(R.id.fragments_place, fotosFragment).commit();
                 } else {
-                    getSupportFragmentManager().beginTransaction().hide(localFragment).show(fotosFragment).commit();
+                    ft.show(fotosFragment).commit();
                 }
                 atual = Passo.FOTOS;
             } else if (atual.equals(Passo.FOTOS)) {
                 if (detalhesFragment == null) {
                     detalhesFragment = new SoliciteDetalhesFragment();
-                    getSupportFragmentManager().beginTransaction().hide(localFragment).add(R.id.fragments_place, detalhesFragment).commit();
+                    getSupportFragmentManager().beginTransaction().hide(fotosFragment).add(R.id.fragments_place, detalhesFragment).commit();
                 } else {
                     getSupportFragmentManager().beginTransaction().hide(fotosFragment).show(detalhesFragment).commit();
                 }
@@ -199,10 +232,19 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
                 getSupportFragmentManager().beginTransaction().hide(detalhesFragment).show(fotosFragment).commit();
                 atual = Passo.FOTOS;
             } else if (atual.equals(Passo.FOTOS)) {
-                getSupportFragmentManager().beginTransaction().hide(fotosFragment).show(localFragment).commit();
-                atual = Passo.LOCAL;
+                if (!getCategoria().getCategoriasInventario().isEmpty()) {
+                    getSupportFragmentManager().beginTransaction().hide(fotosFragment).show(pontoFragment).commit();
+                    atual = Passo.LOCAL;
+                } else {
+                    getSupportFragmentManager().beginTransaction().hide(fotosFragment).show(localFragment).commit();
+                    atual = Passo.LOCAL;
+                }
             } else if (atual.equals(Passo.LOCAL)) {
-                getSupportFragmentManager().beginTransaction().hide(localFragment).show(tipoFragment).commit();
+                if (!getCategoria().getCategoriasInventario().isEmpty()) {
+                    getSupportFragmentManager().beginTransaction().hide(pontoFragment).show(tipoFragment).commit();
+                } else {
+                    getSupportFragmentManager().beginTransaction().hide(localFragment).show(tipoFragment).commit();
+                }
                 exibirBarraInferior(false);
                 atual = Passo.TIPO;
             }
@@ -215,8 +257,28 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
             alertarTamanhoComentario();
             return;
         }
-        solicitacao.setLatitudeLongitude(localFragment.getLatitudeAtual(), localFragment.getLongitudeAtual());
+        if (solicitacao.getCategoria().getCategoriasInventario().isEmpty()) {
+            solicitacao.setLatitudeLongitude(localFragment.getLatitudeAtual(), localFragment.getLongitudeAtual());
+        } else {
+            if (solicitacao.getIdItemInventario() == null) {
+                alertarItemInventario();
+                return;
+            }
+
+            solicitacao.setIdItemInventario(pontoFragment.getCategoriaId());
+        }
         enviarSolicitacao();
+    }
+
+    private void alertarItemInventario() {
+        new AlertDialog.Builder(this)
+                .setMessage("O local do relato não foi selecionado corretamente")
+                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).show();
     }
 
     private void alertarTamanhoComentario() {
@@ -273,10 +335,17 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
                 multipartEntity.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
                 multipartEntity.setCharset(Charset.forName("UTF-8"));
 
-                multipartEntity.addTextBody("latitude", String.valueOf(solicitacao.getLatitude()));
-                multipartEntity.addTextBody("longitude", String.valueOf(solicitacao.getLongitude()));
                 multipartEntity.addTextBody("description", solicitacao.getComentario().trim(), ContentType.APPLICATION_JSON);
-                multipartEntity.addTextBody("address", localFragment.getEnderecoAtual(), ContentType.APPLICATION_JSON);
+                if (solicitacao.getCategoria().getCategoriasInventario().isEmpty()) {
+                    multipartEntity.addTextBody("latitude", String.valueOf(solicitacao.getLatitude()));
+                    multipartEntity.addTextBody("longitude", String.valueOf(solicitacao.getLongitude()));
+                    solicitacao.setEndereco(localFragment.getEnderecoAtual());
+                } else {
+                    multipartEntity.addTextBody("inventory_item_id", String.valueOf(solicitacao.getIdItemInventario()));
+                    solicitacao.setEndereco(pontoFragment.getEndereco());
+                    solicitacao.setLatitudeLongitude(pontoFragment.getLatitude(), pontoFragment.getLongitude());
+                }
+                multipartEntity.addTextBody("address", solicitacao.getEndereco(), ContentType.APPLICATION_JSON);
                 multipartEntity.addTextBody("category_id", String.valueOf(solicitacao.getCategoria().getId()));
 
                 for (String foto : solicitacao.getFotos()) {
@@ -288,9 +357,11 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
                 HttpResponse response = client.execute(post);
                 if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
                     return getSolicitacao(EntityUtils.toString(response.getEntity(), "UTF-8"));
+                } else {
+                    Log.i("ZUP", new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8")).toString(2));
                 }
             } catch (Exception e) {
-                Log.e("ZUP", e.getMessage());
+                Log.e("ZUP", e.getMessage(), e);
             }
             return null;
         }
@@ -314,7 +385,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
     }
 
     public void assertFragmentVisibility() {
-        getSupportFragmentManager().beginTransaction().hide(localFragment).show(fotosFragment).commitAllowingStateLoss();
+        getSupportFragmentManager().beginTransaction().hide(localFragment != null ? localFragment : pontoFragment).show(fotosFragment).commitAllowingStateLoss();
     }
 
     @Override
@@ -346,41 +417,68 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         item.setCategoria(solicitacao.getCategoria());
         item.setLatitude(solicitacao.getLatitude());
         item.setLongitude(solicitacao.getLongitude());
-        item.setEndereco(json.getString("address"));
+        item.setEndereco(solicitacao.getEndereco());
         return item;
     }
 
-    private void restoreFragmentsStates(String imagemTemporaria) {
+    private void restoreFragmentsStates(Bundle bundle) {
         Bundle params = new Bundle();
         params.putSerializable("solicitacao", solicitacao);
-        params.putString("imagemTemporaria", imagemTemporaria);
-        params.putSerializable("solicitacao", solicitacao);
-        tipoFragment = new SoliciteTipoFragment();
-        tipoFragment.setArguments(params);
-        fotosFragment = new SoliciteFotosFragment();
-        fotosFragment.setArguments(params);
-        localFragment = new SoliciteLocalFragment();
-        localFragment.setArguments(params);
-        detalhesFragment = new SoliciteDetalhesFragment();
-        detalhesFragment.setArguments(params);
+        params.putString("imagemTemporaria", bundle.getString("imagemTemporaria"));
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.add(R.id.fragments_place, tipoFragment).add(R.id.fragments_place, localFragment);
-        ft.add(R.id.fragments_place, fotosFragment).add(R.id.fragments_place, detalhesFragment);
-        switch (atual) {
-            case COMENTARIOS:
-                ft.show(detalhesFragment).hide(tipoFragment).hide(localFragment).hide(fotosFragment);
-                break;
-            case FOTOS:
-                ft.hide(detalhesFragment).hide(tipoFragment).hide(localFragment).show(fotosFragment);
-                break;
-            case LOCAL:
-                ft.hide(detalhesFragment).hide(tipoFragment).show(localFragment).hide(fotosFragment);
-                break;
-            case TIPO:
-                ft.hide(detalhesFragment).show(tipoFragment).hide(localFragment).hide(fotosFragment);
-                break;
+
+        if (bundle.getBoolean("tipo")) {
+            tipoFragment = new SoliciteTipoFragment();
+            tipoFragment.setArguments(params);
+            ft.add(R.id.fragments_place, tipoFragment);
+
+            if (atual != Passo.TIPO) {
+                ft.hide(tipoFragment);
+            }
         }
+
+        if (bundle.getBoolean("fotos")) {
+            fotosFragment = new SoliciteFotosFragment();
+            fotosFragment.setArguments(params);
+            ft.add(R.id.fragments_place, fotosFragment);
+
+            if (atual != Passo.FOTOS) {
+                ft.hide(fotosFragment);
+            }
+        }
+
+        if (bundle.getBoolean("local")) {
+            localFragment = new SoliciteLocalFragment();
+            localFragment.setArguments(params);
+            ft.add(R.id.fragments_place, localFragment);
+
+            if (atual != Passo.LOCAL) {
+                ft.hide(localFragment);
+            }
+        }
+
+        if (bundle.getBoolean("detalhes")) {
+            detalhesFragment = new SoliciteDetalhesFragment();
+            detalhesFragment.setArguments(params);
+            ft.add(R.id.fragments_place, detalhesFragment);
+
+            if (atual != Passo.COMENTARIOS) {
+                ft.hide(detalhesFragment);
+            }
+        }
+
+        if (bundle.getBoolean("ponto")) {
+            pontoFragment = new SolicitePontoFragment();
+            pontoFragment.setArguments(params);
+            pontoFragment.setCategoria(solicitacao.getCategoria());
+            ft.add(R.id.fragments_place, pontoFragment);
+
+            if (atual != Passo.LOCAL) {
+                ft.hide(pontoFragment);
+            }
+        }
+
         ft.commitAllowingStateLoss();
     }
 }

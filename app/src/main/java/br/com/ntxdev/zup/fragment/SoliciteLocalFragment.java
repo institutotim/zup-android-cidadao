@@ -19,6 +19,11 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -36,7 +41,9 @@ import br.com.ntxdev.zup.util.ImageUtils;
 import br.com.ntxdev.zup.util.ViewUtils;
 import br.com.ntxdev.zup.widget.PlacesAutoCompleteAdapter;
 
-public class SoliciteLocalFragment extends Fragment implements AdapterView.OnItemClickListener, GoogleMap.OnMyLocationChangeListener {
+public class SoliciteLocalFragment extends Fragment implements AdapterView.OnItemClickListener,
+        GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener,
+        LocationListener {
 
     // Local inicial: São Paulo
     private static final double INITIAL_LATITUDE = -23.5501283;
@@ -50,9 +57,11 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
     private TimerEndereco task;
     private AutoCompleteTextView autoCompView;
 
-    public void snapshotMap(GoogleMap.SnapshotReadyCallback callback) {
-        map.snapshot(callback);
-    }
+    private LocationClient mLocationClient;
+    private static final LocationRequest REQUEST = LocationRequest.create()
+            .setInterval(5000)         // 5 seconds
+            .setFastestInterval(16)    // 16ms = 60fps
+            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
     @SuppressLint("NewApi")
     @Override
@@ -77,7 +86,6 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
             map.setMyLocationEnabled(true);
             map.getUiSettings().setMyLocationButtonEnabled(false);
             map.getUiSettings().setZoomControlsEnabled(false);
-            map.setOnMyLocationChangeListener(this);
 
             map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
 
@@ -143,9 +151,6 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
                     CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
                     map.moveCamera(update);
                 }
-            } else {
-                Log.d("ZUP", "setting location listener");
-                map.setOnMyLocationChangeListener(this);
             }
         }
 
@@ -220,18 +225,6 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
         return endereco;
     }
 
-    @Override
-    public void onMyLocationChange(Location location) {
-        CameraPosition position = new CameraPosition.Builder().target(new LatLng(location.getLatitude(),
-                location.getLongitude())).zoom(15).build();
-        CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
-        map.moveCamera(update);
-        map.setOnMyLocationChangeListener(null);
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
-        atualizarEndereco();
-    }
-
     private class TimerEndereco extends AsyncTask<Void, String, Void> {
 
         private double lat, lon;
@@ -248,7 +241,7 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
                 try {
                     Thread.sleep(250);
                 } catch (Exception e) {
-                    Log.e("ZUP", e.getMessage());
+                    Log.e("ZUP", e.getMessage(), e);
                 }
 
                 if (lat != latitude && lon != longitude) {
@@ -338,6 +331,60 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
                 CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
                 map.animateCamera(update);
             }
+        }
+    }
+
+    private boolean wasLocalized = false;
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        if (!wasLocalized) {
+            mLocationClient.requestLocationUpdates(REQUEST, this);
+        }
+    }
+
+    @Override
+    public void onDisconnected() {
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        CameraPosition position = new CameraPosition.Builder().target(new LatLng(location.getLatitude(),
+                location.getLongitude())).zoom(15).build();
+        CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+        map.moveCamera(update);
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
+        atualizarEndereco();
+        wasLocalized = true;
+        mLocationClient.removeLocationUpdates(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setUpLocationClientIfNeeded();
+        mLocationClient.connect();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mLocationClient != null) {
+            mLocationClient.disconnect();
+        }
+    }
+
+    private void setUpLocationClientIfNeeded() {
+        if (mLocationClient == null) {
+            mLocationClient = new LocationClient(
+                    getActivity(),
+                    this,  // ConnectionCallbacks
+                    this); // OnConnectionFailedListener
         }
     }
 }

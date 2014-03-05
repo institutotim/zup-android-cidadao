@@ -218,7 +218,7 @@ public class CadastroActivity extends Activity implements OnClickListener {
 					}
 				}
 			} catch (Exception e) {
-				Log.e("ZUP", e.getMessage());
+				Log.e("ZUP", e.getMessage(), e);
 			}
 			return null;
 		}
@@ -233,7 +233,7 @@ public class CadastroActivity extends Activity implements OnClickListener {
 							json.getJSONObject("user"), 
 							json.getString("token"));
 				} catch (JSONException e) {
-					Log.e("ZUP", e.getMessage());
+					Log.e("ZUP", e.getMessage(), e);
 				}
 				Toast.makeText(CadastroActivity.this, "Login realizado com sucesso", Toast.LENGTH_LONG).show();
 				setResult(Activity.RESULT_OK);

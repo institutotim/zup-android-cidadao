@@ -86,7 +86,7 @@ public class RecuperarSenhaActivity extends Activity implements View.OnClickList
 					return EntityUtils.toString(response.getEntity(), "UTF-8");
 				}
 			} catch (Exception e) {
-				Log.e("ZUP", e.getMessage());
+				Log.e("ZUP", e.getMessage(), e);
 			}
 			return null;
 		}

@@ -7,25 +7,14 @@ public class Solicitacao implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public enum Tipo {
-		BOCA_LOBO, COLETA_ENTULHO
-	}
-
 	private CategoriaRelato categoria;
-	private Tipo tipo;
 	private double latitude;
 	private double longitude;
 	private ArrayList<String> fotos = new ArrayList<String>();
 	private String comentario;
+    private String endereco;
 	private boolean redeSocial = false;
-
-	public Tipo getTipo() {
-		return tipo;
-	}
-
-	public void setTipo(Tipo tipo) {
-		this.tipo = tipo;
-	}
+    private Long idItemInventario;
 
 	public double getLatitude() {
 		return latitude;
@@ -39,7 +28,15 @@ public class Solicitacao implements Serializable {
 		this.latitude = latitude;
 		this.longitude = longitude;
 	}
-	
+
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
+    }
+
+    public String getEndereco() {
+        return endereco;
+    }
+
 	public ArrayList<String> getFotos() {
 		return fotos;
 	}
@@ -75,4 +72,12 @@ public class Solicitacao implements Serializable {
 	public void setCategoria(CategoriaRelato categoria) {
 		this.categoria = categoria;
 	}
+
+    public Long getIdItemInventario() {
+        return idItemInventario;
+    }
+
+    public void setIdItemInventario(Long idItemInventario) {
+        this.idItemInventario = idItemInventario;
+    }
 }

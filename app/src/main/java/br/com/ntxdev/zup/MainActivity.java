@@ -68,7 +68,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 		}
 		
 		if (!new LoginService().usuarioLogado(this) && v.getId() == R.id.minhaContaButton) {
-			startActivity(new Intent(this, LoginActivity.class));
+			startActivity(new Intent(this, WarningActivity.class));
 			return;
 		}
 		

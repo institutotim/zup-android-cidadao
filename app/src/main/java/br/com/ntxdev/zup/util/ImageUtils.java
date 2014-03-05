@@ -43,9 +43,19 @@ public class ImageUtils {
 		return BitmapFactory.decodeFile(new File(FileUtils.getImagesFolder() + File.separator + file).toString(), options);
 	}
 
+    public static Bitmap loadFromFile(String subfolder, String file) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        return BitmapFactory.decodeFile(new File(FileUtils.getImagesFolder(subfolder) + File.separator + file).toString(), options);
+    }
+
 	public static Bitmap getScaled(Activity activity, String filename) {
 		return getScaled(activity, ImageUtils.loadFromFile(filename));
 	}
+
+    public static Bitmap getScaled(Activity activity, String subfolder, String filename) {
+        return getScaled(activity, ImageUtils.loadFromFile(subfolder, filename));
+    }
 	
 	public static Bitmap getScaled(Activity activity, Bitmap bitmapOrg) {
 		DisplayMetrics metrics = new DisplayMetrics();

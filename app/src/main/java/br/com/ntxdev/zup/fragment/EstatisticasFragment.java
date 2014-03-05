@@ -117,7 +117,7 @@ public class EstatisticasFragment extends Fragment {
 					return EntityUtils.toString(response.getEntity(), "UTF-8");
 				}
 			} catch (Exception e) {
-				Log.e("ZUP", e.getMessage());
+				Log.e("ZUP", e.getMessage(), e);
 			}
 			return null;
 		}
@@ -159,7 +159,7 @@ public class EstatisticasFragment extends Fragment {
 					
 					montarGraficos(estatisticas);
 				} catch (Exception e) {
-					Log.e("ZUP", e.getMessage());
+					Log.e("ZUP", e.getMessage(), e);
 					Toast.makeText(getActivity(), "Não foi possível obter as estatísticas", Toast.LENGTH_LONG).show();
 				}
 			} else {

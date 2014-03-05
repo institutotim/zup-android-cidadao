@@ -21,10 +21,23 @@ public class FileUtils {
 		
 		return new File(imagesFolder, filename).exists();
 	}
+
+    public static boolean imageExists(String subfolder, String filename) {
+        File imagesFolder = getImagesFolder(subfolder);
+        if (!imagesFolder.exists()) {
+            imagesFolder.mkdirs();
+        }
+
+        return new File(imagesFolder, filename).exists();
+    }
 	
 	public static File getImagesFolder() {
 		return new File(Environment.getExternalStorageDirectory() + File.separator + "ZUP" + File.separator + "images");
 	}
+
+    public static File getImagesFolder(String subfolder) {
+        return new File(Environment.getExternalStorageDirectory() + File.separator + "ZUP" + File.separator + "images" + File.separator + subfolder);
+    }
 	
 	public static File getTempImagesFolder() {
 		File imagesFolder = new File(Environment.getExternalStorageDirectory() + File.separator + "ZUP" + File.separator + "temp");
@@ -44,7 +57,7 @@ public class FileUtils {
 			InputStream is = ucon.getInputStream();
 	        BufferedInputStream bis = new BufferedInputStream(is);
 	        ByteArrayBuffer baf = new ByteArrayBuffer(50);
-	        int current = 0;
+	        int current;
 	        while ((current = bis.read()) != -1) {
 	            baf.append((byte) current);
 	        }
@@ -53,4 +66,23 @@ public class FileUtils {
 	        fos.close();
 		}
 	}
+
+    public static void downloadImage(String subfolder, String url) throws Exception {
+        String[] parts = url.split("/");
+        String filename = parts[parts.length - 1];
+        if (!imageExists(subfolder, filename)) {
+            URL u = new URL(url);
+            URLConnection ucon = u.openConnection();
+            InputStream is = ucon.getInputStream();
+            BufferedInputStream bis = new BufferedInputStream(is);
+            ByteArrayBuffer baf = new ByteArrayBuffer(50);
+            int current;
+            while ((current = bis.read()) != -1) {
+                baf.append((byte) current);
+            }
+            FileOutputStream fos = new FileOutputStream(new File(getImagesFolder(subfolder), filename));
+            fos.write(baf.toByteArray());
+            fos.close();
+        }
+    }
 }

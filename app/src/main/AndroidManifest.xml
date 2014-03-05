@@ -74,6 +74,10 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
+            android:name="br.com.ntxdev.zup.WarningActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
             android:name="br.com.ntxdev.zup.FiltroExploreActivity"
             android:screenOrientation="portrait" >
         </activity>

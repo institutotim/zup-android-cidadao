@@ -117,7 +117,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 					return EntityUtils.toString(response.getEntity(), "UTF-8");
 				}
 			} catch (Exception e) {
-				Log.e("ZUP", e.getMessage());
+				Log.e("ZUP", e.getMessage(), e);
 			}
 			return null;
 		}
@@ -132,7 +132,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 							json.getJSONObject("user"), 
 							json.getString("token"));
 				} catch (JSONException e) {
-					Log.e("ZUP", e.getMessage());
+					Log.e("ZUP", e.getMessage(), e);
 				}
 				Toast.makeText(LoginActivity.this, "Login realizado com sucesso", Toast.LENGTH_LONG).show();
 				setResult(Activity.RESULT_OK);

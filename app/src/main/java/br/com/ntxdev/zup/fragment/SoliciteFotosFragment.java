@@ -1,9 +1,5 @@
 package br.com.ntxdev.zup.fragment;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -15,7 +11,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +18,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SoliciteActivity;
@@ -191,6 +190,7 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
 
         String foto = (String) view.getTag();
         containerFotos.removeView(view);
+        ((SoliciteActivity) getActivity()).removerFoto(foto);
         listaFotos.remove(foto);
 
         if (listaFotos.isEmpty()) {

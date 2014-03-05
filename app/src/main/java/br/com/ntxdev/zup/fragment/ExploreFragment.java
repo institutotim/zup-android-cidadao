@@ -20,6 +20,11 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -55,6 +60,7 @@ import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.SolicitacaoDetalheActivity;
 import br.com.ntxdev.zup.core.Constantes;
 import br.com.ntxdev.zup.domain.BuscaExplore;
+import br.com.ntxdev.zup.domain.CategoriaInventario;
 import br.com.ntxdev.zup.domain.CategoriaRelato;
 import br.com.ntxdev.zup.domain.ItemInventario;
 import br.com.ntxdev.zup.domain.ItemRelato;
@@ -72,17 +78,51 @@ import br.com.ntxdev.zup.util.PreferenceUtils;
 import br.com.ntxdev.zup.util.ViewUtils;
 import br.com.ntxdev.zup.widget.PlacesAutoCompleteAdapter;
 
-public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMyLocationChangeListener,
-        GoogleMap.OnCameraChangeListener, AdapterView.OnItemClickListener {
+public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener,
+        GoogleMap.OnCameraChangeListener, AdapterView.OnItemClickListener, GooglePlayServicesClient.ConnectionCallbacks,
+        GooglePlayServicesClient.OnConnectionFailedListener, LocationListener {
 
     // Local inicial: São Paulo
     private static final double INITIAL_LATITUDE = -23.5501283;
     private static final double INITIAL_LONGITUDE = -46.6338553;
 
+    private boolean wasLocalized = false;
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        if (!wasLocalized) {
+            mLocationClient.requestLocationUpdates(REQUEST, this);
+        }
+    }
+
+    @Override
+    public void onDisconnected() {
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        CameraPosition position = new CameraPosition.Builder().target(new LatLng(location.getLatitude(),
+                location.getLongitude())).zoom(15).build();
+        CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+        map.animateCamera(update);
+        mLocationClient.removeLocationUpdates(this);
+        wasLocalized = true;
+    }
+
     private class Request {
         double latitude, longitude;
         long raio;
     }
+
+    private LocationClient mLocationClient;
+    private static final LocationRequest REQUEST = LocationRequest.create()
+            .setInterval(5000)         // 5 seconds
+            .setFastestInterval(16)    // 16ms = 60fps
+            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
     private static final int MAX_ITEMS_PER_REQUEST = 50;
 
@@ -102,6 +142,15 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
     private long raio = 0l;
 
     private ProgressBar progressBar;
+
+    private void setUpLocationClientIfNeeded() {
+        if (mLocationClient == null) {
+            mLocationClient = new LocationClient(
+                    getActivity(),
+                    this,  // ConnectionCallbacks
+                    this); // OnConnectionFailedListener
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -146,7 +195,6 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
             map.getUiSettings().setMyLocationButtonEnabled(false);
             map.getUiSettings().setZoomControlsEnabled(false);
             map.setOnInfoWindowClickListener(this);
-            map.setOnMyLocationChangeListener(this);
             map.setOnCameraChangeListener(this);
             map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
@@ -183,8 +231,24 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        setUpLocationClientIfNeeded();
+        mLocationClient.connect();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mLocationClient != null) {
+            mLocationClient.disconnect();
+        }
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        setUpLocationClientIfNeeded();
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
             new Timer().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -228,27 +292,28 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
     private void adicionarMarker(ItemInventario item) {
         itens.add(item);
-        marcadores.put(map.addMarker(new MarkerOptions()
-                .position(new LatLng(item.getLatitude(), item.getLongitude()))
-                .icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(getActivity(), item.getCategoria().getMarcador())))
-                .title(item.getCategoria().getNome())), item);
+        if (estaNoFiltro(item.getCategoria())) {
+            marcadores.put(map.addMarker(new MarkerOptions()
+                    .position(new LatLng(item.getLatitude(), item.getLongitude()))
+                    .icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(getActivity(), "inventory", item.getCategoria().getMarcador())))
+                    .title(item.getCategoria().getNome())), item);
+        }
     }
 
     private void adicionarMarker(ItemRelato item) {
         itens.add(item);
-        marcadores.put(map.addMarker(new MarkerOptions()
-                .position(new LatLng(item.getLatitude(), item.getLongitude()))
-                .icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(getActivity(), item.getCategoria().getMarcador())))
-                .title(item.getCategoria().getNome())), item);
+        if (estaNoFiltro(item.getCategoria())) {
+            marcadores.put(map.addMarker(new MarkerOptions()
+                    .position(new LatLng(item.getLatitude(), item.getLongitude()))
+                    .icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(getActivity(), "reports", item.getCategoria().getMarcador())))
+                    .title(item.getCategoria().getNome())), item);
+        }
     }
 
     @Override
-    public void onMyLocationChange(Location location) {
-        CameraPosition position = new CameraPosition.Builder().target(new LatLng(location.getLatitude(),
-                location.getLongitude())).zoom(15).build();
-        CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
-        map.animateCamera(update);
-        map.setOnMyLocationChangeListener(null);
+    public void onStop() {
+        super.onStop();
+        PreferenceUtils.salvarBusca(getActivity(), busca);
     }
 
     @Override
@@ -275,8 +340,6 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
-        if (cameraPosition.target.latitude == 0.0 && cameraPosition.target.longitude == 0.0) return;
-
         latitude = cameraPosition.target.latitude;
         longitude = cameraPosition.target.longitude;
         raio = GeoUtils.getVisibleRadius(map);
@@ -355,6 +418,14 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
             }
             return null;
         }
+    }
+
+    private boolean estaNoFiltro(CategoriaRelato categoria) {
+        return busca.getIdsCategoriaRelato().contains(categoria.getId());
+    }
+
+    private boolean estaNoFiltro(CategoriaInventario categoria) {
+        return busca.getIdsCategoriaInventario().contains(categoria.getId());
     }
 
     private class MarkerRetriever extends AsyncTask<Void, Object, Void> {
@@ -492,12 +563,6 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                 itensRelato.add(item);
             }
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        PreferenceUtils.salvarBusca(getActivity(), busca);
-        super.onDestroy();
     }
 
     private class GeocoderTask extends AsyncTask<Place, Void, Address> {

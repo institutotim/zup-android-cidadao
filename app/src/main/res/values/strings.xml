@@ -124,7 +124,7 @@
         <string name="sim">Sim</string>
         <string name="nao">Não</string>
         <string name="todas_as_categorias">Todas as categorias</string>
-        
-        
+    <string name="aviso_permissao_login">Você precisa estar logado para acessar esta área.</string>
+
 
 </resources>

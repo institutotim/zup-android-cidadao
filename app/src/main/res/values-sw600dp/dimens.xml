@@ -1,6 +1,7 @@
 <resources>
 
     <dimen name="view_pager_size">250dp</dimen>
+    <dimen name="comments_box_size">200dp</dimen>
     
     <dimen name="big_chart_text">50sp</dimen>
     <dimen name="small_text_size">18sp</dimen>
@@ -10,6 +11,7 @@
     <dimen name="chart_radius">140dp</dimen>
     <dimen name="navigation_text_size">22sp</dimen>
     <dimen name="instruction_text_size">16sp</dimen>
-    <dimen name="image_resize">200dp</dimen>
+    <dimen name="image_resize">180dp</dimen>
+    <dimen name="warning_text_size">24sp</dimen>
 
 </resources>
