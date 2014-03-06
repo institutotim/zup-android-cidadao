@@ -22,6 +22,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -203,6 +204,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
                 if (!getCategoria().getCategoriasInventario().isEmpty()) {
                     ft.hide(pontoFragment);
                     solicitacao.setIdItemInventario(pontoFragment.getCategoriaId());
+                    solicitacao.setLatitudeLongitude(pontoFragment.getLatitude(), pontoFragment.getLongitude());
                 } else {
                     ft.hide(localFragment);
                 }
@@ -312,9 +314,10 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         }
     }
 
-    public class Tasker extends AsyncTask<Void, Void, SolicitacaoListItem> {
+    public class Tasker extends AsyncTask<Void, Void, SolicitacaoListItem> implements DialogInterface.OnCancelListener{
 
         private ProgressDialog dialog;
+        private HttpPost post;
 
         @Override
         protected void onPreExecute() {
@@ -323,13 +326,14 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
             dialog.setIndeterminate(true);
             dialog.setMessage("Enviando solicitação...");
             dialog.show();
+            dialog.setOnCancelListener(this);
         }
 
         @Override
         protected SolicitacaoListItem doInBackground(Void... params) {
             try {
                 HttpClient client = new DefaultHttpClient();
-                HttpPost post = new HttpPost(Constantes.REST_URL + "/reports/" + solicitacao.getCategoria().getId() + "/items");
+                post = new HttpPost(Constantes.REST_URL + "/reports/" + solicitacao.getCategoria().getId() + "/items");
 
                 MultipartEntityBuilder multipartEntity = MultipartEntityBuilder.create();
                 multipartEntity.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
@@ -354,12 +358,17 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 
                 post.setEntity(multipartEntity.build());
                 post.setHeader("X-App-Token", new LoginService().getToken(SoliciteActivity.this));
-                HttpResponse response = client.execute(post);
-                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
-                    return getSolicitacao(EntityUtils.toString(response.getEntity(), "UTF-8"));
-                } else {
-                    Log.i("ZUP", new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8")).toString(2));
+
+                if (!isCancelled() && !post.isAborted()) {
+                    HttpResponse response = client.execute(post);
+                    if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+                        return getSolicitacao(EntityUtils.toString(response.getEntity(), "UTF-8"));
+                    } else {
+                        Log.i("ZUP", new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8")).toString(2));
+                    }
                 }
+            } catch (HttpHostConnectException e) {
+                Log.w("ZUP", e.getMessage());
             } catch (Exception e) {
                 Log.e("ZUP", e.getMessage(), e);
             }
@@ -381,6 +390,14 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
             } else {
                 Toast.makeText(SoliciteActivity.this, "Falha no envio da solicitação", Toast.LENGTH_LONG).show();
             }
+        }
+
+        @Override
+        public void onCancel(DialogInterface dialog) {
+            if (post != null) post.abort();
+            dialog.dismiss();
+            Toast.makeText(SoliciteActivity.this, "Envio de solicitação cancelado", Toast.LENGTH_SHORT).show();
+            cancel(true);
         }
     }
 

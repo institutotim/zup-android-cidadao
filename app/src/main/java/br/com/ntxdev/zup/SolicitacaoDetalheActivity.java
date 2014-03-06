@@ -81,10 +81,6 @@ public class SolicitacaoDetalheActivity extends FragmentActivity {
 		comentario.setTypeface(FontUtils.getRegular(this));
 		comentario.setText(solicitacao.getComentario());
 
-		TextView link = (TextView) findViewById(R.id.linkLocal);
-		link.setTypeface(FontUtils.getBold(this));
-		link.setText(getString(R.string.ver_detalhes_de) + " " + getString(R.string.boca_de_lobo) + " 65564567");
-
 		TextView botaoVoltar = (TextView) findViewById(R.id.botaoVoltar);
 		if (alterarLabel) {
 			botaoVoltar.setText(R.string.solicitaces_maiusculo);

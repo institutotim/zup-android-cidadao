@@ -18,6 +18,7 @@
             android:layout_height="@dimen/comments_box_size"
             android:background="#f1f1f1"
             android:gravity="top"
+            android:scrollHorizontally="false"
             android:singleLine="true"
             android:hint="@string/se_desejar_detalhe_a_situacao"
             android:padding="10dp"

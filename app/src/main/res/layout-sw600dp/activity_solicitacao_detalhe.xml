@@ -121,15 +121,6 @@
                     android:paddingLeft="15dp"
                     android:paddingRight="15dp"
                     android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/linkLocal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:padding="15dp"
-                    android:textAllCaps="true"
-                    android:textColor="#2ab4dc" />
             </LinearLayout>
 
             <RelativeLayout

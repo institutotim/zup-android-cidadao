@@ -70,12 +70,24 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 		
 		montarCategoriasRelatos();
 		montarCategoriasInventario();
+        aplicarFiltroInicial();
 		popularListStatus();
-		
-		aplicarFiltroInicial();
+        if (busca.getStatus() != null) selecionarListStatus();
 	}
-	
-	private void unselectCategoriasInventario() {
+
+    private void selecionarListStatus() {
+        for (int i = 0; i < opcoes.getChildCount(); i++) {
+            TextView tv = (TextView) opcoes.getChildAt(i);
+            if (tv.getText().toString().equals(busca.getStatus().getNome())) {
+                tv.setTextColor(Color.rgb(0x2a, 0xb4, 0xdc));
+                status.setText(busca.getStatus().getNome());
+            } else {
+                tv.setTextColor(getResources().getColorStateList(R.color.text_option_color));
+            }
+        }
+    }
+
+    private void unselectCategoriasInventario() {
 		LinearLayout container = (LinearLayout) findViewById(R.id.categorias_inventario);
 		for (int i = 0; i < container.getChildCount(); i++) {
 			TextView view = (TextView) container.getChildAt(i);
