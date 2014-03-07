@@ -108,6 +108,9 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
 
     private Marker marker;
 
+    private MarkerRetriever markerRetriever = null;
+    private AddressTask addressTask = null;
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (view != null) {
             ViewGroup parent = (ViewGroup) view.getParent();
@@ -303,7 +306,7 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
                     .position(new LatLng(item.getLatitude(), item.getLongitude())));
             latitudePonto = marker.getPosition().latitude;
             longitudePonto = marker.getPosition().longitude;
-            atualizarEndereco();
+            atualizarEndereco(marker.getPosition());
             return true;
         } catch (Exception e) {
             Log.e("ZUP", e.getMessage(), e);
@@ -319,11 +322,13 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
         return endereco;
     }
 
-    private class MarkerRetriever extends AsyncTask<Void, Object, Void> {
+    private class MarkerRetriever extends AsyncTask<Void, ItemInventario, Void> {
 
         private List<ItemInventario> itensInventario = new CopyOnWriteArrayList<ItemInventario>();
 
         private Request request;
+
+        private HttpGet get;
 
         public MarkerRetriever(Request request) {
             this.request = request;
@@ -350,19 +355,35 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
         }
 
         @Override
+        protected void onCancelled() {
+            if (get != null) get.abort();
+            progressBar.post(new Runnable() {
+                @Override
+                public void run() {
+                    progressBar.setVisibility(View.GONE);
+                }
+            });
+            Log.d("ZUP", "Request cancelled");
+        }
+
+        @Override
         protected Void doInBackground(Void... voids) {
             Log.i("ZUP", "Request started");
             try {
                 HttpClient client = new DefaultHttpClient();
-                HttpGet get;
+
                 HttpResponse response;
 
                 for (CategoriaInventario c : categoria.getCategoriasInventario()) {
                     get = new HttpGet(Constantes.REST_URL + "/inventory/items?position[latitude]=" + request.latitude + "&position[longitude]="
                             + request.longitude + "&position[distance]=" + request.raio + "&max_items=" + MAX_ITEMS_PER_REQUEST + "&inventory_category_id=" + c.getId());
                     get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
+
+                    if (isCancelled()) return null;
+
                     response = client.execute(get);
                     if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                        if (isCancelled()) return null;
                         extrairItensInventario(EntityUtils.toString(response.getEntity(), "UTF-8"));
                     }
                 }
@@ -381,15 +402,15 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
         }
 
         @Override
-        protected void onProgressUpdate(Object... values) {
-            if (values[0] instanceof ItemInventario)
-                adicionarMarker((ItemInventario) values[0]);
+        protected void onProgressUpdate(ItemInventario... values) {
+            adicionarMarker(values[0]);
         }
 
         private void extrairItensInventario(String raw) throws JSONException {
             CategoriaInventarioService service = new CategoriaInventarioService();
             JSONArray array = new JSONObject(raw).getJSONArray("items");
             for (int i = 0; i < array.length(); i++) {
+                if (isCancelled()) return;
                 try {
                     JSONObject json = array.getJSONObject(i);
                     ItemInventario item = new ItemInventario();
@@ -453,7 +474,6 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-
     }
 
     @Override
@@ -462,11 +482,14 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
         ViewUtils.hideKeyboard(getActivity(), autoCompView);
     }
 
-    private void atualizarEndereco() {
+    private void atualizarEndereco(LatLng posicao) {
+        if (addressTask != null) addressTask.cancel(true);
+
+        addressTask = new AddressTask(posicao);
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
-            new AddressTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            addressTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
-            new AddressTask().execute();
+            addressTask.execute();
         }
     }
 
@@ -496,10 +519,15 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
         @Override
         public void run() {
             if (request != null) {
+                if (markerRetriever != null) {
+                    markerRetriever.cancel(true);
+                }
+
+                markerRetriever = new MarkerRetriever(request);
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
-                    new MarkerRetriever(request).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    markerRetriever.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 } else {
-                    new MarkerRetriever(request).execute();
+                    markerRetriever.execute();
                 }
                 request = null;
             }
@@ -508,10 +536,16 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
 
     private class AddressTask extends AsyncTask<Void, Void, String> {
 
+        private final LatLng posicao;
+
+        public AddressTask(LatLng posicao) {
+            this.posicao = posicao;
+        }
+
         @Override
         protected String doInBackground(Void... params) {
             try {
-                return GeoUtils.getFromLocation(latitude, longitude, 1).get(0).getAddressLine(0);
+                return GeoUtils.getFromLocation(posicao.latitude, posicao.longitude, 1).get(0).getAddressLine(0);
             } catch (Exception e) {
                 Log.e("ZUP", e.getMessage(), e);
                 return null;
@@ -525,7 +559,7 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
                 autoCompView.setText(endereco);
                 //autoCompView.setAdapter(null);
                 if (getActivity() != null) {
-                    autoCompView.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, SoliciteLocalFragment.class));
+                    autoCompView.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, SolicitePontoFragment.class));
                 }
             }
         }

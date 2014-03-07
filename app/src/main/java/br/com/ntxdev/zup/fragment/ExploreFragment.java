@@ -143,6 +143,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
     private ProgressBar progressBar;
 
+    private MarkerRetriever markerRetriever = null;
+
     private void setUpLocationClientIfNeeded() {
         if (mLocationClient == null) {
             mLocationClient = new LocationClient(
@@ -405,10 +407,15 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                 try {
                     Thread.sleep(400);
                     if (request != null) {
+                        if (markerRetriever != null) {
+                            markerRetriever.cancel(true);
+                        }
+
+                        markerRetriever = new MarkerRetriever(request);
                         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
-                            new MarkerRetriever(request).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                            markerRetriever.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                         } else {
-                            new MarkerRetriever(request).execute();
+                            markerRetriever.execute();
                         }
                         request = null;
                     }
@@ -435,6 +442,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
         private Request request;
 
+        private HttpGet get;
+
         public MarkerRetriever(Request request) {
             this.request = request;
         }
@@ -460,19 +469,34 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         }
 
         @Override
+        protected void onCancelled() {
+            if (get != null) get.abort();
+            progressBar.post(new Runnable() {
+                @Override
+                public void run() {
+                    progressBar.setVisibility(View.GONE);
+                }
+            });
+            Log.d("ZUP", "Request cancelled");
+        }
+
+        @Override
         protected Void doInBackground(Void... voids) {
-            Log.i("ZUP", "Request started");
+            Log.d("ZUP", "Request started");
             try {
                 HttpClient client = new DefaultHttpClient();
-                HttpGet get;
                 HttpResponse response;
 
                 for (Long id : busca.getIdsCategoriaInventario()) {
                     get = new HttpGet(Constantes.REST_URL + "/inventory/items?position[latitude]=" + request.latitude + "&position[longitude]="
                             + request.longitude + "&position[distance]=" + request.raio + "&max_items=" + MAX_ITEMS_PER_REQUEST + "&inventory_category_id=" + id);
                     get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
+
+                    if (isCancelled()) return null;
+
                     response = client.execute(get);
                     if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                        if (isCancelled()) return null;
                         extrairItensInventario(EntityUtils.toString(response.getEntity(), "UTF-8"));
                     }
                 }
@@ -486,8 +510,12 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                     }
                     get = new HttpGet(query);
                     get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
+
+                    if (isCancelled()) return null;
+
                     response = client.execute(get);
                     if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                        if (isCancelled()) return null;
                         extrairItensRelato(EntityUtils.toString(response.getEntity(), "UTF-8"));
                     }
                 }
@@ -508,7 +536,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                 }
             }
 
-            Log.i("ZUP", "Request completed");
+            Log.d("ZUP", "Request completed");
 
             return null;
         }
@@ -525,6 +553,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
             CategoriaInventarioService service = new CategoriaInventarioService();
             JSONArray array = new JSONObject(raw).getJSONArray("items");
             for (int i = 0; i < array.length(); i++) {
+                if (isCancelled()) return;
                 JSONObject json = array.getJSONObject(i);
                 ItemInventario item = new ItemInventario();
                 item.setCategoria(service.getById(getActivity(), json.getLong("inventory_category_id")));
@@ -539,6 +568,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
             CategoriaRelatoService service = new CategoriaRelatoService();
             JSONArray array = new JSONObject(raw).getJSONArray("reports");
             for (int i = 0; i < array.length(); i++) {
+                if (isCancelled()) return;
                 JSONObject json = array.getJSONObject(i);
                 ItemRelato item = new ItemRelato();
                 item.setId(json.getLong("id"));

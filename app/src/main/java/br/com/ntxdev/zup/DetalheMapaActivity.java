@@ -1,5 +1,6 @@
 package br.com.ntxdev.zup;
 
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,13 +9,16 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -43,9 +47,8 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 	private ItemInventario item;
 	private TextView comentarios;
 	private TextView solicitacoes;
-	private TextView informacoes;
 
-	@Override
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_detalhe_mapa);
@@ -64,9 +67,9 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 			public void onClick(View v) {
 				finish();				
 			}
-		});		
-		
-		informacoes = (TextView) findViewById(R.id.botaoInformacoes);
+		});
+
+        TextView informacoes = (TextView) findViewById(R.id.botaoInformacoes);
 		informacoes.setTypeface(FontUtils.getLight(this));
 		informacoes.setOnClickListener(this);
 		
@@ -83,8 +86,12 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 		comFragment = new ComentariosFragment();
 		
 		getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, solFragment).add(R.id.fragments_place, infoFragment).add(R.id.fragments_place, comFragment).commit();
-		
-		new Tasker().execute();
+
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+            new Tasker().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else {
+            new Tasker().execute();
+        }
 	}
 
 	@Override
@@ -110,9 +117,10 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 		((TextView) findViewById(v.getId())).setTextColor(getResources().getColorStateList(R.color.text_next_color));				
 	}
 	
-	private class Tasker extends AsyncTask<Void, Void, Boolean> {
+	private class Tasker extends AsyncTask<Void, Void, Boolean> implements DialogInterface.OnCancelListener {
 		
 		private ProgressDialog dialog;
+        private HttpGet get;
 
 		@Override
 		protected void onPreExecute() {
@@ -120,6 +128,7 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			dialog.setIndeterminate(true);
 			dialog.setMessage("Por favor, aguarde...");
+            dialog.setOnCancelListener(this);
 			dialog.show();
 		}
 
@@ -127,8 +136,11 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 		protected Boolean doInBackground(Void... params) {
 			try {
 				HttpClient client = new DefaultHttpClient();
-				HttpGet get = new HttpGet(Constantes.REST_URL + "/reports/inventory/" + item.getId() + "/items");
+				get = new HttpGet(Constantes.REST_URL + "/reports/inventory/" + item.getId() + "/items");
 				get.setHeader("X-App-Token", new LoginService().getToken(DetalheMapaActivity.this));
+
+                if (isCancelled()) return Boolean.FALSE;
+
 				HttpResponse response = client.execute(get);
 				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 					setRelatos(EntityUtils.toString(response.getEntity(), "UTF-8"));
@@ -137,6 +149,9 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 				// Dados (campos dinâmicos)
 				get = new HttpGet(Constantes.REST_URL + "/inventory/categories/" + item.getCategoria().getId() + "?display_type=full");
 				get.setHeader("X-App-Token", new LoginService().getToken(DetalheMapaActivity.this));
+
+                if (isCancelled()) return Boolean.FALSE;
+
 				response = client.execute(get);
 				String categoria = null;
 				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
@@ -145,14 +160,25 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 				
 				get = new HttpGet(Constantes.REST_URL + "/inventory/categories/" + item.getCategoria().getId() + "/items/" + item.getId());
 				get.setHeader("X-App-Token", new LoginService().getToken(DetalheMapaActivity.this));
+
+                if (isCancelled()) return Boolean.FALSE;
+
 				response = client.execute(get);
 				String itemInventario = null;
 				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 					itemInventario = EntityUtils.toString(response.getEntity(), "UTF-8");
 				}
-				
+
+                if (isCancelled()) return Boolean.FALSE;
+
 				montarHashMap(categoria, itemInventario);
 				return Boolean.TRUE;
+            } catch (HttpHostConnectException e) {
+                Log.w("ZUP", e.getMessage());
+                return Boolean.FALSE;
+            } catch (SocketException e) {
+                Log.w("ZUP", e.getMessage());
+                return Boolean.FALSE;
 			} catch (Exception e) {
 				Log.e("ZUP", e.getMessage(), e);
 				return Boolean.FALSE;
@@ -209,7 +235,15 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 				}
 			}
 		}
-	}
+
+        @Override
+        public void onCancel(DialogInterface dialog) {
+            if (get != null) get.abort();
+            dialog.dismiss();
+            cancel(true);
+            finish();
+        }
+    }
 	
 	private void ocultarAbasAdicionais() {
 		comentarios.setVisibility(View.GONE);
