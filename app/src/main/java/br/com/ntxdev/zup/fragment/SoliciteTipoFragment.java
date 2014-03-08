@@ -33,6 +33,14 @@ public class SoliciteTipoFragment extends Fragment implements View.OnClickListen
 	}
 
     @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            ((SoliciteActivity) getActivity()).setInfo(R.string.selecione_a_categoria);
+        }
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 

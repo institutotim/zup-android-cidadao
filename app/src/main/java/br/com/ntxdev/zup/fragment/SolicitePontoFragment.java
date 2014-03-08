@@ -111,6 +111,14 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
     private MarkerRetriever markerRetriever = null;
     private AddressTask addressTask = null;
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            ((SoliciteActivity) getActivity()).setInfo(R.string.selecione_o_local);
+        }
+    }
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (view != null) {
             ViewGroup parent = (ViewGroup) view.getParent();

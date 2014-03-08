@@ -159,11 +159,6 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 	private void preencherLista(List<SolicitacaoListItem> itens) {
         listaSolicitacoes.addAll(itens);
         adapter.notifyDataSetChanged();
-
-		TextView solicitacoes = (TextView) getView().findViewById(R.id.solicitacoes);
-		solicitacoes.setTypeface(FontUtils.getBold(getActivity()));
-		solicitacoes.setText(listaSolicitacoes.size() + " " +
-				(itens.size() == 1 ? getString(R.string.solicitacao) : getString(R.string.solicitacoes)));
 	}
 
     @Override
@@ -301,13 +296,14 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
                     try {
                         JSONObject obj = new JSONObject(result);
                         Log.d("ZUP", obj.toString(4));
+                        setReportCount(obj.getInt("total_reports_by_user"));
                         JSONArray array = obj.getJSONArray("reports");
                         List<SolicitacaoListItem> itens = new ArrayList<SolicitacaoListItem>();
                         for (int i = 0; i < array.length(); i++) {
                             itens.add(SolicitacaoListItemAdapter.adapt(getActivity(), array.getJSONObject(i)));
                         }
 
-                        if (itens.isEmpty()) shouldContinueLoading = false;
+                        if (itens.isEmpty() || itens.size() < 10) shouldContinueLoading = false;
                         lastPageLoaded++;
                         preencherLista(Lists.reverse(itens));
                     } catch (Exception e) {
@@ -330,4 +326,11 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 			}
 		}
 	}
+
+    private void setReportCount(int reportCount) {
+        TextView solicitacoes = (TextView) getView().findViewById(R.id.solicitacoes);
+        solicitacoes.setTypeface(FontUtils.getBold(getActivity()));
+        solicitacoes.setText(reportCount + " " +
+                (reportCount == 1 ? getString(R.string.solicitacao) : getString(R.string.solicitacoes)));
+    }
 }

@@ -32,9 +32,9 @@ dependencies {
     compile 'org.twitter4j:twitter4j-core:3.0.5'
     compile 'com.google.guava:guava:16.0.1'
     compile 'ch.acra:acra:4.5.0'
-    compile 'org.apache.httpcomponents:httpcore:4.3.1'
-    compile 'org.apache.httpcomponents:httpclient:4.3.1'
-    compile 'org.apache.httpcomponents:httpmime:4.3.1'
+    compile 'org.apache.httpcomponents:httpcore:4.3.+'
+    compile 'org.apache.httpcomponents:httpclient:4.3.+'
+    compile 'org.apache.httpcomponents:httpmime:4.3.+'
     compile 'org.apache.james:apache-mime4j-core:0.7.2'
     compile 'com.google.code.gson:gson:2.2.4'
     compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])

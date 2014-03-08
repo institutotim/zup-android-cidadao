@@ -22,7 +22,15 @@ public class SoliciteDetalhesFragment extends Fragment implements View.OnClickLi
 
 	private boolean publicar = false;
 
-	@Override
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            ((SoliciteActivity) getActivity()).setInfo(R.string.concluir_solicitacao);
+        }
+    }
+
+    @Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		((SoliciteActivity) getActivity()).setInfo(R.string.concluir_solicitacao);
 

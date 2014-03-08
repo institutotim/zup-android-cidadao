@@ -73,13 +73,13 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/linkPular"
+            android:id="@+id/linkCancelar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:clickable="true"
             android:padding="30dp"
-            android:text="@string/pular_e_acessar_o_aplicativo"
+            android:text="@string/cancelar"
             android:textColor="@color/text_next_color"
             android:textSize="14sp" />
     </LinearLayout>

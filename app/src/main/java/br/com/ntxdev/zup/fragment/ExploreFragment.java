@@ -86,6 +86,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
     private static final double INITIAL_LATITUDE = -23.5501283;
     private static final double INITIAL_LONGITUDE = -46.6338553;
 
+    private static final int ITEMS_PER_PAGE = 3;
+
     private boolean wasLocalized = false;
 
     @Override

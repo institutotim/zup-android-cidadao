@@ -163,6 +163,7 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
+            ((SoliciteActivity) getActivity()).setInfo(R.string.selecione_o_local);
             if (file != null && !file.isEmpty()) {
                 ((ImageView) view.findViewById(R.id.marcador)).setImageBitmap(ImageUtils.getScaled(getActivity(), file));
             }

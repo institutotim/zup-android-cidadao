@@ -45,6 +45,14 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
     private View temp = null;
 
     @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            ((SoliciteActivity) getActivity()).setInfo(R.string.adicione_fotos);
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ((SoliciteActivity) getActivity()).setInfo(R.string.adicione_fotos);
 
