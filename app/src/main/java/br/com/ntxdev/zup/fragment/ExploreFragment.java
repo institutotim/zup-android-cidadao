@@ -34,6 +34,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.squareup.okhttp.apache.OkApacheClient;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -486,7 +487,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         protected Void doInBackground(Void... voids) {
             Log.d("ZUP", "Request started");
             try {
-                HttpClient client = new DefaultHttpClient();
+                //HttpClient client = new DefaultHttpClient();
+                HttpClient client = new OkApacheClient();
                 HttpResponse response;
 
                 for (Long id : busca.getIdsCategoriaInventario()) {

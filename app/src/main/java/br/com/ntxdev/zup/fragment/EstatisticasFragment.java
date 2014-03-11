@@ -16,6 +16,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -51,11 +52,15 @@ public class EstatisticasFragment extends Fragment {
 		botaoFiltrar.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				startActivityForResult(new Intent(getActivity(), FiltroEstatisticasActivity.class), REQUEST_FILTRO);				
+				getActivity().startActivityForResult(new Intent(getActivity(), FiltroEstatisticasActivity.class), REQUEST_FILTRO);
 			}
 		});
 
-        new Tasker().execute();
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+            new Tasker().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else {
+            new Tasker().execute();
+        }
 		
 		return view;
 	}
@@ -64,12 +69,20 @@ public class EstatisticasFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
-            new Tasker().execute();
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+                new Tasker().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                new Tasker().execute();
+            }
         }
     }
 
     public void aplicarFiltro(BuscaEstatisticas busca) {
-		new Tasker(busca).execute();
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+            new Tasker(busca).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else {
+            new Tasker(busca).execute();
+        }
 	}
 	
 	public class Tasker extends AsyncTask<Void, Void, String> {

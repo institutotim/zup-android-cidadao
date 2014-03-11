@@ -113,7 +113,7 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 
 	@Override
 	public void onClick(View v) {
-		if (v.getId() == status.getId()) {
+		if (v.getId() == status.getId() && !relatos.isEmpty()) {
 			if (opcoes.getVisibility() == View.GONE) {
 				opcoes.setVisibility(View.VISIBLE);
 				status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.seta_contrair, 0);

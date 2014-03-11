@@ -174,6 +174,10 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         exibirBarraInferior(true);
     }
 
+    public void enableNextButton(boolean enabled) {
+        botaoAvancar.setVisibility(enabled ? View.VISIBLE : View.GONE);
+    }
+
     public CategoriaRelato getCategoria() {
         return solicitacao.getCategoria();
     }

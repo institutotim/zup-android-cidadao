@@ -114,6 +114,7 @@ public class PlacesAutoCompleteAdapter extends ArrayAdapter<Place> implements Fi
         try {
             // Create a JSON object hierarchy from the results
             JSONObject jsonObj = new JSONObject(jsonResults.toString());
+            System.out.println(jsonObj.toString(2));
             JSONArray predsJsonArray = jsonObj.getJSONArray("predictions");
 
             // Extract the Place descriptions from the results

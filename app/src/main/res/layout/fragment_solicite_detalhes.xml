@@ -11,15 +11,15 @@
         android:padding="30dp"
         android:paddingTop="45dp" >
 
-        <EditText
-            android:imeOptions="actionGo"
+        <br.com.ntxdev.zup.widget.EditTextComentario
             android:id="@+id/comentario"
             android:layout_width="match_parent"
             android:layout_height="@dimen/comments_box_size"
             android:background="#f1f1f1"
             android:gravity="top"
             android:scrollHorizontally="false"
-            android:singleLine="true"
+            android:minLines="4"
+            android:maxLines="4"
             android:hint="@string/se_desejar_detalhe_a_situacao"
             android:padding="10dp"
             android:textColor="#4c4c4c"

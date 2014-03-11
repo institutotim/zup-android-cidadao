@@ -126,6 +126,7 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
                 parent.removeView(view);
         }
 
+        ((SoliciteActivity) getActivity()).enableNextButton(false);
         ((SoliciteActivity) getActivity()).exibirBarraInferior(true);
         ((SoliciteActivity) getActivity()).setInfo(R.string.selecione_o_local);
 
@@ -315,6 +316,7 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
             latitudePonto = marker.getPosition().latitude;
             longitudePonto = marker.getPosition().longitude;
             atualizarEndereco(marker.getPosition());
+            ((SoliciteActivity) getActivity()).enableNextButton(true);
             return true;
         } catch (Exception e) {
             Log.e("ZUP", e.getMessage(), e);

@@ -39,11 +39,12 @@ public class SoliciteDetalhesFragment extends Fragment implements View.OnClickLi
 
 		EditText comentario = (EditText) view.findViewById(R.id.comentario);
 		comentario.setTypeface(FontUtils.getRegular(getActivity()));
+
         comentario.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 boolean handled = false;
-                if (actionId == EditorInfo.IME_ACTION_GO) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
                     ((SoliciteActivity) getActivity()).solicitar();
                     handled = true;
                 }
