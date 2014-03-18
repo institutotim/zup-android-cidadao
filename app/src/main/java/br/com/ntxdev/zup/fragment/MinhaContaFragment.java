@@ -7,7 +7,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -35,6 +34,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.common.collect.Lists;
+import com.squareup.okhttp.apache.OkApacheClient;
 
 import br.com.ntxdev.zup.EditarContaActivity;
 import br.com.ntxdev.zup.OpeningActivity;
@@ -263,7 +263,7 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
             if (shouldContinueLoading) {
                 try {
                     isLoading = true;
-                    HttpClient client = new DefaultHttpClient();
+                    HttpClient client = new OkApacheClient();
                     HttpGet get = new HttpGet(Constantes.REST_URL + "/reports/users/me/items?per_page=10&page=" + (lastPageLoaded + 1));
                     get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
                     HttpResponse response = client.execute(get);
@@ -321,7 +321,7 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 			for (int i = 0; i < array.length(); i++) {
 				JSONArray fotos = array.getJSONObject(i).getJSONArray("images");
 				for (int j = 0; j < fotos.length(); j++) {
-					FileUtils.downloadImage(fotos.getJSONObject(j).getString("url"));
+					FileUtils.downloadImage(getActivity(), fotos.getJSONObject(j).getString("url"));
 				}				
 			}
 		}

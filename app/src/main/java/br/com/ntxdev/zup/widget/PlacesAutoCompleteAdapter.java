@@ -86,6 +86,7 @@ public class PlacesAutoCompleteAdapter extends ArrayAdapter<Place> implements Fi
             sb.append("?sensor=true&key=" + Constantes.PLACES_KEY);
             sb.append("&components=country:br");
             sb.append("&language=pt-BR");
+            sb.append("&types=(regions)");
             sb.append("&location=").append(getLatitude()).append(",").append(getLongitude());
             sb.append("&input=" + URLEncoder.encode(input, "utf8"));
 

@@ -9,7 +9,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
@@ -22,6 +21,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.squareup.okhttp.apache.OkApacheClient;
+
 import br.com.ntxdev.zup.core.Constantes;
 import br.com.ntxdev.zup.util.FontUtils;
 
@@ -76,7 +78,7 @@ public class RecuperarSenhaActivity extends Activity implements View.OnClickList
 		@Override
 		protected String doInBackground(Void... params) {
 			try {
-				HttpClient client = new DefaultHttpClient();
+				HttpClient client = new OkApacheClient();
 				HttpPut put = new HttpPut(Constantes.REST_URL + "/recover_password");
 				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
 				nameValuePairs.add(new BasicNameValuePair("email", campoEmail.getText().toString()));

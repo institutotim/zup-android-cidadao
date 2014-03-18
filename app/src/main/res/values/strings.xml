@@ -125,6 +125,7 @@
         <string name="nao">Não</string>
         <string name="todas_as_categorias">Todas as categorias</string>
     <string name="aviso_permissao_login">Você precisa estar logado para acessar esta área.</string>
+    <string name="toque_no_ponto_exato_solicitacao">Toque no ponto exato que deseja fazer a solicitação</string>
 
 
 </resources>

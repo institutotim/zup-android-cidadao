@@ -37,24 +37,24 @@ public class ImageUtils {
 		return bmpGrayscale;
 	}
 
-	public static Bitmap loadFromFile(String file) {
+	public static Bitmap loadFromFile(Context context, String file) {
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-		return BitmapFactory.decodeFile(new File(FileUtils.getImagesFolder() + File.separator + file).toString(), options);
+		return BitmapFactory.decodeFile(new File(FileUtils.getImagesFolder(context) + File.separator + file).toString(), options);
 	}
 
-    public static Bitmap loadFromFile(String subfolder, String file) {
+    public static Bitmap loadFromFile(Context context, String subfolder, String file) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        return BitmapFactory.decodeFile(new File(FileUtils.getImagesFolder(subfolder) + File.separator + file).toString(), options);
+        return BitmapFactory.decodeFile(new File(FileUtils.getImagesFolder(context, subfolder) + File.separator + file).toString(), options);
     }
 
 	public static Bitmap getScaled(Activity activity, String filename) {
-		return getScaled(activity, ImageUtils.loadFromFile(filename));
+		return getScaled(activity, ImageUtils.loadFromFile(activity, filename));
 	}
 
     public static Bitmap getScaled(Activity activity, String subfolder, String filename) {
-        return getScaled(activity, ImageUtils.loadFromFile(subfolder, filename));
+        return getScaled(activity, ImageUtils.loadFromFile(activity, subfolder, filename));
     }
 	
 	public static Bitmap getScaled(Activity activity, Bitmap bitmapOrg) {
@@ -74,16 +74,25 @@ public class ImageUtils {
 	}
 
 	public static StateListDrawable getStateListDrawable(Activity activity, String filename) {
-		Bitmap original = ImageUtils.getScaled(activity, ImageUtils.loadFromFile(filename));
+		Bitmap original = ImageUtils.getScaled(activity, ImageUtils.loadFromFile(activity, filename));
 		StateListDrawable states = new StateListDrawable();
 		states.addState(new int[] { android.R.attr.state_pressed }, new BitmapDrawable(activity.getResources(), original));
 		states.addState(new int[] {}, new BitmapDrawable(activity.getResources(), ImageUtils.toGrayscale(original)));
 		return states;
 	}
 
-    public static StateListDrawable getStateListDrawable(Activity activity, String activeFilename, String disabledFilename) {
-        Bitmap active = ImageUtils.getScaled(activity, ImageUtils.loadFromFile(activeFilename));
-        Bitmap disabled = ImageUtils.getScaled(activity, ImageUtils.loadFromFile(disabledFilename));
+    public static StateListDrawable getReportStateListDrawable(Activity activity, String activeFilename, String disabledFilename) {
+        Bitmap active = ImageUtils.getScaled(activity, ImageUtils.loadFromFile(activity, "reports", activeFilename));
+        Bitmap disabled = ImageUtils.getScaled(activity, ImageUtils.loadFromFile(activity, "reports", disabledFilename));
+        StateListDrawable states = new StateListDrawable();
+        states.addState(new int[] { android.R.attr.state_pressed }, new BitmapDrawable(activity.getResources(), active));
+        states.addState(new int[] {}, new BitmapDrawable(activity.getResources(), disabled));
+        return states;
+    }
+
+    public static StateListDrawable getInventoryStateListDrawable(Activity activity, String activeFilename, String disabledFilename) {
+        Bitmap active = ImageUtils.getScaled(activity, ImageUtils.loadFromFile(activity, "inventory", activeFilename));
+        Bitmap disabled = ImageUtils.getScaled(activity, ImageUtils.loadFromFile(activity, "inventory", disabledFilename));
         StateListDrawable states = new StateListDrawable();
         states.addState(new int[] { android.R.attr.state_pressed }, new BitmapDrawable(activity.getResources(), active));
         states.addState(new int[] {}, new BitmapDrawable(activity.getResources(), disabled));

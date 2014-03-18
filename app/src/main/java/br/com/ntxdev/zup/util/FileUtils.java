@@ -9,12 +9,12 @@ import java.net.URLConnection;
 
 import org.apache.http.util.ByteArrayBuffer;
 
-import android.os.Environment;
+import android.content.Context;
 
 public class FileUtils {
 
-	public static boolean imageExists(String filename) {
-		File imagesFolder = getImagesFolder();
+	public static boolean imageExists(Context context, String filename) {
+		File imagesFolder = getImagesFolder(context);
 		if (!imagesFolder.exists()) {
 			imagesFolder.mkdirs();
 		}
@@ -22,8 +22,8 @@ public class FileUtils {
 		return new File(imagesFolder, filename).exists();
 	}
 
-    public static boolean imageExists(String subfolder, String filename) {
-        File imagesFolder = getImagesFolder(subfolder);
+    public static boolean imageExists(Context context, String subfolder, String filename) {
+        File imagesFolder = getImagesFolder(context, subfolder);
         if (!imagesFolder.exists()) {
             imagesFolder.mkdirs();
         }
@@ -31,16 +31,16 @@ public class FileUtils {
         return new File(imagesFolder, filename).exists();
     }
 	
-	public static File getImagesFolder() {
-		return new File(Environment.getExternalStorageDirectory() + File.separator + "ZUP" + File.separator + "images");
+	public static File getImagesFolder(Context context) {
+		return new File(context.getFilesDir() + File.separator + "images" + File.separator + "images");
 	}
 
-    public static File getImagesFolder(String subfolder) {
-        return new File(Environment.getExternalStorageDirectory() + File.separator + "ZUP" + File.separator + "images" + File.separator + subfolder);
+    public static File getImagesFolder(Context context, String subfolder) {
+        return new File(context.getFilesDir() + File.separator + "images" + File.separator + "images" + File.separator + subfolder);
     }
 	
-	public static File getTempImagesFolder() {
-		File imagesFolder = new File(Environment.getExternalStorageDirectory() + File.separator + "ZUP" + File.separator + "temp");
+	public static File getTempImagesFolder(Context context) {
+		File imagesFolder = new File(context.getFilesDir() + File.separator + "images" + File.separator + "temp");
 		if (!imagesFolder.exists()) {
 			imagesFolder.mkdirs();
 		}
@@ -48,10 +48,10 @@ public class FileUtils {
 		return imagesFolder;
 	}
 	
-	public static void downloadImage(String url) throws Exception {
+	public static void downloadImage(Context context, String url) throws Exception {
 		String[] parts = url.split("/");
 		String filename = parts[parts.length - 1];
-		if (!imageExists(filename)) {
+		if (!imageExists(context, filename)) {
 			URL u = new URL(url);
 			URLConnection ucon = u.openConnection();
 			InputStream is = ucon.getInputStream();
@@ -61,16 +61,16 @@ public class FileUtils {
 	        while ((current = bis.read()) != -1) {
 	            baf.append((byte) current);
 	        }
-	        FileOutputStream fos = new FileOutputStream(new File(getImagesFolder(), filename));
+	        FileOutputStream fos = new FileOutputStream(new File(getImagesFolder(context), filename));
 	        fos.write(baf.toByteArray());
 	        fos.close();
 		}
 	}
 
-    public static void downloadImage(String subfolder, String url) throws Exception {
+    public static void downloadImage(Context context, String subfolder, String url) throws Exception {
         String[] parts = url.split("/");
         String filename = parts[parts.length - 1];
-        if (!imageExists(subfolder, filename)) {
+        if (!imageExists(context, subfolder, filename)) {
             URL u = new URL(url);
             URLConnection ucon = u.openConnection();
             InputStream is = ucon.getInputStream();
@@ -80,7 +80,7 @@ public class FileUtils {
             while ((current = bis.read()) != -1) {
                 baf.append((byte) current);
             }
-            FileOutputStream fos = new FileOutputStream(new File(getImagesFolder(subfolder), filename));
+            FileOutputStream fos = new FileOutputStream(new File(getImagesFolder(context, subfolder), filename));
             fos.write(baf.toByteArray());
             fos.close();
         }

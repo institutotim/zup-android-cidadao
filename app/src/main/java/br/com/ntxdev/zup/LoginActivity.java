@@ -13,13 +13,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.okhttp.apache.OkApacheClient;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
@@ -106,7 +107,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 		@Override
 		protected String doInBackground(Void... params) {
 			try {
-				HttpClient client = new DefaultHttpClient();
+				HttpClient client = new OkApacheClient();
 				HttpPost post = new HttpPost(Constantes.REST_URL + "/authenticate");
 				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 				nameValuePairs.add(new BasicNameValuePair("email", campoEmail.getText().toString()));

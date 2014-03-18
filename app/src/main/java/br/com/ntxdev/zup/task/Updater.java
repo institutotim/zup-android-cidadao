@@ -43,10 +43,10 @@ public class Updater {
 		JSONArray array = new JSONObject(json).getJSONArray("categories");
 		for (int i = 0; i < array.length(); i++) {
 			String markerUrl = array.getJSONObject(i).getJSONObject("marker").getJSONObject("default").getString("mobile");
-			FileUtils.downloadImage(type, markerUrl);
+			FileUtils.downloadImage(context, type, markerUrl);
 			JSONObject iconUrl = array.getJSONObject(i).getJSONObject("icon").getJSONObject("default").getJSONObject("mobile");
-			FileUtils.downloadImage(type, iconUrl.getString("active"));
-            FileUtils.downloadImage(type, iconUrl.getString("disabled"));
+			FileUtils.downloadImage(context, type, iconUrl.getString("active"));
+            FileUtils.downloadImage(context, type, iconUrl.getString("disabled"));
 		}
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		prefs.edit().putString(type, json).commit();

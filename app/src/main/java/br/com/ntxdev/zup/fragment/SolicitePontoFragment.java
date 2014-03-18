@@ -33,12 +33,12 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.squareup.okhttp.apache.OkApacheClient;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -115,7 +115,7 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
-            ((SoliciteActivity) getActivity()).setInfo(R.string.selecione_o_local);
+            ((SoliciteActivity) getActivity()).setInfo(R.string.toque_no_ponto_exato_solicitacao);
         }
     }
 
@@ -128,7 +128,7 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
 
         ((SoliciteActivity) getActivity()).enableNextButton(false);
         ((SoliciteActivity) getActivity()).exibirBarraInferior(true);
-        ((SoliciteActivity) getActivity()).setInfo(R.string.selecione_o_local);
+        ((SoliciteActivity) getActivity()).setInfo(R.string.toque_no_ponto_exato_solicitacao);
 
         try {
             view = inflater.inflate(R.layout.fragment_solicite_ponto, container, false);
@@ -380,7 +380,7 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
         protected Void doInBackground(Void... voids) {
             Log.i("ZUP", "Request started");
             try {
-                HttpClient client = new DefaultHttpClient();
+                HttpClient client = new OkApacheClient();
 
                 HttpResponse response;
 

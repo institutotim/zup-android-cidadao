@@ -36,6 +36,7 @@ import br.com.ntxdev.zup.SoliciteActivity;
 import br.com.ntxdev.zup.domain.Place;
 import br.com.ntxdev.zup.domain.Solicitacao;
 import br.com.ntxdev.zup.util.FontUtils;
+import br.com.ntxdev.zup.util.GPSUtils;
 import br.com.ntxdev.zup.util.GeoUtils;
 import br.com.ntxdev.zup.util.ImageUtils;
 import br.com.ntxdev.zup.util.ViewUtils;
@@ -155,7 +156,7 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
         }
 
         if (file != null && !file.isEmpty()) {
-            ((ImageView) view.findViewById(R.id.marcador)).setImageBitmap(ImageUtils.getScaled(getActivity(), file));
+            ((ImageView) view.findViewById(R.id.marcador)).setImageBitmap(ImageUtils.getScaled(getActivity(), "reports", file));
         }
     }
 
@@ -292,7 +293,10 @@ public class SoliciteLocalFragment extends Fragment implements AdapterView.OnIte
         @Override
         protected String doInBackground(Void... params) {
             try {
-                return GeoUtils.getFromLocation(latitude, longitude, 1).get(0).getAddressLine(0);
+                //return GeoUtils.getFromLocation(latitude, longitude, 1).get(0).getAddressLine(0);
+                //Address address = GeoUtils.getFromLocation(latitude, longitude, 1).get(0);
+                Address address = GPSUtils.getFromLocation(getActivity(), latitude, longitude).get(0);
+                return new StringBuilder().append(address.getThoroughfare()).append(", ").append(address.getFeatureName()).toString();
             } catch (Exception e) {
                 Log.e("ZUP", e.getMessage(), e);
                 return null;

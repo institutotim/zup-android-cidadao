@@ -1,6 +1,9 @@
 package br.com.ntxdev.zup.fragment;
 
+import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.util.ImageUtils;
+
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -8,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout.LayoutParams;
+
+import com.squareup.picasso.Picasso;
 
 public class ImageViewFragment extends Fragment {
 
@@ -35,8 +40,9 @@ public class ImageViewFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		ImageView imageView = new ImageView(getActivity());
-		imageView.setImageBitmap(ImageUtils.loadFromFile(mContent));
-		imageView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+		//imageView.setImageBitmap(ImageUtils.loadFromFile(mContent));
+        Picasso.with(getActivity()).load(mContent).placeholder(R.drawable.loading).into(imageView);
+        imageView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
 		return imageView;
 	}

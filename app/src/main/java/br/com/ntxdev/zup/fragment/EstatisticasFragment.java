@@ -1,17 +1,5 @@
 package br.com.ntxdev.zup.fragment;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -26,6 +14,21 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.squareup.okhttp.apache.OkApacheClient;
+import com.todddavies.components.progressbar.ProgressWheel;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import br.com.ntxdev.zup.FiltroEstatisticasActivity;
 import br.com.ntxdev.zup.R;
 import br.com.ntxdev.zup.core.Constantes;
@@ -34,8 +37,6 @@ import br.com.ntxdev.zup.domain.Estatistica;
 import br.com.ntxdev.zup.service.LoginService;
 import br.com.ntxdev.zup.util.FontUtils;
 import br.com.ntxdev.zup.util.ImageUtils;
-
-import com.todddavies.components.progressbar.ProgressWheel;
 
 public class EstatisticasFragment extends Fragment {
 
@@ -111,7 +112,7 @@ public class EstatisticasFragment extends Fragment {
 		@Override
 		protected String doInBackground(Void... params) {
 			try {
-				HttpClient client = new DefaultHttpClient();
+				HttpClient client = new OkApacheClient();
 				String request = Constantes.REST_URL + "/reports/stats";
 				if (id != null) {
 					request += "?category_id=" + id;

@@ -11,7 +11,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
@@ -31,6 +30,9 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.squareup.okhttp.apache.OkApacheClient;
+
 import br.com.ntxdev.zup.core.Constantes;
 import br.com.ntxdev.zup.domain.Usuario;
 import br.com.ntxdev.zup.service.LoginService;
@@ -195,7 +197,7 @@ public class CadastroActivity extends Activity implements OnClickListener {
 		@Override
 		protected String doInBackground(Usuario... params) {
 			try {
-				HttpClient client = new DefaultHttpClient();
+				HttpClient client = new OkApacheClient();
 				HttpPost post = new HttpPost(Constantes.REST_URL + "/users");
 				JSONObject json = new UsuarioService().converterParaJSON(params[0]);
 				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(json.length());

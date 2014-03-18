@@ -68,7 +68,7 @@ public class SolicitacaoDetalheActivity extends FragmentActivity {
 
             map.addMarker(new MarkerOptions()
                     .position(new LatLng(solicitacao.getLatitude(), solicitacao.getLongitude()))
-                    .icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(this, solicitacao.getCategoria().getMarcador()))));
+                    .icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(this, "reports", solicitacao.getCategoria().getMarcador()))));
 		} else {
             findViewById(R.id.map).setVisibility(View.GONE);
 			ImagePagerAdapter mAdapter = new ImagePagerAdapter(getSupportFragmentManager(), solicitacao.getFotos());

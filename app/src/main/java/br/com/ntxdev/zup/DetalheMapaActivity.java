@@ -10,7 +10,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.HttpHostConnectException;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,6 +24,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.squareup.okhttp.apache.OkApacheClient;
+
 import br.com.ntxdev.zup.core.Constantes;
 import br.com.ntxdev.zup.domain.ItemInventario;
 import br.com.ntxdev.zup.domain.SolicitacaoListItem;
@@ -135,7 +137,7 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			try {
-				HttpClient client = new DefaultHttpClient();
+				HttpClient client = new OkApacheClient();
 				get = new HttpGet(Constantes.REST_URL + "/reports/inventory/" + item.getId() + "/items");
 				get.setHeader("X-App-Token", new LoginService().getToken(DetalheMapaActivity.this));
 

@@ -40,7 +40,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -487,7 +486,6 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         protected Void doInBackground(Void... voids) {
             Log.d("ZUP", "Request started");
             try {
-                //HttpClient client = new DefaultHttpClient();
                 HttpClient client = new OkApacheClient();
                 HttpResponse response;
 
@@ -588,10 +586,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
                 JSONArray fotos = json.getJSONArray("images");
                 for (int j = 0; j < fotos.length(); j++) {
-                    String url = fotos.getJSONObject(j).getString("url");
-                    FileUtils.downloadImage(url);
-                    String[] parts = url.split("/");
-                    item.getFotos().add(parts[parts.length - 1]);
+                    item.getFotos().add(ViewUtils.isMdpiOrLdpi(getActivity()) ? fotos.getJSONObject(j).getString("low") : fotos.getJSONObject(j).getString("high"));
                 }
 
                 itensRelato.add(item);

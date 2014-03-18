@@ -65,7 +65,7 @@ public class SoliciteTipoFragment extends Fragment implements View.OnClickListen
 		CategoriaRelato categoria = (CategoriaRelato) v.getTag();
 		TextView view = (TextView) v;
 		view.setTextColor(Color.BLACK);
-		view.setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getResources(), ImageUtils.getScaled(getActivity(), ((CategoriaRelato) categoria).getIconeAtivo())), null, null);
+		view.setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getResources(), ImageUtils.getScaled(getActivity(), "reports", categoria.getIconeAtivo())), null, null);
 		((SoliciteActivity) getActivity()).setCategoria(categoria);
 	}
 
@@ -91,10 +91,10 @@ public class SoliciteTipoFragment extends Fragment implements View.OnClickListen
             view.setTypeface(FontUtils.getRegular(getActivity()));
             if (categorias.get(i).equals(selecionada)) {
                 view.setTextColor(Color.BLACK);
-                view.setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getResources(), ImageUtils.getScaled(getActivity(), ((CategoriaRelato) categorias.get(i)).getIconeAtivo())), null, null);
+                view.setCompoundDrawablesWithIntrinsicBounds(null, new BitmapDrawable(getResources(), ImageUtils.getScaled(getActivity(), "reports", categorias.get(i).getIconeAtivo())), null, null);
             } else {
                 view.setCompoundDrawablesWithIntrinsicBounds(null,
-                        ImageUtils.getStateListDrawable(getActivity(), categorias.get(i).getIconeAtivo(), categorias.get(i).getIconeInativo()), null, null);
+                        ImageUtils.getReportStateListDrawable(getActivity(), categorias.get(i).getIconeAtivo(), categorias.get(i).getIconeInativo()), null, null);
             }
 			view.setOnClickListener(this);
 			container.addView(view);
@@ -111,7 +111,7 @@ public class SoliciteTipoFragment extends Fragment implements View.OnClickListen
 			for (int j = 0; j < view.getChildCount(); j++) {
 				TextView txt = (TextView) view.getChildAt(j);
 				CategoriaRelato categoria = (CategoriaRelato) txt.getTag();
-				txt.setCompoundDrawablesWithIntrinsicBounds(null, ImageUtils.getStateListDrawable(getActivity(), categoria.getIconeAtivo(), categoria.getIconeInativo()), null, null);
+				txt.setCompoundDrawablesWithIntrinsicBounds(null, ImageUtils.getReportStateListDrawable(getActivity(), categoria.getIconeAtivo(), categoria.getIconeInativo()), null, null);
 				txt.setTextColor(getResources().getColorStateList(R.color.icon_text_color));
 			}
 		}

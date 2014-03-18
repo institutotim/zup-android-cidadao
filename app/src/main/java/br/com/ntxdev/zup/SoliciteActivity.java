@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.squareup.okhttp.apache.OkApacheClient;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -27,7 +28,6 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -53,6 +53,7 @@ import br.com.ntxdev.zup.util.DateUtils;
 import br.com.ntxdev.zup.util.FileUtils;
 import br.com.ntxdev.zup.util.FontUtils;
 import br.com.ntxdev.zup.util.NetworkUtils;
+import br.com.ntxdev.zup.util.ViewUtils;
 
 public class SoliciteActivity extends FragmentActivity implements View.OnClickListener {
 
@@ -142,7 +143,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
             if (pontoFragment == null) {
                 pontoFragment = new SolicitePontoFragment();
                 pontoFragment.setCategoria(categoria);
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction().setCustomAnimations(FragmentTransaction.TRANSIT_FRAGMENT_FADE, FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
                 if (localFragment != null) {
                     ft.remove(localFragment).commit();
                     ft = getSupportFragmentManager().beginTransaction();
@@ -336,7 +337,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         @Override
         protected SolicitacaoListItem doInBackground(Void... params) {
             try {
-                HttpClient client = new DefaultHttpClient();
+                HttpClient client = new OkApacheClient();
                 post = new HttpPost(Constantes.REST_URL + "/reports/" + solicitacao.getCategoria().getId() + "/items");
 
                 MultipartEntityBuilder multipartEntity = MultipartEntityBuilder.create();
@@ -426,11 +427,8 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         item.setData(DateUtils.getIntervaloTempo(new Date()));
         item.setFotos(new ArrayList<String>());
         JSONArray fotos = json.getJSONArray("images");
-        for (int i = 0; i < fotos.length(); i++) {
-            JSONObject foto = fotos.getJSONObject(i);
-            FileUtils.downloadImage(foto.getString("url"));
-            String[] parts = foto.getString("url").split("/");
-            item.getFotos().add(parts[parts.length - 1]);
+        for (int j = 0; j < fotos.length(); j++) {
+            item.getFotos().add(ViewUtils.isMdpiOrLdpi(this) ? fotos.getJSONObject(j).getString("low") : fotos.getJSONObject(j).getString("high"));
         }
         item.setProtocolo(json.getString("protocol"));
         item.setStatus(new SolicitacaoListItem.Status(json.getJSONObject("status").getString("title"), json.getJSONObject("status").getString("color")));
