@@ -10,6 +10,7 @@ import java.net.URLConnection;
 import org.apache.http.util.ByteArrayBuffer;
 
 import android.content.Context;
+import android.os.Environment;
 
 public class FileUtils {
 
@@ -38,15 +39,15 @@ public class FileUtils {
     public static File getImagesFolder(Context context, String subfolder) {
         return new File(context.getFilesDir() + File.separator + "images" + File.separator + "images" + File.separator + subfolder);
     }
-	
-	public static File getTempImagesFolder(Context context) {
-		File imagesFolder = new File(context.getFilesDir() + File.separator + "images" + File.separator + "temp");
-		if (!imagesFolder.exists()) {
-			imagesFolder.mkdirs();
-		}
-		
-		return imagesFolder;
-	}
+
+    public static File getTempImagesFolder() {
+        File imagesFolder = new File(Environment.getExternalStorageDirectory() + File.separator + "ZUP" + File.separator + "temp");
+        if (!imagesFolder.exists()) {
+            imagesFolder.mkdirs();
+        }
+
+        return imagesFolder;
+    }
 	
 	public static void downloadImage(Context context, String url) throws Exception {
 		String[] parts = url.split("/");

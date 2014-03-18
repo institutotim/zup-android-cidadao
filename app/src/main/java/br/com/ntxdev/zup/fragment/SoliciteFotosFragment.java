@@ -136,7 +136,7 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
     private void tirarFoto() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Arquivo temporário
-        imagemTemporaria = Uri.fromFile(new File(FileUtils.getTempImagesFolder(getActivity()), "tmp_image_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
+        imagemTemporaria = Uri.fromFile(new File(FileUtils.getTempImagesFolder(), "tmp_image_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imagemTemporaria);
         intent.putExtra("return-data", true);
         getActivity().startActivityForResult(intent, CAMERA_RETURN);
@@ -178,7 +178,7 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
                 Intent intent = new Intent(getActivity(), CropImage.class);
                 intent.putExtra(CropImage.IMAGE_PATH, imagemTemporaria.getPath());
                 intent.putExtra(CropImage.SCALE, true);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(FileUtils.getTempImagesFolder(getActivity()), System.currentTimeMillis() + ".jpg")));
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(FileUtils.getTempImagesFolder(), System.currentTimeMillis() + ".jpg")));
                 intent.putExtra(CropImage.ASPECT_X, 1);
                 intent.putExtra(CropImage.ASPECT_Y, 1);
                 intent.putExtra(CropImage.OUTPUT_X, 800);
