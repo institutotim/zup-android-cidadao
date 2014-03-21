@@ -2,13 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff" >
+    android:background="#fff">
 
     <fragment
         android:id="@+id/mapaLocal"
+        class="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        class="com.google.android.gms.maps.SupportMapFragment" />
+        android:layout_height="match_parent" />
 
     <View
         android:id="@+id/posicaoCentral"
@@ -26,34 +26,33 @@
         android:contentDescription="@string/marcador" />
 
     <RelativeLayout
-        android:layout_margin="10dp"
-        android:layout_below="@id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/header"
+        android:layout_margin="10dp"
         android:background="@drawable/search_results"
         android:padding="12dp">
 
         <ImageView
-            android:id="@+id/clean"
-            android:clickable="true"
+            android:id="@+id/editar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
-            android:padding="8dp"
-            android:src="@drawable/map_searchbox_btn_delete" />
+            android:layout_centerVertical="true"
+            android:clickable="true"
+            android:src="@drawable/ic_action_edit" />
 
-        <AutoCompleteTextView
-            android:layout_toLeftOf="@id/clean"
-            android:id="@+id/autocomplete"
+        <TextView
+            android:id="@+id/endereco"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/clean"
             android:background="@android:color/transparent"
             android:ellipsize="end"
-            android:hint="@string/pesquisar"
+            android:textSize="@dimen/medium_chart_text"
+            android:layout_centerVertical="true"
             android:singleLine="true"
-            android:textColor="#000"
-            android:imeOptions="actionSearch" />
+            android:textColor="#000" />
 
     </RelativeLayout>
 

@@ -12,7 +12,7 @@
         android:paddingRight="75dp"
         android:paddingTop="45dp" >
 
-        <br.com.ntxdev.zup.widget.EditTextComentario
+        <br.com.lfdb.zup.widget.EditTextComentario
             android:id="@+id/comentario"
             android:layout_width="match_parent"
             android:layout_height="@dimen/comments_box_size"

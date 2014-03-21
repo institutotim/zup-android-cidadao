@@ -135,7 +135,7 @@
                 android:orientation="horizontal"
                 android:weightSum="2" >
 
-                <br.com.ntxdev.zup.widget.PhoneEditText
+                <br.com.lfdb.zup.widget.PhoneEditText
                     android:imeOptions="actionNext"
                     android:id="@+id/campoTelefone"
                     android:layout_width="0dp"
@@ -148,7 +148,7 @@
                     android:textColor="#000"
                     android:textSize="@dimen/navigation_text_size" />
 
-                <br.com.ntxdev.zup.widget.CpfEditText
+                <br.com.lfdb.zup.widget.CpfEditText
                     android:imeOptions="actionNext"
                     android:id="@+id/campoCPF"
                     android:layout_width="0dp"
@@ -195,7 +195,7 @@
                     android:textColor="#000"
                     android:textSize="@dimen/navigation_text_size" />
 
-                <br.com.ntxdev.zup.widget.CepEditText
+                <br.com.lfdb.zup.widget.CepEditText
                     android:imeOptions="actionNext"
                     android:id="@+id/campoCEP"
                     android:layout_width="0dp"

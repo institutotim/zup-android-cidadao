@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="br.com.ntxdev.zup">
+    package="br.com.lfdb.zup">
 
     <permission
-        android:name="br.com.ntxdev.zup.permission.MAPS_RECEIVE"
+        android:name="br.com.lfdb.zup.permission.MAPS_RECEIVE"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="br.com.ntxdev.zup.permission.MAPS_RECEIVE" />
+    <uses-permission android:name="br.com.lfdb.zup.permission.MAPS_RECEIVE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
@@ -28,16 +28,16 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="br.com.ntxdev.zup.OpeningActivity"
+            android:name=".OpeningActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="br.com.ntxdev.zup.MainActivity"
+            android:name=".MainActivity"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="br.com.ntxdev.zup.SplashActivity"
+            android:name=".SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" >
             <intent-filter>
@@ -47,61 +47,61 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="br.com.ntxdev.zup.SoliciteActivity"
+            android:name=".SoliciteActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="br.com.ntxdev.zup.SolicitacaoDetalheActivity"
+            android:name=".SolicitacaoDetalheActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="br.com.ntxdev.zup.EditarContaActivity"
+            android:name=".EditarContaActivity"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="br.com.ntxdev.zup.TermosDeUsoActivity"
+            android:name=".TermosDeUsoActivity"
             android:label="@string/termos_de_uso"
             android:screenOrientation="portrait"
             android:theme="@style/Popup" >
         </activity>
         <activity
-            android:name="br.com.ntxdev.zup.CadastroActivity"
+            android:name=".CadastroActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="br.com.ntxdev.zup.RedesSociaisCadastroActivity"
+            android:name=".RedesSociaisCadastroActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="br.com.ntxdev.zup.WarningActivity"
+            android:name=".WarningActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="br.com.ntxdev.zup.FiltroExploreActivity"
+            android:name=".FiltroExploreActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="br.com.ntxdev.zup.FiltroEstatisticasActivity"
+            android:name=".FiltroEstatisticasActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="br.com.ntxdev.zup.LoginActivity"
+            android:name=".LoginActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="br.com.ntxdev.zup.RecuperarSenhaActivity"
+            android:name=".RecuperarSenhaActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="br.com.ntxdev.zup.DetalheMapaActivity"
+            android:name=".DetalheMapaActivity"
             android:screenOrientation="portrait" >
         </activity>
-        <activity android:name="br.com.ntxdev.zup.social.TwitterAuth" >
+        <activity android:name=".social.TwitterAuth" >
         </activity>
-        <activity android:name="br.com.ntxdev.zup.social.GooglePlusAuth" >
+        <activity android:name=".social.GooglePlusAuth" >
         </activity>
-        <activity android:name="br.com.ntxdev.zup.social.FacebookAuth" >
+        <activity android:name=".social.FacebookAuth" >
         </activity>
         <activity
             android:name="eu.janmuller.android.simplecropimage.CropImage"
