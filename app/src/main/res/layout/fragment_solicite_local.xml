@@ -10,6 +10,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <ImageView
+        android:id="@+id/locationButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="10dp"
+        android:background="@drawable/white_bg_selector"
+        android:clickable="true"
+        android:padding="10dp"
+        android:src="@drawable/ic_action_location_found" />
+
     <View
         android:id="@+id/posicaoCentral"
         android:layout_width="1dp"
@@ -46,13 +58,14 @@
             android:id="@+id/endereco"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/clean"
             android:background="@android:color/transparent"
             android:ellipsize="end"
-            android:textSize="@dimen/medium_chart_text"
-            android:layout_centerVertical="true"
             android:singleLine="true"
-            android:textColor="#000" />
+            android:text="@string/carregando_aguarde"
+            android:textColor="#000"
+            android:textSize="@dimen/medium_chart_text" />
 
     </RelativeLayout>
 

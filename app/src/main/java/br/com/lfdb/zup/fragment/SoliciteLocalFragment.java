@@ -68,6 +68,10 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
             .setInterval(5000)         // 5 seconds
             .setFastestInterval(16)    // 16ms = 60fps
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    private double userLongitude;
+    private double userLatitude;
+
+    private boolean updateCameraUser = true;
 
     @SuppressLint("NewApi")
     @Override
@@ -90,17 +94,14 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
         map = ((SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.mapaLocal)).getMap();
         if (map != null) {
             map.setMyLocationEnabled(true);
-            map.getUiSettings().setMyLocationButtonEnabled(false);
             map.getUiSettings().setZoomControlsEnabled(false);
+            map.getUiSettings().setMyLocationButtonEnabled(true
+            );
 
             map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
 
                 @Override
                 public void onCameraChange(CameraPosition cameraPosition) {
-                    //if (ignoreUpdate) {
-
-                        //System.out.println("modificou");
-                    //}
                     latitude = cameraPosition.target.latitude;
                     longitude = cameraPosition.target.longitude;
                     zoomAtual = cameraPosition.zoom;
@@ -126,6 +127,8 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
         } else {
             task.execute();
         }
+
+        view.findViewById(R.id.locationButton).setOnClickListener(this);
 
         return view;
     }
@@ -203,6 +206,14 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
 
     @Override
     public void onClick(View v) {
+        if (v.getId() == R.id.locationButton) {
+            CameraPosition position = new CameraPosition.Builder().target(new LatLng(userLatitude,
+                    userLongitude)).zoom(15).build();
+            CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+            map.animateCamera(update);
+            return;
+        }
+
         final View dialogView = getDialogView();
         ((TextView) dialogView.findViewById(R.id.endereco)).setText(rua);
         ((TextView) dialogView.findViewById(R.id.numero)).setText(numero);
@@ -356,7 +367,6 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                     Log.e("ZUP", e.getMessage(), e);
                 }
 
-                System.out.println(lat + " " + latitude + " / " + lon + " - " + longitude);
                 if (lat != latitude && lon != longitude) {
                     lat = latitude;
                     lon = longitude;
@@ -365,8 +375,6 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                         ignoreUpdate = false;
                         continue;
                     }
-
-                    System.out.println("passou");
 
                     List<Address> addresses = GPSUtils.getFromLocation(getActivity(), lat, lon);
                     if (!addresses.isEmpty()) {
@@ -440,15 +448,21 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
 
     @Override
     public void onLocationChanged(Location location) {
-        CameraPosition position = new CameraPosition.Builder().target(new LatLng(location.getLatitude(),
-                location.getLongitude())).zoom(15).build();
-        CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
-        map.moveCamera(update);
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
-        atualizarEndereco();
-        wasLocalized = true;
-        mLocationClient.removeLocationUpdates(this);
+        userLatitude = location.getLatitude();
+        userLongitude = location.getLongitude();
+
+        if (updateCameraUser) {
+            CameraPosition position = new CameraPosition.Builder().target(new LatLng(location.getLatitude(),
+                    location.getLongitude())).zoom(15).build();
+            CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+            map.moveCamera(update);
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+            atualizarEndereco();
+            wasLocalized = true;
+            mLocationClient.removeLocationUpdates(this);
+            updateCameraUser = false;
+        }
     }
 
     @Override

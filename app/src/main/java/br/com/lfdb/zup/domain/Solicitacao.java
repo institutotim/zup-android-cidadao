@@ -13,6 +13,7 @@ public class Solicitacao implements Serializable {
 	private ArrayList<String> fotos = new ArrayList<String>();
 	private String comentario;
     private String endereco;
+    private String referencia;
 	private boolean redeSocial = false;
     private Long idItemInventario;
 
@@ -79,5 +80,13 @@ public class Solicitacao implements Serializable {
 
     public void setIdItemInventario(Long idItemInventario) {
         this.idItemInventario = idItemInventario;
+    }
+
+    public String getReferencia() {
+        return referencia;
+    }
+
+    public void setReferencia(String referencia) {
+        this.referencia = referencia;
     }
 }

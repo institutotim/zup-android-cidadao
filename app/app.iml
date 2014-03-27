@@ -70,22 +70,22 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 19 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" exported="" name="guava-16.0.1" level="project" />
+    <orderEntry type="library" exported="" name="signpost-commonshttp4-1.2.1.2" level="project" />
+    <orderEntry type="library" exported="" name="httpmime-4.3.3" level="project" />
+    <orderEntry type="library" exported="" name="picasso-2.2.0" level="project" />
+    <orderEntry type="library" exported="" name="httpcore-4.3.2" level="project" />
     <orderEntry type="library" exported="" name="gson-2.2.4" level="project" />
     <orderEntry type="library" exported="" name="commons-codec-1.6" level="project" />
     <orderEntry type="library" exported="" name="signpost-core-1.2.1.2" level="project" />
-    <orderEntry type="library" exported="" name="support-v4-19.0.1" level="project" />
-    <orderEntry type="library" exported="" name="twitter4j-core-3.0.6" level="project" />
-    <orderEntry type="library" exported="" name="acra-4.5.0" level="project" />
-    <orderEntry type="library" exported="" name="okhttp-apache-1.5.2" level="project" />
-    <orderEntry type="library" exported="" name="commons-lang3-3.3.1" level="project" />
-    <orderEntry type="library" exported="" name="guava-16.0.1" level="project" />
-    <orderEntry type="library" exported="" name="signpost-commonshttp4-1.2.1.2" level="project" />
-    <orderEntry type="library" exported="" name="play-services-4.2.42" level="project" />
-    <orderEntry type="library" exported="" name="httpmime-4.3.3" level="project" />
-    <orderEntry type="library" exported="" name="httpcore-4.3.2" level="project" />
-    <orderEntry type="library" exported="" name="picasso-2.2.0" level="project" />
+    <orderEntry type="library" exported="" name="play-services-4.3.23" level="project" />
     <orderEntry type="library" exported="" name="apache-mime4j-core-0.7.2" level="project" />
     <orderEntry type="library" exported="" name="okhttp-1.5.2" level="project" />
+    <orderEntry type="library" exported="" name="support-v4-19.0.1" level="project" />
+    <orderEntry type="library" exported="" name="acra-4.5.0" level="project" />
+    <orderEntry type="library" exported="" name="twitter4j-core-3.0.6" level="project" />
+    <orderEntry type="library" exported="" name="okhttp-apache-1.5.2" level="project" />
+    <orderEntry type="library" exported="" name="commons-lang3-3.3.1" level="project" />
     <orderEntry type="module" module-name="lib-androidviewpagerindicator" exported="" />
     <orderEntry type="module" module-name="lib-simplecropimage" exported="" />
     <orderEntry type="module" module-name="lib-progresswheels" exported="" />
