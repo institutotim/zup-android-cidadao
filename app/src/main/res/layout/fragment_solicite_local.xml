@@ -37,29 +37,21 @@
         android:layout_centerHorizontal="true"
         android:contentDescription="@string/marcador" />
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/header"
         android:layout_margin="10dp"
         android:background="@drawable/search_results"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:padding="12dp">
 
-        <ImageView
-            android:id="@+id/editar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:clickable="true"
-            android:src="@drawable/ic_action_edit" />
-
-        <TextView
+        <AutoCompleteTextView
             android:id="@+id/endereco"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/clean"
+            android:layout_weight="5"
             android:background="@android:color/transparent"
             android:ellipsize="end"
             android:singleLine="true"
@@ -67,6 +59,32 @@
             android:textColor="#000"
             android:textSize="@dimen/medium_chart_text" />
 
-    </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/editar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.5"
+            android:clickable="true">
+
+            <View
+                android:id="@+id/div"
+                android:layout_width="1dp"
+                android:layout_height="30dp"
+                android:layout_alignParentLeft="true"
+                android:background="#ccc" />
+
+            <TextView
+                android:id="@+id/numero"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/div"
+                android:gravity="center"
+                android:textColor="#000"
+                android:textSize="@dimen/medium_chart_text" />
+        </RelativeLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>

@@ -127,6 +127,10 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         findViewById(R.id.barra_navegacao).setVisibility(exibir ? View.VISIBLE : View.GONE);
     }
 
+    public void setReferencia(String referencia) {
+        solicitacao.setReferencia(referencia);
+    }
+
     public ArrayList<String> getFotos() {
         return solicitacao.getFotos();
     }
@@ -348,6 +352,9 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
                 if (solicitacao.getCategoria().getCategoriasInventario().isEmpty()) {
                     multipartEntity.addTextBody("latitude", String.valueOf(solicitacao.getLatitude()));
                     multipartEntity.addTextBody("longitude", String.valueOf(solicitacao.getLongitude()));
+                    if (solicitacao.getReferencia() != null && !solicitacao.getReferencia().trim().isEmpty()) {
+                        multipartEntity.addTextBody("reference", solicitacao.getReferencia(), ContentType.APPLICATION_JSON);
+                    }
                     solicitacao.setEndereco(localFragment.getEnderecoAtual());
                 } else {
                     multipartEntity.addTextBody("inventory_item_id", String.valueOf(solicitacao.getIdItemInventario()));

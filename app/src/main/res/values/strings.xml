@@ -113,6 +113,8 @@
     <string name="aviso_permissao_login">Você precisa estar logado para acessar esta área.</string>
     <string name="toque_no_ponto_exato_solicitacao">Toque no ponto exato que deseja fazer a solicitação</string>
     <string name="carregando_aguarde">Aguarde, buscando endereço&#8230;</string>
+    <string name="ponto_de_referencia">Ponto de referência</string>
+    <string name="placeholder_endereco">Ex: Avenida Brasil</string>
 
     <string-array name="foto_menu">
         <item>Escolher foto do álbum</item>

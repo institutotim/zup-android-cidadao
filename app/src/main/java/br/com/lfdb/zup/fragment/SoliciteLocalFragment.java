@@ -11,9 +11,13 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.InflateException;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,19 +35,22 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.List;
 
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SoliciteActivity;
+import br.com.lfdb.zup.domain.Place;
 import br.com.lfdb.zup.domain.Solicitacao;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.GPSUtils;
+import br.com.lfdb.zup.util.GeoUtils;
 import br.com.lfdb.zup.util.ImageUtils;
+import br.com.lfdb.zup.util.ViewUtils;
+import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
 
 public class SoliciteLocalFragment extends Fragment implements GooglePlayServicesClient.ConnectionCallbacks,
-        GooglePlayServicesClient.OnConnectionFailedListener, LocationListener, View.OnClickListener {
+        GooglePlayServicesClient.OnConnectionFailedListener, LocationListener, View.OnClickListener,
+        AdapterView.OnItemClickListener {
 
     // Local inicial: São Paulo
     private static final double INITIAL_LATITUDE = -23.5501283;
@@ -53,9 +60,9 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
     private static View view;
     public static double latitude, longitude;
     private String file;
-    private String endereco = "";
     private TimerEndereco task;
-    private TextView tvEndereco;
+    private AutoCompleteTextView tvEndereco;
+    private TextView tvNumero;
 
     private Address enderecoAtual = null;
 
@@ -70,6 +77,9 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
             .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     private double userLongitude;
     private double userLatitude;
+
+    private SearchTask searchTask = null;
+    private GeocoderTask geocoderTask = null;
 
     private boolean updateCameraUser = true;
 
@@ -116,8 +126,25 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
             map.moveCamera(update);
         }
 
-        tvEndereco = (TextView) view.findViewById(R.id.endereco);
+        tvEndereco = (AutoCompleteTextView) view.findViewById(R.id.endereco);
         tvEndereco.setTypeface(FontUtils.getRegular(getActivity()));
+        tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, ExploreFragment.class));
+        tvEndereco.setOnItemClickListener(this);
+        tvEndereco.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    realizarBuscaAutocomplete(v.getText().toString());
+                    ViewUtils.hideKeyboard(getActivity(), v);
+                    handled = true;
+                }
+                return handled;
+            }
+        });
+
+        tvNumero = (TextView) view.findViewById(R.id.numero);
+        tvNumero.setTypeface(FontUtils.getRegular(getActivity()));
 
         view.findViewById(R.id.editar).setOnClickListener(this);
 
@@ -232,6 +259,8 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                     public void onClick(final DialogInterface dialog, int which) {
                         final String num = ((TextView) dialogView.findViewById(R.id.numero)).getText().toString();
                         final String r = ((TextView) dialogView.findViewById(R.id.endereco)).getText().toString();
+                        String referencia = ((TextView) dialogView.findViewById(R.id.referencia)).getText().toString();
+                        if (referencia != null && !referencia.trim().isEmpty()) ((SoliciteActivity) getActivity()).setReferencia(referencia);
 
                         if (validarEndereco(r, num)) {
                             new AsyncTask<Void, Void, Void>() {
@@ -258,7 +287,8 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                                                 CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
                                                 map.animateCamera(update);
 
-                                                tvEndereco.setText(new StringBuilder().append(rua).append(", ").append(numero));
+                                                tvEndereco.setText(rua);
+                                                tvNumero.setText(numero);
                                             }
                                         });
                                     }
@@ -321,7 +351,8 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                                                     CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
                                                     map.animateCamera(update);
 
-                                                    tvEndereco.setText(new StringBuilder().append(rua).append(", ").append(numero));
+                                                    tvEndereco.setText(rua);
+                                                    tvNumero.setText(numero);
                                                 }
                                             });
                                         }
@@ -342,9 +373,46 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                tvEndereco.setText(new StringBuilder().append(rua).append(", ").append(numero));
+                tvEndereco.setText(rua);
+                tvNumero.setText(numero);
             }
         });
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        realizarBuscaAutocomplete((Place) parent.getItemAtPosition(position));
+        ViewUtils.hideKeyboard(getActivity(), tvEndereco);
+    }
+
+    private void realizarBuscaAutocomplete(Place place) {
+        if (geocoderTask == null) {
+            geocoderTask = new GeocoderTask();
+        } else {
+            geocoderTask.cancel(true);
+            geocoderTask = new GeocoderTask();
+        }
+
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+            geocoderTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, place);
+        } else {
+            geocoderTask.execute(place);
+        }
+    }
+
+    private void realizarBuscaAutocomplete(String query) {
+        if (searchTask == null) {
+            searchTask = new SearchTask();
+        } else {
+            searchTask.cancel(true);
+            searchTask = new SearchTask();
+        }
+
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+            searchTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, query);
+        } else {
+            searchTask.execute(query);
+        }
     }
 
     private class TimerEndereco extends AsyncTask<Void, String, Void> {
@@ -382,16 +450,12 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                         final StringBuilder builder = new StringBuilder().append(address.getThoroughfare());
                         if (address.getThoroughfare() != null) {
                             enderecoAtual = address;
-                            rua = address.getThoroughfare();
 
-                            if (StringUtils.isNumeric(address.getFeatureName())) {
-                                builder.append(", ").append(address.getFeatureName());
+                            if (address.getThoroughfare() != null && !address.getThoroughfare().startsWith("null")) {
+                                rua = address.getThoroughfare();
                                 numero = address.getFeatureName();
-                            } else {
-                                numero = "";
-                            }
-                            if (!builder.toString().startsWith("null")) {
-                                publishProgress(builder.toString());
+
+                                publishProgress(rua, numero);
                             }
                         }
                     }
@@ -402,18 +466,20 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
 
         @Override
         protected void onProgressUpdate(String... values) {
-            endereco = values[0];
+            rua = values[0];
+            numero = values[1];
             tvEndereco.setText(values[0]);
+            tvNumero.setText(values[1]);
+            tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, SoliciteLocalFragment.class));
         }
     }
 
-    private class AddressTask extends AsyncTask<Void, Void, String> {
+    private class AddressTask extends AsyncTask<Void, Void, Address> {
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected Address doInBackground(Void... params) {
             try {
-                Address address = GPSUtils.getFromLocation(getActivity(), latitude, longitude).get(0);
-                return address.getThoroughfare() + ", " + address.getFeatureName();
+                return GPSUtils.getFromLocation(getActivity(), latitude, longitude).get(0);
             } catch (Exception e) {
                 Log.e("ZUP", e.getMessage(), e);
                 return null;
@@ -421,10 +487,15 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
         }
 
         @Override
-        protected void onPostExecute(String addr) {
+        protected void onPostExecute(Address addr) {
             if (addr != null) {
-                endereco = addr;
-                tvEndereco.setText(endereco);
+                rua = addr.getThoroughfare();
+                numero = addr.getFeatureName();
+                tvEndereco.setText(addr.getThoroughfare());
+                tvNumero.setText(addr.getFeatureName());
+                if (getActivity() != null) {
+                    tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, SoliciteLocalFragment.class));
+                }
             }
         }
     }
@@ -486,6 +557,54 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                     getActivity(),
                     this,  // ConnectionCallbacks
                     this); // OnConnectionFailedListener
+        }
+    }
+
+    private class SearchTask extends AsyncTask<String, Void, Address> {
+
+        @Override
+        protected Address doInBackground(String... params) {
+            try {
+                return GeoUtils.search(params[0], latitude, longitude);
+            } catch (Exception e) {
+                Log.e("ZUP", e.getMessage(), e);
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Address addr) {
+            if (!isCancelled()) {
+                if (addr != null) {
+                    CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
+                            addr.getLongitude())).zoom(15).build();
+                    CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
+                    map.animateCamera(update);
+                }
+            }
+        }
+    }
+
+    private class GeocoderTask extends AsyncTask<Place, Void, Address> {
+
+        @Override
+        protected Address doInBackground(Place... params) {
+            try {
+                return GeoUtils.getFromPlace(params[0]);
+            } catch (Exception e) {
+                Log.e("ZUP", e.getMessage(), e);
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Address addr) {
+            if (addr != null) {
+                CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
+                        addr.getLongitude())).zoom(15).build();
+                CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
+                map.animateCamera(update);
+            }
         }
     }
 }

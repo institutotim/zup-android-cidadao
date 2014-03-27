@@ -16,8 +16,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="5"
-            android:hint="Ex: Avenida Brasil"
-            android:singleLine="true" />
+            android:editable="false"
+            android:hint="@string/placeholder_endereco"
+            android:singleLine="true"
+            android:textColor="#ccc" />
 
         <EditText
             android:id="@+id/numero"
@@ -28,5 +30,12 @@
             android:inputType="number" />
 
     </LinearLayout>
+
+    <EditText
+        android:id="@+id/referencia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/ponto_de_referencia"
+        android:singleLine="true" />
 
 </LinearLayout>
