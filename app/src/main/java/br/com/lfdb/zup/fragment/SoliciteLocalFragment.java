@@ -35,6 +35,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.List;
 
 import br.com.lfdb.zup.R;
@@ -94,6 +96,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
 
         ((SoliciteActivity) getActivity()).exibirBarraInferior(true);
         ((SoliciteActivity) getActivity()).setInfo(R.string.selecione_o_local);
+        ((SoliciteActivity) getActivity()).enableNextButton(true);
 
         try {
             view = inflater.inflate(R.layout.fragment_solicite_local, container, false);
@@ -115,6 +118,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                     latitude = cameraPosition.target.latitude;
                     longitude = cameraPosition.target.longitude;
                     zoomAtual = cameraPosition.zoom;
+                    tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, ExploreFragment.class));
                 }
             });
 
@@ -126,7 +130,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
             map.moveCamera(update);
         }
 
-        tvEndereco = (AutoCompleteTextView) view.findViewById(R.id.endereco);
+        tvEndereco = (AutoCompleteTextView) view.findViewById(R.id.autocompleteEndereco);
         tvEndereco.setTypeface(FontUtils.getRegular(getActivity()));
         tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, ExploreFragment.class));
         tvEndereco.setOnItemClickListener(this);
@@ -160,6 +164,12 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
         return view;
     }
 
+    private void setAddressLoaderVisible(boolean visible) {
+        Log.d("ZUP", "marker " + (visible ? "visible" : "invisible"));
+
+        if (view != null) view.findViewById(R.id.loadingIndicator).setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -186,6 +196,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
+            ((SoliciteActivity) getActivity()).enableNextButton(true);
             ((SoliciteActivity) getActivity()).setInfo(R.string.selecione_o_local);
             if (file != null && !file.isEmpty()) {
                 ((ImageView) view.findViewById(R.id.marcador)).setImageBitmap(ImageUtils.getScaled(getActivity(), "reports", file));
@@ -277,8 +288,14 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                                         dialog.dismiss();
                                     } else {
                                         final Address address = addresses.get(0);
+
                                         rua = address.getThoroughfare();
-                                        numero = num;
+                                        if (!num.isEmpty() && StringUtils.isNumeric(num.substring(0, 1))) {
+                                            numero = num;
+                                        } else {
+                                            numero = "";
+                                        }
+
                                         getActivity().runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
@@ -342,7 +359,11 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                                         } else {
                                             final Address address = addresses.get(0);
                                             rua = address.getThoroughfare();
-                                            numero = num;
+                                            if (!num.isEmpty() && StringUtils.isNumeric(num.substring(0, 1))) {
+                                                numero = num;
+                                            } else {
+                                                numero = "";
+                                            }
                                             getActivity().runOnUiThread(new Runnable() {
                                                 @Override
                                                 public void run() {
@@ -444,21 +465,32 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                         continue;
                     }
 
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            setAddressLoaderVisible(true);
+                        }
+                    });
+
                     List<Address> addresses = GPSUtils.getFromLocation(getActivity(), lat, lon);
                     if (!addresses.isEmpty()) {
                         Address address = addresses.get(0);
-                        final StringBuilder builder = new StringBuilder().append(address.getThoroughfare());
                         if (address.getThoroughfare() != null) {
                             enderecoAtual = address;
 
-                            if (address.getThoroughfare() != null && !address.getThoroughfare().startsWith("null")) {
-                                rua = address.getThoroughfare();
-                                numero = address.getFeatureName();
+                            if (!address.getThoroughfare().startsWith("null")) {
 
-                                publishProgress(rua, numero);
+                                publishProgress(address.getThoroughfare(), address.getFeatureName());
                             }
                         }
                     }
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            setAddressLoaderVisible(false);
+                        }
+                    });
                 }
             }
             return null;
@@ -467,14 +499,25 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
         @Override
         protected void onProgressUpdate(String... values) {
             rua = values[0];
-            numero = values[1];
             tvEndereco.setText(values[0]);
-            tvNumero.setText(values[1]);
+
+            if (!values[1].isEmpty() && StringUtils.isNumeric(values[1].substring(0, 1))) {
+                numero = values[1];
+                tvNumero.setText(values[1]);
+            } else {
+                numero = "";
+                tvNumero.setText("");
+            }
             tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, SoliciteLocalFragment.class));
         }
     }
 
     private class AddressTask extends AsyncTask<Void, Void, Address> {
+
+        @Override
+        protected void onPreExecute() {
+            setAddressLoaderVisible(true);
+        }
 
         @Override
         protected Address doInBackground(Void... params) {
@@ -488,11 +531,17 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
 
         @Override
         protected void onPostExecute(Address addr) {
+            setAddressLoaderVisible(false);
             if (addr != null) {
                 rua = addr.getThoroughfare();
-                numero = addr.getFeatureName();
+                if (!addr.getFeatureName().isEmpty() && StringUtils.isNumeric(addr.getFeatureName().substring(0, 1))) {
+                    numero = addr.getFeatureName();
+                    tvNumero.setText(addr.getFeatureName());
+                } else {
+                    numero = "";
+                    tvNumero.setText("");
+                }
                 tvEndereco.setText(addr.getThoroughfare());
-                tvNumero.setText(addr.getFeatureName());
                 if (getActivity() != null) {
                     tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, SoliciteLocalFragment.class));
                 }
@@ -563,6 +612,11 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
     private class SearchTask extends AsyncTask<String, Void, Address> {
 
         @Override
+        protected void onPreExecute() {
+            setAddressLoaderVisible(true);
+        }
+
+        @Override
         protected Address doInBackground(String... params) {
             try {
                 return GeoUtils.search(params[0], latitude, longitude);
@@ -574,6 +628,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
 
         @Override
         protected void onPostExecute(Address addr) {
+            setAddressLoaderVisible(false);
             if (!isCancelled()) {
                 if (addr != null) {
                     CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
@@ -588,6 +643,11 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
     private class GeocoderTask extends AsyncTask<Place, Void, Address> {
 
         @Override
+        protected void onPreExecute() {
+            setAddressLoaderVisible(true);
+        }
+
+        @Override
         protected Address doInBackground(Place... params) {
             try {
                 return GeoUtils.getFromPlace(params[0]);
@@ -599,6 +659,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
 
         @Override
         protected void onPostExecute(Address addr) {
+            setAddressLoaderVisible(false);
             if (addr != null) {
                 CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
                         addr.getLongitude())).zoom(15).build();
