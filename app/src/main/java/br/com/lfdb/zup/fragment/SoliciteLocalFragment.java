@@ -119,6 +119,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                     longitude = cameraPosition.target.longitude;
                     zoomAtual = cameraPosition.zoom;
                     tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, ExploreFragment.class));
+                    tvEndereco.dismissDropDown();
                 }
             });
 
@@ -277,7 +278,8 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                             new AsyncTask<Void, Void, Void>() {
                                 @Override
                                 protected Void doInBackground(Void... params) {
-                                    List<Address> addresses = GPSUtils.getFromLocationName(getActivity(), rua + ", " + numero + " - " + enderecoAtual.getSubAdminArea());
+                                    List<Address> addresses = GPSUtils.getFromLocationName(getActivity(), rua + ", " + numero + " - " + (
+                                            enderecoAtual.getSubAdminArea() != null ? enderecoAtual.getSubAdminArea() : enderecoAtual.getLocality()));
                                     if (addresses.isEmpty()) {
                                         getActivity().runOnUiThread(new Runnable() {
                                             @Override
@@ -347,7 +349,8 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                                 new AsyncTask<Void, Void, Void>() {
                                     @Override
                                     protected Void doInBackground(Void... params) {
-                                        List<Address> addresses = GPSUtils.getFromLocationName(getActivity(), new StringBuilder(rua).append(", ").append(num).append(" - ").append(enderecoAtual.getSubAdminArea()).toString());
+                                        List<Address> addresses = GPSUtils.getFromLocationName(getActivity(), new StringBuilder(rua).append(", ").append(num).append(" - ")
+                                                .append(enderecoAtual.getSubAdminArea() != null ? enderecoAtual.getSubAdminArea() : enderecoAtual.getLocality()).toString());
                                         if (addresses.isEmpty()) {
                                             getActivity().runOnUiThread(new Runnable() {
                                                 @Override
@@ -509,6 +512,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                 tvNumero.setText("");
             }
             tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, SoliciteLocalFragment.class));
+            tvEndereco.dismissDropDown();
         }
     }
 
@@ -544,6 +548,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                 tvEndereco.setText(addr.getThoroughfare());
                 if (getActivity() != null) {
                     tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, SoliciteLocalFragment.class));
+                    tvEndereco.dismissDropDown();
                 }
             }
         }
