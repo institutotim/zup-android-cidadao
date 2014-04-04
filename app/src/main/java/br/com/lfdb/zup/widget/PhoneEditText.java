@@ -53,7 +53,6 @@ public class PhoneEditText extends EditText {
 					return;
 				}
 				
-				System.out.println(current.replaceAll(" ", ""));
 				if (current.replaceAll(" ", "").equals("()-")) {
 					isUpdating = true;
 					PhoneEditText.this.setText("");

@@ -168,8 +168,6 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
     }
 
     private void setAddressLoaderVisible(boolean visible) {
-        Log.d("ZUP", "marker " + (visible ? "visible" : "invisible"));
-
         if (view != null) view.findViewById(R.id.loadingIndicator).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
@@ -286,7 +284,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                             new AsyncTask<Void, Void, Void>() {
                                 @Override
                                 protected Void doInBackground(Void... params) {
-                                    List<Address> addresses = GPSUtils.getFromLocationName(getActivity(), rua + ", " + numero + " - " + (
+                                    List<Address> addresses = GPSUtils.getFromLocationName(getActivity(), r + ", " + num + " - " + (
                                             enderecoAtual.getSubAdminArea() != null ? enderecoAtual.getSubAdminArea() : enderecoAtual.getLocality()));
                                     if (addresses.isEmpty()) {
                                         getActivity().runOnUiThread(new Runnable() {

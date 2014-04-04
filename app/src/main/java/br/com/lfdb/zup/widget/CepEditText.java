@@ -53,7 +53,6 @@ public class CepEditText extends EditText {
 					return;
 				}
 				
-				System.out.println(current.replaceAll(" ", ""));
 				if (current.replaceAll(" ", "").equals("-")) {
 					isUpdating = true;
 					CepEditText.this.setText("");

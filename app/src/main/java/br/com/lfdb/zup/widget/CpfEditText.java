@@ -53,7 +53,6 @@ public class CpfEditText extends EditText {
 					return;
 				}
 				
-				System.out.println(current.replaceAll(" ", ""));
 				if (current.replaceAll(" ", "").equals("..-")) {
 					isUpdating = true;
 					CpfEditText.this.setText("");

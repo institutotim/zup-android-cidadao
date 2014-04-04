@@ -13,7 +13,6 @@ import java.util.List;
 public class GPSUtils {
 
     public static List<Address> getFromLocationName(Context context, String s) {
-        System.out.println(s);
         try {
             Geocoder geocoder = new Geocoder(context);
             List<Address> list = filterResults(geocoder.getFromLocationName(s, 10));
