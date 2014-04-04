@@ -63,6 +63,7 @@ import br.com.lfdb.zup.domain.ItemInventario;
 import br.com.lfdb.zup.domain.Place;
 import br.com.lfdb.zup.service.CategoriaInventarioService;
 import br.com.lfdb.zup.service.LoginService;
+import br.com.lfdb.zup.util.BitmapUtils;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.GeoUtils;
 import br.com.lfdb.zup.util.ImageUtils;
@@ -232,11 +233,15 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
     }
 
     private void adicionarMarker(ItemInventario item) {
-        itens.add(item);
-        marcadores.put(map.addMarker(new MarkerOptions()
-                .position(new LatLng(item.getLatitude(), item.getLongitude()))
-                .icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(getActivity(), "inventory", item.getCategoria().getMarcador())))
-                ), item);
+        try {
+            itens.add(item);
+            marcadores.put(map.addMarker(new MarkerOptions()
+                            .position(new LatLng(item.getLatitude(), item.getLongitude()))
+                            .icon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.getInventoryMarker(getActivity(), item.getCategoria().getMarcador())))
+            ), item);
+        } catch (Exception e) {
+            Log.w("ZUP", e.getMessage() == null ? "null" : e.getMessage(), e);
+        }
     }
 
     @Override
@@ -278,8 +283,9 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
         while (it.hasNext()) {
             Marker marker = it.next();
             if (!GeoUtils.isVisible(map.getProjection().getVisibleRegion(), marker.getPosition())) {
-                marker.setVisible(false);
+                marker.remove();
                 it.remove();
+                marcadores.remove(marker);
             }
         }
     }

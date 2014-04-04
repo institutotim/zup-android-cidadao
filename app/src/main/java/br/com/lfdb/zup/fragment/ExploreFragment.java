@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.InflateException;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -69,21 +68,26 @@ import br.com.lfdb.zup.domain.SolicitacaoListItem;
 import br.com.lfdb.zup.service.CategoriaInventarioService;
 import br.com.lfdb.zup.service.CategoriaRelatoService;
 import br.com.lfdb.zup.service.LoginService;
+import br.com.lfdb.zup.util.BitmapUtils;
 import br.com.lfdb.zup.util.DateUtils;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.GeoUtils;
-import br.com.lfdb.zup.util.ImageUtils;
 import br.com.lfdb.zup.util.PreferenceUtils;
 import br.com.lfdb.zup.util.ViewUtils;
 import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
 
 public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnCameraChangeListener, AdapterView.OnItemClickListener, GooglePlayServicesClient.ConnectionCallbacks,
-        GooglePlayServicesClient.OnConnectionFailedListener, LocationListener {
+        GooglePlayServicesClient.OnConnectionFailedListener, LocationListener, View.OnClickListener {
 
     // Local inicial: São Paulo
     private static final double INITIAL_LATITUDE = -23.5501283;
     private static final double INITIAL_LONGITUDE = -46.6338553;
+
+    private double userLongitude;
+    private double userLatitude;
+
+    private boolean updateCameraUser = true;
 
     private static final int ITEMS_PER_PAGE = 3;
 
@@ -106,12 +110,28 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
     @Override
     public void onLocationChanged(Location location) {
-        CameraPosition position = new CameraPosition.Builder().target(new LatLng(location.getLatitude(),
-                location.getLongitude())).zoom(15).build();
-        CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
-        map.animateCamera(update);
-        mLocationClient.removeLocationUpdates(this);
-        wasLocalized = true;
+        userLatitude = location.getLatitude();
+        userLongitude = location.getLongitude();
+
+        if (updateCameraUser) {
+            CameraPosition position = new CameraPosition.Builder().target(new LatLng(location.getLatitude(),
+                    location.getLongitude())).zoom(15).build();
+            CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+            map.animateCamera(update);
+            updateCameraUser = false;
+            wasLocalized = true;
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.locationButton) {
+            CameraPosition position = new CameraPosition.Builder().target(new LatLng(userLatitude,
+                    userLongitude)).zoom(15).build();
+            CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+            map.animateCamera(update);
+            return;
+        }
     }
 
     private class Request {
@@ -132,7 +152,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
     private AutoCompleteTextView autoCompView;
 
     private GoogleMap map;
-    private static View view;
+    //private static View view;
     private BuscaExplore busca;
     public static double latitude = 0.0, longitude = 0.0;
 
@@ -157,17 +177,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        if (view != null) {
-            ViewGroup parent = (ViewGroup) view.getParent();
-            if (parent != null)
-                parent.removeView(view);
-        }
-
-        try {
-            view = inflater.inflate(R.layout.fragment_explore, container, false);
-        } catch (InflateException e) {
-            Log.w("ZUP", e.getMessage());
-        }
+        View view = inflater.inflate(R.layout.fragment_explore, container, false);
 
         map = ((SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
 
@@ -229,6 +239,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                 autoCompView.setText("");
             }
         });
+
+        view.findViewById(R.id.locationButton).setOnClickListener(this);
 
         return view;
     }
@@ -298,7 +310,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         if (estaNoFiltro(item.getCategoria())) {
             marcadores.put(map.addMarker(new MarkerOptions()
                     .position(new LatLng(item.getLatitude(), item.getLongitude()))
-                    .icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(getActivity(), "inventory", item.getCategoria().getMarcador())))
+                    .icon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.getInventoryMarker(getActivity(), item.getCategoria().getMarcador())))
                     .title(item.getCategoria().getNome())), item);
         }
     }
@@ -308,7 +320,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         if (estaNoFiltro(item.getCategoria())) {
             marcadores.put(map.addMarker(new MarkerOptions()
                     .position(new LatLng(item.getLatitude(), item.getLongitude()))
-                    .icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(getActivity(), "reports", item.getCategoria().getMarcador())))
+                    .icon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.getReportMarker(getActivity(), item.getCategoria().getMarcador())))
                     .title(item.getCategoria().getNome())), item);
         }
     }
@@ -372,8 +384,9 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         while (it.hasNext()) {
             Marker marker = it.next();
             if (!GeoUtils.isVisible(map.getProjection().getVisibleRegion(), marker.getPosition())) {
-                marker.setVisible(false);
+                marker.remove();
                 it.remove();
+                marcadores.remove(marker);
             }
         }
     }
@@ -478,12 +491,10 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                     progressBar.setVisibility(View.GONE);
                 }
             });
-            Log.d("ZUP", "Request cancelled");
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-            Log.d("ZUP", "Request started");
             try {
                 HttpClient client = new OkApacheClient();
                 HttpResponse response;
@@ -536,8 +547,6 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                     publishProgress(item);
                 }
             }
-
-            Log.d("ZUP", "Request completed");
 
             return null;
         }

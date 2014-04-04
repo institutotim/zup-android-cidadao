@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f1f1f1" >
+    android:background="#f1f1f1">
 
     <RelativeLayout
         android:id="@+id/topbar"
@@ -11,7 +11,7 @@
         android:layout_alignParentTop="true"
         android:background="@android:color/white"
         android:paddingBottom="10dp"
-        android:paddingTop="10dp" >
+        android:paddingTop="10dp">
 
         <TextView
             android:id="@+id/titulo"
@@ -40,48 +40,39 @@
         android:layout_below="@id/topbar"
         android:background="#ccc" />
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/barra_navegacao"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/separator1"
         android:background="#f1f1f1"
-        android:padding="20dp" >
+        android:orientation="horizontal"
+        android:padding="20dp">
 
         <TextView
+            android:visibility="gone"
             android:id="@+id/botaoSolicitacoes"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_weight="1"
             android:clickable="true"
+            android:gravity="center"
             android:text="@string/solicitaces_maiusculo"
             android:textColor="@color/text_next_color"
             android:textSize="@dimen/navigation_text_size" />
 
         <TextView
-            android:id="@+id/botaoComentarios"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="15dp"
-            android:layout_toRightOf="@id/botaoSolicitacoes"
-            android:clickable="true"
-            android:text="@string/comentarios_maiusculo"
-            android:textColor="@color/text_previous_color"
-            android:textSize="@dimen/navigation_text_size" />
-
-        <TextView
             android:id="@+id/botaoInformacoes"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_marginRight="15dp"
-            android:layout_toLeftOf="@id/botaoSolicitacoes"
+            android:layout_weight="1"
             android:clickable="true"
+            android:gravity="center"
             android:text="@string/informacoes_maiusculo"
             android:textColor="@color/text_previous_color"
             android:textSize="@dimen/navigation_text_size" />
-    </RelativeLayout>
+    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/fragments_place"

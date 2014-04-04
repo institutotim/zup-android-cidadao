@@ -82,6 +82,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
 
     private SearchTask searchTask = null;
     private GeocoderTask geocoderTask = null;
+    private AddressTask addressTask = null;
 
     private boolean updateCameraUser = true;
 
@@ -118,6 +119,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                     latitude = cameraPosition.target.latitude;
                     longitude = cameraPosition.target.longitude;
                     zoomAtual = cameraPosition.zoom;
+                    tvEndereco.setAdapter(null);
                     tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, ExploreFragment.class));
                     tvEndereco.dismissDropDown();
                 }
@@ -228,10 +230,16 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
     }
 
     private void atualizarEndereco() {
+        if (addressTask != null) {
+            addressTask.cancel(true);
+        }
+
+        addressTask = new AddressTask();
+
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
-            new AddressTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            addressTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
-            new AddressTask().execute();
+            addressTask.execute();
         }
     }
 
@@ -306,7 +314,9 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                                                 CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
                                                 map.animateCamera(update);
 
+                                                tvEndereco.setAdapter(null);
                                                 tvEndereco.setText(rua);
+                                                tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, ExploreFragment.class));
                                                 tvNumero.setText(numero);
                                             }
                                         });
@@ -322,6 +332,15 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
     }
 
     public boolean validarEndereco() {
+        if (!rua.equalsIgnoreCase(tvEndereco.getText().toString())) {
+            new AlertDialog.Builder(getActivity())
+                    .setTitle("Endereço inválido")
+                    .setMessage("O endereço inserido é inválido")
+                    .setNegativeButton("OK", null)
+                    .show();
+            return false;
+        }
+
         return validarEndereco(rua, numero);
     }
 
@@ -375,7 +394,10 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                                                     CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
                                                     map.animateCamera(update);
 
+                                                    tvEndereco.setAdapter(null);
                                                     tvEndereco.setText(rua);
+                                                    tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, ExploreFragment.class));
+
                                                     tvNumero.setText(numero);
                                                 }
                                             });
@@ -410,12 +432,11 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
     }
 
     private void realizarBuscaAutocomplete(Place place) {
-        if (geocoderTask == null) {
-            geocoderTask = new GeocoderTask();
-        } else {
+        if (geocoderTask != null) {
             geocoderTask.cancel(true);
-            geocoderTask = new GeocoderTask();
         }
+
+        geocoderTask = new GeocoderTask();
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
             geocoderTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, place);
@@ -425,12 +446,12 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
     }
 
     private void realizarBuscaAutocomplete(String query) {
-        if (searchTask == null) {
-            searchTask = new SearchTask();
-        } else {
+        if (searchTask != null) {
+
             searchTask.cancel(true);
-            searchTask = new SearchTask();
         }
+
+        searchTask = new SearchTask();
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
             searchTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, query);
@@ -502,6 +523,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
         @Override
         protected void onProgressUpdate(String... values) {
             rua = values[0];
+            tvEndereco.setAdapter(null);
             tvEndereco.setText(values[0]);
 
             if (!values[1].isEmpty() && StringUtils.isNumeric(values[1].substring(0, 1))) {
@@ -545,6 +567,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                     numero = "";
                     tvNumero.setText("");
                 }
+                tvEndereco.setAdapter(null);
                 tvEndereco.setText(addr.getThoroughfare());
                 if (getActivity() != null) {
                     tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, SoliciteLocalFragment.class));
@@ -585,7 +608,6 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
             longitude = location.getLongitude();
             atualizarEndereco();
             wasLocalized = true;
-            mLocationClient.removeLocationUpdates(this);
             updateCameraUser = false;
         }
     }

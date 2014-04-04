@@ -1,19 +1,5 @@
 package br.com.lfdb.zup;
 
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.HttpHostConnectException;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
@@ -27,10 +13,23 @@ import android.widget.Toast;
 
 import com.squareup.okhttp.apache.OkApacheClient;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.HttpHostConnectException;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.domain.ItemInventario;
 import br.com.lfdb.zup.domain.SolicitacaoListItem;
-import br.com.lfdb.zup.fragment.ComentariosFragment;
 import br.com.lfdb.zup.fragment.InformacoesFragment;
 import br.com.lfdb.zup.fragment.SolicitacoesFragment;
 import br.com.lfdb.zup.service.LoginService;
@@ -40,20 +39,20 @@ import br.com.lfdb.zup.widget.SolicitacaoListItemAdapter;
 public class DetalheMapaActivity extends FragmentActivity implements View.OnClickListener {
 
 	private InformacoesFragment infoFragment;
-	private ComentariosFragment comFragment;
 	private SolicitacoesFragment solFragment;
 	
 	private ArrayList<SolicitacaoListItem> relatos;
 	private HashMap<String, String> camposDinamicos = new HashMap<String, String>();
 	
 	private ItemInventario item;
-	private TextView comentarios;
 	private TextView solicitacoes;
 
     @Override
 	protected void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_detalhe_mapa);
+
+        setBarraNavegacaoVisivel(false);
 		
 		item = (ItemInventario) getIntent().getSerializableExtra("item");
 		
@@ -79,15 +78,10 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 		solicitacoes.setTypeface(FontUtils.getLight(this));
 		solicitacoes.setOnClickListener(this);
 		
-		comentarios = (TextView) findViewById(R.id.botaoComentarios);
-		comentarios.setTypeface(FontUtils.getLight(this));
-		comentarios.setOnClickListener(this);
-
 		infoFragment = new InformacoesFragment();
 		solFragment = new SolicitacoesFragment();
-		comFragment = new ComentariosFragment();
 		
-		getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, solFragment).add(R.id.fragments_place, infoFragment).add(R.id.fragments_place, comFragment).commit();
+		getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, solFragment).add(R.id.fragments_place, infoFragment).commit();
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
             new Tasker().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -96,21 +90,21 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
         }
 	}
 
-	@Override
+    private void setBarraNavegacaoVisivel(boolean visible) {
+        findViewById(R.id.barra_navegacao).setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
 	public void onClick(View v) {
 		((TextView) findViewById(R.id.botaoInformacoes)).setTextColor(getResources().getColorStateList(R.color.text_previous_color));
 		((TextView) findViewById(R.id.botaoSolicitacoes)).setTextColor(getResources().getColorStateList(R.color.text_previous_color));
-		((TextView) findViewById(R.id.botaoComentarios)).setTextColor(getResources().getColorStateList(R.color.text_previous_color));
 		
 		switch (v.getId()) {
 		case R.id.botaoInformacoes:
-			getSupportFragmentManager().beginTransaction().show(infoFragment).hide(comFragment).hide(solFragment).commit();
-			break;
-		case R.id.botaoComentarios:
-			getSupportFragmentManager().beginTransaction().hide(infoFragment).show(comFragment).hide(solFragment).commit();
+			getSupportFragmentManager().beginTransaction().show(infoFragment).hide(solFragment).commit();
 			break;
 		case R.id.botaoSolicitacoes:
-			getSupportFragmentManager().beginTransaction().hide(infoFragment).hide(comFragment).show(solFragment).commit();
+			getSupportFragmentManager().beginTransaction().hide(infoFragment).show(solFragment).commit();
 			break;
 		default:
 			return;
@@ -192,12 +186,13 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 			dialog.dismiss();
 			if (result) {
 				if (relatos.isEmpty()) {
-					ocultarAbasAdicionais();					
+					ocultarAbasAdicionais();
 				} else {
 					prepararAbas();
 					solFragment.setRelatos(relatos);					
 				}
 				infoFragment.setDados(camposDinamicos);
+                setBarraNavegacaoVisivel(true);
 			} else {
 				Toast.makeText(DetalheMapaActivity.this, "Não foi possível obter os dados do item", Toast.LENGTH_LONG).show();
 				finish();
@@ -248,16 +243,14 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
     }
 	
 	private void ocultarAbasAdicionais() {
-		comentarios.setVisibility(View.GONE);
 		solicitacoes.setVisibility(View.GONE);
 		
 		((TextView) findViewById(R.id.botaoInformacoes)).setTextColor(getResources().getColorStateList(R.color.text_next_color));
 		((TextView) findViewById(R.id.botaoSolicitacoes)).setTextColor(getResources().getColorStateList(R.color.text_previous_color));
-		((TextView) findViewById(R.id.botaoComentarios)).setTextColor(getResources().getColorStateList(R.color.text_previous_color));
-		getSupportFragmentManager().beginTransaction().hide(solFragment).hide(comFragment).show(infoFragment).commit();
+		getSupportFragmentManager().beginTransaction().hide(solFragment).show(infoFragment).commit();
 	}
 	
 	private void prepararAbas() {
-		getSupportFragmentManager().beginTransaction().show(solFragment).hide(comFragment).hide(infoFragment).commit();
+		getSupportFragmentManager().beginTransaction().show(solFragment).hide(infoFragment).commit();
 	}
 }
