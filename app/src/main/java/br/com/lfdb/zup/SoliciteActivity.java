@@ -323,6 +323,10 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         }
     }
 
+    public String getReferencia() {
+        return solicitacao.getReferencia() != null ? solicitacao.getReferencia() : "";
+    }
+
     public class Tasker extends AsyncTask<Void, Void, SolicitacaoListItem> implements DialogInterface.OnCancelListener{
 
         private ProgressDialog dialog;
@@ -444,6 +448,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         item.setLatitude(solicitacao.getLatitude());
         item.setLongitude(solicitacao.getLongitude());
         item.setEndereco(solicitacao.getEndereco());
+        item.setReferencia(solicitacao.getReferencia());
         return item;
     }
 

@@ -48,6 +48,10 @@ public class SolicitacaoDetalheActivity extends FragmentActivity {
         endereco.setText(solicitacao.getEndereco());
         endereco.setTypeface(FontUtils.getLight(this));
 
+        TextView referencia = (TextView) findViewById(R.id.referencia);
+        referencia.setText(solicitacao.getReferencia());
+        referencia.setTypeface(FontUtils.getLight(this));
+
 		TextView data = (TextView) findViewById(R.id.data);
 		data.setText(getString(R.string.enviada) + " " + solicitacao.getData());
 		data.setTypeface(FontUtils.getBold(this));

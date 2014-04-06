@@ -89,10 +89,18 @@
                     android:textSize="@dimen/topbar_button_font_size" />
 
                 <TextView
+                    android:id="@+id/referencia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@id/endereco"
+                    android:textSize="@dimen/topbar_button_font_size" />
+
+                <TextView
                     android:id="@+id/data"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/endereco"
+                    android:layout_below="@id/referencia"
                     android:textAllCaps="true"
                     android:textColor="#666"
                     android:textSize="@dimen/small_text_size" />

@@ -21,6 +21,7 @@ public class SolicitacaoListItemAdapter {
 		item.setComentario(json.getString("description"));
 		item.setData(DateUtils.getIntervaloTempo(DateUtils.parseRFC3339Date(json.getString("created_at"))));
 		item.setEndereco(json.getString("address"));
+        item.setReferencia(json.optString("reference"));
 		item.setFotos(new ArrayList<String>());
 
         JSONArray array = json.getJSONArray("images");

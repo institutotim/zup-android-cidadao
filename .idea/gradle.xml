@@ -8,12 +8,12 @@
         <option name="gradleHome" value="$USER_HOME$/Ferramentas/gradle-1.11" />
         <option name="modules">
           <set>
-            <option value="C:\Users\Rafael\AndroidStudioProjects\ZUP" />
-            <option value="C:\Users\Rafael\AndroidStudioProjects\ZUP\app" />
-            <option value="C:\Users\Rafael\AndroidStudioProjects\ZUP\lib-androidviewpagerindicator" />
-            <option value="C:\Users\Rafael\AndroidStudioProjects\ZUP\lib-facebooksdk" />
-            <option value="C:\Users\Rafael\AndroidStudioProjects\ZUP\lib-progresswheels" />
-            <option value="C:\Users\Rafael\AndroidStudioProjects\ZUP\lib-simplecropimage" />
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/lib-androidviewpagerindicator" />
+            <option value="$PROJECT_DIR$/lib-facebooksdk" />
+            <option value="$PROJECT_DIR$/lib-progresswheels" />
+            <option value="$PROJECT_DIR$/lib-simplecropimage" />
           </set>
         </option>
       </GradleProjectSettings>

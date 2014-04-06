@@ -11,6 +11,7 @@ public class ItemRelato {
 	private String endereco;
 	private String protocolo;
 	private String descricao;
+    private String referencia;
 	private CategoriaRelato categoria;
 	private long idItemInventario;
 	private long idStatus;
@@ -125,4 +126,12 @@ public class ItemRelato {
 			return false;
 		return true;
 	}
+
+    public String getReferencia() {
+        return referencia;
+    }
+
+    public void setReferencia(String referencia) {
+        this.referencia = referencia;
+    }
 }

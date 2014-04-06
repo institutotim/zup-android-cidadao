@@ -247,7 +247,7 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
     @Override
     public void onLocationChanged(Location location) {
         CameraPosition position = new CameraPosition.Builder().target(new LatLng(location.getLatitude(),
-                location.getLongitude())).zoom(15).build();
+                location.getLongitude())).zoom(18.5f).build();
         CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
         map.animateCamera(update);
         mLocationClient.removeLocationUpdates(this);
@@ -461,7 +461,7 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
         protected void onPostExecute(Address addr) {
             if (addr != null) {
                 CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
-                        addr.getLongitude())).zoom(15).build();
+                        addr.getLongitude())).zoom(18.5f).build();
                 CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
                 map.animateCamera(update);
             }
@@ -484,7 +484,7 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
         protected void onPostExecute(Address addr) {
             if (addr != null) {
                 CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
-                        addr.getLongitude())).zoom(15).build();
+                        addr.getLongitude())).zoom(18.5f).build();
                 CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
                 map.animateCamera(update);
             }

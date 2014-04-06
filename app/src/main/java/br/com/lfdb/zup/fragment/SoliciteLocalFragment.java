@@ -181,7 +181,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                 if (solicitacao != null) {
                     file = solicitacao.getCategoria().getMarcador();
                     CameraPosition p = new CameraPosition.Builder().target(new LatLng(solicitacao.getLatitude(),
-                            solicitacao.getLongitude())).zoom(15).build();
+                            solicitacao.getLongitude())).zoom(18.5f).build();
                     CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
                     map.moveCamera(update);
                 }
@@ -253,7 +253,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
     public void onClick(View v) {
         if (v.getId() == R.id.locationButton) {
             CameraPosition position = new CameraPosition.Builder().target(new LatLng(userLatitude,
-                    userLongitude)).zoom(15).build();
+                    userLongitude)).zoom(18.5f).build();
             CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
             map.animateCamera(update);
             return;
@@ -262,6 +262,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
         final View dialogView = getDialogView();
         ((TextView) dialogView.findViewById(R.id.endereco)).setText(rua);
         ((TextView) dialogView.findViewById(R.id.numero)).setText(numero);
+        ((TextView) dialogView.findViewById(R.id.referencia)).setText(((SoliciteActivity) getActivity()).getReferencia());
 
         new AlertDialog.Builder(getActivity())
                 .setTitle("Endereço do Relato")
@@ -524,10 +525,16 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
             tvEndereco.setAdapter(null);
             tvEndereco.setText(values[0]);
 
-            if (!values[1].isEmpty() && StringUtils.isNumeric(values[1].substring(0, 1))) {
-                numero = values[1];
-                tvNumero.setText(values[1]);
-            } else {
+            try {
+                if (!values[1].isEmpty() && StringUtils.isNumeric(values[1].substring(0, 1))) {
+                    numero = values[1];
+                    tvNumero.setText(values[1]);
+                } else {
+                    numero = "";
+                    tvNumero.setText("");
+                }
+            } catch (Exception e) {
+                Log.w("ZUP", e.getMessage() != null ? e.getMessage() : "null", e);
                 numero = "";
                 tvNumero.setText("");
             }
@@ -599,7 +606,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
 
         if (updateCameraUser) {
             CameraPosition position = new CameraPosition.Builder().target(new LatLng(location.getLatitude(),
-                    location.getLongitude())).zoom(15).build();
+                    location.getLongitude())).zoom(18.5f).build();
             CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
             map.moveCamera(update);
             latitude = location.getLatitude();
@@ -657,7 +664,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
             if (!isCancelled()) {
                 if (addr != null) {
                     CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
-                            addr.getLongitude())).zoom(15).build();
+                            addr.getLongitude())).zoom(18.5f).build();
                     CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
                     map.animateCamera(update);
                 }
@@ -687,7 +694,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
             setAddressLoaderVisible(false);
             if (addr != null) {
                 CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
-                        addr.getLongitude())).zoom(15).build();
+                        addr.getLongitude())).zoom(18.5f).build();
                 CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
                 map.animateCamera(update);
             }

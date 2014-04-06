@@ -293,6 +293,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
             item.setLatitude(ir.getLatitude());
             item.setLongitude(ir.getLongitude());
             item.setCategoria(ir.getCategoria());
+            item.setReferencia(ir.getReferencia());
             for (CategoriaRelato.Status status : ir.getCategoria().getStatus()) {
                 if (status.getId() == ir.getIdStatus()) {
                     item.setStatus(new SolicitacaoListItem.Status(status.getNome(), status.getCor()));
@@ -591,6 +592,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                 item.setLongitude(json.getJSONObject("position").getDouble("longitude"));
                 item.setIdItemInventario(json.optLong("inventory_item_id", -1));
                 item.setIdStatus(json.optLong("status_id", -1));
+                item.setReferencia(json.optString("reference", ""));
 
                 JSONArray fotos = json.getJSONArray("images");
                 for (int j = 0; j < fotos.length(); j++) {

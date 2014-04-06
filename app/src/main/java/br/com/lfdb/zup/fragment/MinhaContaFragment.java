@@ -263,7 +263,7 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
                 try {
                     isLoading = true;
                     HttpClient client = new OkApacheClient();
-                    HttpGet get = new HttpGet(Constantes.REST_URL + "/reports/users/me/items?per_page=10&page=" + (lastPageLoaded + 1));
+                    HttpGet get = new HttpGet(Constantes.REST_URL + "/reports/users/me/items?per_page=10&page=" + (lastPageLoaded + 1) + "&sort=created_at&order=DESC");
                     get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
                     HttpResponse response = client.execute(get);
                     if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
@@ -294,7 +294,6 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
                 if (result != null) {
                     try {
                         JSONObject obj = new JSONObject(result);
-                        Log.d("ZUP", obj.toString(4));
                         setReportCount(obj.getInt("total_reports_by_user"));
                         JSONArray array = obj.getJSONArray("reports");
                         List<SolicitacaoListItem> itens = new ArrayList<SolicitacaoListItem>();

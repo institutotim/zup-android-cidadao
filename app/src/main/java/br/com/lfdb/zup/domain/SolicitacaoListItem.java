@@ -9,7 +9,15 @@ public class SolicitacaoListItem implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public static class Status implements Serializable {
+    public String getReferencia() {
+        return (referencia == null || "null".equals(referencia)) ? "" : referencia;
+    }
+
+    public void setReferencia(String referencia) {
+        this.referencia = referencia;
+    }
+
+    public static class Status implements Serializable {
 		private static final long serialVersionUID = 1L;
 		private String nome;
 		private int cor;
@@ -50,6 +58,7 @@ public class SolicitacaoListItem implements Serializable {
 	private Status status;
 	private String comentario;
 	private String endereco;
+    private String referencia;
     private Double latitude;
     private Double longitude;
     private CategoriaRelato categoria;
