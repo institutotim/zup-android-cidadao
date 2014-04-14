@@ -50,7 +50,6 @@
         android:padding="20dp">
 
         <TextView
-            android:visibility="gone"
             android:id="@+id/botaoSolicitacoes"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

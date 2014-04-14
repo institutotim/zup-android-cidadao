@@ -28,12 +28,12 @@ public class GooglePlusAuth extends Activity implements ConnectionCallbacks, OnC
 		super.onCreate(savedInstanceState);
 
 		mPlusClient = new PlusClient.Builder(this, this, this)
-				.setActions("http://schemas.google.com/AddActivity", "http://schemas.google.com/BuyActivity")
+				.setActions("http://schemas.google.com/AddActivity")
 				.setScopes(Scopes.PLUS_LOGIN)				
 				.build();
 		
 		mConnectionProgressDialog = new ProgressDialog(this);
-		mConnectionProgressDialog.setMessage("Signing in...");
+		mConnectionProgressDialog.setMessage("Entrando...");
 		mConnectionProgressDialog.show();
 	}
 	
@@ -63,7 +63,7 @@ public class GooglePlusAuth extends Activity implements ConnectionCallbacks, OnC
 		}
 
 		mConnectionResult = result;
-		Toast.makeText(this, "Error " + mConnectionResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, "Erro: " + mConnectionResult.getErrorCode(), Toast.LENGTH_SHORT).show();
 		setResult(Activity.RESULT_CANCELED);
 		finish();
 	}
@@ -90,7 +90,7 @@ public class GooglePlusAuth extends Activity implements ConnectionCallbacks, OnC
 
 	@Override
 	public void onDisconnected() {
-		Toast.makeText(this, "Something gets wrong...", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, "Tivemos algum problema...", Toast.LENGTH_SHORT).show();
 	}
 
 	@Override

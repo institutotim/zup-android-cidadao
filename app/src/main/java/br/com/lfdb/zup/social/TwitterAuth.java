@@ -16,8 +16,8 @@ public class TwitterAuth extends Activity {
 
 	private TwitterApp mTwitter;
 	Button mBtnTwitter;
-	public static final String CONSUMER_KEY = "KYdPXY0D2YJBQu54LXRnAg";
-	public static final String CONSUMER_SECRET = "4WbLHvYdFwgSd9tBPRebXpBbwG5cl8Uc0Dev5TUhD8A";
+	public static final String CONSUMER_KEY = "uQdvg6nwrHrgSow67ikEo8hLo";
+	public static final String CONSUMER_SECRET = "6Cunpzd0EgbszsgwEHBKmoN35L9GWvKKolUswmF5qTFsonTuUa";
 
 	private enum FROM {
 		TWITTER_POST, TWITTER_LOGIN
