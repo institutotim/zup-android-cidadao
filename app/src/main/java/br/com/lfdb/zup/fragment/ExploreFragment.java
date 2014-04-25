@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.InflateException;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -89,7 +90,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
     private boolean updateCameraUser = true;
 
-    private static final int ITEMS_PER_PAGE = 3;
+    private static View view;
 
     private boolean wasLocalized = false;
 
@@ -177,7 +178,17 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_explore, container, false);
+        if (view != null) {
+            ViewGroup parent = (ViewGroup) view.getParent();
+            if (parent != null)
+                parent.removeView(view);
+        }
+
+        try {
+            view = inflater.inflate(R.layout.fragment_explore, container, false);
+        } catch (InflateException e) {
+            Log.w("ZUP", e.getMessage());
+        }
 
         map = ((SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
 

@@ -129,18 +129,24 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
         botaoFacebook.setOnClickListener(this);
         if (!prefs.getString(SocialConstants.PREF_LOGGED_SOCIAL, "").equals("facebook")) {
             botaoFacebook.setImageResource(R.drawable.btn_logar_facebook_logoff);
+        } else {
+            botaoFacebook.setImageResource(R.drawable.btn_logar_facebook);
         }
 
         ImageButton botaoTwitter = (ImageButton) findViewById(R.id.botao_logar_twitter);
         botaoTwitter.setOnClickListener(this);
         if (!prefs.getString(SocialConstants.PREF_LOGGED_SOCIAL, "").equals("twitter")) {
             botaoTwitter.setImageResource(R.drawable.btn_logar_twitter_logoff);
+        } else {
+            botaoTwitter.setImageResource(R.drawable.btn_logar_twitter);
         }
 
         ImageButton botaoGoogle = (ImageButton) findViewById(R.id.botao_logar_google);
         botaoGoogle.setOnClickListener(this);
         if (!prefs.getString(SocialConstants.PREF_LOGGED_SOCIAL, "").equals("google")) {
             botaoGoogle.setImageResource(R.drawable.btn_logar_google_logoff);
+        } else {
+            botaoGoogle.setImageResource(R.drawable.btn_logar_google);
         }
     }
 
@@ -187,7 +193,7 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
                         dialog.dismiss();
                         SocialUtils.logout(context);
                         int resource = context.getResources().getIdentifier(String.format("btn_logar_%s_logoff", social.replace("+", "")), "drawable", context.getPackageName());
-                        imgButton.setBackgroundResource(resource);
+                        imgButton.setImageResource(resource);
                     }
                 })
                 .setNegativeButton(R.string.nao, null)
@@ -320,10 +326,7 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
-                setResult(Activity.RESULT_OK);
-                finish();
-            } else {
+            if (resultCode != Activity.RESULT_OK) {
                 Toast.makeText(this, getString(R.string.failed_social_auth), Toast.LENGTH_LONG).show();
             }
         }
