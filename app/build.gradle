@@ -16,19 +16,24 @@ android {
         versionCode 1
         versionName "0.1 alpha"
     }
-    buildTypes {
-        release {
-            debuggable false
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-        }
-    }
     signingConfigs {
         alpha {
             keyAlias 'cognita'
             keyPassword 'ntxp4ss'
             storeFile file('key/cognita.keystore')
             storePassword 'ntxp4ss'
+        }
+    }
+    buildTypes {
+        release {
+            debuggable false
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            signingConfig signingConfigs.alpha
+        }
+        debug {
+            debuggable true
+            signingConfig signingConfigs.alpha
         }
     }
 }

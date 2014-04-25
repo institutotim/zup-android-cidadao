@@ -63,7 +63,7 @@
     <string name="email">E-mail</string>
     <string name="senha">Senha</string>
     <string name="confirme_a_senha">Confirme a senha</string>
-    <string name="appFacebook_id">181443718719972</string>
+    <string name="appFacebook_id">205770772949525</string>
     <string name="telefone">Telefone</string>
     <string name="cpf">CPF</string>
     <string name="endereco">Endereço</string>
@@ -95,6 +95,7 @@
     <string name="termos_de_uso">Termos de Uso</string>
     <string name="complete_seus_dados">Agora complete seus dados</string>
     <string name="concordo_com_os_termos_de_uso"><![CDATA[Concordo com os <font color=\"#94d9ed\">Termos de Uso</font>]]> </string>
+    <string name="login_social"><![CDATA[<font color=\"#94d9ed\">Entre</font> para compartilhar nas redes sociais]]> </string>
     <string name="termos_de_uso_cadastro"><![CDATA[Ao criar uma conta você concorda com os <u><font color=\"#94d9ed\">Termos de uso</font></u>]]> </string>
     <string name="termos_de_uso_relato"><![CDATA[Ao publicar uma solicitação você concorda com os <u><font color=\"#94d9ed\">Termos de uso</font></u>]]> </string>
     <string name="editar_conta">Editar conta</string>
@@ -115,6 +116,11 @@
     <string name="carregando_aguarde">Aguarde, buscando endereço&#8230;</string>
     <string name="ponto_de_referencia">Ponto de referência</string>
     <string name="placeholder_endereco">Ex: Avenida Brasil</string>
+    <string name="carregando">Carregando…</string>
+    <string name="inicializando">Inicializando…</string>
+    <string name="logout_social">Logout de Rede Social</string>
+    <string name="logout_social_message">Deseja realmente fazer logout do %s</string>
+    <string name="failed_social_auth">Falha na autenticação da rede social</string>
 
     <string-array name="foto_menu">
         <item>Escolher foto do álbum</item>

@@ -49,6 +49,7 @@ import br.com.lfdb.zup.fragment.SolicitePontoFragment;
 import br.com.lfdb.zup.fragment.SoliciteTipoFragment;
 import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.service.UsuarioService;
+import br.com.lfdb.zup.social.util.SocialUtils;
 import br.com.lfdb.zup.util.DateUtils;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.NetworkUtils;
@@ -378,6 +379,9 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
                 if (!isCancelled() && !post.isAborted()) {
                     HttpResponse response = client.execute(post);
                     if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+                        if (detalhesFragment.getPublicar()) {
+                            SocialUtils.post(SoliciteActivity.this, "Acabei de publicar uma solicitação com o ZUP!\n" + solicitacao.getComentario());
+                        }
                         return getSolicitacao(EntityUtils.toString(response.getEntity(), "UTF-8"));
                     } else {
                         Log.i("ZUP", new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8")).toString(2));

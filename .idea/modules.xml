@@ -8,6 +8,7 @@
       <module fileurl="file://$PROJECT_DIR$/lib-facebooksdk/lib-facebooksdk.iml" filepath="$PROJECT_DIR$/lib-facebooksdk/lib-facebooksdk.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib-progresswheels/lib-progresswheels.iml" filepath="$PROJECT_DIR$/lib-progresswheels/lib-progresswheels.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib-simplecropimage/lib-simplecropimage.iml" filepath="$PROJECT_DIR$/lib-simplecropimage/lib-simplecropimage.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zup-android-cidadao.iml" filepath="$PROJECT_DIR$/zup-android-cidadao.iml" />
       <module fileurl="file://$PROJECT_DIR$/zup-cidadao-android.iml" filepath="$PROJECT_DIR$/zup-cidadao-android.iml" />
     </modules>
   </component>

@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.social.twitter;
+package br.com.lfdb.zup.social.extra;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -6,8 +6,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.ViewGroup;
@@ -19,40 +21,45 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import br.com.lfdb.zup.R;
-import br.com.lfdb.zup.social.twitter.TwitterApp.TwDialogListener;
+import br.com.lfdb.zup.social.SocialConstants;
 
 public class TwitterDialog extends Dialog {
 
-    static final float[] DIMENSIONS_LANDSCAPE = { 460, 260 };
-    static final float[] DIMENSIONS_PORTRAIT = { 280, 420 };
+    public interface TwitterDialogListener {
+        public void onComplete(String value);
+
+        public void onError(String value);
+    }
+
+    static final float[] DIMENSIONS_LANDSCAPE = {460, 260};
+    static final float[] DIMENSIONS_PORTRAIT = {280, 420};
     static final FrameLayout.LayoutParams FILL = new FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT);
     static final int MARGIN = 4;
     static final int PADDING = 2;
     private String mUrl;
-    private TwDialogListener mListener;
+    private TwitterDialogListener mListener;
     private ProgressDialog mSpinner;
     private WebView mWebView;
     private LinearLayout mContent;
     private TextView mTitle;
     private boolean progressDialogRunning = false;
 
-    public TwitterDialog(Context context, String url, TwDialogListener listener) {
+    public TwitterDialog(Context context, String url, TwitterDialogListener listener) {
         super(context);
 
         mUrl = url;
         mListener = listener;
     }
 
-    @SuppressWarnings("deprecation")
-	@Override
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mSpinner = new ProgressDialog(getContext());
 
         mSpinner.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mSpinner.setMessage("Carregando...");
+        mSpinner.setMessage(getContext().getString(R.string.carregando));
 
         mContent = new LinearLayout(getContext());
 
@@ -63,12 +70,21 @@ public class TwitterDialog extends Dialog {
 
         Display display = getWindow().getWindowManager().getDefaultDisplay();
         final float scale = getContext().getResources().getDisplayMetrics().density;
-        float[] dimensions = (display.getWidth() < display.getHeight()) ? DIMENSIONS_PORTRAIT
-                : DIMENSIONS_LANDSCAPE;
+        float[] dimensions;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            Point size = new Point();
+            display.getSize(size);
+            dimensions = (size.x < size.y) ? DIMENSIONS_PORTRAIT
+                    : DIMENSIONS_LANDSCAPE;
+        } else {
+            dimensions = (display.getWidth() < display.getHeight()) ? DIMENSIONS_PORTRAIT
+                    : DIMENSIONS_LANDSCAPE;
+        }
 
         addContentView(mContent, new FrameLayout.LayoutParams(
                 (int) (dimensions[0] * scale + 0.5f), (int) (dimensions[1]
-                        * scale + 0.5f)));
+                * scale + 0.5f)
+        ));
     }
 
     private void setUpTitle() {
@@ -91,7 +107,7 @@ public class TwitterDialog extends Dialog {
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-	private void setUpWebView() {
+    private void setUpWebView() {
         mWebView = new WebView(getContext());
 
         mWebView.setVerticalScrollBarEnabled(false);
@@ -108,7 +124,7 @@ public class TwitterDialog extends Dialog {
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if (url.startsWith(TwitterApp.CALLBACK_URL)) {
+            if (url.startsWith(SocialConstants.TWITTER_OAUTH_CALLBACK_URL)) {
                 mListener.onComplete(url);
 
                 TwitterDialog.this.dismiss();
@@ -122,7 +138,7 @@ public class TwitterDialog extends Dialog {
 
         @Override
         public void onReceivedError(WebView view, int errorCode,
-                String description, String failingUrl) {
+                                    String description, String failingUrl) {
             super.onReceivedError(view, errorCode, description, failingUrl);
             mListener.onError(description);
             TwitterDialog.this.dismiss();
@@ -145,9 +161,8 @@ public class TwitterDialog extends Dialog {
             progressDialogRunning = false;
             mSpinner.dismiss();
         }
-
     }
-    
+
     @Override
     protected void onStop() {
         progressDialogRunning = false;
@@ -155,7 +170,7 @@ public class TwitterDialog extends Dialog {
     }
 
     public void onBackPressed() {
-        if(!progressDialogRunning){
+        if (!progressDialogRunning) {
             TwitterDialog.this.dismiss();
         }
     }

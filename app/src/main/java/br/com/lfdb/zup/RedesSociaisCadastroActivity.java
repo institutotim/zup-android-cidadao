@@ -8,9 +8,9 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import br.com.lfdb.zup.social.FacebookAuth;
-import br.com.lfdb.zup.social.GooglePlusAuth;
-import br.com.lfdb.zup.social.TwitterAuth;
+import br.com.lfdb.zup.social.auth.FacebookAuth;
+import br.com.lfdb.zup.social.auth.GooglePlusAuth;
+import br.com.lfdb.zup.social.auth.TwitterAuth;
 import br.com.lfdb.zup.util.FontUtils;
 
 public class RedesSociaisCadastroActivity extends Activity implements View.OnClickListener {
@@ -75,7 +75,7 @@ public class RedesSociaisCadastroActivity extends Activity implements View.OnCli
 				setResult(Activity.RESULT_OK);
 				finish();
 			} else {
-				Toast.makeText(this, "Falha na autenticação da rede social", Toast.LENGTH_LONG).show();
+				Toast.makeText(this, getString(R.string.failed_social_auth), Toast.LENGTH_LONG).show();
 			}
 		}
 	}

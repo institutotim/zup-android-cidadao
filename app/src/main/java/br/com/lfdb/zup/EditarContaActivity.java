@@ -1,10 +1,24 @@
 package br.com.lfdb.zup;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.squareup.okhttp.apache.OkApacheClient;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -16,30 +30,28 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.squareup.okhttp.apache.OkApacheClient;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.domain.Usuario;
 import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.service.UsuarioService;
+import br.com.lfdb.zup.social.SocialConstants;
+import br.com.lfdb.zup.social.auth.FacebookAuth;
+import br.com.lfdb.zup.social.auth.GooglePlusAuth;
+import br.com.lfdb.zup.social.auth.TwitterAuth;
+import br.com.lfdb.zup.social.util.SocialUtils;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.ViewUtils;
 
 public class EditarContaActivity extends Activity implements View.OnClickListener {
 
-	private TextView botaoCancelar;
-	private TextView botaoCriar;
-	private EditText campoNome;
+    private static final int REQUEST_CODE = 9999;
+
+    private EditText campoNome;
 	private EditText campoSenha;
 	private EditText campoConfirmarSenha;
 	private EditText campoEmail;
@@ -60,18 +72,18 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 		((TextView) findViewById(R.id.instrucoes)).setTypeface(FontUtils.getBold(this));
 		((TextView) findViewById(R.id.instrucoes_dados)).setTypeface(FontUtils.getBold(this));
 		((TextView) findViewById(R.id.textView1)).setTypeface(FontUtils.getLight(this));
-		
-		botaoCancelar = (TextView) findViewById(R.id.botaoCancelar);
+
+        TextView botaoCancelar = (TextView) findViewById(R.id.botaoCancelar);
 		botaoCancelar.setTypeface(FontUtils.getRegular(this));
 		botaoCancelar.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
+            @Override
+            public void onClick(View v) {
                 ViewUtils.hideKeyboard(EditarContaActivity.this, v.getWindowToken());
-				finish();				
-			}
-		});
-		
-		botaoCriar = (TextView) findViewById(R.id.botaoSalvar);
+                finish();
+            }
+        });
+
+        TextView botaoCriar = (TextView) findViewById(R.id.botaoSalvar);
 		botaoCriar.setTypeface(FontUtils.getRegular(this));
 		botaoCriar.setOnClickListener(this);
 		
@@ -108,17 +120,84 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 		preencherTela();
 	}
 
-	@Override
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        ImageButton botaoFacebook = (ImageButton) findViewById(R.id.botao_logar_facebook);
+        botaoFacebook.setOnClickListener(this);
+        if (!prefs.getString(SocialConstants.PREF_LOGGED_SOCIAL, "").equals("facebook")) {
+            botaoFacebook.setImageResource(R.drawable.btn_logar_facebook_logoff);
+        }
+
+        ImageButton botaoTwitter = (ImageButton) findViewById(R.id.botao_logar_twitter);
+        botaoTwitter.setOnClickListener(this);
+        if (!prefs.getString(SocialConstants.PREF_LOGGED_SOCIAL, "").equals("twitter")) {
+            botaoTwitter.setImageResource(R.drawable.btn_logar_twitter_logoff);
+        }
+
+        ImageButton botaoGoogle = (ImageButton) findViewById(R.id.botao_logar_google);
+        botaoGoogle.setOnClickListener(this);
+        if (!prefs.getString(SocialConstants.PREF_LOGGED_SOCIAL, "").equals("google")) {
+            botaoGoogle.setImageResource(R.drawable.btn_logar_google_logoff);
+        }
+    }
+
+    @Override
 	public void onClick(View v) {
-		limparFundoCampos();
-		List<Integer> validadores = validar();
-		if (validadores.isEmpty()) {
-			montarUsuario();
-			new Tasker().execute();			
-		} else {
-			destacarCampos(validadores);
-		}
+        if (v.getId() == R.id.botaoSalvar) {
+            limparFundoCampos();
+            List<Integer> validadores = validar();
+            if (validadores.isEmpty()) {
+                montarUsuario();
+                new Tasker().execute();
+            } else {
+                destacarCampos(validadores);
+            }
+        } else if (v.getId() == R.id.botao_logar_twitter) {
+            if (isLogged("twitter")) {
+                logout("twitter", (ImageButton) v);
+            } else {
+                startActivityForResult(new Intent(this, TwitterAuth.class), REQUEST_CODE);
+            }
+        } else if (v.getId() == R.id.botao_logar_google) {
+            if (isLogged("google")) {
+                logout("google+", (ImageButton) v);
+            } else {
+                startActivityForResult(new Intent(this, GooglePlusAuth.class), REQUEST_CODE);
+            }
+        } else if (v.getId() == R.id.botao_logar_facebook) {
+            if (isLogged("facebook")) {
+                logout("facebook", (ImageButton) v);
+            } else {
+                startActivityForResult(new Intent(this, FacebookAuth.class), REQUEST_CODE);
+            }
+        }
 	}
+
+    private void logout(final String social, final ImageButton imgButton) {
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.logout_social))
+                .setMessage(getString(R.string.logout_social_message, StringUtils.capitalize(social)))
+                .setPositiveButton(R.string.sim, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Activity context = EditarContaActivity.this;
+                        dialog.dismiss();
+                        SocialUtils.logout(context);
+                        int resource = context.getResources().getIdentifier(String.format("btn_logar_%s_logoff", social.replace("+", "")), "drawable", context.getPackageName());
+                        imgButton.setBackgroundResource(resource);
+                    }
+                })
+                .setNegativeButton(R.string.nao, null)
+                .show();
+    }
+
+    private boolean isLogged(String social) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        return prefs.getString(SocialConstants.PREF_LOGGED_SOCIAL, "").equals(social);
+    }
 	
 	private Usuario montarUsuario() {
 		usuario.setBairro(campoBairro.getText().toString());
@@ -208,7 +287,7 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 	
 	private void destacarCampos(List<Integer> campos) {
 		for (Integer id : campos) {
-			((TextView) findViewById(id)).setBackgroundResource(R.drawable.textbox_red);
+			findViewById(id).setBackgroundResource(R.drawable.textbox_red);
 		}
 		Toast.makeText(this, "Complete ou corrija os campos indicados", Toast.LENGTH_LONG).show();
 	}
@@ -216,7 +295,7 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 	private void limparFundoCampos() {
 		for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF, R.id.campoTelefone,
 				R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro, R.id.campoSenha, R.id.campoConfirmarSenha)) {
-			((TextView) findViewById(id)).setBackgroundResource(R.drawable.textbox_bg);
+			findViewById(id).setBackgroundResource(R.drawable.textbox_bg);
 		}
 	}
 	
@@ -237,4 +316,16 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 		
 		return campos;
 	}
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                setResult(Activity.RESULT_OK);
+                finish();
+            } else {
+                Toast.makeText(this, getString(R.string.failed_social_auth), Toast.LENGTH_LONG).show();
+            }
+        }
+    }
 }
