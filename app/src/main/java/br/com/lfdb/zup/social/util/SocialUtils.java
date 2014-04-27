@@ -136,8 +136,6 @@ public class SocialUtils {
                             FacebookRequestError error = response.getError();
                             if (error != null) {
                                 Toast.makeText(context, error.getErrorMessage(), Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(context, postId, Toast.LENGTH_LONG).show();
                             }
                         }
                     };

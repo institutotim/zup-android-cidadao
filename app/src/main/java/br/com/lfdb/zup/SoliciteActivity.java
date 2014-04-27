@@ -380,7 +380,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
                     HttpResponse response = client.execute(post);
                     if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
                         if (detalhesFragment.getPublicar()) {
-                            SocialUtils.post(SoliciteActivity.this, "Acabei de publicar uma solicitação com o ZUP!\n" + solicitacao.getComentario());
+                            SocialUtils.post(SoliciteActivity.this, "Acabei de publicar uma solicitação com o #ZUP!\n" + solicitacao.getComentario());
                         }
                         return getSolicitacao(EntityUtils.toString(response.getEntity(), "UTF-8"));
                     } else {
