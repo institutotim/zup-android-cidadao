@@ -40,7 +40,7 @@ public class InformacoesFragment extends Fragment {
 		tvLabel.setText(label.toUpperCase(Locale.US));
 		tvLabel.setTextColor(Color.rgb(0x33, 0x33, 0x33));
 		tvLabel.setTypeface(FontUtils.getBold(getActivity()));
-		tvLabel.setPadding((int) (15 * scale + 0.5f), 0, 0, 0);
+		tvLabel.setPadding((int) (15 * scale + 0.5f), (int) (5 * scale + 0.5f), 0, 0);
 		layout.addView(tvLabel);
 		
 		TextView tvContent = new TextView(getActivity());
@@ -51,9 +51,20 @@ public class InformacoesFragment extends Fragment {
 		layout.addView(tvContent);
 	}
 	
-	public void setDados(Map<String, String> camposDinamicos) {
-		for (String key : camposDinamicos.keySet()) {
-			addView(key, camposDinamicos.get(key));
-		}
+	public void setDados(String sectionTitle, Map<String, String> camposDinamicos) {
+        if (!camposDinamicos.isEmpty()) {
+
+            if (sectionTitle != null && !sectionTitle.trim().isEmpty()) adicionarSubtitulo(sectionTitle);
+
+            for (String key : camposDinamicos.keySet()) {
+                addView(key, camposDinamicos.get(key));
+            }
+        }
 	}
+
+    private void adicionarSubtitulo(String subtitulo) {
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.inventory_section_title, null);
+        ((TextView) view.findViewById(R.id.title)).setText(subtitulo);
+        layout.addView(view);
+    }
 }

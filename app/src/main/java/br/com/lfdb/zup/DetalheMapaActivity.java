@@ -42,7 +42,7 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 	private SolicitacoesFragment solFragment;
 	
 	private ArrayList<SolicitacaoListItem> relatos;
-	private HashMap<String, String> camposDinamicos = new HashMap<String, String>();
+	private HashMap<String, HashMap<String, String>> inventoryData = new HashMap<String, HashMap<String, String>>();
 	
 	private ItemInventario item;
 	private TextView solicitacoes;
@@ -191,7 +191,10 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 					prepararAbas();
 					solFragment.setRelatos(relatos);					
 				}
-				infoFragment.setDados(camposDinamicos);
+
+                for (String key : inventoryData.keySet()) {
+                    infoFragment.setDados(key, inventoryData.get(key));
+                }
                 setBarraNavegacaoVisivel(true);
 			} else {
 				Toast.makeText(DetalheMapaActivity.this, "Não foi possível obter os dados do item", Toast.LENGTH_LONG).show();
@@ -208,28 +211,35 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 		}
 		
 		private void montarHashMap(String categoria, String itemInventario) throws Exception {
-			List<JSONObject> campos = new ArrayList<JSONObject>();
 			List<JSONObject> dados = new ArrayList<JSONObject>();
-			
+
+            JSONArray data = new JSONObject(itemInventario).getJSONObject("item").getJSONArray("data");
+            for (int i = 0; i < data.length(); i++) {
+                dados.add(data.getJSONObject(i));
+            }
+
 			JSONArray sections = new JSONObject(categoria).getJSONObject("category").getJSONArray("sections");
 			for (int i = 0; i < sections.length(); i++) {
+                List<JSONObject> campos = new ArrayList<JSONObject>();
+                String sectionName = sections.getJSONObject(i).getString("title");
 				JSONArray fields = sections.getJSONObject(i).getJSONArray("fields");
 				for (int j = 0; j < fields.length(); j++) {
 					campos.add(fields.getJSONObject(j));
 				}
-			}
-			
-			JSONArray data = new JSONObject(itemInventario).getJSONObject("item").getJSONArray("data");
-			for (int i = 0; i < data.length(); i++) {
-				dados.add(data.getJSONObject(i));
-			}
-			
-			for (JSONObject dado : dados) {
-				for (JSONObject campo : campos) {
-					if (dado.getLong("inventory_field_id") == campo.getLong("id")) {
-						camposDinamicos.put(campo.getString("title"), dado.getString("content"));
-					}
-				}
+
+                HashMap<String, String> camposDinamicos = new HashMap<String, String>();
+                for (JSONObject campo : campos) {
+                    for (JSONObject dado : dados) {
+                        if (dado.getLong("inventory_field_id") == campo.getLong("id")) {
+                            if (!dado.getString("content").equals("null")) {
+                                camposDinamicos.put(campo.getString("label").equals("null") ?
+                                        campo.getString("title") : campo.getString("label"), dado.getString("content"));
+                            }
+                        }
+                    }
+                }
+
+                inventoryData.put(sectionName, camposDinamicos);
 			}
 		}
 

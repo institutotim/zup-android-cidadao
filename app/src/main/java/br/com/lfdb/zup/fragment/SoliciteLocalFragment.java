@@ -181,7 +181,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                 if (solicitacao != null) {
                     file = solicitacao.getCategoria().getMarcador();
                     CameraPosition p = new CameraPosition.Builder().target(new LatLng(solicitacao.getLatitude(),
-                            solicitacao.getLongitude())).zoom(18.5f).build();
+                            solicitacao.getLongitude())).zoom(16f).build();
                     CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
                     map.moveCamera(update);
                 }
@@ -224,7 +224,22 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
     }
 
     public String getEnderecoAtual() {
-        return rua + ", " + numero;
+        StringBuilder builder = new StringBuilder();
+        builder.append(rua).append(", ").append(numero);
+
+        if (enderecoAtual.getSubLocality() != null) {
+            builder.append(" - ").append(enderecoAtual.getSubLocality());
+        }
+
+        if (getCity() != null) {
+            builder.append(", ").append(getCity());
+        }
+
+        if (enderecoAtual.getPostalCode() != null) {
+            builder.append(", ").append(enderecoAtual.getPostalCode());
+        }
+
+        return builder.toString();
     }
 
     private void atualizarEndereco() {
@@ -253,7 +268,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
     public void onClick(View v) {
         if (v.getId() == R.id.locationButton) {
             CameraPosition position = new CameraPosition.Builder().target(new LatLng(userLatitude,
-                    userLongitude)).zoom(18.5f).build();
+                    userLongitude)).zoom(16f).build();
             CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
             map.animateCamera(update);
             return;
@@ -606,7 +621,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
 
         if (updateCameraUser) {
             CameraPosition position = new CameraPosition.Builder().target(new LatLng(location.getLatitude(),
-                    location.getLongitude())).zoom(18.5f).build();
+                    location.getLongitude())).zoom(16f).build();
             CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
             map.moveCamera(update);
             latitude = location.getLatitude();
@@ -664,7 +679,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
             if (!isCancelled()) {
                 if (addr != null) {
                     CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
-                            addr.getLongitude())).zoom(18.5f).build();
+                            addr.getLongitude())).zoom(16f).build();
                     CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
                     map.animateCamera(update);
                 }
@@ -694,10 +709,14 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
             setAddressLoaderVisible(false);
             if (addr != null) {
                 CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
-                        addr.getLongitude())).zoom(18.5f).build();
+                        addr.getLongitude())).zoom(16f).build();
                 CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
                 map.animateCamera(update);
             }
         }
+    }
+
+    private String getCity() {
+        return enderecoAtual.getSubAdminArea() != null ? enderecoAtual.getSubAdminArea() : enderecoAtual.getLocality();
     }
 }

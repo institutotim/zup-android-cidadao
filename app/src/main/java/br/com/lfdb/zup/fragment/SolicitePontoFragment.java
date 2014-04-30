@@ -149,7 +149,7 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
             map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
             CameraPosition p = new CameraPosition.Builder().target(new LatLng(INITIAL_LATITUDE,
-                    INITIAL_LONGITUDE)).zoom(12).build();
+                    INITIAL_LONGITUDE)).zoom(16).build();
             CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
             map.moveCamera(update);
         }
@@ -553,7 +553,7 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
         }
     }
 
-    private class AddressTask extends AsyncTask<Void, Void, String> {
+    private class AddressTask extends AsyncTask<Void, Void, Address> {
 
         private final LatLng posicao;
 
@@ -562,9 +562,9 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
         }
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected Address doInBackground(Void... params) {
             try {
-                return GeoUtils.getFromLocation(posicao.latitude, posicao.longitude, 1).get(0).getAddressLine(0);
+                return GeoUtils.getFromLocation(posicao.latitude, posicao.longitude, 1).get(0);
             } catch (Exception e) {
                 Log.e("ZUP", e.getMessage(), e);
                 return null;
@@ -572,9 +572,9 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
         }
 
         @Override
-        protected void onPostExecute(String addr) {
+        protected void onPostExecute(Address addr) {
             if (addr != null) {
-                endereco = addr;
+                endereco = getFormattedAddress(addr);
                 autoCompView.setText(endereco);
                 //autoCompView.setAdapter(null);
                 if (getActivity() != null) {
@@ -582,5 +582,35 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
                 }
             }
         }
+    }
+
+    private String getFormattedAddress(Address address) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(address.getThoroughfare());
+
+        if (address.getFeatureName() != null) {
+            builder.append(", ").append(address.getFeatureName());
+        } else {
+            builder.append(", s/nº");
+        }
+
+
+        if (address.getSubLocality() != null) {
+            builder.append(" - ").append(address.getSubLocality());
+        }
+
+        if (getCity(address) != null) {
+            builder.append(", ").append(getCity(address));
+        }
+
+        if (address.getPostalCode() != null) {
+            builder.append(", ").append(address.getPostalCode());
+        }
+
+        return builder.toString();
+    }
+
+    private String getCity(Address address) {
+        return address.getSubAdminArea() != null ? address.getSubAdminArea() : address.getLocality();
     }
 }
