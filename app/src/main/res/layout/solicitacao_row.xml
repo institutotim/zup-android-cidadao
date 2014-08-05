@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/indicador"
+        android:layout_width="8dp"
+        android:layout_height="match_parent"
+        android:textSize="12sp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/indicador"
+        android:background="@drawable/list_bg"
+        android:paddingBottom="18dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="18dp" >
+
+        <TextView
+            android:id="@+id/data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="5dp"
+            android:drawablePadding="10dp"
+            android:drawableRight="@drawable/seta_direita"
+            android:textAllCaps="true"
+            android:textColor="#666"
+            android:textSize="@dimen/row_date" />
+
+        <TextView
+            android:id="@+id/protocolo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@id/data"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textAllCaps="true"
+            android:textColor="#666"
+            android:textSize="@dimen/row_protocol" />
+
+        <TextView
+            android:id="@+id/indicadorStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="5dp"
+            android:textAllCaps="true"
+            android:textColor="#fff"
+            android:textSize="@dimen/row_status"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/titulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/protocolo"
+            android:layout_marginTop="15dp"
+            android:layout_toLeftOf="@id/indicadorStatus"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textSize="@dimen/row_title" />
+    </RelativeLayout>
+
+</RelativeLayout>

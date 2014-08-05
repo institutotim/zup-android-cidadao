@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:id="@+id/topbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@android:color/white"
+        android:paddingBottom="10dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="10dp" >
+
+        <TextView
+            android:id="@+id/novaConta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/nova_conta"
+            android:textColor="#000"
+            android:textSize="@dimen/title_text_size" />
+
+        <TextView
+            android:id="@+id/botaoCancelar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/button_black_bg"
+            android:text="@string/cancelar"
+            android:textColor="#fff"
+            android:textSize="@dimen/topbar_button_font_size" />
+
+        <TextView
+            android:id="@+id/botaoCriar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/button_blue_bg"
+            android:text="@string/criar"
+            android:textColor="#fff"
+            android:textSize="@dimen/topbar_button_font_size" />
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/separator1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/topbar"
+        android:background="#ccc" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/separator1"
+        android:background="#fff" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:paddingBottom="15dp" >
+
+            <EditText
+                android:imeOptions="actionNext"
+                android:id="@+id/campoNome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/textbox_bg"
+                android:hint="@string/nome_completo"
+                android:inputType="textNoSuggestions"
+                android:padding="12dp"
+                android:textColor="#000"
+                android:textSize="@dimen/navigation_text_size" />
+
+            <EditText
+                android:imeOptions="actionNext"
+                android:id="@+id/campoEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/textbox_bg"
+                android:hint="@string/email"
+                android:inputType="textEmailAddress"
+                android:padding="12dp"
+                android:textColor="#000"
+                android:textSize="@dimen/navigation_text_size" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2" >
+
+                <EditText
+                    android:imeOptions="actionNext"
+                    android:id="@+id/campoSenha"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/textbox_bg"
+                    android:hint="@string/senha"
+                    android:inputType="textPassword"
+                    android:padding="12dp"
+                    android:textColor="#000"
+                    android:textSize="@dimen/navigation_text_size" />
+
+                <EditText
+                    android:imeOptions="actionNext"
+                    android:id="@+id/campoConfirmarSenha"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/textbox_bg"
+                    android:ellipsize="end"
+                    android:hint="@string/confirme_a_senha"
+                    android:inputType="textPassword"
+                    android:padding="12dp"
+                    android:textColor="#000"
+                    android:textSize="@dimen/navigation_text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2" >
+
+                <br.com.lfdb.zup.widget.PhoneEditText
+                    android:imeOptions="actionNext"
+                    android:id="@+id/campoTelefone"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/textbox_bg"
+                    android:hint="@string/telefone"
+                    android:padding="12dp"
+                    android:textColor="#000"
+                    android:textSize="@dimen/navigation_text_size" />
+
+                <br.com.lfdb.zup.widget.CpfEditText
+                    android:imeOptions="actionNext"
+                    android:id="@+id/campoCPF"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/textbox_bg"
+                    android:hint="@string/cpf"
+                    android:padding="12dp"
+                    android:textColor="#000"
+                    android:textSize="@dimen/navigation_text_size" />
+            </LinearLayout>
+
+            <EditText
+                android:imeOptions="actionNext"
+                android:id="@+id/campoEndereco"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/textbox_bg"
+                android:hint="@string/endereco"
+                android:inputType="textNoSuggestions"
+                android:padding="12dp"
+                android:textColor="#000"
+                android:textSize="@dimen/navigation_text_size" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2" >
+
+                <EditText
+                    android:imeOptions="actionNext"
+                    android:id="@+id/campoComplemento"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/textbox_bg"
+                    android:hint="@string/complemento"
+                    android:inputType="textNoSuggestions"
+                    android:padding="12dp"
+                    android:textColor="#000"
+                    android:textSize="@dimen/navigation_text_size" />
+
+                <br.com.lfdb.zup.widget.CepEditText
+                    android:imeOptions="actionNext"
+                    android:id="@+id/campoCEP"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/textbox_bg"
+                    android:hint="@string/cep"
+                    android:padding="12dp"
+                    android:textColor="#000"
+                    android:textSize="@dimen/navigation_text_size" />
+            </LinearLayout>
+
+            <EditText
+                android:imeOptions="actionDone"
+                android:id="@+id/campoBairro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/textbox_bg"
+                android:hint="@string/bairro"
+                android:inputType="textNoSuggestions"
+                android:padding="12dp"
+                android:textColor="#000"
+                android:textSize="@dimen/navigation_text_size" />
+
+            <TextView
+                android:id="@+id/termos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:gravity="left"
+                android:padding="10dp"
+                android:text="@string/concordo_com_os_termos_de_uso"
+                android:textColor="#333"
+                android:textSize="@dimen/navigation_text_size" />
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

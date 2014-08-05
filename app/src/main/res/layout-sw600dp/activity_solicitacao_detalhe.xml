@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff" >
+
+    <RelativeLayout
+        android:id="@+id/topbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@android:color/white"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp" >
+
+        <TextView
+            android:id="@+id/botaoVoltar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/side_button_black_bg"
+            android:text="@string/voltar"
+            android:textColor="#fff" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/info_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/topbar"
+        android:background="#e6e6e6"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp" >
+
+        <TextView
+            android:id="@+id/indicadorStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="50dp"
+            android:textAllCaps="true"
+            android:textColor="#fff"
+            android:textSize="@dimen/row_status" />
+
+        <TextView
+            android:id="@+id/protocolo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="50dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textAllCaps="true"
+            android:textColor="#999"
+            android:textSize="@dimen/instruction_text_size" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/info_label"
+        android:background="#f2f2f2"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp"
+        android:paddingTop="35dp" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            android:weightSum="2" >
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/white"
+                android:minHeight="@dimen/view_pager_size"
+                android:orientation="vertical" >
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp" >
+
+                    <TextView
+                        android:id="@+id/titulo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentTop="true"
+                        android:textSize="@dimen/row_title" />
+
+                    <TextView
+                        android:id="@+id/endereco"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_below="@id/titulo"
+                        android:textSize="@dimen/topbar_button_font_size" />
+
+                    <TextView
+                        android:id="@+id/referencia"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_below="@id/endereco"
+                        android:textSize="@dimen/topbar_button_font_size" />
+
+                    <TextView
+                        android:id="@+id/data"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/referencia"
+                        android:textAllCaps="true"
+                        android:textColor="#666"
+                        android:textSize="@dimen/small_text_size" />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/comentario"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1" >
+
+                <fragment
+                    android:id="@+id/map"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/map_size"
+                    class="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_alignParentTop="true" />
+
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/pager"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/view_pager_size"
+                    android:layout_alignParentTop="true" />
+
+                <com.viewpagerindicator.IconPageIndicator
+                    android:id="@+id/indicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/pager"
+                    android:layout_centerHorizontal="true"
+                    android:padding="@dimen/circle_padding_detail" />
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

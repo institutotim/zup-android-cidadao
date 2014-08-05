@@ -1,0 +1,62 @@
+apply plugin: 'android'
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion '19.0.3'
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+    defaultConfig {
+        minSdkVersion 10
+        targetSdkVersion 19
+        versionCode 1
+        versionName "0.1 alpha"
+    }
+    signingConfigs {
+        alpha {
+            keyAlias 'cognita'
+            keyPassword 'ntxp4ss'
+            storeFile file('key/cognita.keystore')
+            storePassword 'ntxp4ss'
+        }
+    }
+    buildTypes {
+        release {
+            debuggable false
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            signingConfig signingConfigs.alpha
+        }
+        debug {
+            debuggable true
+            signingConfig signingConfigs.alpha
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:+'
+    compile 'com.google.android.gms:play-services:+'
+    compile 'oauth.signpost:signpost-core:1.2.+'
+    compile 'oauth.signpost:signpost-commonshttp4:1.2.+'
+    compile 'org.twitter4j:twitter4j-core:3.0.+'
+    compile 'com.squareup.okhttp:okhttp-apache:1.+'
+    compile 'com.google.guava:guava:16.+'
+    compile 'com.squareup.picasso:picasso:2.2.+'
+    compile 'ch.acra:acra:4.5.0'
+    compile 'org.apache.httpcomponents:httpcore:4.3.+'
+    compile 'org.apache.httpcomponents:httpclient:4.3.+'
+    compile 'org.apache.httpcomponents:httpmime:4.3.+'
+    compile 'org.apache.james:apache-mime4j-core:0.7.+'
+    compile 'com.google.code.gson:gson:2.2.+'
+    compile 'org.apache.commons:commons-lang3:3.+'
+    compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    compile project(':lib-simplecropimage')
+    compile project(':lib-progresswheels')
+    compile project(':lib-facebooksdk')
+    compile project(':lib-androidviewpagerindicator')
+}

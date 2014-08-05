@@ -1,0 +1,1 @@
+include ':app', ':lib-androidviewpagerindicator', ':lib-facebooksdk', ':lib-progresswheels', ':lib-simplecropimage'
