@@ -3,7 +3,6 @@ package br.com.lfdb.zup;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -75,12 +74,9 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 
         TextView botaoCancelar = (TextView) findViewById(R.id.botaoCancelar);
 		botaoCancelar.setTypeface(FontUtils.getRegular(this));
-		botaoCancelar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ViewUtils.hideKeyboard(EditarContaActivity.this, v.getWindowToken());
-                finish();
-            }
+		botaoCancelar.setOnClickListener(v -> {
+            ViewUtils.hideKeyboard(EditarContaActivity.this, v.getWindowToken());
+            finish();
         });
 
         TextView botaoCriar = (TextView) findViewById(R.id.botaoSalvar);
@@ -186,15 +182,12 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
         new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.logout_social))
                 .setMessage(getString(R.string.logout_social_message, StringUtils.capitalize(social)))
-                .setPositiveButton(R.string.sim, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Activity context = EditarContaActivity.this;
-                        dialog.dismiss();
-                        SocialUtils.logout(context);
-                        int resource = context.getResources().getIdentifier(String.format("btn_logar_%s_logoff", social.replace("+", "")), "drawable", context.getPackageName());
-                        imgButton.setImageResource(resource);
-                    }
+                .setPositiveButton(R.string.sim, (dialog, which) -> {
+                    Activity context = EditarContaActivity.this;
+                    dialog.dismiss();
+                    SocialUtils.logout(context);
+                    int resource = context.getResources().getIdentifier(String.format("btn_logar_%s_logoff", social.replace("+", "")), "drawable", context.getPackageName());
+                    imgButton.setImageResource(resource);
                 })
                 .setNegativeButton(R.string.nao, null)
                 .show();
@@ -253,7 +246,7 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 				HttpClient client = new OkApacheClient();
 				HttpPut put = new HttpPut(Constantes.REST_URL + "/users/" + usuario.getId());
 				JSONObject json = new UsuarioService().converterParaJSON(usuario);
-				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(json.length());
+				List<NameValuePair> nameValuePairs = new ArrayList<>(json.length());
 				Iterator<String> iterator = json.keys();
 				while (iterator.hasNext()) {
 					String key = iterator.next();
@@ -306,13 +299,13 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 	}
 	
 	private List<Integer> validar() {
-		List<Integer> campos = new ArrayList<Integer>();
+		List<Integer> campos = new ArrayList<>();
 		if (!campoSenha.getText().toString().trim().isEmpty() && !campoConfirmarSenha.getText().toString().trim().isEmpty() 
 				&& !campoSenha.getText().toString().equals(campoConfirmarSenha.getText().toString())) {
 			campos.add(campoSenha.getId());
 			campos.add(campoConfirmarSenha.getId());
-		}		
-		
+		}
+
 		for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF, R.id.campoTelefone,
 				R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro)) {
 			if (((TextView) findViewById(id)).getText().toString().trim().isEmpty()) {

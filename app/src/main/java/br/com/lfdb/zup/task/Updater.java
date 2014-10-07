@@ -49,6 +49,6 @@ public class Updater {
             FileUtils.downloadImage(context, type, iconUrl.getString("disabled"));
 		}
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		prefs.edit().putString(type, json).commit();
+		prefs.edit().putString(type, json).apply();
 	}
 }

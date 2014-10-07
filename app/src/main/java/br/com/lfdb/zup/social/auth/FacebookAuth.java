@@ -9,11 +9,8 @@ import android.widget.Toast;
 
 import com.facebook.LoggingBehavior;
 import com.facebook.Request;
-import com.facebook.Response;
 import com.facebook.Session;
-import com.facebook.SessionState;
 import com.facebook.Settings;
-import com.facebook.model.GraphUser;
 
 import br.com.lfdb.zup.social.SocialConstants;
 
@@ -43,40 +40,32 @@ public class FacebookAuth extends Activity {
         }
     }
 
-    private Session.StatusCallback callback = new Session.StatusCallback() {
+    private Session.StatusCallback callback = (session, state, exception) -> {
+        if (session.isOpened()) {
+            if (!session.getPermissions().contains("publish_actions")) {
+                session.requestNewPublishPermissions(new Session.NewPermissionsRequest(FacebookAuth.this, "publish_actions"));
+                return;
+            }
 
-        @Override
-        public void call(Session session, SessionState state, Exception exception) {
-            if (session.isOpened()) {
-                if (!session.getPermissions().contains("publish_actions")) {
-                    session.requestNewPublishPermissions(new Session.NewPermissionsRequest(FacebookAuth.this, "publish_actions"));
-                    return;
+            Request request = Request.newMeRequest(session, (user, response) -> {
+                if (user != null) {
+                    Session session1 = Session.getActiveSession();
+                    saveAccessToken(session1.getAccessToken(), session1.getExpirationDate().getTime());
+                    setResult(Activity.RESULT_OK);
                 }
 
-                Request request = Request.newMeRequest(session, new Request.GraphUserCallback() {
+                if (response.getError() != null) {
+                    Toast.makeText(FacebookAuth.this, response.getError().getErrorMessage(), Toast.LENGTH_LONG).show();
+                    setResult(Activity.RESULT_CANCELED);
+                }
 
-                    @Override
-                    public void onCompleted(GraphUser user, Response response) {
-                        if (user != null) {
-                            Session session = Session.getActiveSession();
-                            saveAccessToken(session.getAccessToken(), session.getExpirationDate().getTime());
-                            setResult(Activity.RESULT_OK);
-                        }
-
-                        if (response.getError() != null) {
-                            Toast.makeText(FacebookAuth.this, response.getError().getErrorMessage(), Toast.LENGTH_LONG).show();
-                            setResult(Activity.RESULT_CANCELED);
-                        }
-
-                        finish();
-                    }
-                });
-                request.executeAsync();
-            } else if (exception != null) {
-                Toast.makeText(FacebookAuth.this, "Falha ao conectar-se ao Facebook: " + exception.getMessage(), Toast.LENGTH_LONG).show();
-                setResult(Activity.RESULT_CANCELED);
                 finish();
-            }
+            });
+            request.executeAsync();
+        } else if (exception != null) {
+            Toast.makeText(FacebookAuth.this, "Falha ao conectar-se ao Facebook: " + exception.getMessage(), Toast.LENGTH_LONG).show();
+            setResult(Activity.RESULT_CANCELED);
+            finish();
         }
     };
 
@@ -97,7 +86,7 @@ public class FacebookAuth extends Activity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefs.edit().putString(SocialConstants.PREF_FACEBOOK_ACCESS_TOKEN, accessToken)
                 .putLong(SocialConstants.PREF_FACEBOOK_EXPIRES_IN, expiresIn)
-                .putString(SocialConstants.PREF_LOGGED_SOCIAL, "facebook").commit();
+                .putString(SocialConstants.PREF_LOGGED_SOCIAL, "facebook").apply();
     }
 }
 

@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.Html;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,16 +46,13 @@ public class SoliciteDetalhesFragment extends Fragment implements View.OnClickLi
 		EditText comentario = (EditText) view.findViewById(R.id.comentario);
 		comentario.setTypeface(FontUtils.getRegular(getActivity()));
 
-        comentario.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                boolean handled = false;
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    ((SoliciteActivity) getActivity()).solicitar();
-                    handled = true;
-                }
-                return handled;
+        comentario.setOnEditorActionListener((v, actionId, event) -> {
+            boolean handled = false;
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                ((SoliciteActivity) getActivity()).solicitar();
+                handled = true;
             }
+            return handled;
         });
 
 		TextView redeSocial = (TextView) view.findViewById(R.id.redeSocial);
@@ -65,22 +61,12 @@ public class SoliciteDetalhesFragment extends Fragment implements View.OnClickLi
         TextView loginSocial = (TextView) view.findViewById(R.id.loginSocial);
         loginSocial.setText(R.string.login_social);
         loginSocial.setTypeface(FontUtils.getLight(getActivity()));
-        loginSocial.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getActivity(), RedesSociaisCadastroActivity.class));
-            }
-        });
+        loginSocial.setOnClickListener(v -> startActivity(new Intent(getActivity(), RedesSociaisCadastroActivity.class)));
 
 		TextView termos = (TextView) view.findViewById(R.id.termos);
 		termos.setText(Html.fromHtml(getString(R.string.termos_de_uso_relato)));
 		termos.setTypeface(FontUtils.getLight(getActivity()));
-		termos.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				startActivity(new Intent(getActivity(), TermosDeUsoActivity.class));
-			}
-		});
+		termos.setOnClickListener(v -> startActivity(new Intent(getActivity(), TermosDeUsoActivity.class)));
 
 		return view;
 	}

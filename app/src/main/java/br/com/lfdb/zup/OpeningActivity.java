@@ -1,25 +1,24 @@
 package br.com.lfdb.zup;
 
-import java.util.Arrays;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import br.com.lfdb.zup.service.LoginService;
-import br.com.lfdb.zup.util.FontUtils;
-import br.com.lfdb.zup.widget.ImageResourcePagerAdapter;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.viewpagerindicator.IconPageIndicator;
 import com.viewpagerindicator.PageIndicator;
+
+import java.util.Arrays;
+
+import br.com.lfdb.zup.service.LoginService;
+import br.com.lfdb.zup.util.FontUtils;
+import br.com.lfdb.zup.widget.ImageResourcePagerAdapter;
 
 public class OpeningActivity extends FragmentActivity {
 	
@@ -48,31 +47,18 @@ public class OpeningActivity extends FragmentActivity {
 		
 		TextView linkPular = (TextView) findViewById(R.id.linkPular);
 		linkPular.setTypeface(FontUtils.getBold(this));
-		linkPular.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				startActivity(new Intent(OpeningActivity.this, MainActivity.class));
-				finish();
-			}			
-		});
+		linkPular.setOnClickListener(v -> {
+            startActivity(new Intent(OpeningActivity.this, MainActivity.class));
+            finish();
+        });
 		
 		TextView botaoCadastrar = (TextView) findViewById(R.id.botaoCadastrar);
 		botaoCadastrar.setTypeface(FontUtils.getRegular(this));
-		botaoCadastrar.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				startActivityForResult(new Intent(OpeningActivity.this, CadastroActivity.class), REGISTER_REQUEST);
-			}			
-		});
+		botaoCadastrar.setOnClickListener(v -> startActivityForResult(new Intent(OpeningActivity.this, CadastroActivity.class), REGISTER_REQUEST));
 		
 		TextView botaoLogin = (TextView) findViewById(R.id.botaoLogin);
 		botaoLogin.setTypeface(FontUtils.getRegular(this));
-		botaoLogin.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				startActivityForResult(new Intent(OpeningActivity.this, LoginActivity.class), LOGIN_REQUEST);
-			}			
-		});
+		botaoLogin.setOnClickListener(v -> startActivityForResult(new Intent(OpeningActivity.this, LoginActivity.class), LOGIN_REQUEST));
 
         if (checkPlayServices()) {
             if (new LoginService().usuarioLogado(this)) {

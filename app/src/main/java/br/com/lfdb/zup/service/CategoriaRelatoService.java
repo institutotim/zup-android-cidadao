@@ -22,7 +22,7 @@ public class CategoriaRelatoService {
 	public List<CategoriaRelato.Status> getStatus(Context context, long categoriaId) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String raw = prefs.getString("reports", "");
-		List<CategoriaRelato.Status> status = new ArrayList<CategoriaRelato.Status>();
+		List<CategoriaRelato.Status> status = new ArrayList<>();
 
 		if (raw.isEmpty()) {
 			return status;
@@ -119,7 +119,7 @@ public class CategoriaRelatoService {
 		}
 		
 		try {
-			List<CategoriaRelato> categorias = new ArrayList<CategoriaRelato>();
+			List<CategoriaRelato> categorias = new ArrayList<>();
 			JSONArray array = new JSONObject(raw).getJSONArray("categories");
 			for (int i = 0; i < array.length(); i++) {
 				JSONObject obj = array.getJSONObject(i);
@@ -145,7 +145,7 @@ public class CategoriaRelatoService {
 	}
 
     private ArrayList<CategoriaInventario> extrairCategoriasInventario(Context context, JSONArray array) throws JSONException {
-        ArrayList<CategoriaInventario> categorias = new ArrayList<CategoriaInventario>();
+        ArrayList<CategoriaInventario> categorias = new ArrayList<>();
 
         CategoriaInventarioService service = new CategoriaInventarioService();
         for (int i = 0; i < array.length(); i++) {
@@ -156,7 +156,7 @@ public class CategoriaRelatoService {
     }
 	
 	private ArrayList<CategoriaRelato.Status> extrairStatus(JSONArray lista) throws JSONException {
-		ArrayList<CategoriaRelato.Status> status = new ArrayList<CategoriaRelato.Status>();
+		ArrayList<CategoriaRelato.Status> status = new ArrayList<>();
 		for (int i = 0; i < lista.length(); i++) {
 			JSONObject obj = lista.getJSONObject(i);
 			CategoriaRelato.Status s = new CategoriaRelato.Status();

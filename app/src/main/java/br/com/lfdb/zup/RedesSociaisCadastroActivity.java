@@ -27,23 +27,17 @@ public class RedesSociaisCadastroActivity extends Activity implements View.OnCli
 
 		TextView botaoVoltar = (TextView) findViewById(R.id.botaoVoltar);
 		botaoVoltar.setTypeface(FontUtils.getRegular(this));
-		botaoVoltar.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				setResult(Activity.RESULT_CANCELED);
-				finish();
-			}
-		});
+		botaoVoltar.setOnClickListener(v -> {
+            setResult(Activity.RESULT_CANCELED);
+            finish();
+        });
 
 		TextView linkPular = (TextView) findViewById(R.id.linkPular);
 		linkPular.setTypeface(FontUtils.getBold(this));
-		linkPular.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				setResult(Activity.RESULT_OK);
-				finish();
-			}
-		});
+		linkPular.setOnClickListener(v -> {
+            setResult(Activity.RESULT_OK);
+            finish();
+        });
 
 		ImageButton botaoFacebook = (ImageButton) findViewById(R.id.botao_logar_facebook);
 		botaoFacebook.setOnClickListener(this);

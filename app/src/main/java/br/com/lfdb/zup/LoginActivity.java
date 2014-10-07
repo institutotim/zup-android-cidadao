@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -35,8 +34,7 @@ import br.com.lfdb.zup.util.FontUtils;
 
 public class LoginActivity extends Activity implements View.OnClickListener {
 
-	private TextView botaoCancelar;
-	private TextView botaoEntrar;
+    private TextView botaoEntrar;
 	private EditText campoSenha;
 	private EditText campoEmail;
 	private TextView linkEsqueciSenha;
@@ -51,31 +49,23 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 		linkEsqueciSenha = (TextView) findViewById(R.id.linkEsqueciSenha);
 		linkEsqueciSenha.setTypeface(FontUtils.getBold(this));
 		linkEsqueciSenha.setOnClickListener(this);
-		
-		botaoCancelar = (TextView) findViewById(R.id.botaoCancelar);
+
+        TextView botaoCancelar = (TextView) findViewById(R.id.botaoCancelar);
 		botaoCancelar.setTypeface(FontUtils.getRegular(this));
-		botaoCancelar.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				finish();				
-			}
-		});
+		botaoCancelar.setOnClickListener(v -> finish());
 		botaoEntrar = (TextView) findViewById(R.id.botaoEntrar);
 		botaoEntrar.setTypeface(FontUtils.getRegular(this));
 		botaoEntrar.setOnClickListener(this);
 		
 		campoSenha = (EditText) findViewById(R.id.campoSenha);
 		campoSenha.setTypeface(FontUtils.getLight(this));
-        campoSenha.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                boolean handled = false;
-                if (actionId == EditorInfo.IME_ACTION_GO) {
-                    new Tasker().execute();
-                    handled = true;
-                }
-                return handled;
+        campoSenha.setOnEditorActionListener((v, actionId, event) -> {
+            boolean handled = false;
+            if (actionId == EditorInfo.IME_ACTION_GO) {
+                new Tasker().execute();
+                handled = true;
             }
+            return handled;
         });
 		
 		campoEmail = (EditText) findViewById(R.id.campoEmail);
@@ -109,7 +99,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 			try {
 				HttpClient client = new OkApacheClient();
 				HttpPost post = new HttpPost(Constantes.REST_URL + "/authenticate");
-				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+				List<NameValuePair> nameValuePairs = new ArrayList<>(2);
 				nameValuePairs.add(new BasicNameValuePair("email", campoEmail.getText().toString()));
 				nameValuePairs.add(new BasicNameValuePair("password", campoSenha.getText().toString()));
 				post.setEntity(new UrlEncodedFormEntity(nameValuePairs));

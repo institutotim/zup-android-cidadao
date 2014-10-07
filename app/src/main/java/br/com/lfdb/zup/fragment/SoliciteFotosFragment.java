@@ -2,7 +2,6 @@ package br.com.lfdb.zup.fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -40,7 +39,7 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
     private Uri imagemTemporaria;
     private ImageView fotoFrame;
     private LinearLayout containerFotos;
-    private List<String> listaFotos = new ArrayList<String>();
+    private List<String> listaFotos = new ArrayList<>();
 
     private View temp = null;
 
@@ -100,30 +99,22 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
         if (listaFotos != null && listaFotos.size() == 3) {
             new AlertDialog.Builder(getActivity())
                     .setMessage("É possível adicionar apenas 3 fotos para um relato")
-                    .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
+                    .setNeutralButton("Ok", (dialog, which) -> dialog.dismiss())
                     .show();
             return;
         }
 
-        new AlertDialog.Builder(getActivity()).setItems(R.array.foto_menu, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int item) {
-                switch (item) {
-                    case 0:
-                        selecionarFoto();
-                        break;
-                    case 1:
-                        tirarFoto();
-                        break;
-                    case 2:
-                        dialog.dismiss();
-                        break;
-                }
+        new AlertDialog.Builder(getActivity()).setItems(R.array.foto_menu, (dialog, item) -> {
+            switch (item) {
+                case 0:
+                    selecionarFoto();
+                    break;
+                case 1:
+                    tirarFoto();
+                    break;
+                case 2:
+                    dialog.dismiss();
+                    break;
             }
         }).show();
     }
@@ -244,34 +235,25 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
         ImageView btn = new ImageView(getActivity());
         btn.setClickable(true);
         btn.setImageResource(R.drawable.btn_editar_foto);
-        btn.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(final View v) {
-                new AlertDialog.Builder(getActivity()).setItems(R.array.foto_menu_editar, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int item) {
-                        switch (item) {
-                            case 0:
-                                removerFoto((View) v.getParent());
-                                fotoButton.setEnabled(true);
-                                break;
-                            case 1:
-                                temp = (View) v.getParent();
-                                selecionarFoto();
-                                break;
-                            case 2:
-                                temp = (View) v.getParent();
-                                tirarFoto();
-                                break;
-                            case 3:
-                                dialog.dismiss();
-                                break;
-                        }
-                    }
-                }).show();
+        btn.setOnClickListener(v -> new AlertDialog.Builder(getActivity()).setItems(R.array.foto_menu_editar, (dialog, item) -> {
+            switch (item) {
+                case 0:
+                    removerFoto((View) v.getParent());
+                    fotoButton.setEnabled(true);
+                    break;
+                case 1:
+                    temp = (View) v.getParent();
+                    selecionarFoto();
+                    break;
+                case 2:
+                    temp = (View) v.getParent();
+                    tirarFoto();
+                    break;
+                case 3:
+                    dialog.dismiss();
+                    break;
             }
-        });
+        }).show());
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
         params.addRule(RelativeLayout.ALIGN_TOP, imgView.getId());

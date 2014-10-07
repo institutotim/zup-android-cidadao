@@ -12,7 +12,7 @@ public class DateUtils {
 	}
 	
 	public static Date parseRFC3339Date(String datestring) throws Exception {
-		Date d = new Date();
+		Date d;
 
 		if (datestring.endsWith("Z")) {
 			try {

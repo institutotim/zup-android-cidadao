@@ -8,8 +8,8 @@ import java.util.Map;
 
 public class BitmapUtils {
 
-    private static Map<String, Bitmap> reportBitmaps = new HashMap<String, Bitmap>();
-    private static Map<String, Bitmap> inventoryBitmaps = new HashMap<String, Bitmap>();
+    private static Map<String, Bitmap> reportBitmaps = new HashMap<>();
+    private static Map<String, Bitmap> inventoryBitmaps = new HashMap<>();
 
     public static Bitmap getReportMarker(Activity activity, String filename) {
         if (reportBitmaps.containsKey(filename)) {

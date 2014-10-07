@@ -90,12 +90,9 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 
         TextView botaoCancelar = (TextView) findViewById(R.id.botaoCancelar);
         botaoCancelar.setTypeface(FontUtils.getRegular(this));
-        botaoCancelar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setResult(Activity.RESULT_CANCELED);
-                finish();
-            }
+        botaoCancelar.setOnClickListener(v -> {
+            setResult(Activity.RESULT_CANCELED);
+            finish();
         });
 
         if (savedInstanceState != null) {
@@ -285,35 +282,20 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
     private void alertarItemInventario() {
         new AlertDialog.Builder(this)
                 .setMessage("O local do relato não foi selecionado corretamente")
-                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                }).show();
+                .setNeutralButton("OK", (dialog, which) -> dialog.dismiss()).show();
     }
 
     private void alertarTamanhoComentario() {
         new AlertDialog.Builder(this)
                 .setMessage("O comentário deve ter menos de 800 caracteres")
-                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                }).show();
+                .setNeutralButton("OK", (dialog, which) -> dialog.dismiss()).show();
     }
 
     @SuppressLint("NewApi")
     private void enviarSolicitacao() {
         if (!NetworkUtils.isInternetPresent(this)) {
             new AlertDialog.Builder(this).setMessage("Sua conexão com a Internet encontra-se indisponível. Verifique a conexão e tente novamente")
-                    .setNeutralButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).show();
+                    .setNeutralButton("OK", (dialog, which) -> dialog.dismiss()).show();
             return;
         }
 
@@ -440,7 +422,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 
         item.setComentario(solicitacao.getComentario());
         item.setData(DateUtils.getIntervaloTempo(new Date()));
-        item.setFotos(new ArrayList<String>());
+        item.setFotos(new ArrayList<>());
         JSONArray fotos = json.getJSONArray("images");
         for (int j = 0; j < fotos.length(); j++) {
             item.getFotos().add(ViewUtils.isMdpiOrLdpi(this) ? fotos.getJSONObject(j).getString("low") : fotos.getJSONObject(j).getString("high"));

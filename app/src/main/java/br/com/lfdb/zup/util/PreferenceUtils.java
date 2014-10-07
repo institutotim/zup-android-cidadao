@@ -12,7 +12,7 @@ public class PreferenceUtils {
 
 	public static void salvarBusca(Context context, BuscaExplore busca) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		prefs.edit().putString("busca", new Gson().toJson(busca)).commit();
+		prefs.edit().putString("busca", new Gson().toJson(busca)).apply();
 	}
 	
 	public static BuscaExplore obterBuscaExplore(Context context) {
@@ -22,7 +22,7 @@ public class PreferenceUtils {
 	
 	public static void salvarBusca(Context context, BuscaEstatisticas busca) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		prefs.edit().putString("busca", new Gson().toJson(busca)).commit();
+		prefs.edit().putString("busca", new Gson().toJson(busca)).apply();
 	}
 	
 	public static BuscaEstatisticas obterBuscaEstatisticas(Context context) {

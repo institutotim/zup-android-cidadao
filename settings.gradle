@@ -1,1 +1,1 @@
-include ':app', ':lib-androidviewpagerindicator', ':lib-facebooksdk', ':lib-progresswheels', ':lib-simplecropimage'
+include ':app', ':lib-androidviewpagerindicator', ':lib-progresswheels', ':lib-simplecropimage'

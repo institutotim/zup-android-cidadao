@@ -69,18 +69,18 @@ public class SocialUtils {
     private static void logoutFacebook(Activity context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         prefs.edit().remove(SocialConstants.PREF_FACEBOOK_ACCESS_TOKEN).remove(SocialConstants.PREF_FACEBOOK_EXPIRES_IN)
-                .remove(SocialConstants.PREF_LOGGED_SOCIAL).commit();
+                .remove(SocialConstants.PREF_LOGGED_SOCIAL).apply();
     }
 
     private static void logoutGooglePlus(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefs.edit().remove(SocialConstants.PREF_LOGGED_SOCIAL).commit();
+        prefs.edit().remove(SocialConstants.PREF_LOGGED_SOCIAL).apply();
     }
 
     private static void logoutTwitter(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         prefs.edit().remove(SocialConstants.PREF_TWITTER_AUTH_TOKEN).remove(SocialConstants.PREF_TWITTER_AUTH_TOKEN_SECRET)
-                .remove(SocialConstants.PREF_LOGGED_SOCIAL).commit();
+                .remove(SocialConstants.PREF_LOGGED_SOCIAL).apply();
 
     }
 
@@ -99,12 +99,7 @@ public class SocialUtils {
                     twitter.updateStatus(message);
                 } catch (TwitterException e) {
                     Log.e("Social", e.getMessage(), e);
-                    context.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(context, "Falha ao publicar tweet", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    context.runOnUiThread(() -> Toast.makeText(context, "Falha ao publicar tweet", Toast.LENGTH_SHORT).show());
                 }
             }
         }.start();
@@ -115,36 +110,30 @@ public class SocialUtils {
         com.facebook.AccessToken token = com.facebook.AccessToken.createFromExistingAccessToken(prefs.getString(SocialConstants.PREF_FACEBOOK_ACCESS_TOKEN, ""),
                 new Date(prefs.getLong(SocialConstants.PREF_FACEBOOK_EXPIRES_IN, 0)), null, AccessTokenSource.CLIENT_TOKEN,
                 Arrays.asList("basic_info", "email", "publish_actions"));
-        Session.openActiveSessionWithAccessToken(context, token, new Session.StatusCallback() {
+        Session.openActiveSessionWithAccessToken(context, token, (session, state, exception) -> {
+            if (session.isOpened()) {
 
-            @Override
-            public void call(Session session, SessionState state, Exception exception) {
-                if (session.isOpened()) {
+                Bundle postParams = new Bundle();
+                postParams.putString("message", mensagem);
 
-                    Bundle postParams = new Bundle();
-                    postParams.putString("message", mensagem);
+                Request.Callback callback = response -> {
+                    JSONObject graphResponse = response.getGraphObject().getInnerJSONObject();
+                    String postId = null;
+                    try {
+                        postId = graphResponse.getString("id");
+                    } catch (JSONException e) {
+                        Log.e("Social Me", "JSON error " + e.getMessage());
+                    }
+                    FacebookRequestError error = response.getError();
+                    if (error != null) {
+                        Toast.makeText(context, error.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                };
 
-                    Request.Callback callback = new Request.Callback() {
-                        public void onCompleted(Response response) {
-                            JSONObject graphResponse = response.getGraphObject().getInnerJSONObject();
-                            String postId = null;
-                            try {
-                                postId = graphResponse.getString("id");
-                            } catch (JSONException e) {
-                                Log.e("Social Me", "JSON error " + e.getMessage());
-                            }
-                            FacebookRequestError error = response.getError();
-                            if (error != null) {
-                                Toast.makeText(context, error.getErrorMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    };
+                Request request = new Request(session, "me/feed", postParams, HttpMethod.POST, callback);
 
-                    Request request = new Request(session, "me/feed", postParams, HttpMethod.POST, callback);
-
-                    RequestAsyncTask task = new RequestAsyncTask(request);
-                    task.execute();
-                }
+                RequestAsyncTask task = new RequestAsyncTask(request);
+                task.execute();
             }
         });
     }

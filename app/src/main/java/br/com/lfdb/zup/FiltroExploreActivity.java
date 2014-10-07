@@ -34,8 +34,8 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 	private LinearLayout opcoes;
 	private SeekBar seekBar;
 	
-	private List<CategoriaInventario> inventarios = new ArrayList<CategoriaInventario>();
-	private List<CategoriaRelato> relatos = new ArrayList<CategoriaRelato>();
+	private List<CategoriaInventario> inventarios = new ArrayList<>();
+	private List<CategoriaRelato> relatos = new ArrayList<>();
 
 	private BuscaExplore busca;
 
@@ -305,7 +305,7 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 	
 	private void popularListStatus() {
 		CategoriaRelatoService service = new CategoriaRelatoService();
-		List<CategoriaRelato.Status> status = new ArrayList<CategoriaRelato.Status>();
+		List<CategoriaRelato.Status> status = new ArrayList<>();
 		for (CategoriaRelato categoria : relatos) {
 			status.addAll(service.getStatus(this, categoria.getId()));
 		}
@@ -327,7 +327,7 @@ public class FiltroExploreActivity extends Activity implements View.OnClickListe
 			busca.setStatus(null);
 		}
 		
-		Set<Long> ids = new HashSet<Long>();
+		Set<Long> ids = new HashSet<>();
 		for (CategoriaRelato.Status s : status) {
 			if (!ids.contains(s.getId())) {
 				tv = (TextView) inflater.inflate(R.layout.status_textview, opcoes, false);

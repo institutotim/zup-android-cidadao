@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.InflateException;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -100,8 +98,8 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
 
     private double latitudePonto = 0.0, longitudePonto = 0.0;
 
-    private Set<Object> itens = new HashSet<Object>();
-    private Map<Marker, Object> marcadores = new HashMap<Marker, Object>();
+    private Set<Object> itens = new HashSet<>();
+    private Map<Marker, Object> marcadores = new HashMap<>();
 
     private long raio = 0l;
 
@@ -158,24 +156,16 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
         autoCompView.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, ExploreFragment.class));
         autoCompView.setTypeface(FontUtils.getRegular(getActivity()));
         autoCompView.setOnItemClickListener(this);
-        autoCompView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                boolean handled = false;
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    realizarBuscaAutocomplete(v.getText().toString());
-                    ViewUtils.hideKeyboard(getActivity(), v);
-                    handled = true;
-                }
-                return handled;
+        autoCompView.setOnEditorActionListener((v, actionId, event) -> {
+            boolean handled = false;
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                realizarBuscaAutocomplete(v.getText().toString());
+                ViewUtils.hideKeyboard(getActivity(), v);
+                handled = true;
             }
+            return handled;
         });
-        view.findViewById(R.id.clean).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                autoCompView.setText("");
-            }
-        });
+        view.findViewById(R.id.clean).setOnClickListener(v -> autoCompView.setText(""));
 
         return view;
     }
@@ -343,7 +333,7 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
 
     private class MarkerRetriever extends AsyncTask<Void, ItemInventario, Void> {
 
-        private List<ItemInventario> itensInventario = new CopyOnWriteArrayList<ItemInventario>();
+        private List<ItemInventario> itensInventario = new CopyOnWriteArrayList<>();
 
         private Request request;
 
@@ -355,33 +345,18 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
 
         @Override
         protected void onPreExecute() {
-            progressBar.post(new Runnable() {
-                @Override
-                public void run() {
-                    progressBar.setVisibility(View.VISIBLE);
-                }
-            });
+            progressBar.post(() -> progressBar.setVisibility(View.VISIBLE));
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            progressBar.post(new Runnable() {
-                @Override
-                public void run() {
-                    progressBar.setVisibility(View.GONE);
-                }
-            });
+            progressBar.post(() -> progressBar.setVisibility(View.GONE));
         }
 
         @Override
         protected void onCancelled() {
             if (get != null) get.abort();
-            progressBar.post(new Runnable() {
-                @Override
-                public void run() {
-                    progressBar.setVisibility(View.GONE);
-                }
-            });
+            progressBar.post(() -> progressBar.setVisibility(View.GONE));
             Log.d("ZUP", "Request cancelled");
         }
 

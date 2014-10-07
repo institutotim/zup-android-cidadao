@@ -1,22 +1,10 @@
 package br.com.lfdb.zup.fragment;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -36,11 +24,21 @@ import android.widget.Toast;
 import com.google.common.collect.Lists;
 import com.squareup.okhttp.apache.OkApacheClient;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import br.com.lfdb.zup.EditarContaActivity;
 import br.com.lfdb.zup.OpeningActivity;
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SolicitacaoDetalheActivity;
-import br.com.lfdb.zup.widget.SolicitacaoListItemAdapter;
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.domain.SolicitacaoListItem;
 import br.com.lfdb.zup.domain.Usuario;
@@ -48,6 +46,7 @@ import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.service.UsuarioService;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.ImageUtils;
+import br.com.lfdb.zup.widget.SolicitacaoListItemAdapter;
 
 public class MinhaContaFragment extends Fragment implements AdapterView.OnItemClickListener,
         AbsListView.OnScrollListener {
@@ -63,7 +62,7 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
     private boolean shouldContinueLoading = true;
     private String lastResult = "";
 
-    List<SolicitacaoListItem> listaSolicitacoes = new ArrayList<SolicitacaoListItem>();
+    List<SolicitacaoListItem> listaSolicitacoes = new ArrayList<>();
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -71,44 +70,23 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 
         TextView botaoSair = (TextView) view.findViewById(R.id.botaoSair);
 		botaoSair.setTypeface(FontUtils.getRegular(getActivity()));
-		botaoSair.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                new AlertDialog.Builder(getActivity())
-                        .setMessage(R.string.deseja_realmente_sair_da_sua_conta)
-                        .setPositiveButton(R.string.sim, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                new LoginService().registrarLogout(getActivity());
-                                startActivity(new Intent(getActivity(), OpeningActivity.class));
-                                getActivity().finish();
-                            }
-                        })
-                        .setNegativeButton(R.string.nao, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .show();
-
-            }
-        });
+		botaoSair.setOnClickListener(v -> new AlertDialog.Builder(getActivity())
+                .setMessage(R.string.deseja_realmente_sair_da_sua_conta)
+                .setPositiveButton(R.string.sim, (dialog, which) -> {
+                    new LoginService().registrarLogout(getActivity());
+                    startActivity(new Intent(getActivity(), OpeningActivity.class));
+                    getActivity().finish();
+                })
+                .setNegativeButton(R.string.nao, (dialog, which) -> dialog.dismiss())
+                .show());
 
         TextView botaoEditar = (TextView) view.findViewById(R.id.botaoEditar);
 		botaoEditar.setTypeface(FontUtils.getRegular(getActivity()));
-		botaoEditar.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                startActivityForResult(new Intent(getActivity(), EditarContaActivity.class), REQUEST_EDIT_USER);
-            }
-        });
+		botaoEditar.setOnClickListener(v -> startActivityForResult(new Intent(getActivity(), EditarContaActivity.class), REQUEST_EDIT_USER));
 		
 		((TextView) view.findViewById(R.id.instrucoes)).setTypeface(FontUtils.getBold(getActivity()));
 
-		List<SolicitacaoListItem> items = new ArrayList<SolicitacaoListItem>();
+		List<SolicitacaoListItem> items = new ArrayList<>();
 		
 		((TextView) view.findViewById(R.id.minhaConta)).setTypeface(FontUtils.getLight(getActivity()));
 		nomeUsuario = (TextView) view.findViewById(R.id.nomeUsuario);
@@ -296,7 +274,7 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
                         JSONObject obj = new JSONObject(result);
                         setReportCount(obj.getInt("total_reports_by_user"));
                         JSONArray array = obj.getJSONArray("reports");
-                        List<SolicitacaoListItem> itens = new ArrayList<SolicitacaoListItem>();
+                        List<SolicitacaoListItem> itens = new ArrayList<>();
                         for (int i = 0; i < array.length(); i++) {
                             itens.add(SolicitacaoListItemAdapter.adapt(getActivity(), array.getJSONObject(i)));
                         }

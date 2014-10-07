@@ -42,7 +42,7 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 	private SolicitacoesFragment solFragment;
 	
 	private ArrayList<SolicitacaoListItem> relatos;
-	private HashMap<String, HashMap<String, String>> inventoryData = new HashMap<String, HashMap<String, String>>();
+	private HashMap<String, HashMap<String, String>> inventoryData = new HashMap<>();
 	
 	private ItemInventario item;
 	private TextView solicitacoes;
@@ -62,13 +62,7 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 		
 		TextView voltar = (TextView) findViewById(R.id.botaoVoltar);
 		voltar.setTypeface(FontUtils.getRegular(this));
-		voltar.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				finish();				
-			}
-		});
+		voltar.setOnClickListener(v -> finish());
 
         TextView informacoes = (TextView) findViewById(R.id.botaoInformacoes);
 		informacoes.setTypeface(FontUtils.getLight(this));
@@ -204,14 +198,14 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 		
 		private void setRelatos(String json) throws Exception {
 			JSONArray array = new JSONObject(json).getJSONArray("reports");
-			relatos = new ArrayList<SolicitacaoListItem>();
+			relatos = new ArrayList<>();
 			for (int i = 0; i < array.length(); i++) {
 				relatos.add(SolicitacaoListItemAdapter.adapt(DetalheMapaActivity.this, array.getJSONObject(i)));
 			}
 		}
 		
 		private void montarHashMap(String categoria, String itemInventario) throws Exception {
-			List<JSONObject> dados = new ArrayList<JSONObject>();
+			List<JSONObject> dados = new ArrayList<>();
 
             JSONArray data = new JSONObject(itemInventario).getJSONObject("item").getJSONArray("data");
             for (int i = 0; i < data.length(); i++) {
@@ -220,14 +214,14 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 
 			JSONArray sections = new JSONObject(categoria).getJSONObject("category").getJSONArray("sections");
 			for (int i = 0; i < sections.length(); i++) {
-                List<JSONObject> campos = new ArrayList<JSONObject>();
+                List<JSONObject> campos = new ArrayList<>();
                 String sectionName = sections.getJSONObject(i).getString("title");
 				JSONArray fields = sections.getJSONObject(i).getJSONArray("fields");
 				for (int j = 0; j < fields.length(); j++) {
 					campos.add(fields.getJSONObject(j));
 				}
 
-                HashMap<String, String> camposDinamicos = new HashMap<String, String>();
+                HashMap<String, String> camposDinamicos = new HashMap<>();
                 for (JSONObject campo : campos) {
                     for (JSONObject dado : dados) {
                         if (dado.getLong("inventory_field_id") == campo.getLong("id")) {

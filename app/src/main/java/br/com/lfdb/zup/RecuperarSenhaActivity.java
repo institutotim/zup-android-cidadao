@@ -1,17 +1,5 @@
 package br.com.lfdb.zup;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
@@ -24,14 +12,24 @@ import android.widget.Toast;
 
 import com.squareup.okhttp.apache.OkApacheClient;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.util.FontUtils;
 
 public class RecuperarSenhaActivity extends Activity implements View.OnClickListener {
 
-	private TextView botaoVoltar;
-	private TextView botaoEnviar;
-	private EditText campoEmail;
+    private EditText campoEmail;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,17 +37,12 @@ public class RecuperarSenhaActivity extends Activity implements View.OnClickList
 		setContentView(R.layout.activity_recuperar_senha);
 
 		((TextView) findViewById(R.id.esqueceuSenha)).setTypeface(FontUtils.getLight(this));
-		
-		botaoVoltar = (TextView) findViewById(R.id.botaoVoltar);
+
+        TextView botaoVoltar = (TextView) findViewById(R.id.botaoVoltar);
 		botaoVoltar.setTypeface(FontUtils.getRegular(this));
-		botaoVoltar.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				finish();				
-			}
-		});
-		
-		botaoEnviar = (TextView) findViewById(R.id.botaoEnviar);
+		botaoVoltar.setOnClickListener(v -> finish());
+
+        TextView botaoEnviar = (TextView) findViewById(R.id.botaoEnviar);
 		botaoEnviar.setTypeface(FontUtils.getRegular(this));
 		botaoEnviar.setOnClickListener(this);
 		
@@ -80,7 +73,7 @@ public class RecuperarSenhaActivity extends Activity implements View.OnClickList
 			try {
 				HttpClient client = new OkApacheClient();
 				HttpPut put = new HttpPut(Constantes.REST_URL + "/recover_password");
-				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+				List<NameValuePair> nameValuePairs = new ArrayList<>(1);
 				nameValuePairs.add(new BasicNameValuePair("email", campoEmail.getText().toString()));
 				put.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 				HttpResponse response = client.execute(put);

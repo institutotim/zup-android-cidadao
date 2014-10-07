@@ -1,8 +1,9 @@
-apply plugin: 'android'
+apply plugin: 'com.android.application'
+apply plugin: 'retrolambda'
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion '19.0.3'
+    compileSdkVersion 20
+    buildToolsVersion '20.0.0'
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/NOTICE'
@@ -12,7 +13,7 @@ android {
     }
     defaultConfig {
         minSdkVersion 10
-        targetSdkVersion 19
+        targetSdkVersion 20
         versionCode 1
         versionName "0.1 alpha"
     }
@@ -36,27 +37,35 @@ android {
             signingConfig signingConfigs.alpha
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:+'
-    compile 'com.google.android.gms:play-services:+'
-    compile 'oauth.signpost:signpost-core:1.2.+'
-    compile 'oauth.signpost:signpost-commonshttp4:1.2.+'
-    compile 'org.twitter4j:twitter4j-core:3.0.+'
-    compile 'com.squareup.okhttp:okhttp-apache:1.+'
-    compile 'com.google.guava:guava:16.+'
-    compile 'com.squareup.picasso:picasso:2.2.+'
+    compile 'com.android.support:support-v4:20.0.0'
+    compile 'com.google.android.gms:play-services:5.0.89'
+    compile 'oauth.signpost:signpost-core:1.2.1.2'
+    compile 'oauth.signpost:signpost-commonshttp4:1.2.1.2'
+    compile 'org.twitter4j:twitter4j-core:4.0.2'
+    compile 'com.squareup.okhttp:okhttp:2.0.0'
+    compile 'com.squareup.okhttp:okhttp-apache:2.0.0'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.0.0'
+    compile 'com.google.guava:guava:18.0'
+    compile 'com.squareup.picasso:picasso:2.3.4'
     compile 'ch.acra:acra:4.5.0'
-    compile 'org.apache.httpcomponents:httpcore:4.3.+'
-    compile 'org.apache.httpcomponents:httpclient:4.3.+'
-    compile 'org.apache.httpcomponents:httpmime:4.3.+'
-    compile 'org.apache.james:apache-mime4j-core:0.7.+'
-    compile 'com.google.code.gson:gson:2.2.+'
-    compile 'org.apache.commons:commons-lang3:3.+'
+    compile 'org.apache.httpcomponents:httpcore:4.3.2'
+    compile 'org.apache.httpcomponents:httpclient:4.3.5'
+    compile 'org.apache.httpcomponents:httpmime:4.3.5'
+    compile 'org.apache.james:apache-mime4j-core:0.7.2'
+    compile 'com.google.code.gson:gson:2.3'
+    compile 'org.apache.commons:commons-lang3:3.3.2'
+    compile ('fr.avianey:facebook-android-api:3.18.0') {
+        exclude module: 'support-v4'
+    }
     compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     compile project(':lib-simplecropimage')
     compile project(':lib-progresswheels')
-    compile project(':lib-facebooksdk')
     compile project(':lib-androidviewpagerindicator')
 }

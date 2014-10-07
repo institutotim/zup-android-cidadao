@@ -91,13 +91,7 @@ public class SolicitacaoDetalheActivity extends FragmentActivity {
 			botaoVoltar.setText(R.string.solicitaces_maiusculo);
 		}
 		botaoVoltar.setTypeface(FontUtils.getRegular(this));
-		botaoVoltar.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				finish();
-			}
-		});
+		botaoVoltar.setOnClickListener(v -> finish());
 
 		TextView indicadorStatus = (TextView) findViewById(R.id.indicadorStatus);
 		indicadorStatus.setTypeface(FontUtils.getBold(this));

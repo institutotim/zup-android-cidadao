@@ -15,7 +15,7 @@ public class GooglePlusAuth extends Activity {
         super.onCreate(savedInstanceState);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        prefs.edit().putString(SocialConstants.PREF_LOGGED_SOCIAL, "google").commit();
+        prefs.edit().putString(SocialConstants.PREF_LOGGED_SOCIAL, "google").apply();
         setResult(Activity.RESULT_OK);
         finish();
     }

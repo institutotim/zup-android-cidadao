@@ -93,7 +93,6 @@ public class FiltroEstatisticasActivity extends Activity implements View.OnClick
 			i.putExtra("busca", busca);
 			setResult(Activity.RESULT_OK, i);
 			finish();
-			return;
 		}
 	}
 	
@@ -134,7 +133,7 @@ public class FiltroEstatisticasActivity extends Activity implements View.OnClick
 			tv.setTag(categoria);
 			tv.setText(categoria.getNome());
 			tv.setOnClickListener(cliqueOpcao);
-			if (categoria.equals(busca.getCategoria())) {
+			if (busca.getCategoria().equals(categoria.getId())) {
 				tv.setTextColor(Color.parseColor("#2ab4dc"));
 			}
 			opcoes.addView(tv);

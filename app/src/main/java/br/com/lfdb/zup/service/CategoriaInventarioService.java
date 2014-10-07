@@ -55,7 +55,7 @@ public class CategoriaInventarioService {
 		}
 
 		try {
-			List<CategoriaInventario> categorias = new ArrayList<CategoriaInventario>();
+			List<CategoriaInventario> categorias = new ArrayList<>();
 			JSONArray array = new JSONObject(raw).getJSONArray("categories");
 			for (int i = 0; i < array.length(); i++) {
 				JSONObject obj = array.getJSONObject(i);
