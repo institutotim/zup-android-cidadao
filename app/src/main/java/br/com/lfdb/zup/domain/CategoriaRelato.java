@@ -2,6 +2,9 @@ package br.com.lfdb.zup.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import android.graphics.Color;
 
@@ -14,6 +17,8 @@ public class CategoriaRelato implements Serializable {
 	private String marcador;
 	private String nome;
     private ArrayList<CategoriaInventario> categoriasInventario;
+    private ArrayList<CategoriaRelato> subcategorias;
+    private CategoriaRelato categoriaMae;
 
 	private ArrayList<Status> status;
 	
@@ -80,7 +85,29 @@ public class CategoriaRelato implements Serializable {
 		this.nome = nome;
 	}
 
-	public static class Status implements Serializable {
+    public List<CategoriaRelato> getSubcategorias() {
+        if (subcategorias == null) return Collections.<CategoriaRelato>emptyList();
+        return subcategorias;
+    }
+
+    public void setSubcategorias(ArrayList<CategoriaRelato> subcategorias) {
+        this.subcategorias = subcategorias;
+    }
+
+    public void addSubcategoria(CategoriaRelato categoria) {
+        if (subcategorias == null) subcategorias = new ArrayList<>();
+        subcategorias.add(categoria);
+    }
+
+    public CategoriaRelato getCategoriaMae() {
+        return categoriaMae;
+    }
+
+    public void setCategoriaMae(CategoriaRelato categoriaMae) {
+        this.categoriaMae = categoriaMae;
+    }
+
+    public static class Status implements Serializable {
 		private long id;
 		private int cor;
 		private String nome;

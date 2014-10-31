@@ -41,26 +41,50 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    dexOptions {
+        preDexLibraries = false
+    }
+}
+
+afterEvaluate {
+    tasks.matching {
+        it.name.startsWith('dex')
+    }.each { dx ->
+        if (dx.additionalParameters == null) {
+            dx.additionalParameters = []
+        }
+        dx.additionalParameters += '--multi-dex'
+        dx.additionalParameters += "--main-dex-list=$projectDir/multidex.keep".toString()
+    }
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:21.0.0'
-    compile 'com.google.android.gms:play-services:6.1.11'
+    compile 'com.android.support:appcompat-v7:20.0.0'
+    compile 'com.google.android.gms:play-services:6.1.71'
     compile 'oauth.signpost:signpost-core:1.2.1.2'
-    compile 'oauth.signpost:signpost-commonshttp4:1.2.1.2'
+    compile 'org.apache.james:apache-mime4j-core:0.7.2'
+    compile 'com.google.code.gson:gson:2.3'
+    compile 'org.apache.commons:commons-lang3:3.3.2'
+    compile 'com.jakewharton:butterknife:6.0.0'
+    compile 'uk.co.chrisjenx:calligraphy:1.2.0'
     compile 'org.twitter4j:twitter4j-core:4.0.2'
     compile 'com.squareup.okhttp:okhttp:2.0.0'
     compile 'com.squareup.okhttp:okhttp-apache:2.0.0'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.0.0'
     compile 'com.google.guava:guava:18.0'
     compile 'com.squareup.picasso:picasso:2.3.4'
-    compile 'ch.acra:acra:4.5.0'
-    compile 'org.apache.httpcomponents:httpcore:4.3.2'
-    compile 'org.apache.httpcomponents:httpclient:4.3.5'
-    compile 'org.apache.httpcomponents:httpmime:4.3.5'
-    compile 'org.apache.james:apache-mime4j-core:0.7.2'
-    compile 'com.google.code.gson:gson:2.3'
-    compile 'org.apache.commons:commons-lang3:3.3.2'
+    compile ('oauth.signpost:signpost-commonshttp4:1.2.1.2') {
+        exclude module: 'httpclient'
+    }
+    compile ('ch.acra:acra:4.5.0') {
+        exclude module: 'json'
+    }
+    compile ('org.apache.httpcomponents:httpcore:4.3.2') {
+        exclude module: 'httpclient'
+    }
+    compile ('org.apache.httpcomponents:httpmime:4.3.5') {
+        exclude module: 'httpclient'
+    }
     compile('com.facebook.android:facebook-android-sdk:3.19.1') {
         exclude module: 'support-v4'
     }
@@ -69,5 +93,5 @@ dependencies {
     compile project(':lib-progresswheels')
     compile project(':lib-androidviewpagerindicator')
 
-    retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:1.6.2'
+    retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:1.7.0'
 }

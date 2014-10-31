@@ -55,6 +55,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import br.com.lfdb.zup.DetalheMapaActivity;
 import br.com.lfdb.zup.FiltroExploreActivity;
+import br.com.lfdb.zup.FiltroExploreNovoActivity;
 import br.com.lfdb.zup.MainActivity;
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SolicitacaoDetalheActivity;
@@ -194,13 +195,10 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
         TextView botaoFiltrar = (TextView) view.findViewById(R.id.botaoFiltrar);
         botaoFiltrar.setTypeface(FontUtils.getRegular(getActivity()));
-        botaoFiltrar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), FiltroExploreActivity.class);
-                intent.putExtra("busca", busca);
-                getActivity().startActivityForResult(intent, MainActivity.FILTRO_CODE);
-            }
+        botaoFiltrar.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), FiltroExploreNovoActivity.class);
+            intent.putExtra("busca", busca);
+            getActivity().startActivityForResult(intent, MainActivity.FILTRO_CODE);
         });
 
         progressBar = (ProgressBar) view.findViewById(R.id.loading);

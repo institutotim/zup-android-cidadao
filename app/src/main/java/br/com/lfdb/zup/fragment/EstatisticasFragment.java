@@ -50,12 +50,7 @@ public class EstatisticasFragment extends Fragment {
 		
 		TextView botaoFiltrar = (TextView) view.findViewById(R.id.botaoFiltrar);
 		botaoFiltrar.setTypeface(FontUtils.getRegular(getActivity()));
-		botaoFiltrar.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				getActivity().startActivityForResult(new Intent(getActivity(), FiltroEstatisticasActivity.class), REQUEST_FILTRO);
-			}
-		});
+		botaoFiltrar.setOnClickListener(v -> getActivity().startActivityForResult(new Intent(getActivity(), FiltroEstatisticasActivity.class), REQUEST_FILTRO));
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
             new Tasker().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

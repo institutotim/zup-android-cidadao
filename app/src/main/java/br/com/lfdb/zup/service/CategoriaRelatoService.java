@@ -135,7 +135,19 @@ public class CategoriaRelatoService {
 				categoria.setNome(obj.getString("title"));
 				categoria.setStatus(extrairStatus(obj.getJSONArray("statuses")));
                 categoria.setCategoriasInventario(extrairCategoriasInventario(context, obj.getJSONArray("inventory_categories")));
-				categorias.add(categoria);
+
+                if (!obj.isNull("parent_id")) {
+                    long id = obj.getLong("parent_id");
+                    for (CategoriaRelato c : categorias) {
+                        if (c.getId() == id) {
+                            categoria.setCategoriaMae(c);
+                            c.addSubcategoria(categoria);
+                            break;
+                        }
+                    }
+                } else {
+                    categorias.add(categoria);
+                }
 			}
 			return categorias;
 		} catch (Exception e) {

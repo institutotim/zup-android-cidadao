@@ -69,7 +69,7 @@
             android:name=".WarningActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".FiltroExploreActivity"
+            android:name=".FiltroExploreNovoActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".FiltroEstatisticasActivity"
