@@ -2,8 +2,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'retrolambda'
 
 android {
-    compileSdkVersion 20
-    buildToolsVersion '20.0.0'
+    compileSdkVersion 21
+    buildToolsVersion '21.1.0'
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/NOTICE'
@@ -13,9 +13,10 @@ android {
     }
     defaultConfig {
         minSdkVersion 10
-        targetSdkVersion 20
+        targetSdkVersion 21
         versionCode 1
-        versionName "0.1 alpha"
+        versionName '0.2'
+        multiDexEnabled = true
     }
     signingConfigs {
         alpha {
@@ -28,8 +29,7 @@ android {
     buildTypes {
         release {
             debuggable false
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            minifyEnabled false
             signingConfig signingConfigs.alpha
         }
         debug {
@@ -41,26 +41,12 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    dexOptions {
-        preDexLibraries = false
-    }
-}
-
-afterEvaluate {
-    tasks.matching {
-        it.name.startsWith('dex')
-    }.each { dx ->
-        if (dx.additionalParameters == null) {
-            dx.additionalParameters = []
-        }
-        dx.additionalParameters += '--multi-dex'
-        dx.additionalParameters += "--main-dex-list=$projectDir/multidex.keep".toString()
-    }
 }
 
 dependencies {
     compile 'com.android.support:appcompat-v7:20.0.0'
     compile 'com.google.android.gms:play-services:6.1.71'
+    compile 'com.android.support:multidex:1.0.0'
     compile 'oauth.signpost:signpost-core:1.2.1.2'
     compile 'org.apache.james:apache-mime4j-core:0.7.2'
     compile 'com.google.code.gson:gson:2.3'

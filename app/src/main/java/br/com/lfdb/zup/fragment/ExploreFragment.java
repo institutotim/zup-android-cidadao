@@ -54,7 +54,6 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import br.com.lfdb.zup.DetalheMapaActivity;
-import br.com.lfdb.zup.FiltroExploreActivity;
 import br.com.lfdb.zup.FiltroExploreNovoActivity;
 import br.com.lfdb.zup.MainActivity;
 import br.com.lfdb.zup.R;

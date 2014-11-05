@@ -1,14 +1,10 @@
 package br.com.lfdb.zup;
 
-import org.acra.ACRA;
-import org.acra.annotation.ReportsCrashes;
-
-import android.app.Application;
 import android.content.Context;
-import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 
-import br.com.lfdb.zup.util.SentrySender;
+import org.acra.annotation.ReportsCrashes;
+
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 @ReportsCrashes(formKey = "")
@@ -35,8 +31,4 @@ public class ZupApplication extends MultiDexApplication {
         return context;
     }
 
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-        MultiDex.install(this);
-    }
 }
