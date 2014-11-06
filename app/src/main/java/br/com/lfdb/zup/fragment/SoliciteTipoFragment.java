@@ -1,7 +1,5 @@
 package br.com.lfdb.zup.fragment;
 
-import java.util.List;
-
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -11,6 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.util.List;
+
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SoliciteActivity;
 import br.com.lfdb.zup.domain.CategoriaRelato;

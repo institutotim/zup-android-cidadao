@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -46,7 +47,7 @@ import br.com.lfdb.zup.fragment.SoliciteDetalhesFragment;
 import br.com.lfdb.zup.fragment.SoliciteFotosFragment;
 import br.com.lfdb.zup.fragment.SoliciteLocalFragment;
 import br.com.lfdb.zup.fragment.SolicitePontoFragment;
-import br.com.lfdb.zup.fragment.SoliciteTipoFragment;
+import br.com.lfdb.zup.fragment.SoliciteTipoNovoFragment;
 import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.service.UsuarioService;
 import br.com.lfdb.zup.social.util.SocialUtils;
@@ -54,6 +55,7 @@ import br.com.lfdb.zup.util.DateUtils;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.NetworkUtils;
 import br.com.lfdb.zup.util.ViewUtils;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class SoliciteActivity extends FragmentActivity implements View.OnClickListener {
 
@@ -64,7 +66,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 
     private TextView botaoAvancar;
 
-    private SoliciteTipoFragment tipoFragment;
+    private SoliciteTipoNovoFragment tipoFragment;
     private SoliciteFotosFragment fotosFragment;
     private SoliciteLocalFragment localFragment;
     private SolicitePontoFragment pontoFragment;
@@ -100,7 +102,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
             atual = new Gson().fromJson(savedInstanceState.getString("passo"), Passo.class);
             restoreFragmentsStates(savedInstanceState);
         } else {
-            tipoFragment = new SoliciteTipoFragment();
+            tipoFragment = new SoliciteTipoNovoFragment();
             getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, tipoFragment).commit();
         }
     }
@@ -446,7 +448,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
         if (bundle.getBoolean("tipo")) {
-            tipoFragment = new SoliciteTipoFragment();
+            tipoFragment = new SoliciteTipoNovoFragment();
             tipoFragment.setArguments(params);
             ft.add(R.id.fragments_place, tipoFragment);
 
@@ -497,5 +499,10 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         }
 
         ft.commitAllowingStateLoss();
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(new CalligraphyContextWrapper(newBase));
     }
 }

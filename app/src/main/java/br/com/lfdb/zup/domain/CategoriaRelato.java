@@ -1,12 +1,11 @@
 package br.com.lfdb.zup.domain;
 
+import android.graphics.Color;
+
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import android.graphics.Color;
 
 public class CategoriaRelato implements Serializable {
 
@@ -105,6 +104,16 @@ public class CategoriaRelato implements Serializable {
 
     public void setCategoriaMae(CategoriaRelato categoriaMae) {
         this.categoriaMae = categoriaMae;
+    }
+
+    public boolean isSubcategoria(CategoriaRelato categoria) {
+        if (subcategorias == null || subcategorias.isEmpty() || categoria == null) return false;
+
+        for (CategoriaRelato c : subcategorias) {
+            if (c.getId() == categoria.getId()) return true;
+        }
+
+        return false;
     }
 
     public static class Status implements Serializable {
