@@ -45,11 +45,22 @@ public class Updater {
 		JSONArray array = new JSONObject(json).getJSONArray("categories");
 		for (int i = 0; i < array.length(); i++) {
 			String markerUrl = array.getJSONObject(i).getJSONObject("marker").getJSONObject("default").getString("mobile");
-            if (!markerUrl.startsWith("http")) markerUrl = Constantes.REST_URL + markerUrl;
-			FileUtils.downloadImage(context, type, markerUrl);
+            FileUtils.downloadImage(context, type, markerUrl);
 			JSONObject iconUrl = array.getJSONObject(i).getJSONObject("icon").getJSONObject("default").getJSONObject("mobile");
 			FileUtils.downloadImage(context, type, iconUrl.getString("active").startsWith("http") ? iconUrl.getString("active") : Constantes.REST_URL + iconUrl.getString("active"));
             FileUtils.downloadImage(context, type, iconUrl.getString("disabled").startsWith("http") ? iconUrl.getString("disabled") : Constantes.REST_URL + iconUrl.getString("disabled"));
+
+            if (array.getJSONObject(i).has("subcategories")) {
+                for (int j = 0; j < array.getJSONObject(i).getJSONArray("subcategories").length(); j++) {
+                    JSONObject subcategory = array.getJSONObject(i).getJSONArray("subcategories").getJSONObject(j);
+
+                    String marker = subcategory.getJSONObject("marker").getJSONObject("default").getString("mobile");
+                    FileUtils.downloadImage(context, type, marker);
+                    JSONObject icon = subcategory.getJSONObject("icon").getJSONObject("default").getJSONObject("mobile");
+                    FileUtils.downloadImage(context, type, icon.getString("active").startsWith("http") ? icon.getString("active") : Constantes.REST_URL + iconUrl.getString("active"));
+                    FileUtils.downloadImage(context, type, icon.getString("disabled").startsWith("http") ? icon.getString("disabled") : Constantes.REST_URL + iconUrl.getString("disabled"));
+                }
+            }
 		}
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		prefs.edit().putString(type, json).apply();

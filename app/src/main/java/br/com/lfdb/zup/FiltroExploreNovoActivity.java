@@ -166,7 +166,7 @@ public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSee
                         }
 
                         if (todasSubCategoriasRemovidas) {
-                            imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeInativo(), 0.75f));
+                            imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", categoria.getIconeInativo(), 0.75f));
 
                             nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                             if (busca.getIdsCategoriaRelato().contains(sub.getCategoriaMae().getId()))
@@ -181,7 +181,7 @@ public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSee
                         nome.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
                         nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
 
-                        imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeAtivo(), 0.75f));
+                        imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", categoria.getIconeAtivo(), 0.75f));
 
                         desativarLabel();
                     }

@@ -2,6 +2,7 @@ package br.com.lfdb.zup;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -90,8 +91,8 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 
     @Override
 	public void onClick(View v) {
-		((TextView) findViewById(R.id.botaoInformacoes)).setTextColor(getResources().getColorStateList(R.color.text_previous_color));
-		((TextView) findViewById(R.id.botaoSolicitacoes)).setTextColor(getResources().getColorStateList(R.color.text_previous_color));
+		((TextView) findViewById(R.id.botaoInformacoes)).setTextColor(Color.parseColor("#808080"));
+		((TextView) findViewById(R.id.botaoSolicitacoes)).setTextColor(Color.parseColor("#808080"));
 		
 		switch (v.getId()) {
 		case R.id.botaoInformacoes:
@@ -104,7 +105,7 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 			return;
 		}
 		
-		((TextView) findViewById(v.getId())).setTextColor(getResources().getColorStateList(R.color.text_next_color));
+		((TextView) findViewById(v.getId())).setTextColor(Color.WHITE);
 	}
 	
 	private class Tasker extends AsyncTask<Void, Void, Boolean> implements DialogInterface.OnCancelListener {
