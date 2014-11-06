@@ -5,6 +5,9 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import com.squareup.okhttp.apache.OkApacheClient;
 
 import org.apache.http.HttpResponse;
@@ -35,13 +38,23 @@ public class Updater {
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				saveCategories(context, EntityUtils.toString(response.getEntity(), "UTF-8"), "inventory");
 			}
+
+            updateFeatureFlags(context);
 		} catch (Exception e) {
 			Log.e("ZUP", e.getMessage(), e);
             throw e;
 		}
 	}
-	
-	private void saveCategories(Context context, String json, String type) throws Exception {
+
+    private void updateFeatureFlags(Context context) throws Exception {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url(Constantes.REST_URL + "/feature_flags").build();
+        Response response = client.newCall(request).execute();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().putString("features", response.body().string()).apply();
+    }
+
+    private void saveCategories(Context context, String json, String type) throws Exception {
 		JSONArray array = new JSONObject(json).getJSONArray("categories");
 		for (int i = 0; i < array.length(); i++) {
 			String markerUrl = array.getJSONObject(i).getJSONObject("marker").getJSONObject("default").getString("mobile");
