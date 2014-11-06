@@ -29,7 +29,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.lfdb.zup.FiltroEstatisticasActivity;
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.domain.BuscaEstatisticas;
@@ -37,6 +36,7 @@ import br.com.lfdb.zup.domain.Estatistica;
 import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.ImageUtils;
+import br.com.lfdb.zup.FiltroEstatisticasNovoActivity;
 
 public class EstatisticasFragment extends Fragment {
 
@@ -50,7 +50,7 @@ public class EstatisticasFragment extends Fragment {
 		
 		TextView botaoFiltrar = (TextView) view.findViewById(R.id.botaoFiltrar);
 		botaoFiltrar.setTypeface(FontUtils.getRegular(getActivity()));
-		botaoFiltrar.setOnClickListener(v -> getActivity().startActivityForResult(new Intent(getActivity(), FiltroEstatisticasActivity.class), REQUEST_FILTRO));
+		botaoFiltrar.setOnClickListener(v -> getActivity().startActivityForResult(new Intent(getActivity(), FiltroEstatisticasNovoActivity.class), REQUEST_FILTRO));
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
             new Tasker().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

@@ -52,6 +52,12 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ((SoliciteActivity) getActivity()).setInfo(R.string.adicione_fotos);
 

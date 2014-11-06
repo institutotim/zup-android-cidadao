@@ -84,6 +84,12 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
 
     private boolean updateCameraUser = true;
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
+
     @SuppressLint("NewApi")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
