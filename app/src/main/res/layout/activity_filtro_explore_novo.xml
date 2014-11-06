@@ -79,13 +79,84 @@
         android:id="@+id/formInventario"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"></ScrollView>
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:paddingBottom="15dp"
+                android:paddingTop="15dp"
+                android:text="Ao ativar pontos de inventário, as\nsolicitações são desativadas" />
+
+            <LinearLayout
+                android:id="@+id/inventarioContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+        </LinearLayout>
+
+    </ScrollView>
 
     <ScrollView
         android:id="@+id/formPeriodo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"></ScrollView>
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <br.com.lfdb.zup.widget.SeekbarWithIntervals
+                android:id="@+id/seekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/separator1"
+                android:padding="20dp" />
+
+            <View
+                android:id="@+id/separator1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#ccc" />
+
+            <TextView
+                android:id="@+id/status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:clickable="true"
+                android:drawablePadding="15dp"
+                android:drawableRight="@drawable/seta_expandir"
+                android:padding="25dp"
+                android:text="@string/todos_os_status"
+                android:textSize="@dimen/navigation_text_size" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#ccc" />
+
+            <LinearLayout
+                android:id="@+id/opcoes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#fff"
+                android:orientation="vertical"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+    </ScrollView>
 
     <ScrollView
         android:id="@+id/formCategorias"
