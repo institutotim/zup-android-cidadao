@@ -2,6 +2,7 @@ ZUP Cidadão Android Client
 ==========================
 
 # Requirements to build
+* Oracle JDK 8
 * Android Studio Beta 0.9.2 (Canary Channel)
 * Android SDK Tools 23.0.5
 * Android SDK Platform Tools 21
