@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class FeatureService {
 
@@ -20,7 +21,7 @@ public class FeatureService {
     private JSONArray getPrefs() {
         try {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(staticContext);
-            return new JSONArray(prefs.getString("features", ""));
+            return new JSONObject(prefs.getString("features", "")).getJSONArray("flags");
         } catch (Exception e) {
             Log.e("ZUP", "Falha ao carregar configurações", e);
             return null;
