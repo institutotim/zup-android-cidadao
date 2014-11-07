@@ -48,6 +48,7 @@ import br.com.lfdb.zup.fragment.SoliciteFotosFragment;
 import br.com.lfdb.zup.fragment.SoliciteLocalFragment;
 import br.com.lfdb.zup.fragment.SolicitePontoFragment;
 import br.com.lfdb.zup.fragment.SoliciteTipoNovoFragment;
+import br.com.lfdb.zup.service.FeatureService;
 import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.service.UsuarioService;
 import br.com.lfdb.zup.social.util.SocialUtils;
@@ -383,14 +384,22 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         protected void onPostExecute(SolicitacaoListItem result) {
             dialog.dismiss();
             if (result != null) {
-                Toast.makeText(SoliciteActivity.this, "Solicitação enviada com sucesso!", Toast.LENGTH_LONG).show();
+                new AlertDialog.Builder(SoliciteActivity.this)
+                        .setTitle("Solicitação enviada")
+                        .setMessage("Você será avisado quando sua solicitação for atualizada\n" +
+                                String.format("Anote seu protocolo: %s", result.getProtocolo()) +
+                                (FeatureService.getInstance(SoliciteActivity.this).isShowResolutionTimeToClientsEnabled() ?
+                                String.format("\nPrazo de solução: %s", DateUtils.getString(result.getCategoria().getTempoResolucao())) : ""))
+                        .setNeutralButton("OK", (dialog1, which) -> {
+                            Intent i = new Intent(SoliciteActivity.this, SolicitacaoDetalheActivity.class);
+                            i.putExtra("solicitacao", result);
+                            startActivity(i);
 
-                Intent i = new Intent(SoliciteActivity.this, SolicitacaoDetalheActivity.class);
-                i.putExtra("solicitacao", result);
-                startActivity(i);
-
-                setResult(Activity.RESULT_OK);
-                finish();
+                            setResult(Activity.RESULT_OK);
+                            finish();
+                        })
+                        .setCancelable(false)
+                        .show();
             } else {
                 Toast.makeText(SoliciteActivity.this, "Falha no envio da solicitação", Toast.LENGTH_LONG).show();
             }

@@ -25,6 +25,7 @@ import java.util.List;
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SoliciteActivity;
 import br.com.lfdb.zup.domain.Solicitacao;
+import br.com.lfdb.zup.service.FeatureService;
 import br.com.lfdb.zup.util.FileUtils;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.ImageUtils;
@@ -110,19 +111,32 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
             return;
         }
 
-        new AlertDialog.Builder(getActivity()).setItems(R.array.foto_menu, (dialog, item) -> {
-            switch (item) {
-                case 0:
-                    selecionarFoto();
-                    break;
-                case 1:
-                    tirarFoto();
-                    break;
-                case 2:
-                    dialog.dismiss();
-                    break;
-            }
-        }).show();
+        if (FeatureService.getInstance(getActivity()).isAllowPhotoAlbumAccessEnabled()) {
+            new AlertDialog.Builder(getActivity()).setItems(R.array.foto_menu, (dialog, item) -> {
+                switch (item) {
+                    case 0:
+                        selecionarFoto();
+                        break;
+                    case 1:
+                        tirarFoto();
+                        break;
+                    case 2:
+                        dialog.dismiss();
+                        break;
+                }
+            }).show();
+        } else {
+            new AlertDialog.Builder(getActivity()).setItems(R.array.foto_menu_restricted, (dialog, item) -> {
+                switch (item) {
+                    case 0:
+                        tirarFoto();
+                        break;
+                    case 1:
+                        dialog.dismiss();
+                        break;
+                }
+            }).show();
+        }
     }
 
     private void selecionarFoto() {

@@ -89,4 +89,9 @@ public class FeatureService {
     public boolean isSocialNetworkFacebookEnabled() {
         return checkFeature("social_networks_facebook");
     }
+
+    public boolean isAnySocialEnabled() {
+        return checkFeature("social_networks_facebook") || checkFeature("social_networks_gplus") ||
+                checkFeature("social_networks_twitter");
+    }
 }

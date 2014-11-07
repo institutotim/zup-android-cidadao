@@ -36,6 +36,7 @@ import java.util.List;
 
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.domain.Usuario;
+import br.com.lfdb.zup.service.FeatureService;
 import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.service.UsuarioService;
 import br.com.lfdb.zup.social.SocialConstants;
@@ -112,6 +113,12 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 		
 		campoBairro = (EditText) findViewById(R.id.campoBairro);
 		campoBairro.setTypeface(FontUtils.getLight(this));
+
+        if (!FeatureService.getInstance(this).isAnySocialEnabled()) {
+            findViewById(R.id.textView1).setVisibility(View.GONE);
+            findViewById(R.id.social).setVisibility(View.GONE);
+            findViewById(R.id.info_label).setVisibility(View.GONE);
+        }
 		
 		preencherTela();
 	}
@@ -143,6 +150,16 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
             botaoGoogle.setImageResource(R.drawable.btn_logar_google_logoff);
         } else {
             botaoGoogle.setImageResource(R.drawable.btn_logar_google);
+        }
+
+        if (!FeatureService.getInstance(this).isSocialNetworkFacebookEnabled()) {
+            botaoFacebook.setVisibility(View.GONE);
+        }
+        if (!FeatureService.getInstance(this).isSocialNetworkTwitterEnabled()) {
+            botaoTwitter.setVisibility(View.GONE);
+        }
+        if (!FeatureService.getInstance(this).isSocialNetworkGPlusEnabled()) {
+            botaoGoogle.setVisibility(View.GONE);
         }
     }
 

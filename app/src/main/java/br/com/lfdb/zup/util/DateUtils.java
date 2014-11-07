@@ -58,4 +58,18 @@ public class DateUtils {
 		
 		return "há " + contador + " dias atrás";
 	}
+
+    public static String getString(long tempoEmSegundos) {
+        long var = tempoEmSegundos;
+        if (var < 60) return String.format("%d Segundos", var);
+
+        var /= 60;
+        if (var < 60) return String.format("%d Minutos", var);
+
+        var /= 60;
+        if (var < 60) return String.format("%d Horas", var);
+
+        var /= 24;
+        return String.format("%d Dias", var);
+    }
 }

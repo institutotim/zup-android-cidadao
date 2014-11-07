@@ -19,6 +19,9 @@ public class CategoriaRelato implements Serializable {
     private ArrayList<CategoriaRelato> subcategorias;
     private CategoriaRelato categoriaMae;
 
+    private long tempoResposta;
+    private long tempoResolucao;
+
 	private ArrayList<Status> status;
 	
 	public CategoriaRelato() {
@@ -114,6 +117,22 @@ public class CategoriaRelato implements Serializable {
         }
 
         return false;
+    }
+
+    public long getTempoResposta() {
+        return tempoResposta;
+    }
+
+    public void setTempoResposta(long tempoResposta) {
+        this.tempoResposta = tempoResposta;
+    }
+
+    public long getTempoResolucao() {
+        return tempoResolucao;
+    }
+
+    public void setTempoResolucao(long tempoResolucao) {
+        this.tempoResolucao = tempoResolucao;
     }
 
     public static class Status implements Serializable {

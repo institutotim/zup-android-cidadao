@@ -34,6 +34,7 @@ import java.util.List;
 
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.domain.Usuario;
+import br.com.lfdb.zup.service.FeatureService;
 import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.service.UsuarioService;
 import br.com.lfdb.zup.util.FontUtils;
@@ -115,7 +116,11 @@ public class CadastroActivity extends Activity implements OnClickListener {
         limparFundoCampos();
         List<Integer> validadores = validar();
         if (validadores.isEmpty()) {
-            startActivityForResult(new Intent(this, RedesSociaisCadastroActivity.class), REQUEST_SOCIAL);
+            if (FeatureService.getInstance(this).isAnySocialEnabled()) {
+                startActivityForResult(new Intent(this, RedesSociaisCadastroActivity.class), REQUEST_SOCIAL);
+            } else {
+                cadastrar();
+            }
         } else {
             destacarCampos(validadores);
         }

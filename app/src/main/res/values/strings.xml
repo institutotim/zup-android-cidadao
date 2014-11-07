@@ -128,6 +128,11 @@
         <item>Tirar foto</item>
         <item>Cancelar</item>
     </string-array>
+
+    <string-array name="foto_menu_restricted">
+        <item>Tirar foto</item>
+        <item>Cancelar</item>
+    </string-array>
     
     <string-array name="foto_menu_editar">
         <item>Remover foto</item>

@@ -8,6 +8,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import br.com.lfdb.zup.service.FeatureService;
 import br.com.lfdb.zup.social.auth.FacebookAuth;
 import br.com.lfdb.zup.social.auth.GooglePlusAuth;
 import br.com.lfdb.zup.social.auth.TwitterAuth;
@@ -45,6 +46,16 @@ public class RedesSociaisCadastroActivity extends Activity implements View.OnCli
 		botaoTwitter.setOnClickListener(this);
 		ImageButton botaoGooglePlus = (ImageButton) findViewById(R.id.botao_logar_google);
 		botaoGooglePlus.setOnClickListener(this);
+
+        if (!FeatureService.getInstance(this).isSocialNetworkFacebookEnabled()) {
+            botaoFacebook.setVisibility(View.GONE);
+        }
+        if (!FeatureService.getInstance(this).isSocialNetworkTwitterEnabled()) {
+            botaoTwitter.setVisibility(View.GONE);
+        }
+        if (!FeatureService.getInstance(this).isSocialNetworkGPlusEnabled()) {
+            botaoGooglePlus.setVisibility(View.GONE);
+        }
 	}
 
 	@Override
