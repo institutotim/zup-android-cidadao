@@ -1,5 +1,5 @@
-Crushing Table Android Client
-============================
+ZUP Cidadão Android Client
+==========================
 
 # Requirements to build
 * Android Studio Beta 0.9.2 (Canary Channel)
