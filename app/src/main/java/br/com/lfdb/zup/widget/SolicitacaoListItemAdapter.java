@@ -22,7 +22,7 @@ public class SolicitacaoListItemAdapter {
 		item.setData(DateUtils.getIntervaloTempo(DateUtils.parseRFC3339Date(json.getString("created_at"))));
 		item.setEndereco(json.getString("address"));
         item.setReferencia(json.optString("reference"));
-		item.setFotos(new ArrayList<String>());
+		item.setFotos(new ArrayList<>());
 
         JSONArray array = json.getJSONArray("images");
         for (int j = 0; j < array.length(); j++) {
@@ -37,7 +37,7 @@ public class SolicitacaoListItemAdapter {
         }
 		item.setTitulo(categoria.getNome());
         item.setCategoria(categoria);
-		item.setProtocolo(json.getString("protocol"));
+		item.setProtocolo(json.optString("protocol", null));
 
         if (json.has("status_id")) {
             CategoriaRelato.Status status = service.getStatusById(context, categoria.getId(), json.getLong("status_id"));

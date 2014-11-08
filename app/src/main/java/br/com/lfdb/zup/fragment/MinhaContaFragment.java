@@ -180,10 +180,14 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 			TextView data = (TextView) row.findViewById(R.id.data);
 			data.setText(item.getData());
 			data.setTypeface(FontUtils.getBold(getContext()));
-			
+
 			TextView protocolo = (TextView) row.findViewById(R.id.protocolo);
-			protocolo.setText(getString(R.string.protocolo) + " " + item.getProtocolo());
-			protocolo.setTypeface(FontUtils.getRegular(getContext()));
+            if (item.getProtocolo() != null) {
+                protocolo.setText(getString(R.string.protocolo) + " " + item.getProtocolo());
+                protocolo.setTypeface(FontUtils.getRegular(getContext()));
+            } else {
+                protocolo.setVisibility(View.GONE);
+            }
 			
 			row.findViewById(R.id.bg).setBackgroundColor(item.getStatus().getCor());
 			TextView indicadorStatus = (TextView) row.findViewById(R.id.indicadorStatus);

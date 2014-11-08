@@ -49,9 +49,13 @@ public class SolicitacaoDetalheActivity extends FragmentActivity {
         SolicitacaoListItem solicitacao = (SolicitacaoListItem) getIntent().getExtras().getSerializable("solicitacao");
 		boolean alterarLabel = getIntent().getExtras().getBoolean("alterar_botao", false);
 
-		TextView protocolo = (TextView) findViewById(R.id.protocolo);
-		protocolo.setText(getString(R.string.protocolo) + " " + solicitacao.getProtocolo());
-		protocolo.setTypeface(FontUtils.getBold(this));
+        TextView protocolo = (TextView) findViewById(R.id.protocolo);
+        if (solicitacao.getProtocolo() == null) {
+            protocolo.setVisibility(View.GONE);
+        } else {
+            protocolo.setText(getString(R.string.protocolo) + " " + solicitacao.getProtocolo());
+            protocolo.setTypeface(FontUtils.getBold(this));
+        }
 
 		TextView endereco = (TextView) findViewById(R.id.endereco);
         endereco.setText(solicitacao.getEndereco());

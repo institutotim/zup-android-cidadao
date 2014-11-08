@@ -438,7 +438,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         for (int j = 0; j < fotos.length(); j++) {
             item.getFotos().add(ViewUtils.isMdpiOrLdpi(this) ? fotos.getJSONObject(j).getString("low") : fotos.getJSONObject(j).getString("high"));
         }
-        item.setProtocolo(json.getString("protocol"));
+        item.setProtocolo(json.optString("protocol", null));
         item.setStatus(new SolicitacaoListItem.Status(json.getJSONObject("status").getString("title"), json.getJSONObject("status").getString("color")));
         item.setTitulo(json.getJSONObject("category").getString("title"));
         item.setCategoria(solicitacao.getCategoria());

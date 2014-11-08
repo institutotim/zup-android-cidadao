@@ -473,33 +473,18 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
         @Override
         protected void onPreExecute() {
-            progressBar.post(new Runnable() {
-                @Override
-                public void run() {
-                    progressBar.setVisibility(View.VISIBLE);
-                }
-            });
+            progressBar.post(() -> progressBar.setVisibility(View.VISIBLE));
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            progressBar.post(new Runnable() {
-                @Override
-                public void run() {
-                    progressBar.setVisibility(View.GONE);
-                }
-            });
+            progressBar.post(() -> progressBar.setVisibility(View.GONE));
         }
 
         @Override
         protected void onCancelled() {
             if (get != null) get.abort();
-            progressBar.post(new Runnable() {
-                @Override
-                public void run() {
-                    progressBar.setVisibility(View.GONE);
-                }
-            });
+            progressBar.post(() -> progressBar.setVisibility(View.GONE));
         }
 
         @Override
@@ -592,7 +577,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                 ItemRelato item = new ItemRelato();
                 item.setId(json.getLong("id"));
                 item.setDescricao(json.getString("description"));
-                item.setProtocolo(json.getString("protocol"));
+                item.setProtocolo(json.optString("protocol", null));
                 item.setEndereco(json.getString("address"));
                 item.setData(DateUtils.getIntervaloTempo(DateUtils.parseRFC3339Date(json.getString("created_at"))));
                 item.setCategoria(service.getById(getActivity(), json.getLong("category_id")));
