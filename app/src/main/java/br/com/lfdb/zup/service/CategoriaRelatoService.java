@@ -222,8 +222,8 @@ public class CategoriaRelatoService {
         file = icon.getString("disabled").split("/");
         categoria.setIconeInativo(file[file.length - 1]);
         categoria.setId(json.getLong("id"));
-        categoria.setTempoResolucao(json.getLong("resolution_time"));
-        categoria.setTempoResposta(json.getLong("user_response_time"));
+        categoria.setTempoResolucao(json.optLong("resolution_time"));
+        categoria.setTempoResposta(json.optLong("user_response_time"));
         file = json.getJSONObject("marker").getJSONObject("default").getString("mobile").split("/");
         categoria.setMarcador(file[file.length - 1]);
         categoria.setNome(json.getString("title"));
