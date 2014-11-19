@@ -115,6 +115,7 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+        <meta-data android:name="com.crashlytics.ApiKey" android:value="b4e65954c5311e9478b811354a85bab993be65d6"/>
     </application>
 
 </manifest>

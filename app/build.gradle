@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 apply plugin: 'retrolambda'
 
 android {
@@ -15,7 +16,7 @@ android {
         minSdkVersion 10
         targetSdkVersion 21
         versionCode 1
-        versionName '0.2'
+        versionName '0.2.1'
         multiDexEnabled = true
     }
     signingConfigs {
@@ -59,16 +60,19 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.0.0'
     compile 'com.google.guava:guava:18.0'
     compile 'com.squareup.picasso:picasso:2.4.0'
-    compile ('oauth.signpost:signpost-commonshttp4:1.2.1.2') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.0.1@aar') {
+        transitive = true;
+    }
+    compile('oauth.signpost:signpost-commonshttp4:1.2.1.2') {
         exclude module: 'httpclient'
     }
-    compile ('ch.acra:acra:4.5.0') {
+    compile('ch.acra:acra:4.5.0') {
         exclude module: 'json'
     }
-    compile ('org.apache.httpcomponents:httpcore:4.3.2') {
+    compile('org.apache.httpcomponents:httpcore:4.3.2') {
         exclude module: 'httpclient'
     }
-    compile ('org.apache.httpcomponents:httpmime:4.3.5') {
+    compile('org.apache.httpcomponents:httpmime:4.3.5') {
         exclude module: 'httpclient'
     }
     compile('com.facebook.android:facebook-android-sdk:3.20.0') {
@@ -78,6 +82,4 @@ dependencies {
     compile project(':lib-simplecropimage')
     compile project(':lib-progresswheels')
     compile project(':lib-androidviewpagerindicator')
-
-    retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:1.7.0'
 }

@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.InflateException;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -131,7 +130,6 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                     userLongitude)).zoom(15).build();
             CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
             map.animateCamera(update);
-            return;
         }
     }
 
@@ -229,24 +227,16 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         autoCompView.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, ExploreFragment.class));
         autoCompView.setTypeface(FontUtils.getRegular(getActivity()));
         autoCompView.setOnItemClickListener(this);
-        autoCompView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                boolean handled = false;
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    realizarBuscaAutocomplete(v.getText().toString());
-                    ViewUtils.hideKeyboard(getActivity(), v);
-                    handled = true;
-                }
-                return handled;
+        autoCompView.setOnEditorActionListener((v, actionId, event) -> {
+            boolean handled = false;
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                realizarBuscaAutocomplete(v.getText().toString());
+                ViewUtils.hideKeyboard(getActivity(), v);
+                handled = true;
             }
+            return handled;
         });
-        view.findViewById(R.id.clean).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                autoCompView.setText("");
-            }
-        });
+        view.findViewById(R.id.clean).setOnClickListener(v -> autoCompView.setText(""));
 
         view.findViewById(R.id.locationButton).setOnClickListener(this);
 
@@ -460,8 +450,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
     private class MarkerRetriever extends AsyncTask<Void, Object, Void> {
 
-        private List<ItemInventario> itensInventario = new CopyOnWriteArrayList<ItemInventario>();
-        private List<ItemRelato> itensRelato = new CopyOnWriteArrayList<ItemRelato>();
+        private List<ItemInventario> itensInventario = new CopyOnWriteArrayList<>();
+        private List<ItemRelato> itensRelato = new CopyOnWriteArrayList<>();
 
         private Request request;
 
