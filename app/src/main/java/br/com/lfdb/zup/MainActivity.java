@@ -69,15 +69,17 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             exploreFragment = new ExploreFragment();
             setFragment(exploreFragment);
         } else {
-            if (FeatureService.getInstance(this).isStatsEnabled()) {
-                current = estatisticasButton;
-                estatisticasFragment = new EstatisticasFragment();
-                setFragment(estatisticasFragment);
-            } else {
-                current = minhaContaButton;
-                minhaContaFragment = new MinhaContaFragment();
-                setFragment(minhaContaFragment);
+            exploreButton.setVisibility(View.GONE);
+
+            if (!FeatureService.getInstance(this).isStatsEnabled() &&
+                    !FeatureService.getInstance(this).isCreateReportsClients()) {
+                findViewById(R.id.footer).setVisibility(View.GONE);
             }
+
+            selectCurrent(R.id.minhaContaButton);
+            current = minhaContaButton;
+            minhaContaFragment = new MinhaContaFragment();
+            setFragment(minhaContaFragment);
         }
     }
 
