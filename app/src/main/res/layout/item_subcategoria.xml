@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginRight="10dp"
-        android:drawableRight="@drawable/filtros_check_categoria"
         android:paddingBottom="10dp"
         android:paddingTop="10dp" />
 

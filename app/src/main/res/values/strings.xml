@@ -122,6 +122,7 @@
     <string name="logout_social_message">Deseja realmente fazer logout do %s</string>
     <string name="failed_social_auth">Falha na autenticação da rede social</string>
     <string name="selecione_a_categoria_subcategoria">SELECIONE A CATEGORIA E SUBCATEGORIA</string>
+    <string name="confidential_disclaimer">As suas informações pessoais serão mantidas em absoluto sigilo e não serão divulgadas.</string>
 
     <string-array name="foto_menu">
         <item>Escolher foto do álbum</item>

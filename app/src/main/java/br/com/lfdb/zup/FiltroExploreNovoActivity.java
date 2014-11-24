@@ -340,6 +340,7 @@ public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSee
 
     @OnClick(R.id.toggleAll)
     public void selecionarOuRemoverTodos() {
+        desmarcarCategoriasInventario();
         if (busca.getIdsCategoriaRelato().isEmpty()) {
             adicionarTodasCategoriasRelato();
 
@@ -458,7 +459,6 @@ public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSee
                 opcoes.setVisibility(View.GONE);
                 status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.seta_expandir, 0);
             }
-            return;
         }
     }
 

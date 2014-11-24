@@ -22,6 +22,8 @@ public class CategoriaRelato implements Serializable {
     private Long tempoResposta;
     private Long tempoResolucao;
 
+    private boolean confidencial;
+
 	private ArrayList<Status> status;
 	
 	public CategoriaRelato() {
@@ -133,6 +135,14 @@ public class CategoriaRelato implements Serializable {
 
     public void setTempoResolucao(Long tempoResolucao) {
         this.tempoResolucao = tempoResolucao;
+    }
+
+    public boolean isConfidencial() {
+        return confidencial;
+    }
+
+    public void setConfidencial(boolean confidencial) {
+        this.confidencial = confidencial;
     }
 
     public static class Status implements Serializable {

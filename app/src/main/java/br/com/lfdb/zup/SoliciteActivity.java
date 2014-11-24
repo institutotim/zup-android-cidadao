@@ -66,6 +66,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
     private Solicitacao solicitacao = new Solicitacao();
 
     private TextView botaoAvancar;
+    private TextView botaoVoltar;
 
     private SoliciteTipoNovoFragment tipoFragment;
     private SoliciteFotosFragment fotosFragment;
@@ -87,7 +88,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         botaoAvancar = (TextView) findViewById(R.id.botaoAvancar);
         botaoAvancar.setOnClickListener(this);
         botaoAvancar.setTypeface(FontUtils.getRegular(this));
-        TextView botaoVoltar = (TextView) findViewById(R.id.botaoVoltar);
+        botaoVoltar = (TextView) findViewById(R.id.botaoVoltar);
         botaoVoltar.setOnClickListener(this);
         botaoVoltar.setTypeface(FontUtils.getRegular(this));
 
@@ -99,7 +100,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         });
 
         if (savedInstanceState != null) {
-            solicitacao = new Gson().fromJson(savedInstanceState.getString("solicitacao"), Solicitacao.class);
+            solicitacao = (Solicitacao) savedInstanceState.getSerializable("solicitacao");
             atual = new Gson().fromJson(savedInstanceState.getString("passo"), Passo.class);
             restoreFragmentsStates(savedInstanceState);
         } else {
@@ -111,7 +112,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("solicitacao", new Gson().toJson(solicitacao));
+        outState.putSerializable("solicitacao", solicitacao);
         outState.putString("passo", new Gson().toJson(atual));
         if (fotosFragment != null) {
             outState.putString("imagemTemporaria", fotosFragment.getImagemTemporaria());
@@ -143,39 +144,6 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
             return;
         }
 
-        if (!categoria.getCategoriasInventario().isEmpty()) {
-            if (pontoFragment == null) {
-                pontoFragment = new SolicitePontoFragment();
-                pontoFragment.setCategoria(categoria);
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                if (localFragment != null) {
-                    ft.remove(localFragment).commit();
-                    ft = getSupportFragmentManager().beginTransaction();
-                    localFragment = null;
-                }
-                ft.add(R.id.fragments_place, pontoFragment).hide(tipoFragment).commitAllowingStateLoss();
-            } else {
-                getSupportFragmentManager().beginTransaction().hide(tipoFragment).show(pontoFragment).commitAllowingStateLoss();
-                pontoFragment.setCategoria(categoria);
-            }
-        } else {
-            if (localFragment == null) {
-                localFragment = new SoliciteLocalFragment();
-                localFragment.setMarcador(categoria.getMarcador());
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                if (pontoFragment != null) {
-                    ft.remove(pontoFragment).commit();
-                    ft = getSupportFragmentManager().beginTransaction();
-                    pontoFragment = null;
-                }
-                ft.add(R.id.fragments_place, localFragment).hide(tipoFragment).commitAllowingStateLoss();
-            } else {
-                getSupportFragmentManager().beginTransaction().hide(tipoFragment).show(localFragment).commitAllowingStateLoss();
-                localFragment.setMarcador(categoria.getMarcador());
-            }
-        }
-
-        atual = Passo.LOCAL;
         exibirBarraInferior(true);
     }
 
@@ -208,6 +176,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.botaoAvancar) {
+            botaoVoltar.setVisibility(View.VISIBLE);
             if (atual.equals(Passo.LOCAL)) {
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 if (!getCategoria().getCategoriasInventario().isEmpty()) {
@@ -237,6 +206,40 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
                 atual = Passo.COMENTARIOS;
             } else if (atual.equals(Passo.COMENTARIOS)){
                 solicitar();
+            } else if (atual.equals(Passo.TIPO)) {
+                if (!solicitacao.getCategoria().getCategoriasInventario().isEmpty()) {
+                    if (pontoFragment == null) {
+                        pontoFragment = new SolicitePontoFragment();
+                        pontoFragment.setCategoria(solicitacao.getCategoria());
+                        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                        if (localFragment != null) {
+                            ft.remove(localFragment).commit();
+                            ft = getSupportFragmentManager().beginTransaction();
+                            localFragment = null;
+                        }
+                        ft.add(R.id.fragments_place, pontoFragment).hide(tipoFragment).commitAllowingStateLoss();
+                    } else {
+                        getSupportFragmentManager().beginTransaction().hide(tipoFragment).show(pontoFragment).commitAllowingStateLoss();
+                        pontoFragment.setCategoria(solicitacao.getCategoria());
+                    }
+                } else {
+                    if (localFragment == null) {
+                        localFragment = new SoliciteLocalFragment();
+                        localFragment.setMarcador(solicitacao.getCategoria().getMarcador());
+                        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                        if (pontoFragment != null) {
+                            ft.remove(pontoFragment).commit();
+                            ft = getSupportFragmentManager().beginTransaction();
+                            pontoFragment = null;
+                        }
+                        ft.add(R.id.fragments_place, localFragment).hide(tipoFragment).commitAllowingStateLoss();
+                    } else {
+                        getSupportFragmentManager().beginTransaction().hide(tipoFragment).show(localFragment).commitAllowingStateLoss();
+                        localFragment.setMarcador(solicitacao.getCategoria().getMarcador());
+                    }
+                }
+
+                atual = Passo.LOCAL;
             }
         } else if (v.getId() == R.id.botaoVoltar) {
             botaoAvancar.setText(R.string.proximo);
@@ -252,12 +255,12 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
                     atual = Passo.LOCAL;
                 }
             } else if (atual.equals(Passo.LOCAL)) {
+                botaoVoltar.setVisibility(View.GONE);
                 if (!getCategoria().getCategoriasInventario().isEmpty()) {
                     getSupportFragmentManager().beginTransaction().hide(pontoFragment).show(tipoFragment).commit();
                 } else {
                     getSupportFragmentManager().beginTransaction().hide(localFragment).show(tipoFragment).commit();
                 }
-                exibirBarraInferior(false);
                 atual = Passo.TIPO;
             }
         }

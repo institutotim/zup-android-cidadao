@@ -155,8 +155,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
     private BuscaExplore busca;
     public static double latitude = 0.0, longitude = 0.0;
 
-    private Set<Object> itens = new HashSet<Object>();
-    private Map<Marker, Object> marcadores = new HashMap<Marker, Object>();
+    private Set<Object> itens = new HashSet<>();
+    private Map<Marker, Object> marcadores = new HashMap<>();
 
     private Marker pontoBusca;
     private long raio = 0l;

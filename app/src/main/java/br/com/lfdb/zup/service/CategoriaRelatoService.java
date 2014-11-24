@@ -16,6 +16,7 @@ import android.util.Log;
 
 import br.com.lfdb.zup.domain.CategoriaInventario;
 import br.com.lfdb.zup.domain.CategoriaRelato;
+import br.com.lfdb.zup.util.ImageUtils;
 
 public class CategoriaRelatoService {
 
@@ -215,8 +216,9 @@ public class CategoriaRelatoService {
 	}
 
     private CategoriaRelato extrairDoJson(Context context, JSONObject json) throws JSONException {
+        String density = ImageUtils.shouldDownloadRetinaIcon(context) ? "retina" : "default";
         CategoriaRelato categoria = new CategoriaRelato();
-        JSONObject icon = json.getJSONObject("icon").getJSONObject("default").getJSONObject("mobile");
+        JSONObject icon = json.getJSONObject("icon").getJSONObject(density).getJSONObject("mobile");
         String[] file = icon.getString("active").split("/");
         categoria.setIconeAtivo(file[file.length - 1]);
         file = icon.getString("disabled").split("/");
@@ -224,7 +226,8 @@ public class CategoriaRelatoService {
         categoria.setId(json.getLong("id"));
         categoria.setTempoResolucao(json.optLong("resolution_time"));
         categoria.setTempoResposta(json.optLong("user_response_time"));
-        file = json.getJSONObject("marker").getJSONObject("default").getString("mobile").split("/");
+        categoria.setConfidencial(json.optBoolean("confidential", false));
+        file = json.getJSONObject("marker").getJSONObject(density).getString("mobile").split("/");
         categoria.setMarcador(file[file.length - 1]);
         categoria.setNome(json.getString("title"));
         categoria.setStatus(extrairStatus(json.getJSONArray("statuses")));

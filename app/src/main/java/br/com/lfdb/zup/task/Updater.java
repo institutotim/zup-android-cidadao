@@ -20,6 +20,7 @@ import org.json.JSONObject;
 
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.util.FileUtils;
+import br.com.lfdb.zup.util.ImageUtils;
 
 public class Updater {
 
@@ -56,10 +57,12 @@ public class Updater {
 
     private void saveCategories(Context context, String json, String type) throws Exception {
 		JSONArray array = new JSONObject(json).getJSONArray("categories");
+
+        String density = ImageUtils.shouldDownloadRetinaIcon(context) ? "retina" : "default";
 		for (int i = 0; i < array.length(); i++) {
-			String markerUrl = array.getJSONObject(i).getJSONObject("marker").getJSONObject("default").getString("mobile");
+			String markerUrl = array.getJSONObject(i).getJSONObject("marker").getJSONObject(density).getString("mobile");
             FileUtils.downloadImage(context, type, markerUrl);
-			JSONObject iconUrl = array.getJSONObject(i).getJSONObject("icon").getJSONObject("default").getJSONObject("mobile");
+			JSONObject iconUrl = array.getJSONObject(i).getJSONObject("icon").getJSONObject(density).getJSONObject("mobile");
 			FileUtils.downloadImage(context, type, iconUrl.getString("active").startsWith("http") ? iconUrl.getString("active") : Constantes.REST_URL + iconUrl.getString("active"));
             FileUtils.downloadImage(context, type, iconUrl.getString("disabled").startsWith("http") ? iconUrl.getString("disabled") : Constantes.REST_URL + iconUrl.getString("disabled"));
 
@@ -67,9 +70,9 @@ public class Updater {
                 for (int j = 0; j < array.getJSONObject(i).getJSONArray("subcategories").length(); j++) {
                     JSONObject subcategory = array.getJSONObject(i).getJSONArray("subcategories").getJSONObject(j);
 
-                    String marker = subcategory.getJSONObject("marker").getJSONObject("default").getString("mobile");
+                    String marker = subcategory.getJSONObject("marker").getJSONObject(density).getString("mobile");
                     FileUtils.downloadImage(context, type, marker);
-                    JSONObject icon = subcategory.getJSONObject("icon").getJSONObject("default").getJSONObject("mobile");
+                    JSONObject icon = subcategory.getJSONObject("icon").getJSONObject(density).getJSONObject("mobile");
                     FileUtils.downloadImage(context, type, icon.getString("active").startsWith("http") ? icon.getString("active") : Constantes.REST_URL + iconUrl.getString("active"));
                     FileUtils.downloadImage(context, type, icon.getString("disabled").startsWith("http") ? icon.getString("disabled") : Constantes.REST_URL + iconUrl.getString("disabled"));
                 }

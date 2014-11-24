@@ -26,13 +26,17 @@ import br.com.lfdb.zup.util.FontUtils;
 
 public class SoliciteDetalhesFragment extends Fragment implements View.OnClickListener {
 
-	private boolean publicar = false;
+    private boolean publicar = false;
+
+    private TextView sigioso;
 
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
             ((SoliciteActivity) getActivity()).setInfo(R.string.concluir_solicitacao);
+            sigioso.setVisibility(((SoliciteActivity) getActivity()).getCategoria().isConfidencial() ?
+                    View.VISIBLE : View.GONE);
         }
     }
 
@@ -43,14 +47,16 @@ public class SoliciteDetalhesFragment extends Fragment implements View.OnClickLi
     }
 
     @Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		((SoliciteActivity) getActivity()).setInfo(R.string.concluir_solicitacao);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        ((SoliciteActivity) getActivity()).setInfo(R.string.concluir_solicitacao);
 
-		View view = inflater.inflate(R.layout.fragment_solicite_detalhes, container, false);
-		view.findViewById(R.id.seletor_postagem).setOnClickListener(this);
+        View view = inflater.inflate(R.layout.fragment_solicite_detalhes, container, false);
+        view.findViewById(R.id.seletor_postagem).setOnClickListener(this);
 
-		EditText comentario = (EditText) view.findViewById(R.id.comentario);
-		comentario.setTypeface(FontUtils.getRegular(getActivity()));
+        sigioso = (TextView) view.findViewById(R.id.sigiloso);
+
+        EditText comentario = (EditText) view.findViewById(R.id.comentario);
+        comentario.setTypeface(FontUtils.getRegular(getActivity()));
 
         comentario.setOnEditorActionListener((v, actionId, event) -> {
             boolean handled = false;
@@ -61,21 +67,21 @@ public class SoliciteDetalhesFragment extends Fragment implements View.OnClickLi
             return handled;
         });
 
-		TextView redeSocial = (TextView) view.findViewById(R.id.redeSocial);
-		redeSocial.setTypeface(FontUtils.getLight(getActivity()));
+        TextView redeSocial = (TextView) view.findViewById(R.id.redeSocial);
+        redeSocial.setTypeface(FontUtils.getLight(getActivity()));
 
         TextView loginSocial = (TextView) view.findViewById(R.id.loginSocial);
         loginSocial.setText(R.string.login_social);
         loginSocial.setTypeface(FontUtils.getLight(getActivity()));
         loginSocial.setOnClickListener(v -> startActivity(new Intent(getActivity(), RedesSociaisCadastroActivity.class)));
 
-		TextView termos = (TextView) view.findViewById(R.id.termos);
-		termos.setText(Html.fromHtml(getString(R.string.termos_de_uso_relato)));
-		termos.setTypeface(FontUtils.getLight(getActivity()));
-		termos.setOnClickListener(v -> startActivity(new Intent(getActivity(), TermosDeUsoActivity.class)));
+        TextView termos = (TextView) view.findViewById(R.id.termos);
+        termos.setText(Html.fromHtml(getString(R.string.termos_de_uso_relato)));
+        termos.setTypeface(FontUtils.getLight(getActivity()));
+        termos.setOnClickListener(v -> startActivity(new Intent(getActivity(), TermosDeUsoActivity.class)));
 
-		return view;
-	}
+        return view;
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -109,21 +115,21 @@ public class SoliciteDetalhesFragment extends Fragment implements View.OnClickLi
     }
 
     @Override
-	public void onClick(View v) {
-		publicar = !publicar;
+    public void onClick(View v) {
+        publicar = !publicar;
 
-		if (publicar) {
-			((ImageView) v).setImageResource(R.drawable.switch_on);
-		} else {
-			((ImageView) v).setImageResource(R.drawable.switch_off);
-		}
-	}
+        if (publicar) {
+            ((ImageView) v).setImageResource(R.drawable.switch_on);
+        } else {
+            ((ImageView) v).setImageResource(R.drawable.switch_off);
+        }
+    }
 
     public boolean getPublicar() {
         return publicar;
     }
 
-	public String getComentario() {
-		return ((TextView) getView().findViewById(R.id.comentario)).getText().toString();
-	}
+    public String getComentario() {
+        return ((TextView) getView().findViewById(R.id.comentario)).getText().toString();
+    }
 }

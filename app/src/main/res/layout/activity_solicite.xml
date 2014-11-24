@@ -65,24 +65,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
+            android:background="@android:color/transparent"
             android:clickable="true"
+            android:padding="2dp"
             android:text="@string/anterior"
             android:textColor="@color/text_previous_color"
             android:textSize="@dimen/navigation_text_size"
-            android:padding="2dp"
-            android:background="@android:color/transparent" />
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/botaoAvancar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:background="@android:color/transparent"
             android:clickable="true"
+            android:padding="2dp"
             android:text="@string/proximo"
             android:textColor="@color/text_next_color"
-            android:textSize="@dimen/navigation_text_size"
-            android:padding="2dp"
-            android:background="@android:color/transparent" />
+            android:textSize="@dimen/navigation_text_size" />
     </RelativeLayout>
 
     <FrameLayout

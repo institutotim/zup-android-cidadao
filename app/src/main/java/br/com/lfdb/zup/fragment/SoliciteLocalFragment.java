@@ -506,8 +506,10 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                 numero = "";
                 tvNumero.setText("");
             }
-            tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, SoliciteLocalFragment.class));
-            tvEndereco.dismissDropDown();
+            if (getActivity() != null) {
+                tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, SoliciteLocalFragment.class));
+                tvEndereco.dismissDropDown();
+            }
         }
     }
 

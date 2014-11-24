@@ -11,6 +11,16 @@
         android:padding="30dp"
         android:paddingTop="45dp">
 
+        <TextView
+            android:id="@+id/sigiloso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="#fff5c5"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/confidential_disclaimer" />
+
         <br.com.lfdb.zup.widget.EditTextComentario
             android:id="@+id/comentario"
             android:layout_width="match_parent"

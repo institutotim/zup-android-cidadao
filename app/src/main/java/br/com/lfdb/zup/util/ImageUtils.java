@@ -50,19 +50,23 @@ public class ImageUtils {
     }
 
 	public static Bitmap getScaled(Activity activity, String filename) {
-		return getScaled(activity, 1, ImageUtils.loadFromFile(activity, filename));
+        float scale = ImageUtils.shouldDownloadRetinaIcon(activity) ? 0.5f : 1f;
+		return getScaled(activity, scale, ImageUtils.loadFromFile(activity, filename));
 	}
 
     public static Bitmap getScaled(Activity activity, String subfolder, String filename) {
-        return getScaled(activity, 1, ImageUtils.loadFromFile(activity, subfolder, filename));
+        float scale = ImageUtils.shouldDownloadRetinaIcon(activity) ? 0.5f : 1f;
+        return getScaled(activity, scale, ImageUtils.loadFromFile(activity, subfolder, filename));
     }
 
     public static Bitmap getHalfScaled(Activity activity, String subfolder, String filename) {
-        return getScaled(activity, 0.5f, ImageUtils.loadFromFile(activity, subfolder, filename));
+        float scale = ImageUtils.shouldDownloadRetinaIcon(activity) ? 0.25f : 0.5f;
+        return getScaled(activity, scale, ImageUtils.loadFromFile(activity, subfolder, filename));
     }
 
     public static Bitmap getScaledCustom(Activity activity, String subfolder, String filename, float scale) {
-        return getScaled(activity, scale, ImageUtils.loadFromFile(activity, subfolder, filename));
+        float divider = ImageUtils.shouldDownloadRetinaIcon(activity) ? 2f : 1f;
+        return getScaled(activity, scale / divider, ImageUtils.loadFromFile(activity, subfolder, filename));
     }
 	
 	public static Bitmap getScaled(Activity activity, float scale, Bitmap bitmapOrg) {
@@ -82,7 +86,8 @@ public class ImageUtils {
 	}
 
 	public static StateListDrawable getStateListDrawable(Activity activity, String filename) {
-		Bitmap original = ImageUtils.getScaled(activity, 1, ImageUtils.loadFromFile(activity, filename));
+        float scale = ImageUtils.shouldDownloadRetinaIcon(activity) ? 0.5f : 1f;
+        Bitmap original = ImageUtils.getScaled(activity, scale, ImageUtils.loadFromFile(activity, filename));
 		StateListDrawable states = new StateListDrawable();
 		states.addState(new int[] { android.R.attr.state_pressed }, new BitmapDrawable(activity.getResources(), original));
 		states.addState(new int[] {}, new BitmapDrawable(activity.getResources(), ImageUtils.toGrayscale(original)));
@@ -169,4 +174,8 @@ public class ImageUtils {
 				tenDp, tenDp, tenDp, tenDp, tenDp, tenDp });
 		return gd;
 	}
+
+    public static boolean shouldDownloadRetinaIcon(Context context) {
+        return context.getResources().getDisplayMetrics().density >= 1.5f;
+    }
 }

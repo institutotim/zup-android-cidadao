@@ -73,7 +73,7 @@ public class SoliciteTipoNovoFragment extends Fragment {
 
             TextView nomeCategoria = ButterKnife.findById(view, R.id.nomeCategoria);
 
-            if (!categoria.isSubcategoria(selecionada)) {
+            if (!categoria.equals(selecionada)) {
                 imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", categoria.getIconeInativo(), 0.75f));
                 nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
             } else {
@@ -82,46 +82,53 @@ public class SoliciteTipoNovoFragment extends Fragment {
 
             nomeCategoria.setText(categoria.getNome());
             nomeCategoria.setOnClickListener(v -> {
+                desmarcarTudo();
+                ((SoliciteActivity) getActivity()).setCategoria(categoria);
+                nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
+                imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", categoria.getIconeAtivo(), 0.75f));
+            });
 
-                if (categoria.getSubcategorias().isEmpty()) {
-                    desmarcarTudo();
-
-                    nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
-                    imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", categoria.getIconeAtivo(), 0.75f));
-
-                    ((SoliciteActivity) getActivity()).setCategoria(categoria);
+            final TextView expander = ButterKnife.findById(view, R.id.expander);
+            expander.setOnClickListener(v -> {
+                if (expander.getTag() == null) {
+                    expander.setTag(new Object());
+                    subcategorias.setVisibility(View.VISIBLE);
+                    expander.setText("Ocultar subcategorias");
                 } else {
-                    if (nomeCategoria.getTag() == null) {
-                        nomeCategoria.setTag(new Object());
-                        subcategorias.setVisibility(View.VISIBLE);
-                    } else {
-                        nomeCategoria.setTag(null);
-                        subcategorias.setVisibility(View.GONE);
-                    }
+                    expander.setTag(null);
+                    subcategorias.setVisibility(View.GONE);
+                    expander.setText("Ver subcategorias");
                 }
             });
 
-            ButterKnife.findById(view, R.id.expander).setVisibility(View.GONE);
+            if (categoria.getSubcategorias().isEmpty()) {
+                expander.setVisibility(View.GONE);
+            } else {
+                for (CategoriaRelato sub : categoria.getSubcategorias()) {
+                    View subView = getActivity().getLayoutInflater().inflate(R.layout.item_subcategoria, subcategorias, false);
+                    final TextView nome = ButterKnife.findById(subView, R.id.nome);
 
-            for (CategoriaRelato sub : categoria.getSubcategorias()) {
-                View subView = getActivity().getLayoutInflater().inflate(R.layout.item_subcategoria, subcategorias, false);
-                final TextView nome = ButterKnife.findById(subView, R.id.nome);
+                    if (sub.equals(selecionada)) {
+                        expander.setTag(new Object());
+                        subcategorias.setVisibility(View.VISIBLE);
+                        expander.setText("Ocultar subcategorias");
+                        expander.setTag(new Object());
+                        nome.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
+                        imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", sub.getIconeAtivo(), 0.75f));
+                    }
 
-                if (selecionada == null || selecionada.getId() != sub.getId()) {
-                    nome.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                    nome.setText(sub.getNome());
+                    subcategorias.addView(subView);
+                    subView.setOnClickListener(v -> {
+                        desmarcarTudo();
+                        expander.setText("Ocultar subcategorias");
+                        expander.setTag(new Object());
+                        subcategorias.setVisibility(View.VISIBLE);
+                        ((SoliciteActivity) getActivity()).setCategoria(sub);
+                        nome.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
+                        imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", sub.getIconeAtivo(), 0.75f));
+                    });
                 }
-
-                nome.setText(sub.getNome());
-                subcategorias.addView(subView);
-                subView.setOnClickListener(v -> {
-
-                    desmarcarTudo();
-                    subcategorias.setVisibility(View.VISIBLE);
-                    imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", categoria.getIconeAtivo(), 0.75f));
-                    nome.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
-
-                    ((SoliciteActivity) getActivity()).setCategoria(sub);
-                });
             }
 
             categoriasContainer.addView(view);
@@ -139,6 +146,7 @@ public class SoliciteTipoNovoFragment extends Fragment {
 
             ViewGroup subcategorias = ButterKnife.findById(view, R.id.subcategorias);
             subcategorias.setVisibility(View.GONE);
+            ButterKnife.findById(view, R.id.expander).setTag(null);
             for (int j = 0; j < subcategorias.getChildCount(); j++) {
                 View v = subcategorias.getChildAt(j);
                 TextView nome = ButterKnife.findById(v, R.id.nome);
