@@ -27,7 +27,7 @@ public class ZupApplication extends MultiDexApplication {
                 ACRA.getErrorReporter().setReportSender(sentry);
                 ACRA.getErrorReporter().checkReportsOnApplicationStart();
             }
-        }).run();
+        }).start();
 
         context = this.getApplicationContext();
     }

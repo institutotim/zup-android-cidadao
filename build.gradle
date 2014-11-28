@@ -7,8 +7,8 @@ buildscript {
     }
     dependencies {
         classpath 'me.tatarka:gradle-retrolambda:2.4.1'
-        classpath 'com.android.tools.build:gradle:0.14.2'
-        classpath 'io.fabric.tools:gradle:1.14.3'
+        classpath 'com.android.tools.build:gradle:1.0.0-rc1'
+        classpath 'io.fabric.tools:gradle:1.14.4'
     }
 }
 

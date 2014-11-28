@@ -62,6 +62,10 @@ public class Updater {
 		for (int i = 0; i < array.length(); i++) {
 			String markerUrl = array.getJSONObject(i).getJSONObject("marker").getJSONObject(density).getString("mobile");
             FileUtils.downloadImage(context, type, markerUrl);
+            if (array.getJSONObject(i).has("pin")) {
+                markerUrl = array.getJSONObject(i).getJSONObject("pin").getJSONObject(density).getString("mobile");
+                FileUtils.downloadImage(context, type, markerUrl);
+            }
 			JSONObject iconUrl = array.getJSONObject(i).getJSONObject("icon").getJSONObject(density).getJSONObject("mobile");
 			FileUtils.downloadImage(context, type, iconUrl.getString("active").startsWith("http") ? iconUrl.getString("active") : Constantes.REST_URL + iconUrl.getString("active"));
             FileUtils.downloadImage(context, type, iconUrl.getString("disabled").startsWith("http") ? iconUrl.getString("disabled") : Constantes.REST_URL + iconUrl.getString("disabled"));

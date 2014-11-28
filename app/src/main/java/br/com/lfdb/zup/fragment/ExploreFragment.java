@@ -309,7 +309,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         if (estaNoFiltro(item.getCategoria())) {
             marcadores.put(map.addMarker(new MarkerOptions()
                     .position(new LatLng(item.getLatitude(), item.getLongitude()))
-                    .icon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.getInventoryMarker(getActivity(), item.getCategoria().getMarcador())))
+                    .icon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.getInventoryMarker(getActivity(), item.getCategoria().isShowMarker() ? item.getCategoria().getMarcador() : item.getCategoria().getPin())))
                     .title(item.getCategoria().getNome())), item);
         }
     }
