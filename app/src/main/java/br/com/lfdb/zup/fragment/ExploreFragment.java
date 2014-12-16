@@ -188,7 +188,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
             Log.w("ZUP", e.getMessage());
         }
 
-        map = ((SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+        map = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map)).getMap();
 
         TextView botaoFiltrar = (TextView) view.findViewById(R.id.botaoFiltrar);
         botaoFiltrar.setTypeface(FontUtils.getRegular(getActivity()));

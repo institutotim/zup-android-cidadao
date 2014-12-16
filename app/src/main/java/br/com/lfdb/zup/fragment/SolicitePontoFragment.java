@@ -141,7 +141,7 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
             Log.w("ZUP", e.getMessage());
         }
 
-        map = ((SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.mapaPonto)).getMap();
+        map = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaPonto)).getMap();
         progressBar = (ProgressBar) view.findViewById(R.id.loading);
 
         if (map != null) {

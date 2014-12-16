@@ -109,7 +109,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
             Log.w("ZUP", e.getMessage());
         }
 
-        map = ((SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.mapaLocal)).getMap();
+        map = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaLocal)).getMap();
         if (map != null) {
             map.setMyLocationEnabled(true);
             map.getUiSettings().setZoomControlsEnabled(false);

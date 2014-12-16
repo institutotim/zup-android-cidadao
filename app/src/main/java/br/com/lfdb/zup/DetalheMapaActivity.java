@@ -18,12 +18,10 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -91,8 +89,8 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 
     @Override
 	public void onClick(View v) {
-		((TextView) findViewById(R.id.botaoInformacoes)).setTextColor(Color.parseColor("#808080"));
-		((TextView) findViewById(R.id.botaoSolicitacoes)).setTextColor(Color.parseColor("#808080"));
+		((TextView) findViewById(R.id.botaoInformacoes)).setTextColor(Color.rgb(0x2a, 0xb4, 0xdc));
+		((TextView) findViewById(R.id.botaoSolicitacoes)).setTextColor(Color.rgb(0x2a, 0xb4, 0xdc));
 		
 		switch (v.getId()) {
 		case R.id.botaoInformacoes:
@@ -164,14 +162,8 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 
 				montarHashMap(categoria, itemInventario);
 				return Boolean.TRUE;
-            } catch (HttpHostConnectException e) {
-                Log.w("ZUP", e.getMessage());
-                return Boolean.FALSE;
-            } catch (SocketException e) {
-                Log.w("ZUP", e.getMessage());
-                return Boolean.FALSE;
-			} catch (Exception e) {
-				Log.e("ZUP", e.getMessage(), e);
+            } catch (Exception e) {
+				Log.e("ZUP", "Falha ao obter informações do item de inventário", e);
 				return Boolean.FALSE;
 			}
 		}
@@ -180,7 +172,7 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 		protected void onPostExecute(Boolean result) {
 			dialog.dismiss();
 			if (result) {
-				if (relatos.isEmpty()) {
+				if (relatos == null || relatos.isEmpty()) {
 					ocultarAbasAdicionais();
 				} else {
 					prepararAbas();
@@ -225,7 +217,7 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
                 HashMap<String, String> camposDinamicos = new HashMap<>();
                 for (JSONObject campo : campos) {
                     for (JSONObject dado : dados) {
-                        if (dado.getLong("inventory_field_id") == campo.getLong("id")) {
+                        if (dado.getJSONObject("field").getLong("id") == campo.getLong("id")) {
                             if (!dado.getString("content").equals("null")) {
                                 camposDinamicos.put(campo.getString("label").equals("null") ?
                                         campo.getString("title") : campo.getString("label"), dado.getString("content"));
@@ -250,8 +242,8 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 	private void ocultarAbasAdicionais() {
 		solicitacoes.setVisibility(View.GONE);
 		
-		((TextView) findViewById(R.id.botaoInformacoes)).setTextColor(getResources().getColorStateList(R.color.text_next_color));
-		((TextView) findViewById(R.id.botaoSolicitacoes)).setTextColor(getResources().getColorStateList(R.color.text_previous_color));
+		((TextView) findViewById(R.id.botaoInformacoes)).setTextColor(Color.WHITE);
+		((TextView) findViewById(R.id.botaoSolicitacoes)).setTextColor(Color.WHITE);
 		getSupportFragmentManager().beginTransaction().hide(solFragment).show(infoFragment).commit();
 	}
 	

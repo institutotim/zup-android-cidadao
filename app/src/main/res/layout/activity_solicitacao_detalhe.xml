@@ -43,17 +43,7 @@
             android:textColor="#fff"
             android:textSize="@dimen/row_status" />
 
-        <TextView
-            android:id="@+id/protocolo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textAllCaps="true"
-            android:textColor="#999"
-            android:textSize="@dimen/instruction_text_size" />
+
     </RelativeLayout>
 
     <LinearLayout
@@ -130,6 +120,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/referencia"
+                    android:textAllCaps="true"
+                    android:textColor="#666"
+                    android:textSize="@dimen/small_text_size" />
+
+                <TextView
+                    android:id="@+id/protocolo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/data"
                     android:textAllCaps="true"
                     android:textColor="#666"
                     android:textSize="@dimen/small_text_size" />
