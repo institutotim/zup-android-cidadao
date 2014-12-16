@@ -367,10 +367,13 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
                 if (!isCancelled() && !post.isAborted()) {
                     HttpResponse response = client.execute(post);
                     if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+                        SolicitacaoListItem item = getSolicitacao(EntityUtils.toString(response.getEntity(), "UTF-8"));
+
+
                         if (detalhesFragment.getPublicar()) {
-                            SocialUtils.post(SoliciteActivity.this, "Acabei de publicar uma solicitação com o #ZUP!\n" + solicitacao.getComentario());
+                            SocialUtils.post(SoliciteActivity.this, "Estou colaborando com a minha cidade, reportando problemas e solicitações.\n" + Constantes.WEBSITE_URL + "/" + item.getId() + "\n#ZeladoriaUrbana");
                         }
-                        return getSolicitacao(EntityUtils.toString(response.getEntity(), "UTF-8"));
+                        return item;
                     } else {
                         Log.i("ZUP", new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8")).toString(2));
                     }
@@ -449,6 +452,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         item.setLongitude(solicitacao.getLongitude());
         item.setEndereco(solicitacao.getEndereco());
         item.setReferencia(solicitacao.getReferencia());
+        item.setId(json.optLong("id"));
         return item;
     }
 

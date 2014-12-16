@@ -441,11 +441,11 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
     }
 
     private boolean estaNoFiltro(CategoriaRelato categoria) {
-        return busca.getIdsCategoriaRelato().contains(categoria.getId());
+        return busca != null && busca.getIdsCategoriaRelato() != null && busca.getIdsCategoriaRelato().contains(categoria.getId());
     }
 
     private boolean estaNoFiltro(CategoriaInventario categoria) {
-        return busca.getIdsCategoriaInventario().contains(categoria.getId());
+        return busca != null && busca.getIdsCategoriaInventario() != null && busca.getIdsCategoriaInventario().contains(categoria.getId());
     }
 
     private class MarkerRetriever extends AsyncTask<Void, Object, Void> {

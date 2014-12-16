@@ -50,7 +50,7 @@ public class SolicitacaoDetalheActivity extends FragmentActivity {
 		boolean alterarLabel = getIntent().getExtras().getBoolean("alterar_botao", false);
 
         TextView protocolo = (TextView) findViewById(R.id.protocolo);
-        if (solicitacao.getProtocolo() == null) {
+        if (solicitacao.getProtocolo() == null || solicitacao.getProtocolo().equalsIgnoreCase("null")) {
             protocolo.setVisibility(View.GONE);
         } else {
             protocolo.setText(getString(R.string.protocolo) + " " + solicitacao.getProtocolo());
