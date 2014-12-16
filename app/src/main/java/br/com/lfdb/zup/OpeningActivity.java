@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +17,7 @@ import com.viewpagerindicator.PageIndicator;
 
 import java.util.Arrays;
 
+import br.com.lfdb.zup.service.FeatureService;
 import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.widget.ImageResourcePagerAdapter;
@@ -51,6 +53,10 @@ public class OpeningActivity extends FragmentActivity {
             startActivity(new Intent(OpeningActivity.this, MainActivity.class));
             finish();
         });
+
+        if (!FeatureService.getInstance(this).isExploreEnabled()) {
+            linkPular.setVisibility(View.GONE);
+        }
 		
 		TextView botaoCadastrar = (TextView) findViewById(R.id.botaoCadastrar);
 		botaoCadastrar.setTypeface(FontUtils.getRegular(this));
