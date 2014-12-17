@@ -147,6 +147,8 @@ public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSee
 
                 if (!busca.getIdsCategoriaRelato().contains(sub.getId()))
                     nome.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                else
+                    nome.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
 
                 nome.setText(sub.getNome());
                 subcategorias.addView(subView);

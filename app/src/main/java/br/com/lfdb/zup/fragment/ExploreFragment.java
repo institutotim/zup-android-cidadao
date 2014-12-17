@@ -80,10 +80,6 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         GoogleMap.OnCameraChangeListener, AdapterView.OnItemClickListener, GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener, LocationListener, View.OnClickListener {
 
-    // Local inicial: São Paulo
-    private static final double INITIAL_LATITUDE = -23.5501283;
-    private static final double INITIAL_LONGITUDE = -46.6338553;
-
     private double userLongitude;
     private double userLatitude;
 
@@ -203,9 +199,12 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         busca = PreferenceUtils.obterBuscaExplore(getActivity());
         if (busca == null) {
             busca = new BuscaExplore();
-            CategoriaRelatoService service = new CategoriaRelatoService();
-            for (CategoriaRelato categoria : service.getCategorias(getActivity())) {
+            List<CategoriaRelato> categorias = new CategoriaRelatoService().getCategorias(getActivity());
+            for (CategoriaRelato categoria : categorias) {
                 busca.getIdsCategoriaRelato().add(categoria.getId());
+                for (CategoriaRelato sub : categoria.getSubcategorias()) {
+                    busca.getIdsCategoriaRelato().add(sub.getId());
+                }
             }
         }
 
@@ -217,8 +216,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
             map.setOnCameraChangeListener(this);
             map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-            CameraPosition p = new CameraPosition.Builder().target(new LatLng(INITIAL_LATITUDE,
-                    INITIAL_LONGITUDE)).zoom(12).build();
+            CameraPosition p = new CameraPosition.Builder().target(new LatLng(Constantes.INITIAL_LATITUDE,
+                    Constantes.INITIAL_LONGITUDE)).zoom(12).build();
             CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
             map.moveCamera(update);
         }

@@ -91,7 +91,7 @@ public class TwitterDialog extends Dialog {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         Drawable icon = getContext().getResources().getDrawable(
-                R.drawable.ic_launcher);
+                R.drawable.ic_splash);
 
         mTitle = new TextView(getContext());
 

@@ -72,10 +72,6 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
         GoogleMap.OnMarkerClickListener, GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener, LocationListener, AdapterView.OnItemClickListener {
 
-    // Local inicial: São Paulo
-    private static final double INITIAL_LATITUDE = -23.5501283;
-    private static final double INITIAL_LONGITUDE = -46.6338553;
-
     private static final int MAX_ITEMS_PER_REQUEST = 30;
 
     private static final LocationRequest REQUEST = LocationRequest.create()
@@ -152,8 +148,8 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
             map.setOnMarkerClickListener(this);
             map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-            CameraPosition p = new CameraPosition.Builder().target(new LatLng(INITIAL_LATITUDE,
-                    INITIAL_LONGITUDE)).zoom(16).build();
+            CameraPosition p = new CameraPosition.Builder().target(new LatLng(Constantes.INITIAL_LATITUDE,
+                    Constantes.INITIAL_LONGITUDE)).zoom(16).build();
             CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
             map.moveCamera(update);
         }

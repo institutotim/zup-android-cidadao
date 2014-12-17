@@ -39,6 +39,7 @@ import java.util.List;
 
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SoliciteActivity;
+import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.domain.Place;
 import br.com.lfdb.zup.domain.Solicitacao;
 import br.com.lfdb.zup.util.FontUtils;
@@ -51,10 +52,6 @@ import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
 public class SoliciteLocalFragment extends Fragment implements GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener, LocationListener, View.OnClickListener,
         AdapterView.OnItemClickListener {
-
-    // Local inicial: São Paulo
-    private static final double INITIAL_LATITUDE = -23.5501283;
-    private static final double INITIAL_LONGITUDE = -46.6338553;
 
     private GoogleMap map;
     private static View view;
@@ -127,8 +124,8 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
 
             map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-            CameraPosition p = new CameraPosition.Builder().target(new LatLng(INITIAL_LATITUDE,
-                    INITIAL_LONGITUDE)).zoom(12).build();
+            CameraPosition p = new CameraPosition.Builder().target(new LatLng(Constantes.INITIAL_LATITUDE,
+                    Constantes.INITIAL_LONGITUDE)).zoom(12).build();
             CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
             map.moveCamera(update);
         }

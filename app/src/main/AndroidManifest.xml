@@ -73,9 +73,6 @@
             android:name=".FiltroExploreNovoActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".FiltroEstatisticasActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".FiltroEstatisticasNovoActivity"
             android:screenOrientation="portrait" />
         <activity
@@ -110,7 +107,7 @@
         <!-- Google Maps -->
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyDQm-4GmbP4DFV_Sq72N6ZGaLbDYMTfAlg" />
+            android:value="@string/google_key" />
         <!-- Google Play Services -->
         <meta-data
             android:name="com.google.android.gms.version"

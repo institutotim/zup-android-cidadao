@@ -36,13 +36,12 @@
             android:id="@+id/indicadorStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="3dp"
             android:textAllCaps="true"
             android:textColor="#fff"
             android:textSize="@dimen/row_status" />
-
 
     </RelativeLayout>
 

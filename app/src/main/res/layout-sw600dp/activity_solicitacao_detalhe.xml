@@ -37,7 +37,7 @@
             android:id="@+id/indicadorStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="3dp"
             android:layout_marginRight="50dp"
@@ -45,18 +45,6 @@
             android:textColor="#fff"
             android:textSize="@dimen/row_status" />
 
-        <TextView
-            android:id="@+id/protocolo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="50dp"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textAllCaps="true"
-            android:textColor="#999"
-            android:textSize="@dimen/instruction_text_size" />
     </RelativeLayout>
 
     <LinearLayout
@@ -146,6 +134,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/referencia"
+                        android:textAllCaps="true"
+                        android:textColor="#666"
+                        android:textSize="@dimen/small_text_size" />
+
+                    <TextView
+                        android:id="@+id/protocolo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/data"
                         android:textAllCaps="true"
                         android:textColor="#666"
                         android:textSize="@dimen/small_text_size" />

@@ -120,12 +120,12 @@ public class SolicitacaoDetalheActivity extends FragmentActivity {
 
         if (solicitacao.getCategoria().getCategoriaMae() != null) {
             categoryIcon.setImageBitmap(ImageUtils.getScaledCustom(this, "reports",
-                    solicitacao.getCategoria().getCategoriaMae().getIconeAtivo(), 0.75f));
+                    solicitacao.getCategoria().getCategoriaMae().getIconeInativo(), 0.75f));
             categoryName.setText(solicitacao.getCategoria().getNome());
             subcategoryName.setText(solicitacao.getCategoria().getCategoriaMae().getNome());
         } else {
             categoryIcon.setImageBitmap(ImageUtils.getScaledCustom(this, "reports",
-                    solicitacao.getCategoria().getIconeAtivo(), 0.75f));
+                    solicitacao.getCategoria().getIconeInativo(), 0.75f));
             categoryName.setText(solicitacao.getCategoria().getNome());
             subcategoryName.setVisibility(View.GONE);
         }

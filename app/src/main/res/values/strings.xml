@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">ZUP</string>
     <string name="appFacebook_id">205770772949525</string>
     <string name="estatisticas">Estatísticas</string>
     <string name="minha_conta">Minha Conta</string>
