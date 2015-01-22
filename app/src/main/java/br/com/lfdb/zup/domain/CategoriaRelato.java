@@ -22,6 +22,9 @@ public class CategoriaRelato implements Serializable {
     private Long tempoResposta;
     private Long tempoResolucao;
 
+    private boolean tempoResolucaoAtivado;
+    private boolean tempoResolucaoPrivado;
+
     private boolean confidencial;
 
 	private ArrayList<Status> status;
@@ -143,6 +146,22 @@ public class CategoriaRelato implements Serializable {
 
     public void setConfidencial(boolean confidencial) {
         this.confidencial = confidencial;
+    }
+
+    public boolean isTempoResolucaoAtivado() {
+        return tempoResolucaoAtivado;
+    }
+
+    public void setTempoResolucaoAtivado(boolean tempoResolucaoAtivado) {
+        this.tempoResolucaoAtivado = tempoResolucaoAtivado;
+    }
+
+    public boolean isTempoResolucaoPrivado() {
+        return tempoResolucaoPrivado;
+    }
+
+    public void setTempoResolucaoPrivado(boolean tempoResolucaoPrivado) {
+        this.tempoResolucaoPrivado = tempoResolucaoPrivado;
     }
 
     public static class Status implements Serializable {

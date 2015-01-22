@@ -227,6 +227,8 @@ public class CategoriaRelatoService {
         categoria.setTempoResolucao(json.optLong("resolution_time"));
         categoria.setTempoResposta(json.optLong("user_response_time"));
         categoria.setConfidencial(json.optBoolean("confidential", false));
+        categoria.setTempoResolucaoAtivado(json.getBoolean("resolution_time_enabled"));
+        categoria.setTempoResolucaoPrivado(json.getBoolean("private_resolution_time"));
         file = json.getJSONObject("marker").getJSONObject(density).getString("mobile").split("/");
         categoria.setMarcador(file[file.length - 1]);
         categoria.setNome(json.getString("title"));

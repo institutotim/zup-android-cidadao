@@ -394,7 +394,9 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
                         .setTitle("Solicitação enviada")
                         .setMessage("Você será avisado quando sua solicitação for atualizada\n" +
                                 String.format("Anote seu protocolo: %s", result.getProtocolo()) +
-                                (FeatureService.getInstance(SoliciteActivity.this).isShowResolutionTimeToClientsEnabled() ?
+                                (FeatureService.getInstance(SoliciteActivity.this).isShowResolutionTimeToClientsEnabled() &&
+                                        solicitacao.getCategoria().isTempoResolucaoAtivado() &&
+                                        !solicitacao.getCategoria().isTempoResolucaoPrivado() ?
                                 String.format("\nPrazo de solução: %s", DateUtils.getString(result.getCategoria().getTempoResolucao())) : ""))
                         .setNeutralButton("OK", (dialog1, which) -> {
                             Intent i = new Intent(SoliciteActivity.this, SolicitacaoDetalheActivity.class);

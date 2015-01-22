@@ -80,14 +80,6 @@ public class SoliciteTipoNovoFragment extends Fragment {
                 imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", categoria.getIconeAtivo(), 0.75f));
             }
 
-            nomeCategoria.setText(categoria.getNome());
-            nomeCategoria.setOnClickListener(v -> {
-                desmarcarTudo();
-                ((SoliciteActivity) getActivity()).setCategoria(categoria);
-                nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
-                imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", categoria.getIconeAtivo(), 0.75f));
-            });
-
             final TextView expander = ButterKnife.findById(view, R.id.expander);
             expander.setOnClickListener(v -> {
                 if (expander.getTag() == null) {
@@ -98,6 +90,20 @@ public class SoliciteTipoNovoFragment extends Fragment {
                     expander.setTag(null);
                     subcategorias.setVisibility(View.GONE);
                     expander.setText("Ver subcategorias");
+                }
+            });
+
+            nomeCategoria.setText(categoria.getNome());
+            nomeCategoria.setOnClickListener(v -> {
+                if (expander.getTag() == null  && !categoria.getSubcategorias().isEmpty()) {
+                    expander.setTag(new Object());
+                    subcategorias.setVisibility(View.VISIBLE);
+                    expander.setText("Ocultar subcategorias");
+                } else {
+                    desmarcarTudo(categoria.getSubcategorias().isEmpty());
+                    ((SoliciteActivity) getActivity()).setCategoria(categoria);
+                    nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
+                    imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", categoria.getIconeAtivo(), 0.75f));
                 }
             });
 
@@ -136,6 +142,10 @@ public class SoliciteTipoNovoFragment extends Fragment {
     }
 
     private void desmarcarTudo() {
+        desmarcarTudo(true);
+    }
+
+    private void desmarcarTudo(boolean collapse) {
         for (int i = 0; i < categoriasContainer.getChildCount(); i++) {
             View view = categoriasContainer.getChildAt(i);
             TextView nomeCategoria = ButterKnife.findById(view, R.id.nomeCategoria);
@@ -145,7 +155,9 @@ public class SoliciteTipoNovoFragment extends Fragment {
             imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", ((CategoriaRelato) view.getTag()).getIconeInativo(), 0.75f));
 
             ViewGroup subcategorias = ButterKnife.findById(view, R.id.subcategorias);
-            subcategorias.setVisibility(View.GONE);
+            subcategorias.setVisibility(collapse ? View.GONE : View.VISIBLE);
+            TextView expander = ButterKnife.findById(view, R.id.expander);
+            if (collapse) expander.setText("Ver subcategorias");
             ButterKnife.findById(view, R.id.expander).setTag(null);
             for (int j = 0; j < subcategorias.getChildCount(); j++) {
                 View v = subcategorias.getChildAt(j);

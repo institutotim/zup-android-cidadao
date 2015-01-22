@@ -59,8 +59,8 @@ public class DateUtils {
 		return "há " + contador + " dias atrás";
 	}
 
-    public static String getString(long tempoEmSegundos) {
-        long var = tempoEmSegundos;
+    public static String getString(Long tempoEmSegundos) {
+        long var = tempoEmSegundos != null ? tempoEmSegundos : 0;
         if (var < 60) return String.format("%d Segundos", var);
 
         var /= 60;
