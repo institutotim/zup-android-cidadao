@@ -300,10 +300,10 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
                         preencherLista(itens);
                     } catch (Exception e) {
                         Log.e("ZUP", e.getMessage(), e);
-                        Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos", Toast.LENGTH_LONG).show();
+                        if (getActivity() != null) Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos", Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos", Toast.LENGTH_LONG).show();
+                    if (getActivity() != null) Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos", Toast.LENGTH_LONG).show();
                 }
             }
         }

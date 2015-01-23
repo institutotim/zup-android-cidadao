@@ -129,17 +129,20 @@ public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSee
             });
 
             final TextView expander = ButterKnife.findById(view, R.id.expander);
-            expander.setOnClickListener(v -> {
-                if (expander.getTag() == null) {
-                    expander.setTag(new Object());
-                    subcategorias.setVisibility(View.VISIBLE);
-                    expander.setText("Ocultar subcategorias");
-                } else {
-                    expander.setTag(null);
-                    subcategorias.setVisibility(View.GONE);
-                    expander.setText("Ver subcategorias");
-                }
-            });
+            if (categoria.getSubcategorias().isEmpty()) expander.setVisibility(View.GONE);
+            else {
+                expander.setOnClickListener(v -> {
+                    if (expander.getTag() == null) {
+                        expander.setTag(new Object());
+                        subcategorias.setVisibility(View.VISIBLE);
+                        expander.setText("Ocultar subcategorias");
+                    } else {
+                        expander.setTag(null);
+                        subcategorias.setVisibility(View.GONE);
+                        expander.setText("Ver subcategorias");
+                    }
+                });
+            }
 
             for (CategoriaRelato sub : categoria.getSubcategorias()) {
                 View subView = getLayoutInflater().inflate(R.layout.item_subcategoria, subcategorias, false);

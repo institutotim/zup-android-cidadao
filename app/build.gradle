@@ -16,7 +16,7 @@ android {
         minSdkVersion 10
         targetSdkVersion 21
         versionCode 1
-        versionName '0.2.9'
+        versionName '0.2.12'
         multiDexEnabled = true
     }
     signingConfigs {
@@ -33,6 +33,9 @@ android {
         }
         boavista {
             applicationId 'br.com.lfdb.zup.boavista'
+        }
+        sbc {
+            applicationId 'br.com.lfdb.zup.sbc'
         }
     }
     buildTypes {

@@ -52,6 +52,7 @@ public class UsuarioService {
 		json.put("phone", usuario.getTelefone());
 		json.put("password", usuario.getSenha());
 		json.put("password_confirmation", usuario.getConfirmacaoSenha());
+        json.put("id", usuario.getId());
 		
 		return json;
 	}

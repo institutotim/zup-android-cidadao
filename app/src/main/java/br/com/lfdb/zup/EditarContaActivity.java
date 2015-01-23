@@ -165,6 +165,7 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 
     @Override
 	public void onClick(View v) {
+        ViewUtils.hideKeyboard(this, campoNome);
         if (v.getId() == R.id.botaoSalvar) {
             limparFundoCampos();
             List<Integer> validadores = validar();

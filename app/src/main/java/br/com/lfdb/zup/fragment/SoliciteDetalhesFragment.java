@@ -33,7 +33,7 @@ public class SoliciteDetalhesFragment extends Fragment implements View.OnClickLi
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-        if (!hidden) {
+            if (!hidden) {
             ((SoliciteActivity) getActivity()).setInfo(R.string.concluir_solicitacao);
             sigioso.setVisibility(((SoliciteActivity) getActivity()).getCategoria().isConfidencial() ?
                     View.VISIBLE : View.GONE);
@@ -54,6 +54,8 @@ public class SoliciteDetalhesFragment extends Fragment implements View.OnClickLi
         view.findViewById(R.id.seletor_postagem).setOnClickListener(this);
 
         sigioso = (TextView) view.findViewById(R.id.sigiloso);
+        sigioso.setVisibility(((SoliciteActivity) getActivity()).getCategoria().isConfidencial() ?
+                View.VISIBLE : View.GONE);
 
         EditText comentario = (EditText) view.findViewById(R.id.comentario);
         comentario.setTypeface(FontUtils.getRegular(getActivity()));
