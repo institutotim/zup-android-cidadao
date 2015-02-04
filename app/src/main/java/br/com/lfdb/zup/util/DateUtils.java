@@ -12,7 +12,7 @@ public class DateUtils {
 	}
 	
 	public static Date parseRFC3339Date(String datestring) throws Exception {
-		Date d = new Date();
+		Date d;
 
 		if (datestring.endsWith("Z")) {
 			try {
@@ -58,4 +58,18 @@ public class DateUtils {
 		
 		return "há " + contador + " dias atrás";
 	}
+
+    public static String getString(Long tempoEmSegundos) {
+        long var = tempoEmSegundos != null ? tempoEmSegundos : 0;
+        if (var < 60) return String.format("%d Segundos", var);
+
+        var /= 60;
+        if (var < 60) return String.format("%d Minutos", var);
+
+        var /= 60;
+        if (var < 60) return String.format("%d Horas", var);
+
+        var /= 24;
+        return String.format("%d Dias", var);
+    }
 }

@@ -3,7 +3,6 @@ package br.com.lfdb.zup;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -14,15 +13,18 @@ import android.widget.Toast;
 
 import br.com.lfdb.zup.task.Updater;
 import br.com.lfdb.zup.util.NetworkUtils;
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 
 public class SplashActivity extends Activity {
-
-
 
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		if (!BuildConfig.DEBUG) Fabric.with(this, new Crashlytics());
+
 		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
 			getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 		}
@@ -78,19 +80,13 @@ public class SplashActivity extends Activity {
                     new AlertDialog.Builder(SplashActivity.this)
                             .setTitle("Falha na sincronização")
                             .setMessage("Não foi possível realizar o sincronismo de dados. Deseja tentar novamente?")
-                            .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                    new CategoriaUpdater().execute();
-                                }
+                            .setPositiveButton("Sim", (dialog, which) -> {
+                                dialog.dismiss();
+                                new CategoriaUpdater().execute();
                             })
-                            .setNegativeButton("Não", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                    finish();
-                                }
+                            .setNegativeButton("Não", (dialog, which) -> {
+                                dialog.dismiss();
+                                finish();
                             })
                             .show();
                 } else {

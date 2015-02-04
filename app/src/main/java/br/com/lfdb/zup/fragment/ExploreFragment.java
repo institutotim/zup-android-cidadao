@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.InflateException;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,7 +53,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import br.com.lfdb.zup.DetalheMapaActivity;
-import br.com.lfdb.zup.FiltroExploreActivity;
+import br.com.lfdb.zup.FiltroExploreNovoActivity;
 import br.com.lfdb.zup.MainActivity;
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SolicitacaoDetalheActivity;
@@ -80,10 +79,6 @@ import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
 public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnCameraChangeListener, AdapterView.OnItemClickListener, GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener, LocationListener, View.OnClickListener {
-
-    // Local inicial: São Paulo
-    private static final double INITIAL_LATITUDE = -23.5501283;
-    private static final double INITIAL_LONGITUDE = -46.6338553;
 
     private double userLongitude;
     private double userLatitude;
@@ -131,7 +126,6 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                     userLongitude)).zoom(15).build();
             CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
             map.animateCamera(update);
-            return;
         }
     }
 
@@ -157,8 +151,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
     private BuscaExplore busca;
     public static double latitude = 0.0, longitude = 0.0;
 
-    private Set<Object> itens = new HashSet<Object>();
-    private Map<Marker, Object> marcadores = new HashMap<Marker, Object>();
+    private Set<Object> itens = new HashSet<>();
+    private Map<Marker, Object> marcadores = new HashMap<>();
 
     private Marker pontoBusca;
     private long raio = 0l;
@@ -190,17 +184,14 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
             Log.w("ZUP", e.getMessage());
         }
 
-        map = ((SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+        map = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map)).getMap();
 
         TextView botaoFiltrar = (TextView) view.findViewById(R.id.botaoFiltrar);
         botaoFiltrar.setTypeface(FontUtils.getRegular(getActivity()));
-        botaoFiltrar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), FiltroExploreActivity.class);
-                intent.putExtra("busca", busca);
-                getActivity().startActivityForResult(intent, MainActivity.FILTRO_CODE);
-            }
+        botaoFiltrar.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), FiltroExploreNovoActivity.class);
+            intent.putExtra("busca", busca);
+            getActivity().startActivityForResult(intent, MainActivity.FILTRO_CODE);
         });
 
         progressBar = (ProgressBar) view.findViewById(R.id.loading);
@@ -208,9 +199,12 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         busca = PreferenceUtils.obterBuscaExplore(getActivity());
         if (busca == null) {
             busca = new BuscaExplore();
-            CategoriaRelatoService service = new CategoriaRelatoService();
-            for (CategoriaRelato categoria : service.getCategorias(getActivity())) {
+            List<CategoriaRelato> categorias = new CategoriaRelatoService().getCategorias(getActivity());
+            for (CategoriaRelato categoria : categorias) {
                 busca.getIdsCategoriaRelato().add(categoria.getId());
+                for (CategoriaRelato sub : categoria.getSubcategorias()) {
+                    busca.getIdsCategoriaRelato().add(sub.getId());
+                }
             }
         }
 
@@ -222,8 +216,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
             map.setOnCameraChangeListener(this);
             map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-            CameraPosition p = new CameraPosition.Builder().target(new LatLng(INITIAL_LATITUDE,
-                    INITIAL_LONGITUDE)).zoom(12).build();
+            CameraPosition p = new CameraPosition.Builder().target(new LatLng(Constantes.INITIAL_LATITUDE,
+                    Constantes.INITIAL_LONGITUDE)).zoom(12).build();
             CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
             map.moveCamera(update);
         }
@@ -232,24 +226,16 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         autoCompView.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, ExploreFragment.class));
         autoCompView.setTypeface(FontUtils.getRegular(getActivity()));
         autoCompView.setOnItemClickListener(this);
-        autoCompView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                boolean handled = false;
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    realizarBuscaAutocomplete(v.getText().toString());
-                    ViewUtils.hideKeyboard(getActivity(), v);
-                    handled = true;
-                }
-                return handled;
+        autoCompView.setOnEditorActionListener((v, actionId, event) -> {
+            boolean handled = false;
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                realizarBuscaAutocomplete(v.getText().toString());
+                ViewUtils.hideKeyboard(getActivity(), v);
+                handled = true;
             }
+            return handled;
         });
-        view.findViewById(R.id.clean).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                autoCompView.setText("");
-            }
-        });
+        view.findViewById(R.id.clean).setOnClickListener(v -> autoCompView.setText(""));
 
         view.findViewById(R.id.locationButton).setOnClickListener(this);
 
@@ -322,7 +308,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         if (estaNoFiltro(item.getCategoria())) {
             marcadores.put(map.addMarker(new MarkerOptions()
                     .position(new LatLng(item.getLatitude(), item.getLongitude()))
-                    .icon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.getInventoryMarker(getActivity(), item.getCategoria().getMarcador())))
+                    .icon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.getInventoryMarker(getActivity(), item.getCategoria().isShowMarker() ? item.getCategoria().getMarcador() : item.getCategoria().getPin())))
                     .title(item.getCategoria().getNome())), item);
         }
     }
@@ -454,17 +440,17 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
     }
 
     private boolean estaNoFiltro(CategoriaRelato categoria) {
-        return busca.getIdsCategoriaRelato().contains(categoria.getId());
+        return busca != null && busca.getIdsCategoriaRelato() != null && busca.getIdsCategoriaRelato().contains(categoria.getId());
     }
 
     private boolean estaNoFiltro(CategoriaInventario categoria) {
-        return busca.getIdsCategoriaInventario().contains(categoria.getId());
+        return busca != null && busca.getIdsCategoriaInventario() != null && busca.getIdsCategoriaInventario().contains(categoria.getId());
     }
 
     private class MarkerRetriever extends AsyncTask<Void, Object, Void> {
 
-        private List<ItemInventario> itensInventario = new CopyOnWriteArrayList<ItemInventario>();
-        private List<ItemRelato> itensRelato = new CopyOnWriteArrayList<ItemRelato>();
+        private List<ItemInventario> itensInventario = new CopyOnWriteArrayList<>();
+        private List<ItemRelato> itensRelato = new CopyOnWriteArrayList<>();
 
         private Request request;
 
@@ -476,33 +462,18 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
         @Override
         protected void onPreExecute() {
-            progressBar.post(new Runnable() {
-                @Override
-                public void run() {
-                    progressBar.setVisibility(View.VISIBLE);
-                }
-            });
+            progressBar.post(() -> progressBar.setVisibility(View.VISIBLE));
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            progressBar.post(new Runnable() {
-                @Override
-                public void run() {
-                    progressBar.setVisibility(View.GONE);
-                }
-            });
+            progressBar.post(() -> progressBar.setVisibility(View.GONE));
         }
 
         @Override
         protected void onCancelled() {
             if (get != null) get.abort();
-            progressBar.post(new Runnable() {
-                @Override
-                public void run() {
-                    progressBar.setVisibility(View.GONE);
-                }
-            });
+            progressBar.post(() -> progressBar.setVisibility(View.GONE));
         }
 
         @Override
@@ -595,7 +566,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                 ItemRelato item = new ItemRelato();
                 item.setId(json.getLong("id"));
                 item.setDescricao(json.getString("description"));
-                item.setProtocolo(json.getString("protocol"));
+                item.setProtocolo(json.optString("protocol", null));
                 item.setEndereco(json.getString("address"));
                 item.setData(DateUtils.getIntervaloTempo(DateUtils.parseRFC3339Date(json.getString("created_at"))));
                 item.setCategoria(service.getById(getActivity(), json.getLong("category_id")));

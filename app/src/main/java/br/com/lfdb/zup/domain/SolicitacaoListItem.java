@@ -17,6 +17,14 @@ public class SolicitacaoListItem implements Serializable {
         this.referencia = referencia;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public static class Status implements Serializable {
 		private static final long serialVersionUID = 1L;
 		private String nome;
@@ -62,6 +70,7 @@ public class SolicitacaoListItem implements Serializable {
     private Double latitude;
     private Double longitude;
     private CategoriaRelato categoria;
+    private Long id;
 
 	private ArrayList<String> fotos;
 

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">ZUP</string>
     <string name="appFacebook_id">205770772949525</string>
     <string name="estatisticas">Estatísticas</string>
     <string name="minha_conta">Minha Conta</string>
@@ -121,9 +120,16 @@
     <string name="logout_social">Logout de Rede Social</string>
     <string name="logout_social_message">Deseja realmente fazer logout do %s</string>
     <string name="failed_social_auth">Falha na autenticação da rede social</string>
+    <string name="selecione_a_categoria_subcategoria">SELECIONE A CATEGORIA E SUBCATEGORIA</string>
+    <string name="confidential_disclaimer">As suas informações pessoais serão mantidas em absoluto sigilo e não serão divulgadas.</string>
 
     <string-array name="foto_menu">
         <item>Escolher foto do álbum</item>
+        <item>Tirar foto</item>
+        <item>Cancelar</item>
+    </string-array>
+
+    <string-array name="foto_menu_restricted">
         <item>Tirar foto</item>
         <item>Cancelar</item>
     </string-array>

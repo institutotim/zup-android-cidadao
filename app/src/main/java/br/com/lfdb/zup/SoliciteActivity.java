@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -46,7 +47,8 @@ import br.com.lfdb.zup.fragment.SoliciteDetalhesFragment;
 import br.com.lfdb.zup.fragment.SoliciteFotosFragment;
 import br.com.lfdb.zup.fragment.SoliciteLocalFragment;
 import br.com.lfdb.zup.fragment.SolicitePontoFragment;
-import br.com.lfdb.zup.fragment.SoliciteTipoFragment;
+import br.com.lfdb.zup.fragment.SoliciteTipoNovoFragment;
+import br.com.lfdb.zup.service.FeatureService;
 import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.service.UsuarioService;
 import br.com.lfdb.zup.social.util.SocialUtils;
@@ -54,6 +56,7 @@ import br.com.lfdb.zup.util.DateUtils;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.NetworkUtils;
 import br.com.lfdb.zup.util.ViewUtils;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class SoliciteActivity extends FragmentActivity implements View.OnClickListener {
 
@@ -63,8 +66,9 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
     private Solicitacao solicitacao = new Solicitacao();
 
     private TextView botaoAvancar;
+    private TextView botaoVoltar;
 
-    private SoliciteTipoFragment tipoFragment;
+    private SoliciteTipoNovoFragment tipoFragment;
     private SoliciteFotosFragment fotosFragment;
     private SoliciteLocalFragment localFragment;
     private SolicitePontoFragment pontoFragment;
@@ -84,26 +88,23 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         botaoAvancar = (TextView) findViewById(R.id.botaoAvancar);
         botaoAvancar.setOnClickListener(this);
         botaoAvancar.setTypeface(FontUtils.getRegular(this));
-        TextView botaoVoltar = (TextView) findViewById(R.id.botaoVoltar);
+        botaoVoltar = (TextView) findViewById(R.id.botaoVoltar);
         botaoVoltar.setOnClickListener(this);
         botaoVoltar.setTypeface(FontUtils.getRegular(this));
 
         TextView botaoCancelar = (TextView) findViewById(R.id.botaoCancelar);
         botaoCancelar.setTypeface(FontUtils.getRegular(this));
-        botaoCancelar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setResult(Activity.RESULT_CANCELED);
-                finish();
-            }
+        botaoCancelar.setOnClickListener(v -> {
+            setResult(Activity.RESULT_CANCELED);
+            finish();
         });
 
         if (savedInstanceState != null) {
-            solicitacao = new Gson().fromJson(savedInstanceState.getString("solicitacao"), Solicitacao.class);
+            solicitacao = (Solicitacao) savedInstanceState.getSerializable("solicitacao");
             atual = new Gson().fromJson(savedInstanceState.getString("passo"), Passo.class);
             restoreFragmentsStates(savedInstanceState);
         } else {
-            tipoFragment = new SoliciteTipoFragment();
+            tipoFragment = new SoliciteTipoNovoFragment();
             getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, tipoFragment).commit();
         }
     }
@@ -111,7 +112,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("solicitacao", new Gson().toJson(solicitacao));
+        outState.putSerializable("solicitacao", solicitacao);
         outState.putString("passo", new Gson().toJson(atual));
         if (fotosFragment != null) {
             outState.putString("imagemTemporaria", fotosFragment.getImagemTemporaria());
@@ -143,39 +144,6 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
             return;
         }
 
-        if (!categoria.getCategoriasInventario().isEmpty()) {
-            if (pontoFragment == null) {
-                pontoFragment = new SolicitePontoFragment();
-                pontoFragment.setCategoria(categoria);
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                if (localFragment != null) {
-                    ft.remove(localFragment).commit();
-                    ft = getSupportFragmentManager().beginTransaction();
-                    localFragment = null;
-                }
-                ft.add(R.id.fragments_place, pontoFragment).hide(tipoFragment).commitAllowingStateLoss();
-            } else {
-                getSupportFragmentManager().beginTransaction().hide(tipoFragment).show(pontoFragment).commitAllowingStateLoss();
-                pontoFragment.setCategoria(categoria);
-            }
-        } else {
-            if (localFragment == null) {
-                localFragment = new SoliciteLocalFragment();
-                localFragment.setMarcador(categoria.getMarcador());
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                if (pontoFragment != null) {
-                    ft.remove(pontoFragment).commit();
-                    ft = getSupportFragmentManager().beginTransaction();
-                    pontoFragment = null;
-                }
-                ft.add(R.id.fragments_place, localFragment).hide(tipoFragment).commitAllowingStateLoss();
-            } else {
-                getSupportFragmentManager().beginTransaction().hide(tipoFragment).show(localFragment).commitAllowingStateLoss();
-                localFragment.setMarcador(categoria.getMarcador());
-            }
-        }
-
-        atual = Passo.LOCAL;
         exibirBarraInferior(true);
     }
 
@@ -208,6 +176,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.botaoAvancar) {
+            botaoVoltar.setVisibility(View.VISIBLE);
             if (atual.equals(Passo.LOCAL)) {
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 if (!getCategoria().getCategoriasInventario().isEmpty()) {
@@ -237,6 +206,40 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
                 atual = Passo.COMENTARIOS;
             } else if (atual.equals(Passo.COMENTARIOS)){
                 solicitar();
+            } else if (atual.equals(Passo.TIPO)) {
+                if (!solicitacao.getCategoria().getCategoriasInventario().isEmpty()) {
+                    if (pontoFragment == null) {
+                        pontoFragment = new SolicitePontoFragment();
+                        pontoFragment.setCategoria(solicitacao.getCategoria());
+                        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                        if (localFragment != null) {
+                            ft.remove(localFragment).commit();
+                            ft = getSupportFragmentManager().beginTransaction();
+                            localFragment = null;
+                        }
+                        ft.add(R.id.fragments_place, pontoFragment).hide(tipoFragment).commitAllowingStateLoss();
+                    } else {
+                        getSupportFragmentManager().beginTransaction().hide(tipoFragment).show(pontoFragment).commitAllowingStateLoss();
+                        pontoFragment.setCategoria(solicitacao.getCategoria());
+                    }
+                } else {
+                    if (localFragment == null) {
+                        localFragment = new SoliciteLocalFragment();
+                        localFragment.setMarcador(solicitacao.getCategoria().getMarcador());
+                        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                        if (pontoFragment != null) {
+                            ft.remove(pontoFragment).commit();
+                            ft = getSupportFragmentManager().beginTransaction();
+                            pontoFragment = null;
+                        }
+                        ft.add(R.id.fragments_place, localFragment).hide(tipoFragment).commitAllowingStateLoss();
+                    } else {
+                        getSupportFragmentManager().beginTransaction().hide(tipoFragment).show(localFragment).commitAllowingStateLoss();
+                        localFragment.setMarcador(solicitacao.getCategoria().getMarcador());
+                    }
+                }
+
+                atual = Passo.LOCAL;
             }
         } else if (v.getId() == R.id.botaoVoltar) {
             botaoAvancar.setText(R.string.proximo);
@@ -252,12 +255,12 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
                     atual = Passo.LOCAL;
                 }
             } else if (atual.equals(Passo.LOCAL)) {
+                botaoVoltar.setVisibility(View.GONE);
                 if (!getCategoria().getCategoriasInventario().isEmpty()) {
                     getSupportFragmentManager().beginTransaction().hide(pontoFragment).show(tipoFragment).commit();
                 } else {
                     getSupportFragmentManager().beginTransaction().hide(localFragment).show(tipoFragment).commit();
                 }
-                exibirBarraInferior(false);
                 atual = Passo.TIPO;
             }
         }
@@ -285,35 +288,20 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
     private void alertarItemInventario() {
         new AlertDialog.Builder(this)
                 .setMessage("O local do relato não foi selecionado corretamente")
-                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                }).show();
+                .setNeutralButton("OK", (dialog, which) -> dialog.dismiss()).show();
     }
 
     private void alertarTamanhoComentario() {
         new AlertDialog.Builder(this)
                 .setMessage("O comentário deve ter menos de 800 caracteres")
-                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                }).show();
+                .setNeutralButton("OK", (dialog, which) -> dialog.dismiss()).show();
     }
 
     @SuppressLint("NewApi")
     private void enviarSolicitacao() {
         if (!NetworkUtils.isInternetPresent(this)) {
             new AlertDialog.Builder(this).setMessage("Sua conexão com a Internet encontra-se indisponível. Verifique a conexão e tente novamente")
-                    .setNeutralButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).show();
+                    .setNeutralButton("OK", (dialog, which) -> dialog.dismiss()).show();
             return;
         }
 
@@ -379,10 +367,13 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
                 if (!isCancelled() && !post.isAborted()) {
                     HttpResponse response = client.execute(post);
                     if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+                        SolicitacaoListItem item = getSolicitacao(EntityUtils.toString(response.getEntity(), "UTF-8"));
+
+
                         if (detalhesFragment.getPublicar()) {
-                            SocialUtils.post(SoliciteActivity.this, "Acabei de publicar uma solicitação com o #ZUP!\n" + solicitacao.getComentario());
+                            SocialUtils.post(SoliciteActivity.this, "Estou colaborando com a minha cidade, reportando problemas e solicitações.\n" + Constantes.WEBSITE_URL + "/" + item.getId() + "\n#ZeladoriaUrbana");
                         }
-                        return getSolicitacao(EntityUtils.toString(response.getEntity(), "UTF-8"));
+                        return item;
                     } else {
                         Log.i("ZUP", new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8")).toString(2));
                     }
@@ -399,14 +390,24 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         protected void onPostExecute(SolicitacaoListItem result) {
             dialog.dismiss();
             if (result != null) {
-                Toast.makeText(SoliciteActivity.this, "Solicitação enviada com sucesso!", Toast.LENGTH_LONG).show();
+                new AlertDialog.Builder(SoliciteActivity.this)
+                        .setTitle("Solicitação enviada")
+                        .setMessage("Você será avisado quando sua solicitação for atualizada\n" +
+                                String.format("Anote seu protocolo: %s", result.getProtocolo()) +
+                                (FeatureService.getInstance(SoliciteActivity.this).isShowResolutionTimeToClientsEnabled() &&
+                                        solicitacao.getCategoria().isTempoResolucaoAtivado() &&
+                                        !solicitacao.getCategoria().isTempoResolucaoPrivado() ?
+                                String.format("\nPrazo de solução: %s", DateUtils.getString(result.getCategoria().getTempoResolucao())) : ""))
+                        .setNeutralButton("OK", (dialog1, which) -> {
+                            Intent i = new Intent(SoliciteActivity.this, SolicitacaoDetalheActivity.class);
+                            i.putExtra("solicitacao", result);
+                            startActivity(i);
 
-                Intent i = new Intent(SoliciteActivity.this, SolicitacaoDetalheActivity.class);
-                i.putExtra("solicitacao", result);
-                startActivity(i);
-
-                setResult(Activity.RESULT_OK);
-                finish();
+                            setResult(Activity.RESULT_OK);
+                            finish();
+                        })
+                        .setCancelable(false)
+                        .show();
             } else {
                 Toast.makeText(SoliciteActivity.this, "Falha no envio da solicitação", Toast.LENGTH_LONG).show();
             }
@@ -440,12 +441,12 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 
         item.setComentario(solicitacao.getComentario());
         item.setData(DateUtils.getIntervaloTempo(new Date()));
-        item.setFotos(new ArrayList<String>());
+        item.setFotos(new ArrayList<>());
         JSONArray fotos = json.getJSONArray("images");
         for (int j = 0; j < fotos.length(); j++) {
             item.getFotos().add(ViewUtils.isMdpiOrLdpi(this) ? fotos.getJSONObject(j).getString("low") : fotos.getJSONObject(j).getString("high"));
         }
-        item.setProtocolo(json.getString("protocol"));
+        item.setProtocolo(json.optString("protocol", null));
         item.setStatus(new SolicitacaoListItem.Status(json.getJSONObject("status").getString("title"), json.getJSONObject("status").getString("color")));
         item.setTitulo(json.getJSONObject("category").getString("title"));
         item.setCategoria(solicitacao.getCategoria());
@@ -453,6 +454,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         item.setLongitude(solicitacao.getLongitude());
         item.setEndereco(solicitacao.getEndereco());
         item.setReferencia(solicitacao.getReferencia());
+        item.setId(json.optLong("id"));
         return item;
     }
 
@@ -464,7 +466,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
         if (bundle.getBoolean("tipo")) {
-            tipoFragment = new SoliciteTipoFragment();
+            tipoFragment = new SoliciteTipoNovoFragment();
             tipoFragment.setArguments(params);
             ft.add(R.id.fragments_place, tipoFragment);
 
@@ -515,5 +517,10 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         }
 
         ft.commitAllowingStateLoss();
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(new CalligraphyContextWrapper(newBase));
     }
 }

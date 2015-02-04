@@ -8,6 +8,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import br.com.lfdb.zup.service.FeatureService;
 import br.com.lfdb.zup.social.auth.FacebookAuth;
 import br.com.lfdb.zup.social.auth.GooglePlusAuth;
 import br.com.lfdb.zup.social.auth.TwitterAuth;
@@ -27,23 +28,17 @@ public class RedesSociaisCadastroActivity extends Activity implements View.OnCli
 
 		TextView botaoVoltar = (TextView) findViewById(R.id.botaoVoltar);
 		botaoVoltar.setTypeface(FontUtils.getRegular(this));
-		botaoVoltar.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				setResult(Activity.RESULT_CANCELED);
-				finish();
-			}
-		});
+		botaoVoltar.setOnClickListener(v -> {
+            setResult(Activity.RESULT_CANCELED);
+            finish();
+        });
 
 		TextView linkPular = (TextView) findViewById(R.id.linkPular);
 		linkPular.setTypeface(FontUtils.getBold(this));
-		linkPular.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				setResult(Activity.RESULT_OK);
-				finish();
-			}
-		});
+		linkPular.setOnClickListener(v -> {
+            setResult(Activity.RESULT_OK);
+            finish();
+        });
 
 		ImageButton botaoFacebook = (ImageButton) findViewById(R.id.botao_logar_facebook);
 		botaoFacebook.setOnClickListener(this);
@@ -51,6 +46,16 @@ public class RedesSociaisCadastroActivity extends Activity implements View.OnCli
 		botaoTwitter.setOnClickListener(this);
 		ImageButton botaoGooglePlus = (ImageButton) findViewById(R.id.botao_logar_google);
 		botaoGooglePlus.setOnClickListener(this);
+
+        if (!FeatureService.getInstance(this).isSocialNetworkFacebookEnabled()) {
+            botaoFacebook.setVisibility(View.GONE);
+        }
+        if (!FeatureService.getInstance(this).isSocialNetworkTwitterEnabled()) {
+            botaoTwitter.setVisibility(View.GONE);
+        }
+        if (!FeatureService.getInstance(this).isSocialNetworkGPlusEnabled()) {
+            botaoGooglePlus.setVisibility(View.GONE);
+        }
 	}
 
 	@Override

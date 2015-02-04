@@ -13,6 +13,8 @@ import java.util.List;
 public class GPSUtils {
 
     public static List<Address> getFromLocationName(Context context, String s) {
+        if (context == null) return new ArrayList<>();
+
         try {
             Geocoder geocoder = new Geocoder(context);
             List<Address> list = filterResults(geocoder.getFromLocationName(s, 10));
@@ -22,8 +24,7 @@ public class GPSUtils {
         }
 
         try {
-            List<Address> list = filterResults(Geocoder2.getFromLocationName(s));
-            return list;
+            return filterResults(Geocoder2.getFromLocationName(s));
         } catch (IOException e) {
             Log.e("ZUP", e.getMessage(), e);
             return Collections.emptyList();
@@ -40,8 +41,7 @@ public class GPSUtils {
         }
 
         try {
-            List<Address> list = filterResults(Geocoder2.getFromLocation(latitude, longitude));
-            return list;
+            return filterResults(Geocoder2.getFromLocation(latitude, longitude));
         } catch (IOException e) {
             Log.e("ZUP", e.getMessage(), e);
             return Collections.emptyList();
@@ -49,7 +49,7 @@ public class GPSUtils {
     }
 
     private static List<Address> filterResults(List<Address> list) {
-        List<Address> arraylist = new ArrayList<Address>();
+        List<Address> arraylist = new ArrayList<>();
         for (Address address : list) {
             if (!Strings.isTrimmedNullOrEmpty(address.getLocality()) || !Strings.isTrimmedNullOrEmpty(address.getSubAdminArea())) {
                 arraylist.add(address);

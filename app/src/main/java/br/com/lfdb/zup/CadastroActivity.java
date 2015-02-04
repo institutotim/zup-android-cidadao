@@ -1,9 +1,20 @@
 package br.com.lfdb.zup;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.text.Html;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.squareup.okhttp.apache.OkApacheClient;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -16,25 +27,14 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.text.Html;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.squareup.okhttp.apache.OkApacheClient;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.domain.Usuario;
+import br.com.lfdb.zup.service.FeatureService;
 import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.service.UsuarioService;
 import br.com.lfdb.zup.util.FontUtils;
@@ -42,11 +42,8 @@ import br.com.lfdb.zup.util.FontUtils;
 public class CadastroActivity extends Activity implements OnClickListener {
 
 	private static final int REQUEST_SOCIAL = 9876;
-	
-	private TextView botaoCancelar;
-	private TextView botaoCriar;
 
-	private EditText campoNome;
+    private EditText campoNome;
 	private EditText campoEmail;
 	private EditText campoSenha;
 	private EditText campoConfirmarSenha;
@@ -64,15 +61,10 @@ public class CadastroActivity extends Activity implements OnClickListener {
 
 		((TextView) findViewById(R.id.novaConta)).setTypeface(FontUtils.getLight(this));
 
-		botaoCancelar = (TextView) findViewById(R.id.botaoCancelar);
+        TextView botaoCancelar = (TextView) findViewById(R.id.botaoCancelar);
 		botaoCancelar.setTypeface(FontUtils.getRegular(this));
-		botaoCancelar.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				finish();				
-			}
-		});
-		botaoCriar = (TextView) findViewById(R.id.botaoCriar);
+		botaoCancelar.setOnClickListener(v -> finish());
+        TextView botaoCriar = (TextView) findViewById(R.id.botaoCriar);
 		botaoCriar.setTypeface(FontUtils.getRegular(this));
 		botaoCriar.setOnClickListener(this);
 
@@ -105,34 +97,30 @@ public class CadastroActivity extends Activity implements OnClickListener {
 		
 		campoBairro = (EditText) findViewById(R.id.campoBairro);
 		campoBairro.setTypeface(FontUtils.getLight(this));
-        campoBairro.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                boolean handled = false;
-                if (actionId == EditorInfo.IME_ACTION_GO) {
-                    validarECadastrar();
-                    handled = true;
-                }
-                return handled;
+        campoBairro.setOnEditorActionListener((v, actionId, event) -> {
+            boolean handled = false;
+            if (actionId == EditorInfo.IME_ACTION_GO) {
+                validarECadastrar();
+                handled = true;
             }
+            return handled;
         });
 		
 		TextView termos = (TextView) findViewById(R.id.termos);
 		termos.setText(Html.fromHtml(getString(R.string.termos_de_uso_cadastro)));
 		termos.setTypeface(FontUtils.getLight(this));
-		termos.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				startActivity(new Intent(CadastroActivity.this, TermosDeUsoActivity.class));				
-			}
-		});
+		termos.setOnClickListener(v -> startActivity(new Intent(CadastroActivity.this, TermosDeUsoActivity.class)));
 	}
 
     private void validarECadastrar() {
         limparFundoCampos();
         List<Integer> validadores = validar();
         if (validadores.isEmpty()) {
-            startActivityForResult(new Intent(this, RedesSociaisCadastroActivity.class), REQUEST_SOCIAL);
+            if (FeatureService.getInstance(this).isAnySocialEnabled()) {
+                startActivityForResult(new Intent(this, RedesSociaisCadastroActivity.class), REQUEST_SOCIAL);
+            } else {
+                cadastrar();
+            }
         } else {
             destacarCampos(validadores);
         }
@@ -148,7 +136,7 @@ public class CadastroActivity extends Activity implements OnClickListener {
 	}
 	
 	private List<Integer> validar() {
-		List<Integer> campos = new ArrayList<Integer>();
+		List<Integer> campos = new ArrayList<>();
 		if (campoSenha.getText().toString().trim().isEmpty() || campoConfirmarSenha.getText().toString().trim().isEmpty() || 
 				!campoSenha.getText().toString().equals(campoConfirmarSenha.getText().toString())) {
 			campos.add(campoSenha.getId());
@@ -200,7 +188,7 @@ public class CadastroActivity extends Activity implements OnClickListener {
 				HttpClient client = new OkApacheClient();
 				HttpPost post = new HttpPost(Constantes.REST_URL + "/users");
 				JSONObject json = new UsuarioService().converterParaJSON(params[0]);
-				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(json.length());
+				List<NameValuePair> nameValuePairs = new ArrayList<>(json.length());
 				Iterator<String> iterator = json.keys();
 				while (iterator.hasNext()) {
 					String key = iterator.next();
@@ -210,7 +198,7 @@ public class CadastroActivity extends Activity implements OnClickListener {
 				HttpResponse response = client.execute(post);
 				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
 					post = new HttpPost(Constantes.REST_URL + "/authenticate");
-					nameValuePairs = new ArrayList<NameValuePair>(2);
+					nameValuePairs = new ArrayList<>(2);
 					nameValuePairs.add(new BasicNameValuePair("email", params[0].getEmail()));
 					nameValuePairs.add(new BasicNameValuePair("password", params[0].getSenha()));
 					post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
@@ -255,7 +243,7 @@ public class CadastroActivity extends Activity implements OnClickListener {
 	
 	private void destacarCampos(List<Integer> campos) {
 		for (Integer id : campos) {
-			((TextView) findViewById(id)).setBackgroundResource(R.drawable.textbox_red);
+			findViewById(id).setBackgroundResource(R.drawable.textbox_red);
 		}
 		Toast.makeText(this, "Complete ou corrija os campos indicados", Toast.LENGTH_LONG).show();
 	}
@@ -263,7 +251,7 @@ public class CadastroActivity extends Activity implements OnClickListener {
 	private void limparFundoCampos() {
 		for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF, R.id.campoTelefone,
 				R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro, R.id.campoSenha, R.id.campoConfirmarSenha)) {
-			((TextView) findViewById(id)).setBackgroundResource(R.drawable.textbox_bg);
+			findViewById(id).setBackgroundResource(R.drawable.textbox_bg);
 		}
 	}
 }

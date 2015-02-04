@@ -51,12 +51,7 @@ public class TwitterAuth extends Activity implements TwitterDialog.TwitterDialog
                         twitter = TwitterFactory.getSingleton();
                         twitter.setOAuthConsumer(SocialConstants.TWITTER_CONSUMER_KEY, SocialConstants.TWITTER_CONSUMER_SECRET);
                         requestToken = twitter.getOAuthRequestToken();
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                new TwitterDialog(TwitterAuth.this, requestToken.getAuthorizationURL(), TwitterAuth.this).show();
-                            }
-                        });
+                        runOnUiThread(() -> new TwitterDialog(TwitterAuth.this, requestToken.getAuthorizationURL(), TwitterAuth.this).show());
                     } catch (TwitterException e) {
                         Log.e("Social", e.getMessage(), e);
                         setResult(Activity.RESULT_CANCELED);
@@ -71,7 +66,7 @@ public class TwitterAuth extends Activity implements TwitterDialog.TwitterDialog
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefs.edit().putString(SocialConstants.PREF_TWITTER_AUTH_TOKEN, accessToken.getToken())
                 .putString(SocialConstants.PREF_TWITTER_AUTH_TOKEN_SECRET, accessToken.getTokenSecret())
-                .putString(SocialConstants.PREF_LOGGED_SOCIAL, "twitter").commit();
+                .putString(SocialConstants.PREF_LOGGED_SOCIAL, "twitter").apply();
     }
 
     private boolean hasAccessToken() {
@@ -93,23 +88,17 @@ public class TwitterAuth extends Activity implements TwitterDialog.TwitterDialog
                         public void run() {
                             try {
                                 saveAccessToken(twitter.getOAuthAccessToken(requestToken, oauthVerifier));
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        progressDialog.dismiss();
-                                        setResult(Activity.RESULT_OK);
-                                        finish();
-                                    }
+                                runOnUiThread(() -> {
+                                    progressDialog.dismiss();
+                                    setResult(Activity.RESULT_OK);
+                                    finish();
                                 });
                             } catch (TwitterException e) {
                                 Log.e("Social", e.getMessage(), e);
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        progressDialog.dismiss();
-                                        setResult(Activity.RESULT_CANCELED);
-                                        finish();
-                                    }
+                                runOnUiThread(() -> {
+                                    progressDialog.dismiss();
+                                    setResult(Activity.RESULT_CANCELED);
+                                    finish();
                                 });
                             }
 

@@ -2,6 +2,7 @@ package br.com.lfdb.zup;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,12 +18,10 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +41,7 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 	private SolicitacoesFragment solFragment;
 	
 	private ArrayList<SolicitacaoListItem> relatos;
-	private HashMap<String, HashMap<String, String>> inventoryData = new HashMap<String, HashMap<String, String>>();
+	private HashMap<String, HashMap<String, String>> inventoryData = new HashMap<>();
 	
 	private ItemInventario item;
 	private TextView solicitacoes;
@@ -62,13 +61,7 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 		
 		TextView voltar = (TextView) findViewById(R.id.botaoVoltar);
 		voltar.setTypeface(FontUtils.getRegular(this));
-		voltar.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				finish();				
-			}
-		});
+		voltar.setOnClickListener(v -> finish());
 
         TextView informacoes = (TextView) findViewById(R.id.botaoInformacoes);
 		informacoes.setTypeface(FontUtils.getLight(this));
@@ -96,8 +89,8 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 
     @Override
 	public void onClick(View v) {
-		((TextView) findViewById(R.id.botaoInformacoes)).setTextColor(getResources().getColorStateList(R.color.text_previous_color));
-		((TextView) findViewById(R.id.botaoSolicitacoes)).setTextColor(getResources().getColorStateList(R.color.text_previous_color));
+		((TextView) findViewById(R.id.botaoInformacoes)).setTextColor(Color.rgb(0x2a, 0xb4, 0xdc));
+		((TextView) findViewById(R.id.botaoSolicitacoes)).setTextColor(Color.rgb(0x2a, 0xb4, 0xdc));
 		
 		switch (v.getId()) {
 		case R.id.botaoInformacoes:
@@ -110,7 +103,7 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 			return;
 		}
 		
-		((TextView) findViewById(v.getId())).setTextColor(getResources().getColorStateList(R.color.text_next_color));
+		((TextView) findViewById(v.getId())).setTextColor(Color.WHITE);
 	}
 	
 	private class Tasker extends AsyncTask<Void, Void, Boolean> implements DialogInterface.OnCancelListener {
@@ -169,14 +162,8 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 
 				montarHashMap(categoria, itemInventario);
 				return Boolean.TRUE;
-            } catch (HttpHostConnectException e) {
-                Log.w("ZUP", e.getMessage());
-                return Boolean.FALSE;
-            } catch (SocketException e) {
-                Log.w("ZUP", e.getMessage());
-                return Boolean.FALSE;
-			} catch (Exception e) {
-				Log.e("ZUP", e.getMessage(), e);
+            } catch (Exception e) {
+				Log.e("ZUP", "Falha ao obter informações do item de inventário", e);
 				return Boolean.FALSE;
 			}
 		}
@@ -185,7 +172,7 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 		protected void onPostExecute(Boolean result) {
 			dialog.dismiss();
 			if (result) {
-				if (relatos.isEmpty()) {
+				if (relatos == null || relatos.isEmpty()) {
 					ocultarAbasAdicionais();
 				} else {
 					prepararAbas();
@@ -204,14 +191,14 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 		
 		private void setRelatos(String json) throws Exception {
 			JSONArray array = new JSONObject(json).getJSONArray("reports");
-			relatos = new ArrayList<SolicitacaoListItem>();
+			relatos = new ArrayList<>();
 			for (int i = 0; i < array.length(); i++) {
 				relatos.add(SolicitacaoListItemAdapter.adapt(DetalheMapaActivity.this, array.getJSONObject(i)));
 			}
 		}
 		
 		private void montarHashMap(String categoria, String itemInventario) throws Exception {
-			List<JSONObject> dados = new ArrayList<JSONObject>();
+			List<JSONObject> dados = new ArrayList<>();
 
             JSONArray data = new JSONObject(itemInventario).getJSONObject("item").getJSONArray("data");
             for (int i = 0; i < data.length(); i++) {
@@ -220,17 +207,17 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 
 			JSONArray sections = new JSONObject(categoria).getJSONObject("category").getJSONArray("sections");
 			for (int i = 0; i < sections.length(); i++) {
-                List<JSONObject> campos = new ArrayList<JSONObject>();
+                List<JSONObject> campos = new ArrayList<>();
                 String sectionName = sections.getJSONObject(i).getString("title");
 				JSONArray fields = sections.getJSONObject(i).getJSONArray("fields");
 				for (int j = 0; j < fields.length(); j++) {
 					campos.add(fields.getJSONObject(j));
 				}
 
-                HashMap<String, String> camposDinamicos = new HashMap<String, String>();
+                HashMap<String, String> camposDinamicos = new HashMap<>();
                 for (JSONObject campo : campos) {
                     for (JSONObject dado : dados) {
-                        if (dado.getLong("inventory_field_id") == campo.getLong("id")) {
+                        if (dado.getJSONObject("field").getLong("id") == campo.getLong("id")) {
                             if (!dado.getString("content").equals("null")) {
                                 camposDinamicos.put(campo.getString("label").equals("null") ?
                                         campo.getString("title") : campo.getString("label"), dado.getString("content"));
@@ -255,8 +242,8 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 	private void ocultarAbasAdicionais() {
 		solicitacoes.setVisibility(View.GONE);
 		
-		((TextView) findViewById(R.id.botaoInformacoes)).setTextColor(getResources().getColorStateList(R.color.text_next_color));
-		((TextView) findViewById(R.id.botaoSolicitacoes)).setTextColor(getResources().getColorStateList(R.color.text_previous_color));
+		((TextView) findViewById(R.id.botaoInformacoes)).setTextColor(Color.WHITE);
+		((TextView) findViewById(R.id.botaoSolicitacoes)).setTextColor(Color.WHITE);
 		getSupportFragmentManager().beginTransaction().hide(solFragment).show(infoFragment).commit();
 	}
 	

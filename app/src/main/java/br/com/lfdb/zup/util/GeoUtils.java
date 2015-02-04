@@ -8,7 +8,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.VisibleRegion;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -51,15 +50,8 @@ public class GeoUtils {
     }
 
     public static Address search(String str, double lat, double lng) {
-        StringBuilder address = new StringBuilder("https://maps.googleapis.com/maps/api/place/search/json");
-        address.append("?sensor=true");
-        address.append("&name=").append(str.replace(" ", "%20"));
-        address.append("&key=").append(Constantes.PLACES_KEY);
-        address.append("&radius=").append(50000);
-        address.append("&location=").append(lat).append(',').append(lng);
-        address.append("&language=pt-BR");
 
-        HttpGet httpGet = new HttpGet(address.toString());
+        HttpGet httpGet = new HttpGet("https://maps.googleapis.com/maps/api/place/search/json" + "?sensor=true" + "&name=" + str.replace(" ", "%20") + "&key=" + Constantes.PLACES_KEY + "&radius=" + 50000 + "&location=" + lat + ',' + lng + "&language=pt-BR");
         HttpClient client = new DefaultHttpClient();
         HttpResponse response;
 
@@ -76,8 +68,6 @@ public class GeoUtils {
                 addr.setLongitude(result.getJSONObject("geometry").getJSONObject("location").getDouble("lng"));
                 return addr;
             }
-        } catch (ClientProtocolException e) {
-            Log.e("ZUP", "Error calling Google geocode webservice.", e);
         } catch (IOException e) {
             Log.e("ZUP", "Error calling Google geocode webservice.", e);
         } catch (JSONException e) {
@@ -107,8 +97,6 @@ public class GeoUtils {
                 addr.setLongitude(result.getJSONObject("geometry").getJSONObject("location").getDouble("lng"));
                 return addr;
             }
-        } catch (ClientProtocolException e) {
-            Log.e("ZUP", "Error calling Google geocode webservice.", e);
         } catch (IOException e) {
             Log.e("ZUP", "Error calling Google geocode webservice.", e);
         } catch (JSONException e) {
@@ -130,7 +118,7 @@ public class GeoUtils {
             response = client.execute(httpGet);
             JSONObject jsonObject = new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8"));
 
-            retList = new ArrayList<Address>();
+            retList = new ArrayList<>();
 
             if ("OK".equalsIgnoreCase(jsonObject.getString("status"))) {
                 JSONArray results = jsonObject.getJSONArray("results");
@@ -144,8 +132,6 @@ public class GeoUtils {
                     retList.add(addr);
                 }
             }
-        } catch (ClientProtocolException e) {
-            Log.e("ZUP", "Error calling Google geocode webservice.", e);
         } catch (IOException e) {
             Log.e("ZUP", "Error calling Google geocode webservice.", e);
         } catch (JSONException e) {

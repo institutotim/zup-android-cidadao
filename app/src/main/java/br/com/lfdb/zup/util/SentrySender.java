@@ -66,14 +66,12 @@ public class SentrySender implements ReportSender {
 		request.setSocketTimeOut(ACRA.getConfig().socketTimeout());
 		request.setMaxNrRetries(ACRA.getConfig().maxNumberOfRequestRetries());
 
-		Hashtable<String, String> headers = new Hashtable<String, String>();
+		Hashtable<String, String> headers = new Hashtable<>();
 		headers.put("X-Sentry-Auth", buildAuthHeader());
 		request.setHeaders(headers);
 
 		try {
 			request.send(config.getSentryURL(), Method.POST, buildJSON(errorContent), org.acra.sender.HttpSender.Type.JSON);
-		} catch (MalformedURLException e) {
-			throw new ReportSenderException("Error while sending report to Sentry.", e);
 		} catch (IOException e) {
 			throw new ReportSenderException("Error while sending report to Sentry.", e);
 		} catch (JSONException e) {
@@ -82,17 +80,8 @@ public class SentrySender implements ReportSender {
 	}
 
 	protected String buildAuthHeader() {
-		StringBuilder header = new StringBuilder();
-		header.append("Sentry sentry_version=3");
-		header.append(",sentry_client=ACRA");
-		header.append(",sentry_timestamp=");
-		header.append(new Date().getTime());
-		header.append(",sentry_key=");
-		header.append(config.getPublicKey());
-		header.append(",sentry_secret=");
-		header.append(config.getSecretKey());
 
-		return header.toString();
+        return "Sentry sentry_version=3" + ",sentry_client=ACRA" + ",sentry_timestamp=" + new Date().getTime() + ",sentry_key=" + config.getPublicKey() + ",sentry_secret=" + config.getSecretKey();
 	}
 
 	public String getTimestampString() {

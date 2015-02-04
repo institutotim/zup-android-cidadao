@@ -1,9 +1,11 @@
 package br.com.lfdb.zup.domain;
 
+import android.graphics.Color;
+
 import java.io.Serializable;
 import java.util.ArrayList;
-
-import android.graphics.Color;
+import java.util.Collections;
+import java.util.List;
 
 public class CategoriaRelato implements Serializable {
 
@@ -14,6 +16,16 @@ public class CategoriaRelato implements Serializable {
 	private String marcador;
 	private String nome;
     private ArrayList<CategoriaInventario> categoriasInventario;
+    private ArrayList<CategoriaRelato> subcategorias;
+    private CategoriaRelato categoriaMae;
+
+    private Long tempoResposta;
+    private Long tempoResolucao;
+
+    private boolean tempoResolucaoAtivado;
+    private boolean tempoResolucaoPrivado;
+
+    private boolean confidencial;
 
 	private ArrayList<Status> status;
 	
@@ -80,7 +92,79 @@ public class CategoriaRelato implements Serializable {
 		this.nome = nome;
 	}
 
-	public static class Status implements Serializable {
+    public List<CategoriaRelato> getSubcategorias() {
+        if (subcategorias == null) return Collections.<CategoriaRelato>emptyList();
+        return subcategorias;
+    }
+
+    public void setSubcategorias(ArrayList<CategoriaRelato> subcategorias) {
+        this.subcategorias = subcategorias;
+    }
+
+    public void addSubcategoria(CategoriaRelato categoria) {
+        if (subcategorias == null) subcategorias = new ArrayList<>();
+        subcategorias.add(categoria);
+    }
+
+    public CategoriaRelato getCategoriaMae() {
+        return categoriaMae;
+    }
+
+    public void setCategoriaMae(CategoriaRelato categoriaMae) {
+        this.categoriaMae = categoriaMae;
+    }
+
+    public boolean isSubcategoria(CategoriaRelato categoria) {
+        if (subcategorias == null || subcategorias.isEmpty() || categoria == null) return false;
+
+        for (CategoriaRelato c : subcategorias) {
+            if (c.getId() == categoria.getId()) return true;
+        }
+
+        return false;
+    }
+
+    public long getTempoResposta() {
+        return tempoResposta;
+    }
+
+    public void setTempoResposta(long tempoResposta) {
+        this.tempoResposta = tempoResposta;
+    }
+
+    public long getTempoResolucao() {
+        return tempoResolucao;
+    }
+
+    public void setTempoResolucao(Long tempoResolucao) {
+        this.tempoResolucao = tempoResolucao;
+    }
+
+    public boolean isConfidencial() {
+        return confidencial;
+    }
+
+    public void setConfidencial(boolean confidencial) {
+        this.confidencial = confidencial;
+    }
+
+    public boolean isTempoResolucaoAtivado() {
+        return tempoResolucaoAtivado;
+    }
+
+    public void setTempoResolucaoAtivado(boolean tempoResolucaoAtivado) {
+        this.tempoResolucaoAtivado = tempoResolucaoAtivado;
+    }
+
+    public boolean isTempoResolucaoPrivado() {
+        return tempoResolucaoPrivado;
+    }
+
+    public void setTempoResolucaoPrivado(boolean tempoResolucaoPrivado) {
+        this.tempoResolucaoPrivado = tempoResolucaoPrivado;
+    }
+
+    public static class Status implements Serializable {
 		private long id;
 		private int cor;
 		private String nome;

@@ -29,4 +29,6 @@
     <dimen name="map_size">300dp</dimen>
     
     <dimen name="splash_margin">315dp</dimen>
+
+    <dimen name="view_pager_height">240dp</dimen>
 </resources>

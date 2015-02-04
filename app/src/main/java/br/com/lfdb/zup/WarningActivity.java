@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.view.View;
 import android.widget.TextView;
 
 import br.com.lfdb.zup.service.LoginService;
@@ -26,30 +25,15 @@ public class WarningActivity extends FragmentActivity {
 
         TextView linkCancelar = (TextView) findViewById(R.id.linkCancelar);
         linkCancelar.setTypeface(FontUtils.getBold(this));
-        linkCancelar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        linkCancelar.setOnClickListener(v -> finish());
 
         TextView botaoCadastrar = (TextView) findViewById(R.id.botaoCadastrar);
         botaoCadastrar.setTypeface(FontUtils.getRegular(this));
-        botaoCadastrar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivityForResult(new Intent(WarningActivity.this, CadastroActivity.class), REGISTER_REQUEST);
-            }
-        });
+        botaoCadastrar.setOnClickListener(v -> startActivityForResult(new Intent(WarningActivity.this, CadastroActivity.class), REGISTER_REQUEST));
 
         TextView botaoLogin = (TextView) findViewById(R.id.botaoLogin);
         botaoLogin.setTypeface(FontUtils.getRegular(this));
-        botaoLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivityForResult(new Intent(WarningActivity.this, LoginActivity.class), LOGIN_REQUEST);
-            }
-        });
+        botaoLogin.setOnClickListener(v -> startActivityForResult(new Intent(WarningActivity.this, LoginActivity.class), LOGIN_REQUEST));
 
         if (new LoginService().usuarioLogado(this)) {
             setResult(Activity.RESULT_OK);

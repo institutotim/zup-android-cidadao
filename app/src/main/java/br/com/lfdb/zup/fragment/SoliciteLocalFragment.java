@@ -2,7 +2,6 @@ package br.com.lfdb.zup.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.location.Address;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -11,7 +10,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.InflateException;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +39,7 @@ import java.util.List;
 
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SoliciteActivity;
+import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.domain.Place;
 import br.com.lfdb.zup.domain.Solicitacao;
 import br.com.lfdb.zup.util.FontUtils;
@@ -53,10 +52,6 @@ import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
 public class SoliciteLocalFragment extends Fragment implements GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener, LocationListener, View.OnClickListener,
         AdapterView.OnItemClickListener {
-
-    // Local inicial: São Paulo
-    private static final double INITIAL_LATITUDE = -23.5501283;
-    private static final double INITIAL_LONGITUDE = -46.6338553;
 
     private GoogleMap map;
     private static View view;
@@ -86,6 +81,12 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
 
     private boolean updateCameraUser = true;
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
+
     @SuppressLint("NewApi")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -105,30 +106,26 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
             Log.w("ZUP", e.getMessage());
         }
 
-        map = ((SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.mapaLocal)).getMap();
+        map = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaLocal)).getMap();
         if (map != null) {
             map.setMyLocationEnabled(true);
             map.getUiSettings().setZoomControlsEnabled(false);
             map.getUiSettings().setMyLocationButtonEnabled(true
             );
 
-            map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-
-                @Override
-                public void onCameraChange(CameraPosition cameraPosition) {
-                    latitude = cameraPosition.target.latitude;
-                    longitude = cameraPosition.target.longitude;
-                    zoomAtual = cameraPosition.zoom;
-                    tvEndereco.setAdapter(null);
-                    tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, ExploreFragment.class));
-                    tvEndereco.dismissDropDown();
-                }
+            map.setOnCameraChangeListener(cameraPosition -> {
+                latitude = cameraPosition.target.latitude;
+                longitude = cameraPosition.target.longitude;
+                zoomAtual = cameraPosition.zoom;
+                tvEndereco.setAdapter(null);
+                tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, ExploreFragment.class));
+                tvEndereco.dismissDropDown();
             });
 
             map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-            CameraPosition p = new CameraPosition.Builder().target(new LatLng(INITIAL_LATITUDE,
-                    INITIAL_LONGITUDE)).zoom(12).build();
+            CameraPosition p = new CameraPosition.Builder().target(new LatLng(Constantes.INITIAL_LATITUDE,
+                    Constantes.INITIAL_LONGITUDE)).zoom(12).build();
             CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
             map.moveCamera(update);
         }
@@ -137,17 +134,14 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
         tvEndereco.setTypeface(FontUtils.getRegular(getActivity()));
         tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, ExploreFragment.class));
         tvEndereco.setOnItemClickListener(this);
-        tvEndereco.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                boolean handled = false;
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    realizarBuscaAutocomplete(v.getText().toString());
-                    ViewUtils.hideKeyboard(getActivity(), v);
-                    handled = true;
-                }
-                return handled;
+        tvEndereco.setOnEditorActionListener((v, actionId, event) -> {
+            boolean handled = false;
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                realizarBuscaAutocomplete(v.getText().toString());
+                ViewUtils.hideKeyboard(getActivity(), v);
+                handled = true;
             }
+            return handled;
         });
 
         tvNumero = (TextView) view.findViewById(R.id.numero);
@@ -282,64 +276,48 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
         new AlertDialog.Builder(getActivity())
                 .setTitle("Endereço do Relato")
                 .setView(dialogView)
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(final DialogInterface dialog, int which) {
-                        final String num = ((TextView) dialogView.findViewById(R.id.numero)).getText().toString();
-                        final String r = ((TextView) dialogView.findViewById(R.id.endereco)).getText().toString();
-                        String referencia = ((TextView) dialogView.findViewById(R.id.referencia)).getText().toString();
-                        if (referencia != null && !referencia.trim().isEmpty()) ((SoliciteActivity) getActivity()).setReferencia(referencia);
+                .setNegativeButton("Cancelar", (dialog, which) -> dialog.dismiss())
+                .setPositiveButton("OK", (dialog, which) -> {
+                    final String num = ((TextView) dialogView.findViewById(R.id.numero)).getText().toString();
+                    final String r = ((TextView) dialogView.findViewById(R.id.endereco)).getText().toString();
+                    String referencia = ((TextView) dialogView.findViewById(R.id.referencia)).getText().toString();
+                    if (referencia != null && !referencia.trim().isEmpty()) ((SoliciteActivity) getActivity()).setReferencia(referencia);
 
-                        if (validarEndereco(r, num)) {
-                            new AsyncTask<Void, Void, Void>() {
-                                @Override
-                                protected Void doInBackground(Void... params) {
-                                    List<Address> addresses = GPSUtils.getFromLocationName(getActivity(), r + ", " + num + " - " + (
-                                            enderecoAtual.getSubAdminArea() != null ? enderecoAtual.getSubAdminArea() : enderecoAtual.getLocality()));
-                                    if (addresses.isEmpty()) {
-                                        getActivity().runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                Toast.makeText(getActivity(), "Endereço não encontrado", Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                                        dialog.dismiss();
+                    if (validarEndereco(r, num)) {
+                        new AsyncTask<Void, Void, Void>() {
+                            @Override
+                            protected Void doInBackground(Void... params) {
+                                List<Address> addresses = GPSUtils.getFromLocationName(getActivity(), r + ", " + num + " - " + (
+                                        enderecoAtual.getSubAdminArea() != null ? enderecoAtual.getSubAdminArea() : enderecoAtual.getLocality()));
+                                if (addresses.isEmpty()) {
+                                    getActivity().runOnUiThread(() -> Toast.makeText(getActivity(), "Endereço não encontrado", Toast.LENGTH_SHORT).show());
+                                    dialog.dismiss();
+                                } else {
+                                    final Address address = addresses.get(0);
+
+                                    rua = address.getThoroughfare();
+                                    if (!num.isEmpty() && StringUtils.isNumeric(num.substring(0, 1))) {
+                                        numero = num;
                                     } else {
-                                        final Address address = addresses.get(0);
-
-                                        rua = address.getThoroughfare();
-                                        if (!num.isEmpty() && StringUtils.isNumeric(num.substring(0, 1))) {
-                                            numero = num;
-                                        } else {
-                                            numero = "";
-                                        }
-
-                                        getActivity().runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                ignoreUpdate = true;
-                                                CameraPosition position = new CameraPosition.Builder().target(new LatLng(address.getLatitude(), address.getLongitude())).zoom(zoomAtual).build();
-                                                CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
-                                                map.animateCamera(update);
-
-                                                tvEndereco.setAdapter(null);
-                                                tvEndereco.setText(rua);
-                                                tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, ExploreFragment.class));
-                                                tvNumero.setText(numero);
-                                            }
-                                        });
+                                        numero = "";
                                     }
-                                    return null;
+
+                                    getActivity().runOnUiThread(() -> {
+                                        ignoreUpdate = true;
+                                        CameraPosition position = new CameraPosition.Builder().target(new LatLng(address.getLatitude(), address.getLongitude())).zoom(zoomAtual).build();
+                                        CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+                                        map.animateCamera(update);
+
+                                        tvEndereco.setAdapter(null);
+                                        tvEndereco.setText(rua);
+                                        tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, ExploreFragment.class));
+                                        tvNumero.setText(numero);
+                                    });
                                 }
-                            }.execute();
-                            dialog.dismiss();
-                        }
+                                return null;
+                            }
+                        }.execute();
+                        dialog.dismiss();
                     }
                 })
                 .show();
@@ -366,60 +344,45 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
             new AlertDialog.Builder(getActivity())
                     .setTitle(r)
                     .setView(dialogView)
-                    .setNegativeButton("Sem número", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            numero = "s/n";
-                            atualizarCampoEndereco();
-                        }
+                    .setNegativeButton("Sem número", (dialog, which) -> {
+                        dialog.dismiss();
+                        numero = "s/n";
+                        atualizarCampoEndereco();
                     })
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(final DialogInterface dialog, int which) {
-                            final String num = ((EditText) dialogView.findViewById(R.id.numero)).getText().toString();
-                            if (!num.isEmpty()) {
-                                new AsyncTask<Void, Void, Void>() {
-                                    @Override
-                                    protected Void doInBackground(Void... params) {
-                                        List<Address> addresses = GPSUtils.getFromLocationName(getActivity(), new StringBuilder(rua).append(", ").append(num).append(" - ")
-                                                .append(enderecoAtual.getSubAdminArea() != null ? enderecoAtual.getSubAdminArea() : enderecoAtual.getLocality()).toString());
-                                        if (addresses.isEmpty()) {
-                                            getActivity().runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    Toast.makeText(getActivity(), "Endereço não encontrado", Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
-                                            dialog.dismiss();
+                    .setPositiveButton("OK", (dialog, which) -> {
+                        final String num1 = ((EditText) dialogView.findViewById(R.id.numero)).getText().toString();
+                        if (!num1.isEmpty()) {
+                            new AsyncTask<Void, Void, Void>() {
+                                @Override
+                                protected Void doInBackground(Void... params) {
+                                    List<Address> addresses = GPSUtils.getFromLocationName(getActivity(), rua + ", " + num1 + " - " + (enderecoAtual.getSubAdminArea() != null ? enderecoAtual.getSubAdminArea() : enderecoAtual.getLocality()));
+                                    if (addresses.isEmpty()) {
+                                        getActivity().runOnUiThread(() -> Toast.makeText(getActivity(), "Endereço não encontrado", Toast.LENGTH_SHORT).show());
+                                        dialog.dismiss();
+                                    } else {
+                                        final Address address = addresses.get(0);
+                                        rua = address.getThoroughfare();
+                                        if (!num1.isEmpty() && StringUtils.isNumeric(num1.substring(0, 1))) {
+                                            numero = num1;
                                         } else {
-                                            final Address address = addresses.get(0);
-                                            rua = address.getThoroughfare();
-                                            if (!num.isEmpty() && StringUtils.isNumeric(num.substring(0, 1))) {
-                                                numero = num;
-                                            } else {
-                                                numero = "";
-                                            }
-                                            getActivity().runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    ignoreUpdate = true;
-                                                    CameraPosition position = new CameraPosition.Builder().target(new LatLng(address.getLatitude(), address.getLongitude())).zoom(zoomAtual).build();
-                                                    CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
-                                                    map.animateCamera(update);
-
-                                                    tvEndereco.setAdapter(null);
-                                                    tvEndereco.setText(rua);
-                                                    tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, ExploreFragment.class));
-
-                                                    tvNumero.setText(numero);
-                                                }
-                                            });
+                                            numero = "";
                                         }
-                                        return null;
+                                        getActivity().runOnUiThread(() -> {
+                                            ignoreUpdate = true;
+                                            CameraPosition position = new CameraPosition.Builder().target(new LatLng(address.getLatitude(), address.getLongitude())).zoom(zoomAtual).build();
+                                            CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+                                            map.animateCamera(update);
+
+                                            tvEndereco.setAdapter(null);
+                                            tvEndereco.setText(rua);
+                                            tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, ExploreFragment.class));
+
+                                            tvNumero.setText(numero);
+                                        });
                                     }
-                                }.execute();
-                            }
+                                    return null;
+                                }
+                            }.execute();
                         }
                     })
                     .show();
@@ -430,12 +393,9 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
     }
 
     private void atualizarCampoEndereco() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                tvEndereco.setText(rua);
-                tvNumero.setText(numero);
-            }
+        getActivity().runOnUiThread(() -> {
+            tvEndereco.setText(rua);
+            tvNumero.setText(numero);
         });
     }
 
@@ -503,12 +463,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                         continue;
                     }
 
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            setAddressLoaderVisible(true);
-                        }
-                    });
+                    getActivity().runOnUiThread(() -> setAddressLoaderVisible(true));
 
                     List<Address> addresses = GPSUtils.getFromLocation(getActivity(), lat, lon);
                     if (!addresses.isEmpty()) {
@@ -523,12 +478,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                         }
                     }
 
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            setAddressLoaderVisible(false);
-                        }
-                    });
+                    getActivity().runOnUiThread(() -> setAddressLoaderVisible(false));
                 }
             }
             return null;
@@ -553,8 +503,10 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                 numero = "";
                 tvNumero.setText("");
             }
-            tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, SoliciteLocalFragment.class));
-            tvEndereco.dismissDropDown();
+            if (getActivity() != null) {
+                tvEndereco.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, SoliciteLocalFragment.class));
+                tvEndereco.dismissDropDown();
+            }
         }
     }
 

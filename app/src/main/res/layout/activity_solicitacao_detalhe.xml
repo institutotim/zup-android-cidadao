@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff" >
+    android:background="#fff">
 
     <RelativeLayout
         android:id="@+id/topbar"
@@ -11,7 +11,7 @@
         android:layout_alignParentTop="true"
         android:background="@android:color/white"
         android:paddingBottom="10dp"
-        android:paddingTop="10dp" >
+        android:paddingTop="10dp">
 
         <TextView
             android:id="@+id/botaoVoltar"
@@ -30,61 +30,79 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/topbar"
         android:background="#e6e6e6"
-        android:padding="10dp" >
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/indicadorStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="3dp"
             android:textAllCaps="true"
             android:textColor="#fff"
             android:textSize="@dimen/row_status" />
 
-        <TextView
-            android:id="@+id/protocolo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textAllCaps="true"
-            android:textColor="#999"
-            android:textSize="@dimen/instruction_text_size" />
     </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/categoryInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/info_label"
+        android:background="#f3f3f3"
+        android:orientation="horizontal"
+        android:padding="15dp">
+
+        <ImageView
+            android:id="@+id/categoryIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/categoryName"
+                style="?android:attr/textAppearanceMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/subcategoryName"
+                style="?android:attr/textAppearanceSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/info_label" >
+        android:layout_below="@id/categoryInfo">
 
         <LinearLayout
-            android:background="#fff"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:background="#fff"
+            android:orientation="vertical">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="10dp" >
-
-                <TextView
-                    android:id="@+id/titulo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentTop="true"
-                    android:textSize="@dimen/row_title" />
+                android:padding="10dp">
 
                 <TextView
                     android:id="@+id/endereco"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
                     android:layout_below="@id/titulo"
                     android:textSize="@dimen/topbar_button_font_size" />
 
@@ -104,13 +122,22 @@
                     android:textAllCaps="true"
                     android:textColor="#666"
                     android:textSize="@dimen/small_text_size" />
+
+                <TextView
+                    android:id="@+id/protocolo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/data"
+                    android:textAllCaps="true"
+                    android:textColor="#666"
+                    android:textSize="@dimen/small_text_size" />
             </RelativeLayout>
 
             <fragment
                 android:id="@+id/map"
+                class="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/map_size"
-                class="com.google.android.gms.maps.SupportMapFragment" />
+                android:layout_height="@dimen/map_size" />
 
             <android.support.v4.view.ViewPager
                 android:id="@+id/pager"

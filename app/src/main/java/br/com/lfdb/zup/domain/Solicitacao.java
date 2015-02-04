@@ -10,7 +10,7 @@ public class Solicitacao implements Serializable {
 	private CategoriaRelato categoria;
 	private double latitude;
 	private double longitude;
-	private ArrayList<String> fotos = new ArrayList<String>();
+	private ArrayList<String> fotos = new ArrayList<>();
 	private String comentario;
     private String endereco;
     private String referencia;

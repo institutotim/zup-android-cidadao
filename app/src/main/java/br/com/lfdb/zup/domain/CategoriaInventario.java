@@ -10,6 +10,8 @@ public class CategoriaInventario implements Serializable {
     private String iconeInativo;
 	private String marcador;
 	private String nome;
+    private String pin;
+    private boolean showMarker;
 
 	public CategoriaInventario() {
 	}
@@ -79,4 +81,20 @@ public class CategoriaInventario implements Serializable {
 			return false;
 		return true;
 	}
+
+    public String getPin() {
+        return pin;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
+    }
+
+    public boolean isShowMarker() {
+        return showMarker;
+    }
+
+    public void setShowMarker(boolean showMarker) {
+        this.showMarker = showMarker;
+    }
 }

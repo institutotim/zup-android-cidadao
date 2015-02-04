@@ -1,22 +1,10 @@
 package br.com.lfdb.zup.fragment;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -33,14 +21,23 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.common.collect.Lists;
 import com.squareup.okhttp.apache.OkApacheClient;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import br.com.lfdb.zup.EditarContaActivity;
 import br.com.lfdb.zup.OpeningActivity;
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SolicitacaoDetalheActivity;
-import br.com.lfdb.zup.widget.SolicitacaoListItemAdapter;
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.domain.SolicitacaoListItem;
 import br.com.lfdb.zup.domain.Usuario;
@@ -48,11 +45,12 @@ import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.service.UsuarioService;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.ImageUtils;
+import br.com.lfdb.zup.widget.SolicitacaoListItemAdapter;
 
 public class MinhaContaFragment extends Fragment implements AdapterView.OnItemClickListener,
         AbsListView.OnScrollListener {
-	
-	private static final int REQUEST_EDIT_USER = 1099;
+
+    private static final int REQUEST_EDIT_USER = 1099;
 
     private TextView nomeUsuario;
 
@@ -63,66 +61,45 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
     private boolean shouldContinueLoading = true;
     private String lastResult = "";
 
-    List<SolicitacaoListItem> listaSolicitacoes = new ArrayList<SolicitacaoListItem>();
+    List<SolicitacaoListItem> listaSolicitacoes = new ArrayList<>();
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_minha_conta, container, false);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_minha_conta, container, false);
 
         TextView botaoSair = (TextView) view.findViewById(R.id.botaoSair);
-		botaoSair.setTypeface(FontUtils.getRegular(getActivity()));
-		botaoSair.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                new AlertDialog.Builder(getActivity())
-                        .setMessage(R.string.deseja_realmente_sair_da_sua_conta)
-                        .setPositiveButton(R.string.sim, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                new LoginService().registrarLogout(getActivity());
-                                startActivity(new Intent(getActivity(), OpeningActivity.class));
-                                getActivity().finish();
-                            }
-                        })
-                        .setNegativeButton(R.string.nao, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .show();
-
-            }
-        });
+        botaoSair.setTypeface(FontUtils.getRegular(getActivity()));
+        botaoSair.setOnClickListener(v -> new AlertDialog.Builder(getActivity())
+                .setMessage(R.string.deseja_realmente_sair_da_sua_conta)
+                .setPositiveButton(R.string.sim, (dialog, which) -> {
+                    new LoginService().registrarLogout(getActivity());
+                    startActivity(new Intent(getActivity(), OpeningActivity.class));
+                    getActivity().finish();
+                })
+                .setNegativeButton(R.string.nao, (dialog, which) -> dialog.dismiss())
+                .show());
 
         TextView botaoEditar = (TextView) view.findViewById(R.id.botaoEditar);
-		botaoEditar.setTypeface(FontUtils.getRegular(getActivity()));
-		botaoEditar.setOnClickListener(new View.OnClickListener() {
+        botaoEditar.setTypeface(FontUtils.getRegular(getActivity()));
+        botaoEditar.setOnClickListener(v -> startActivityForResult(new Intent(getActivity(), EditarContaActivity.class), REQUEST_EDIT_USER));
 
-            @Override
-            public void onClick(View v) {
-                startActivityForResult(new Intent(getActivity(), EditarContaActivity.class), REQUEST_EDIT_USER);
-            }
-        });
-		
-		((TextView) view.findViewById(R.id.instrucoes)).setTypeface(FontUtils.getBold(getActivity()));
+        ((TextView) view.findViewById(R.id.instrucoes)).setTypeface(FontUtils.getBold(getActivity()));
 
-		List<SolicitacaoListItem> items = new ArrayList<SolicitacaoListItem>();
-		
-		((TextView) view.findViewById(R.id.minhaConta)).setTypeface(FontUtils.getLight(getActivity()));
-		nomeUsuario = (TextView) view.findViewById(R.id.nomeUsuario);
-		nomeUsuario.setTypeface(FontUtils.getLight(getActivity()));
-		
-		Usuario usuario = new UsuarioService().getUsuarioAtivo(getActivity());
-		if (usuario != null) {
-			nomeUsuario.setText(usuario.getNome() != null ? usuario.getNome() : usuario.getEmail());
-		}
-		
-		TextView solicitacoes = (TextView) view.findViewById(R.id.solicitacoes);
-		solicitacoes.setTypeface(FontUtils.getBold(getActivity()));
-		solicitacoes.setText(items.size() + " " + 
-				(items.size() == 1 ? getString(R.string.solicitacao) : getString(R.string.solicitacoes)));
+        List<SolicitacaoListItem> items = new ArrayList<>();
+
+        ((TextView) view.findViewById(R.id.minhaConta)).setTypeface(FontUtils.getLight(getActivity()));
+        nomeUsuario = (TextView) view.findViewById(R.id.nomeUsuario);
+        nomeUsuario.setTypeface(FontUtils.getLight(getActivity()));
+
+        Usuario usuario = new UsuarioService().getUsuarioAtivo(getActivity());
+        if (usuario != null) {
+            nomeUsuario.setText(usuario.getNome() != null ? usuario.getNome() : usuario.getEmail());
+        }
+
+        TextView solicitacoes = (TextView) view.findViewById(R.id.solicitacoes);
+        solicitacoes.setTypeface(FontUtils.getBold(getActivity()));
+        solicitacoes.setText(items.size() + " " +
+                (items.size() == 1 ? getString(R.string.solicitacao) : getString(R.string.solicitacoes)));
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
             new Tasker().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -136,13 +113,13 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
         list.setAdapter(adapter);
         list.setOnScrollListener(this);
 
-		return view;
-	}
-	
-	@Override
-	public void onHiddenChanged(boolean hidden) {
-		super.onHiddenChanged(hidden);
-		if (!hidden) {
+        return view;
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
             lastPageLoaded = 0;
             shouldContinueLoading = true;
             lastResult = "";
@@ -152,13 +129,13 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
             } else {
                 new Tasker().execute();
             }
-		}
-	}
-	
-	private void preencherLista(List<SolicitacaoListItem> itens) {
+        }
+    }
+
+    private void preencherLista(List<SolicitacaoListItem> itens) {
         listaSolicitacoes.addAll(itens);
         adapter.notifyDataSetChanged();
-	}
+    }
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -181,73 +158,90 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 
     public class SolicitacaoAdapter extends ArrayAdapter<SolicitacaoListItem> {
 
-		private List<SolicitacaoListItem> items;
+        private List<SolicitacaoListItem> items;
 
-		public SolicitacaoAdapter(Context context, List<SolicitacaoListItem> objects) {
-			super(context, R.layout.solicitacao_row, objects);
-			items = objects;
-		}
+        public SolicitacaoAdapter(Context context, List<SolicitacaoListItem> objects) {
+            super(context, R.layout.solicitacao_row, objects);
+            items = objects;
+        }
 
-		@SuppressLint("NewApi")
-		@SuppressWarnings("deprecation")
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			View row = getActivity().getLayoutInflater().inflate(R.layout.solicitacao_row, parent, false);
-			SolicitacaoListItem item = items.get(position);
+        @SuppressLint("NewApi")
+        @SuppressWarnings("deprecation")
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View row = getActivity().getLayoutInflater().inflate(R.layout.solicitacao_row, parent, false);
+            SolicitacaoListItem item = items.get(position);
 
-			TextView titulo = (TextView) row.findViewById(R.id.titulo);
-			titulo.setText(item.getTitulo());
-			titulo.setTypeface(FontUtils.getLight(getContext()));
-			
-			TextView data = (TextView) row.findViewById(R.id.data);
-			data.setText(item.getData());
-			data.setTypeface(FontUtils.getBold(getContext()));
-			
-			TextView protocolo = (TextView) row.findViewById(R.id.protocolo);
-			protocolo.setText(getString(R.string.protocolo) + " " + item.getProtocolo());
-			protocolo.setTypeface(FontUtils.getRegular(getContext()));
-			
-			row.findViewById(R.id.bg).setBackgroundColor(item.getStatus().getCor());
-			TextView indicadorStatus = (TextView) row.findViewById(R.id.indicadorStatus);
-			indicadorStatus.setTypeface(FontUtils.getBold(getContext()));
-			int fiveDp = (int) ImageUtils.dpToPx(getActivity(), 5);
-			int tenDp = (int) ImageUtils.dpToPx(getActivity(), 10);
-			indicadorStatus.setPadding(tenDp, fiveDp, tenDp, fiveDp);
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-				indicadorStatus.setBackgroundDrawable(ImageUtils.getStatusBackground(getActivity(), item.getStatus().getCor()));
-			} else {
-				indicadorStatus.setBackground(ImageUtils.getStatusBackground(getActivity(), item.getStatus().getCor()));
-			}
-			indicadorStatus.setText(item.getStatus().getNome());
+            TextView titulo = (TextView) row.findViewById(R.id.titulo);
 
-			return row;
-		}
-	}
 
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		SolicitacaoListItem item = (SolicitacaoListItem) parent.getItemAtPosition(position);
-		Intent intent = new Intent(getActivity(), SolicitacaoDetalheActivity.class);
-		intent.putExtra("solicitacao", item);
-		startActivity(intent);
-	}
-	
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == REQUEST_EDIT_USER && resultCode == Activity.RESULT_OK) {
-			Usuario usuario = new UsuarioService().getUsuarioAtivo(getActivity());
-			if (usuario != null) {
-				nomeUsuario.setText(usuario.getNome() != null ? usuario.getNome() : usuario.getEmail());
-			}
-		}
-	}
-	
-	public class Tasker extends AsyncTask<Void, Void, String> {
-		
-		private ProgressDialog dialog;
+            TextView subcategoria = (TextView) row.findViewById(R.id.subcategoria);
+            if (item.getCategoria().getCategoriaMae() != null) {
+                titulo.setText(item.getCategoria().getNome());
+                titulo.setTypeface(FontUtils.getLight(getContext()));
 
-		@Override
-		protected void onPreExecute() {
+                subcategoria.setText(item.getCategoria().getCategoriaMae().getNome());
+                subcategoria.setTypeface(FontUtils.getLight(getContext()));
+            } else {
+                titulo.setText(item.getTitulo());
+                titulo.setTypeface(FontUtils.getLight(getContext()));
+                subcategoria.setVisibility(View.GONE);
+            }
+
+
+            TextView data = (TextView) row.findViewById(R.id.data);
+            data.setText(item.getData());
+            data.setTypeface(FontUtils.getBold(getContext()));
+
+            TextView protocolo = (TextView) row.findViewById(R.id.protocolo);
+            if (item.getProtocolo() != null) {
+                protocolo.setText(getString(R.string.protocolo) + " " + item.getProtocolo());
+                protocolo.setTypeface(FontUtils.getRegular(getContext()));
+            } else {
+                protocolo.setVisibility(View.GONE);
+            }
+
+            row.findViewById(R.id.bg).setBackgroundColor(item.getStatus().getCor());
+            TextView indicadorStatus = (TextView) row.findViewById(R.id.indicadorStatus);
+            indicadorStatus.setTypeface(FontUtils.getBold(getContext()));
+            int fiveDp = (int) ImageUtils.dpToPx(getActivity(), 5);
+            int tenDp = (int) ImageUtils.dpToPx(getActivity(), 10);
+            indicadorStatus.setPadding(tenDp, fiveDp, tenDp, fiveDp);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+                indicadorStatus.setBackgroundDrawable(ImageUtils.getStatusBackground(getActivity(), item.getStatus().getCor()));
+            } else {
+                indicadorStatus.setBackground(ImageUtils.getStatusBackground(getActivity(), item.getStatus().getCor()));
+            }
+            indicadorStatus.setText(item.getStatus().getNome());
+
+            return row;
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        SolicitacaoListItem item = (SolicitacaoListItem) parent.getItemAtPosition(position);
+        Intent intent = new Intent(getActivity(), SolicitacaoDetalheActivity.class);
+        intent.putExtra("solicitacao", item);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_EDIT_USER && resultCode == Activity.RESULT_OK) {
+            Usuario usuario = new UsuarioService().getUsuarioAtivo(getActivity());
+            if (usuario != null) {
+                nomeUsuario.setText(usuario.getNome() != null ? usuario.getNome() : usuario.getEmail());
+            }
+        }
+    }
+
+    public class Tasker extends AsyncTask<Void, Void, String> {
+
+        private ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
             if (shouldContinueLoading) {
                 dialog = new ProgressDialog(getActivity());
                 dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -255,10 +249,10 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
                 dialog.setMessage("Por favor, aguarde...");
                 dialog.show();
             }
-		}
+        }
 
-		@Override
-		protected String doInBackground(Void... params) {
+        @Override
+        protected String doInBackground(Void... params) {
             if (shouldContinueLoading) {
                 try {
                     isLoading = true;
@@ -283,11 +277,11 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
                     Log.e("ZUP", e.getMessage(), e);
                 }
             }
-			return null;
-		}
-		
-		@Override
-		protected void onPostExecute(String result) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
             isLoading = false;
             if (dialog != null) dialog.dismiss();
             if (shouldContinueLoading) {
@@ -296,24 +290,24 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
                         JSONObject obj = new JSONObject(result);
                         setReportCount(obj.getInt("total_reports_by_user"));
                         JSONArray array = obj.getJSONArray("reports");
-                        List<SolicitacaoListItem> itens = new ArrayList<SolicitacaoListItem>();
+                        List<SolicitacaoListItem> itens = new ArrayList<>();
                         for (int i = 0; i < array.length(); i++) {
                             itens.add(SolicitacaoListItemAdapter.adapt(getActivity(), array.getJSONObject(i)));
                         }
 
                         if (itens.isEmpty() || itens.size() < 10) shouldContinueLoading = false;
                         lastPageLoaded++;
-                        preencherLista(Lists.reverse(itens));
+                        preencherLista(itens);
                     } catch (Exception e) {
                         Log.e("ZUP", e.getMessage(), e);
-                        Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos", Toast.LENGTH_LONG).show();
+                        if (getActivity() != null) Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos", Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos", Toast.LENGTH_LONG).show();
+                    if (getActivity() != null) Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos", Toast.LENGTH_LONG).show();
                 }
             }
-		}
-	}
+        }
+    }
 
     private void setReportCount(int reportCount) {
         TextView solicitacoes = (TextView) getView().findViewById(R.id.solicitacoes);
