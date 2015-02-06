@@ -3,6 +3,8 @@ package br.com.lfdb.zup;
 import android.content.Context;
 import android.support.multidex.MultiDexApplication;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
 import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
 
@@ -18,8 +20,12 @@ public class ZupApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
 
+        JodaTimeAndroid.init(this);
         new Thread(() -> {
-            CalligraphyConfig.initDefault("fonts/OpenSans-Regular.ttf", R.attr.fontPath);
+            CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                    .setDefaultFontPath("fonts/OpenSans-Regular.ttf")
+                    .setFontAttrId(R.attr.fontPath)
+                    .build());
 
             if (!BuildConfig.DEBUG) {
                 ACRA.init(this);

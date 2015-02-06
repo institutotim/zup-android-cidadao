@@ -418,7 +418,7 @@ public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSee
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(new CalligraphyContextWrapper(newBase));
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     @OnClick(R.id.seletorCategorias)

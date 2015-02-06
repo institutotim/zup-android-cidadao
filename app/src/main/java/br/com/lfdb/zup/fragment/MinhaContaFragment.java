@@ -292,7 +292,11 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
                         JSONArray array = obj.getJSONArray("reports");
                         List<SolicitacaoListItem> itens = new ArrayList<>();
                         for (int i = 0; i < array.length(); i++) {
-                            itens.add(SolicitacaoListItemAdapter.adapt(getActivity(), array.getJSONObject(i)));
+                            try {
+                                itens.add(SolicitacaoListItemAdapter.adapt(getActivity(), array.getJSONObject(i)));
+                            } catch (Exception e) {
+                                Log.e("ZUP", "não foi possível parsear o relato", e);
+                            }
                         }
 
                         if (itens.isEmpty() || itens.size() < 10) shouldContinueLoading = false;
@@ -300,10 +304,12 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
                         preencherLista(itens);
                     } catch (Exception e) {
                         Log.e("ZUP", e.getMessage(), e);
-                        if (getActivity() != null) Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos", Toast.LENGTH_LONG).show();
+                        if (getActivity() != null)
+                            Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos", Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    if (getActivity() != null) Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos", Toast.LENGTH_LONG).show();
+                    if (getActivity() != null)
+                        Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos", Toast.LENGTH_LONG).show();
                 }
             }
         }

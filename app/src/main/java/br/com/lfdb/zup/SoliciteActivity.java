@@ -204,7 +204,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
                 }
                 botaoAvancar.setText(R.string.publicar);
                 atual = Passo.COMENTARIOS;
-            } else if (atual.equals(Passo.COMENTARIOS)){
+            } else if (atual.equals(Passo.COMENTARIOS)) {
                 solicitar();
             } else if (atual.equals(Passo.TIPO)) {
                 if (!solicitacao.getCategoria().getCategoriasInventario().isEmpty()) {
@@ -316,7 +316,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         return solicitacao.getReferencia() != null ? solicitacao.getReferencia() : "";
     }
 
-    public class Tasker extends AsyncTask<Void, Void, SolicitacaoListItem> implements DialogInterface.OnCancelListener{
+    public class Tasker extends AsyncTask<Void, Void, SolicitacaoListItem> implements DialogInterface.OnCancelListener {
 
         private ProgressDialog dialog;
         private HttpPost post;
@@ -397,7 +397,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
                                 (FeatureService.getInstance(SoliciteActivity.this).isShowResolutionTimeToClientsEnabled() &&
                                         solicitacao.getCategoria().isTempoResolucaoAtivado() &&
                                         !solicitacao.getCategoria().isTempoResolucaoPrivado() ?
-                                String.format("\nPrazo de solução: %s", DateUtils.getString(result.getCategoria().getTempoResolucao())) : ""))
+                                        String.format("\nPrazo de solução: %s", DateUtils.getString(result.getCategoria().getTempoResolucao())) : ""))
                         .setNeutralButton("OK", (dialog1, which) -> {
                             Intent i = new Intent(SoliciteActivity.this, SolicitacaoDetalheActivity.class);
                             i.putExtra("solicitacao", result);
@@ -521,6 +521,6 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(new CalligraphyContextWrapper(newBase));
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 }
