@@ -203,7 +203,7 @@ public class SolicitacaoDetalheActivity extends FragmentActivity {
             TextView message = ButterKnife.findById(view, R.id.message);
             message.setText(comentario.getMensagem());
             TextView autor = ButterKnife.findById(view, R.id.author);
-            autor.setText(String.format("Enviado por %s em %s", getString(R.string.prefeitura), DateUtils.formatDate(this, comentario.getCriacao())));
+            autor.setText(String.format("Enviado por %s\n%s", getString(R.string.prefeitura), DateUtils.formatDate(this, comentario.getCriacao())));
             commentContainer.addView(view);
         }
     }
