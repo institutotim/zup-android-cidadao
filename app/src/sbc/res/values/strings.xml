@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">ZUP SBC</string>
     <string name="google_key">AIzaSyD0R2hFDONVaH1IUUqny6zW7yzHS2klTos</string>
+    <string name="prefeitura">Prefeitura de São Bernardo do Campo</string>
 </resources>

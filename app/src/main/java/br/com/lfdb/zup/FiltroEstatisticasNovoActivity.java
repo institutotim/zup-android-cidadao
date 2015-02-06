@@ -53,7 +53,7 @@ public class FiltroEstatisticasNovoActivity extends FragmentActivity implements 
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(new CalligraphyContextWrapper(newBase));
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     @OnClick(R.id.botaoConcluido)
