@@ -15,14 +15,15 @@ import br.com.lfdb.zup.util.ViewUtils;
 
 public class SolicitacaoListItemAdapter {
 
-	public static SolicitacaoListItem adapt(Context context, JSONObject json) throws Exception {
-		CategoriaRelatoService service = new CategoriaRelatoService();
-		SolicitacaoListItem item = new SolicitacaoListItem();
-		item.setComentario(json.getString("description"));
-		item.setData(DateUtils.getIntervaloTempo(DateUtils.parseRFC3339Date(json.getString("created_at"))));
-		item.setEndereco(json.getString("address"));
+    public static SolicitacaoListItem adapt(Context context, JSONObject json) throws Exception {
+        CategoriaRelatoService service = new CategoriaRelatoService();
+        SolicitacaoListItem item = new SolicitacaoListItem();
+        item.setId(json.getLong("id"));
+        item.setComentario(json.getString("description"));
+        item.setData(DateUtils.getIntervaloTempo(DateUtils.parseRFC3339Date(json.getString("created_at"))));
+        item.setEndereco(json.getString("address"));
         item.setReferencia(json.optString("reference"));
-		item.setFotos(new ArrayList<>());
+        item.setFotos(new ArrayList<>());
 
         JSONArray array = json.getJSONArray("images");
         for (int j = 0; j < array.length(); j++) {
@@ -31,13 +32,14 @@ public class SolicitacaoListItemAdapter {
 
         CategoriaRelato categoria;
         if (json.has("category_id")) {
-		    categoria = service.getById(context, json.getLong("category_id"));
+            categoria = service.getById(context, json.getLong("category_id"));
         } else {
             categoria = service.getById(context, json.getJSONObject("category").getLong("id"));
         }
-		item.setTitulo(categoria.getNome());
+        item.setTitulo(categoria.getNome());
         item.setCategoria(categoria);
-		item.setProtocolo(json.optString("protocol", null));
+        item.setProtocolo(json.optString("protocol", null));
+        item.setCreatorId(json.getJSONObject("user").getLong("id"));
 
         if (json.has("status_id")) {
             CategoriaRelato.Status status = service.getStatusById(context, categoria.getId(), json.getLong("status_id"));
@@ -49,6 +51,6 @@ public class SolicitacaoListItemAdapter {
 
         item.setLatitude(json.getJSONObject("position").getDouble("latitude"));
         item.setLongitude(json.getJSONObject("position").getDouble("longitude"));
-		return item;
-	}
+        return item;
+    }
 }

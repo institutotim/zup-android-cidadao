@@ -6,10 +6,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -18,10 +21,27 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.squareup.okhttp.apache.OkApacheClient;
 import com.viewpagerindicator.IconPageIndicator;
 import com.viewpagerindicator.PageIndicator;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
+import org.joda.time.DateTime;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.domain.ComentarioRelato;
 import br.com.lfdb.zup.domain.SolicitacaoListItem;
+import br.com.lfdb.zup.service.LoginService;
+import br.com.lfdb.zup.util.DateUtils;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.ImageUtils;
 import br.com.lfdb.zup.widget.ImagePagerAdapter;
@@ -38,16 +58,21 @@ public class SolicitacaoDetalheActivity extends FragmentActivity {
     @InjectView(R.id.subcategoryName)
     TextView subcategoryName;
 
+    @InjectView(R.id.comment_container)
+    ViewGroup commentContainer;
+
+    SolicitacaoListItem solicitacao;
+
     @SuppressWarnings("deprecation")
-	@SuppressLint("NewApi")
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_solicitacao_detalhe);
+    @SuppressLint("NewApi")
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_solicitacao_detalhe);
         ButterKnife.inject(this);
 
-        SolicitacaoListItem solicitacao = (SolicitacaoListItem) getIntent().getExtras().getSerializable("solicitacao");
-		boolean alterarLabel = getIntent().getExtras().getBoolean("alterar_botao", false);
+        solicitacao = (SolicitacaoListItem) getIntent().getExtras().getSerializable("solicitacao");
+        boolean alterarLabel = getIntent().getExtras().getBoolean("alterar_botao", false);
 
         TextView protocolo = (TextView) findViewById(R.id.protocolo);
         if (solicitacao.getProtocolo() == null || solicitacao.getProtocolo().equalsIgnoreCase("null")) {
@@ -57,7 +82,7 @@ public class SolicitacaoDetalheActivity extends FragmentActivity {
             protocolo.setTypeface(FontUtils.getBold(this));
         }
 
-		TextView endereco = (TextView) findViewById(R.id.endereco);
+        TextView endereco = (TextView) findViewById(R.id.endereco);
         endereco.setText(solicitacao.getEndereco());
         endereco.setTypeface(FontUtils.getLight(this));
 
@@ -65,13 +90,13 @@ public class SolicitacaoDetalheActivity extends FragmentActivity {
         referencia.setText(solicitacao.getReferencia());
         referencia.setTypeface(FontUtils.getLight(this));
 
-		TextView data = (TextView) findViewById(R.id.data);
-		data.setText(getString(R.string.enviada) + " " + solicitacao.getData());
-		data.setTypeface(FontUtils.getBold(this));
+        TextView data = (TextView) findViewById(R.id.data);
+        data.setText(getString(R.string.enviada) + " " + solicitacao.getData());
+        data.setTypeface(FontUtils.getBold(this));
 
-		ViewPager mPager = (ViewPager) findViewById(R.id.pager);
-		if (solicitacao.getFotos().isEmpty()) {
-			mPager.setVisibility(View.GONE);
+        ViewPager mPager = (ViewPager) findViewById(R.id.pager);
+        if (solicitacao.getFotos().isEmpty()) {
+            mPager.setVisibility(View.GONE);
             findViewById(R.id.indicator).setVisibility(View.GONE);
 
             GoogleMap map = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
@@ -87,36 +112,36 @@ public class SolicitacaoDetalheActivity extends FragmentActivity {
             map.addMarker(new MarkerOptions()
                     .position(new LatLng(solicitacao.getLatitude(), solicitacao.getLongitude()))
                     .icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(this, "reports", solicitacao.getCategoria().getMarcador()))));
-		} else {
+        } else {
             findViewById(R.id.map).setVisibility(View.GONE);
-			ImagePagerAdapter mAdapter = new ImagePagerAdapter(getSupportFragmentManager(), solicitacao.getFotos());
-			mPager.setAdapter(mAdapter);
-			PageIndicator mIndicator = (IconPageIndicator) findViewById(R.id.indicator);
-			mIndicator.setViewPager(mPager);
-		}		
+            ImagePagerAdapter mAdapter = new ImagePagerAdapter(getSupportFragmentManager(), solicitacao.getFotos());
+            mPager.setAdapter(mAdapter);
+            PageIndicator mIndicator = (IconPageIndicator) findViewById(R.id.indicator);
+            mIndicator.setViewPager(mPager);
+        }
 
-		TextView comentario = (TextView) findViewById(R.id.comentario);
-		comentario.setTypeface(FontUtils.getRegular(this));
-		comentario.setText(solicitacao.getComentario());
+        TextView comentario = (TextView) findViewById(R.id.comentario);
+        comentario.setTypeface(FontUtils.getRegular(this));
+        comentario.setText(solicitacao.getComentario());
 
-		TextView botaoVoltar = (TextView) findViewById(R.id.botaoVoltar);
-		if (alterarLabel) {
-			botaoVoltar.setText(R.string.solicitaces_maiusculo);
-		}
-		botaoVoltar.setTypeface(FontUtils.getRegular(this));
-		botaoVoltar.setOnClickListener(v -> finish());
+        TextView botaoVoltar = (TextView) findViewById(R.id.botaoVoltar);
+        if (alterarLabel) {
+            botaoVoltar.setText(R.string.solicitaces_maiusculo);
+        }
+        botaoVoltar.setTypeface(FontUtils.getRegular(this));
+        botaoVoltar.setOnClickListener(v -> finish());
 
-		TextView indicadorStatus = (TextView) findViewById(R.id.indicadorStatus);
-		indicadorStatus.setTypeface(FontUtils.getBold(this));
-		int fiveDp = (int) ImageUtils.dpToPx(this, 5);
-		int tenDp = (int) ImageUtils.dpToPx(this, 10);
-		indicadorStatus.setPadding(tenDp, fiveDp, tenDp, fiveDp);
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-			indicadorStatus.setBackgroundDrawable(ImageUtils.getStatusBackground(this, solicitacao.getStatus().getCor()));
-		} else {
-			indicadorStatus.setBackground(ImageUtils.getStatusBackground(this, solicitacao.getStatus().getCor()));
-		}
-		indicadorStatus.setText(solicitacao.getStatus().getNome());
+        TextView indicadorStatus = (TextView) findViewById(R.id.indicadorStatus);
+        indicadorStatus.setTypeface(FontUtils.getBold(this));
+        int fiveDp = (int) ImageUtils.dpToPx(this, 5);
+        int tenDp = (int) ImageUtils.dpToPx(this, 10);
+        indicadorStatus.setPadding(tenDp, fiveDp, tenDp, fiveDp);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+            indicadorStatus.setBackgroundDrawable(ImageUtils.getStatusBackground(this, solicitacao.getStatus().getCor()));
+        } else {
+            indicadorStatus.setBackground(ImageUtils.getStatusBackground(this, solicitacao.getStatus().getCor()));
+        }
+        indicadorStatus.setText(solicitacao.getStatus().getNome());
 
         if (solicitacao.getCategoria().getCategoriaMae() != null) {
             categoryIcon.setImageBitmap(ImageUtils.getScaledCustom(this, "reports",
@@ -129,10 +154,57 @@ public class SolicitacaoDetalheActivity extends FragmentActivity {
             categoryName.setText(solicitacao.getCategoria().getNome());
             subcategoryName.setVisibility(View.GONE);
         }
-	}
+
+        loadComments();
+    }
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(new CalligraphyContextWrapper(newBase));
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    private void loadComments() {
+        new Thread(() -> {
+            try {
+                HttpClient client = new OkApacheClient();
+                HttpGet get = new HttpGet(Constantes.REST_URL + String.format("/reports/%d/comments", solicitacao.getId()));
+                get.setHeader("X-App-Token", new LoginService().getToken(this));
+                HttpResponse response = client.execute(get);
+                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                    String raw = EntityUtils.toString(response.getEntity(), "UTF-8");
+                    fillData(new JSONObject(raw).getJSONArray("comments"));
+                }
+            } catch (Exception e) {
+                Log.e("ZUP", "Couldn't retrieve comments", e);
+                if (!BuildConfig.DEBUG) Crashlytics.logException(e);
+            }
+        }).start();
+    }
+
+    private void fillData(JSONArray list) throws Exception {
+        final List<ComentarioRelato> comentarios = new ArrayList<>();
+        for (int i = 0; i < list.length(); i++) {
+            JSONObject json = list.getJSONObject(i);
+            if (json.getInt("visibility") == 0 || (json.getInt("visibility") == 1 &&
+                    new LoginService().getUserId(this) == solicitacao.getCreatorId())) {
+                ComentarioRelato comentario = new ComentarioRelato();
+                comentario.setMensagem(json.getString("message"));
+                comentario.setCriacao(new DateTime(json.getString("created_at")).toDate());
+                comentarios.add(comentario);
+            }
+        }
+
+        runOnUiThread(() -> buildUi(comentarios));
+    }
+
+    private void buildUi(List<ComentarioRelato> comentarios) {
+        for (ComentarioRelato comentario : comentarios) {
+            View view = getLayoutInflater().inflate(R.layout.item_comentario_relato, commentContainer, false);
+            TextView message = ButterKnife.findById(view, R.id.message);
+            message.setText(comentario.getMensagem());
+            TextView autor = ButterKnife.findById(view, R.id.author);
+            autor.setText(String.format("Enviado por %s\n%s", getString(R.string.prefeitura), DateUtils.formatDate(this, comentario.getCriacao())));
+            commentContainer.addView(view);
+        }
     }
 }

@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">ZUP Staging</string>
     <string name="google_key">AIzaSyDQm-4GmbP4DFV_Sq72N6ZGaLbDYMTfAlg</string>
+    <string name="prefeitura">Prefeitura de São Bernardo do Campo</string>
 </resources>
