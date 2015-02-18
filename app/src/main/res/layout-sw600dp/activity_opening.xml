@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/loginBox"
@@ -11,7 +11,7 @@
         android:layout_marginLeft="115dp"
         android:layout_marginRight="115dp"
         android:baselineAligned="false"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -19,14 +19,14 @@
             android:layout_margin="10dp"
             android:baselineAligned="false"
             android:orientation="horizontal"
-            android:weightSum="2" >
+            android:weightSum="2">
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
                 android:layout_weight="1"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/labelPossuiConta"
@@ -51,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/labelNaoPossuiConta"
@@ -72,6 +72,13 @@
             </LinearLayout>
         </LinearLayout>
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="10dp"
+            android:src="@drawable/logo_login" />
+
         <TextView
             android:id="@+id/linkPular"
             android:layout_width="wrap_content"
@@ -89,7 +96,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@id/loginBox"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" >
+        android:layout_centerHorizontal="true">
 
         <android.support.v4.view.ViewPager
             android:id="@+id/pager"

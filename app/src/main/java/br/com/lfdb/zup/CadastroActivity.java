@@ -38,6 +38,7 @@ import br.com.lfdb.zup.service.FeatureService;
 import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.service.UsuarioService;
 import br.com.lfdb.zup.util.FontUtils;
+import br.com.lfdb.zup.validador.CpfValidador;
 
 public class CadastroActivity extends Activity implements OnClickListener {
 
@@ -141,7 +142,7 @@ public class CadastroActivity extends Activity implements OnClickListener {
 				!campoSenha.getText().toString().equals(campoConfirmarSenha.getText().toString())) {
 			campos.add(campoSenha.getId());
 			campos.add(campoConfirmarSenha.getId());
-		}		
+		}
 		
 		for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF, R.id.campoTelefone,
 				R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro)) {
@@ -149,6 +150,10 @@ public class CadastroActivity extends Activity implements OnClickListener {
 				campos.add(id);
 			}
 		}
+
+        if (!CpfValidador.isValid(campoCPF.getText().toString().trim().replace("-", "").replace(".", ""))) {
+            campos.add(campoCPF.getId());
+        }
 		
 		return campos;
 	}

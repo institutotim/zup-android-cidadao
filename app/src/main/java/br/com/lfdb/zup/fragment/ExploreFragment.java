@@ -186,6 +186,9 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
         map = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map)).getMap();
 
+        boolean showLogo = getResources().getBoolean(R.bool.show_logo_header);
+        if (showLogo) view.findViewById(R.id.logo_header).setVisibility(View.VISIBLE);
+
         TextView botaoFiltrar = (TextView) view.findViewById(R.id.botaoFiltrar);
         botaoFiltrar.setTypeface(FontUtils.getRegular(getActivity()));
         botaoFiltrar.setOnClickListener(v -> {
