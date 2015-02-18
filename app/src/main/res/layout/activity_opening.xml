@@ -70,13 +70,20 @@
             </LinearLayout>
         </LinearLayout>
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="15dp"
+            android:src="@drawable/logo_login" />
+
         <TextView
             android:id="@+id/linkPular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:clickable="true"
-            android:padding="30dp"
+            android:padding="10dp"
             android:text="@string/pular_e_acessar_o_aplicativo"
             android:textColor="@color/text_next_color"
             android:textSize="14sp" />
