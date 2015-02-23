@@ -6,9 +6,11 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +23,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import com.squareup.okhttp.apache.OkApacheClient;
 
 import org.apache.http.HttpResponse;
@@ -31,6 +37,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,9 +79,35 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
         botaoSair.setOnClickListener(v -> new AlertDialog.Builder(getActivity())
                 .setMessage(R.string.deseja_realmente_sair_da_sua_conta)
                 .setPositiveButton(R.string.sim, (dialog, which) -> {
-                    new LoginService().registrarLogout(getActivity());
-                    startActivity(new Intent(getActivity(), OpeningActivity.class));
-                    getActivity().finish();
+                    final ProgressDialog dialog1 = new ProgressDialog(getActivity());
+                    dialog1.setMessage("Saindo...");
+                    dialog1.setCancelable(false);
+                    dialog1.show();
+
+                    new Thread(() -> {
+                        try {
+                            GoogleCloudMessaging.getInstance(getActivity()).unregister();
+                            OkHttpClient client = new OkHttpClient();
+                            Request request = new Request.Builder()
+                                    .addHeader("X-App-Token", new LoginService().getToken(getActivity()))
+                                    .url(Constantes.REST_URL + "/sign_out?token=" + Uri.encode(new LoginService().getToken(getActivity())))
+                                    .delete()
+                                    .build();
+                            Response response = client.newCall(request).execute();
+                            if (response.isSuccessful()) {
+                                dialog1.dismiss();
+                                PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().remove("gcm").apply();
+                                startActivity(new Intent(getActivity(), OpeningActivity.class));
+                                getActivity().finish();
+                            } else {
+                                dialog1.dismiss();
+                                getActivity().runOnUiThread(() -> Toast.makeText(getActivity(), "Ops... Não foi possível realizar seu logout...", Toast.LENGTH_SHORT).show());
+                            }
+                        } catch (IOException e) {
+                            dialog1.dismiss();
+                            e.printStackTrace();
+                        }
+                    }).start();
                 })
                 .setNegativeButton(R.string.nao, (dialog, which) -> dialog.dismiss())
                 .show());
