@@ -12,6 +12,8 @@ import org.apache.http.util.ByteArrayBuffer;
 import android.content.Context;
 import android.os.Environment;
 
+import br.com.lfdb.zup.core.Constantes;
+
 public class FileUtils {
 
 	public static boolean imageExists(Context context, String filename) {
@@ -50,6 +52,8 @@ public class FileUtils {
     }
 	
 	public static void downloadImage(Context context, String url) throws Exception {
+        if (!url.startsWith("http")) url = Constantes.REST_URL + (url.startsWith("/") ? url : ("/" + url));
+
 		String[] parts = url.split("/");
 		String filename = parts[parts.length - 1];
 		if (!imageExists(context, filename)) {
@@ -69,6 +73,8 @@ public class FileUtils {
 	}
 
     public static void downloadImage(Context context, String subfolder, String url) throws Exception {
+        if (!url.startsWith("http")) url = Constantes.REST_URL + (url.startsWith("/") ? url : ("/" + url));
+
         String[] parts = url.split("/");
         String filename = parts[parts.length - 1];
         if (!imageExists(context, subfolder, filename)) {
