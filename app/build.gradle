@@ -16,7 +16,7 @@ android {
         minSdkVersion 10
         targetSdkVersion 21
         versionCode 1
-        versionName '0.2.17'
+        versionName '0.2.18'
         multiDexEnabled = true
     }
     signingConfigs {
@@ -70,15 +70,15 @@ dependencies {
     compile 'com.google.code.gson:gson:2.3.1'
     compile 'org.apache.commons:commons-lang3:3.3.2'
     compile 'com.jakewharton:butterknife:6.1.0'
-    compile 'uk.co.chrisjenx:calligraphy:2.0.1'
+    compile 'uk.co.chrisjenx:calligraphy:2.0.2'
     compile 'org.twitter4j:twitter4j-core:4.0.2'
     compile 'com.squareup.okhttp:okhttp:2.2.0'
     compile 'com.squareup.okhttp:okhttp-apache:2.2.0'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.2.0'
     compile 'com.google.guava:guava:18.0'
-    compile 'com.squareup.picasso:picasso:2.4.0'
+    compile 'com.squareup.picasso:picasso:2.5.0'
     compile 'net.danlew:android.joda:2.7.1'
-    compile('com.crashlytics.sdk.android:crashlytics:2.2.1@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.2.2@aar') {
         transitive = true;
     }
     compile('oauth.signpost:signpost-commonshttp4:1.2.1.2') {
@@ -90,7 +90,7 @@ dependencies {
     compile('org.apache.httpcomponents:httpcore:4.3.3') {
         exclude module: 'httpclient'
     }
-    compile('org.apache.httpcomponents:httpmime:4.3.6') {
+    compile('org.apache.httpcomponents:httpmime:4.4') {
         exclude module: 'httpclient'
     }
     compile('com.facebook.android:facebook-android-sdk:3.23.0') {
