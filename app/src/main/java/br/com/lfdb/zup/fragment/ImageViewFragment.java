@@ -1,6 +1,7 @@
 package br.com.lfdb.zup.fragment;
 
 import br.com.lfdb.zup.R;
+import br.com.lfdb.zup.core.Constantes;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -40,6 +41,7 @@ public class ImageViewFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		ImageView imageView = new ImageView(getActivity());
 		//imageView.setImageBitmap(ImageUtils.loadFromFile(mContent));
+        if (!mContent.startsWith("http")) mContent = Constantes.REST_URL + (mContent.startsWith("/") ? mContent : ("/" + mContent));
         Picasso.with(getActivity()).load(Uri.parse(mContent)).placeholder(R.drawable.loading).into(imageView);
         imageView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
