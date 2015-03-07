@@ -77,8 +77,8 @@ public class Updater {
                     String marker = subcategory.getJSONObject("marker").getJSONObject(density).getString("mobile");
                     FileUtils.downloadImage(context, type, marker);
                     JSONObject icon = subcategory.getJSONObject("icon").getJSONObject(density).getJSONObject("mobile");
-                    FileUtils.downloadImage(context, type, icon.getString("active").startsWith("http") ? icon.getString("active") : Constantes.REST_URL + iconUrl.getString("active"));
-                    FileUtils.downloadImage(context, type, icon.getString("disabled").startsWith("http") ? icon.getString("disabled") : Constantes.REST_URL + iconUrl.getString("disabled"));
+                    FileUtils.downloadImage(context, type, icon.getString("active").startsWith("http") ? icon.getString("active") : Constantes.REST_URL + icon.getString("active"));
+                    FileUtils.downloadImage(context, type, icon.getString("disabled").startsWith("http") ? icon.getString("disabled") : Constantes.REST_URL + icon.getString("disabled"));
                 }
             }
 		}
