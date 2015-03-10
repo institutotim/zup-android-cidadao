@@ -98,6 +98,7 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
                                 dialog1.dismiss();
                                 PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().remove("gcm").apply();
                                 startActivity(new Intent(getActivity(), OpeningActivity.class));
+                                new LoginService().registrarLogout(getActivity());
                                 getActivity().finish();
                             } else {
                                 dialog1.dismiss();
