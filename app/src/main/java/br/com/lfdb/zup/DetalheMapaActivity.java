@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.domain.ItemInventario;
 import br.com.lfdb.zup.domain.SolicitacaoListItem;
 import br.com.lfdb.zup.fragment.InformacoesFragment;
@@ -125,7 +126,7 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 		protected Boolean doInBackground(Void... params) {
 			try {
 				HttpClient client = new OkApacheClient();
-				get = new HttpGet(Constantes.REST_URL + "/reports/inventory/" + item.getId() + "/items");
+				get = new HttpGet(Constantes.REST_URL + "/reports/inventory/" + item.getId() + "/items" + ConstantesBase.getItemRelatoQuery(DetalheMapaActivity.this) + ",data.field.id,data.content");
 				get.setHeader("X-App-Token", new LoginService().getToken(DetalheMapaActivity.this));
 
                 if (isCancelled()) return Boolean.FALSE;
@@ -136,7 +137,7 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 				}
 				
 				// Dados (campos dinâmicos)
-				get = new HttpGet(Constantes.REST_URL + "/inventory/categories/" + item.getCategoria().getId() + "?display_type=full");
+				get = new HttpGet(Constantes.REST_URL + "/inventory/categories/" + item.getCategoria().getId() + ConstantesBase.getCategoriasInventarioQuery(DetalheMapaActivity.this) + ",sections.title,sections.fields.label");
 				get.setHeader("X-App-Token", new LoginService().getToken(DetalheMapaActivity.this));
 
                 if (isCancelled()) return Boolean.FALSE;

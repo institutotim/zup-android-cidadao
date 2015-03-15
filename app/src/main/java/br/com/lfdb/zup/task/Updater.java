@@ -19,6 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.util.FileUtils;
 import br.com.lfdb.zup.util.ImageUtils;
 
@@ -27,15 +28,15 @@ public class Updater {
 	public void update(Context context) throws Exception {
 		try {
 			HttpClient client = new OkApacheClient();
-			HttpGet get = new HttpGet(Constantes.REST_URL + "/reports/categories?display_type=full");
+            HttpGet get = new HttpGet(Constantes.REST_URL + "/reports/categories" + ConstantesBase.getCategoriasRelatoQuery(context) + "&display_type=full");
 			HttpResponse response = client.execute(get);
 			
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				saveCategories(context, EntityUtils.toString(response.getEntity(), "UTF-8"), "reports");
 			}
 			
-			get = new HttpGet(Constantes.REST_URL + "/inventory/categories");
-			response = client.execute(get);
+			get = new HttpGet(Constantes.REST_URL + "/inventory/categories" + ConstantesBase.getCategoriasInventarioQuery(context));
+            response = client.execute(get);
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				saveCategories(context, EntityUtils.toString(response.getEntity(), "UTF-8"), "inventory");
 			}

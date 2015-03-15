@@ -58,6 +58,7 @@ import br.com.lfdb.zup.MainActivity;
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SolicitacaoDetalheActivity;
 import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.domain.BuscaExplore;
 import br.com.lfdb.zup.domain.CategoriaInventario;
 import br.com.lfdb.zup.domain.CategoriaRelato;
@@ -486,7 +487,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                 HttpResponse response;
 
                 for (Long id : busca.getIdsCategoriaInventario()) {
-                    get = new HttpGet(Constantes.REST_URL + "/inventory/items?position[latitude]=" + request.latitude + "&position[longitude]="
+                    get = new HttpGet(Constantes.REST_URL + "/inventory/items" + ConstantesBase.getItemInventarioQuery(getActivity()) + "&position[latitude]=" + request.latitude + "&position[longitude]="
                             + request.longitude + "&position[distance]=" + request.raio + "&max_items=" + MAX_ITEMS_PER_REQUEST + "&inventory_category_id=" + id);
                     get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
 
@@ -500,12 +501,13 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                 }
 
                 for (Long id : busca.getIdsCategoriaRelato()) {
-                    String query = Constantes.REST_URL + "/reports/items?position[latitude]=" + request.latitude + "&position[longitude]="
+                    String query = Constantes.REST_URL + "/reports/items" + ConstantesBase.getItemRelatoQuery(getActivity()) + "&position[latitude]=" + request.latitude + "&position[longitude]="
                             + request.longitude + "&position[distance]=" + request.raio + "&max_items=" + MAX_ITEMS_PER_REQUEST + "&category_id=" + id + "&begin_date="
-                            + busca.getPeriodo().getDateString();
+                            + busca.getPeriodo().getDateString() + "&display_type=full";
                     if (busca.getStatus() != null) {
                         query += "&statuses=" + busca.getStatus().getId();
                     }
+                    Log.d("REQUEST", query);
                     get = new HttpGet(query);
                     get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
 
@@ -572,7 +574,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                 item.setProtocolo(json.optString("protocol", null));
                 item.setEndereco(json.getString("address"));
                 item.setData(DateUtils.getIntervaloTempo(DateUtils.parseRFC3339Date(json.getString("created_at"))));
-                item.setCategoria(service.getById(getActivity(), json.getLong("category_id")));
+                item.setCategoria(service.getById(getActivity(), json.getJSONObject("category").getLong("id")));
                 item.setLatitude(json.getJSONObject("position").getDouble("latitude"));
                 item.setLongitude(json.getJSONObject("position").getDouble("longitude"));
                 item.setIdItemInventario(json.optLong("inventory_item_id", -1));
