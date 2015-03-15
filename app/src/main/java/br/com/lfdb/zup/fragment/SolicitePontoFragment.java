@@ -55,6 +55,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SoliciteActivity;
 import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.domain.CategoriaInventario;
 import br.com.lfdb.zup.domain.CategoriaRelato;
 import br.com.lfdb.zup.domain.ItemInventario;
@@ -371,7 +372,7 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
                 HttpResponse response;
 
                 for (CategoriaInventario c : categoria.getCategoriasInventario()) {
-                    get = new HttpGet(Constantes.REST_URL + "/inventory/items?position[latitude]=" + request.latitude + "&position[longitude]="
+                    get = new HttpGet(Constantes.REST_URL + "/inventory/items" + ConstantesBase.getItemInventarioQuery(getActivity()) + "&position[latitude]=" + request.latitude + "&position[longitude]="
                             + request.longitude + "&position[distance]=" + request.raio + "&max_items=" + MAX_ITEMS_PER_REQUEST + "&inventory_category_id=" + c.getId());
                     get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
 
