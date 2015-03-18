@@ -78,7 +78,7 @@ public class SplashActivity extends Activity {
                     Response response = client.newCall(request).execute();
                     if (!response.isSuccessful()) throw new Exception();
 
-                    item = SolicitacaoListItemAdapter.adapt(context, new JSONObject(response.body().string()));
+                    item = SolicitacaoListItemAdapter.adapt(context, new JSONObject(response.body().string()).getJSONObject("report"));
                 }
             } catch (Exception e) {
                 error = true;

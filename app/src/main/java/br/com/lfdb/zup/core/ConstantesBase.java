@@ -29,7 +29,8 @@ public class ConstantesBase {
                 .append("inventory_item_id,")
                 .append("status_id,")
                 .append("reference,")
-                .append("images")
+                .append("images,")
+                .append("user.id")
                 .toString();
     }
 

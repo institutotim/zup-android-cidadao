@@ -18,7 +18,7 @@ public class PushReceiver extends BroadcastReceiver {
         if (String.valueOf(new LoginService().getUserId(context)).equals(intent.getExtras().getString("user_id"))) {
             Intent i = new Intent(context, SplashActivity.class);
             i.putExtra("report_id", Long.valueOf(intent.getStringExtra("object_id")));
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, i, 0);
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, Long.valueOf(System.currentTimeMillis()).intValue(), i, 0);
 
             Notification notification = new NotificationCompat.Builder(context)
                     .setSmallIcon(R.drawable.ic_stat_zup)
