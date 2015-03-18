@@ -29,7 +29,7 @@ public class ConstantesBase {
                 .append("inventory_item_id,")
                 .append("status_id,")
                 .append("reference,")
-                .append("images_structure")
+                .append("images")
                 .toString();
     }
 
@@ -37,10 +37,10 @@ public class ConstantesBase {
         String imageSize = ImageUtils.shouldDownloadRetinaIcon(context) ? "retina" : "default";
         return new StringBuilder("?return_fields=")
                 .append("plot_format,")
-                .append("icon_structure,")
+                .append("icon,")
                 .append("id,")
-                .append("marker_structure,")
-                .append("pin_structure,")
+                .append("marker,")
+                .append("pin,")
                 .append("title")
                 .toString();
     }
@@ -48,8 +48,8 @@ public class ConstantesBase {
     public static String getCategoriasRelatoQuery(Context context) {
         String imageSize = ImageUtils.shouldDownloadRetinaIcon(context) ? "retina" : "default";
         return new StringBuilder("?return_fields=")
-                .append("icon_structure,")
-                .append("marker_structure,")
+                .append("icon,")
+                .append("marker,")
                 .append("id,")
                 .append("title,")
                 .append("resolution_time,")
@@ -62,8 +62,8 @@ public class ConstantesBase {
                 .append("statuses.color,")
                 .append("inventory_categories.id,")
                         // subcategories
-                .append("subcategories.").append("icon_structure,")
-                .append("subcategories.").append("marker_structure,")
+                .append("subcategories.").append("icon,")
+                .append("subcategories.").append("marker,")
                 .append("subcategories.").append("id,")
                 .append("subcategories.").append("title,")
                 .append("subcategories.").append("resolution_time,")
