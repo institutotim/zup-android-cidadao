@@ -18,6 +18,7 @@ public class CategoriaRelato implements Serializable {
     private ArrayList<CategoriaInventario> categoriasInventario;
     private ArrayList<CategoriaRelato> subcategorias;
     private CategoriaRelato categoriaMae;
+	private boolean posicaoLivre;
 
     private Long tempoResposta;
     private Long tempoResolucao;
@@ -164,7 +165,15 @@ public class CategoriaRelato implements Serializable {
         this.tempoResolucaoPrivado = tempoResolucaoPrivado;
     }
 
-    public static class Status implements Serializable {
+	public boolean isPosicaoLivre() {
+		return posicaoLivre;
+	}
+
+	public void setPosicaoLivre(boolean posicaoLivre) {
+		this.posicaoLivre = posicaoLivre;
+	}
+
+	public static class Status implements Serializable {
 		private long id;
 		private int cor;
 		private String nome;

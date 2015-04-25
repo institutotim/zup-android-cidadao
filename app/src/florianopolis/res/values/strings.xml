@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ZUP Florianópolis</string>
+    <string name="google_key">AIzaSyA5tQ4OCvnFndrJGEriJMMi3RYdKvSZmoY</string>
+    <string name="gcm_project">927118703236</string>
+    <string name="prefeitura">Prefeitura de Florianópolis</string>
+</resources>

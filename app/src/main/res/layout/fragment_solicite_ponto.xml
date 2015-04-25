@@ -41,6 +41,15 @@
             android:imeOptions="actionSearch" />
     </RelativeLayout>
 
+    <ImageView
+        android:id="@+id/marcador"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/posicaoCentral"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"
+        android:contentDescription="@string/marcador" />
+
     <ProgressBar
         android:id="@+id/loading"
         android:visibility="gone"

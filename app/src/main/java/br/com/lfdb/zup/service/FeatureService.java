@@ -33,7 +33,7 @@ public class FeatureService {
             JSONArray json = getPrefs();
             for (int i = 0; i < json.length(); i++) {
                 if (json.getJSONObject(i).getString("name").equals(featureName)) {
-                    return json.getJSONObject(i).getString("status_name").equals("enabled");
+                    return json.getJSONObject(i).getString("status").equals("enabled");
                 }
             }
         } catch (Exception e) {

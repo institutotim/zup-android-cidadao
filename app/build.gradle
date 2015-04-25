@@ -16,7 +16,7 @@ android {
         minSdkVersion 10
         targetSdkVersion 21
         versionCode 1
-        versionName '0.2.24'
+        versionName '0.2.27'
         multiDexEnabled = true
     }
     signingConfigs {
@@ -39,6 +39,12 @@ android {
         }
         sbcinterno {
             applicationId 'br.com.lfdb.zup.sbc.interno'
+        }
+        maceio {
+            applicationId 'br.com.lfdb.zup.maceio'
+        }
+        florianopolis {
+            applicationId 'br.com.lfdb.zup.florianopolis'
         }
     }
     buildTypes {
@@ -77,8 +83,8 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.2.0'
     compile 'com.google.guava:guava:18.0'
     compile 'com.squareup.picasso:picasso:2.4.0'
-    compile 'net.danlew:android.joda:2.7.1'
-    compile('com.crashlytics.sdk.android:crashlytics:2.2.1@aar') {
+    compile 'net.danlew:android.joda:2.7.2'
+    compile('com.crashlytics.sdk.android:crashlytics:2.2.3@aar') {
         transitive = true;
     }
     compile('oauth.signpost:signpost-commonshttp4:1.2.1.2') {

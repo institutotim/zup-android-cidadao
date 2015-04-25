@@ -97,7 +97,7 @@ public class CategoriaRelatoService {
                         if (sub.getLong("id") == categoriaId) {
                             JSONArray s = sub.getJSONArray("statuses");
                             for (int k = 0; k < s.length(); k++) {
-                                if (s.getJSONObject(j).getLong("id") == statusId) {
+                                if (s.getJSONObject(k).getLong("id") == statusId) {
                                     return new CategoriaRelato.Status(s.getJSONObject(k).getLong("id"),
                                             s.getJSONObject(k).getString("title"),
                                             s.getJSONObject(k).getString("color"));
@@ -225,6 +225,7 @@ public class CategoriaRelatoService {
         file = icon.getString("disabled").split("/");
         categoria.setIconeInativo(file[file.length - 1]);
         categoria.setId(json.getLong("id"));
+        categoria.setPosicaoLivre(json.optBoolean("allows_arbitrary_position", false));
         categoria.setTempoResolucao(json.optLong("resolution_time"));
         categoria.setTempoResposta(json.optLong("user_response_time"));
         categoria.setConfidencial(json.optBoolean("confidential", false));
