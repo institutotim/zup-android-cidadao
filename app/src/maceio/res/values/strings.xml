@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ZUP Maceió</string>
+    <string name="google_key">AIzaSyDwwJDeVGc-TfwXGvp7UkfXbTB_f32RYCE</string>
+    <string name="gcm_project">213545171749</string>
+    <string name="prefeitura">Prefeitura de Maceió</string>
+</resources>

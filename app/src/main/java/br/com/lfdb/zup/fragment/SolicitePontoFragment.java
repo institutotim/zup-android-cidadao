@@ -15,6 +15,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -92,6 +93,8 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
     public static double latitude = 0.0, longitude = 0.0;
     private Long id = null;
     private String endereco = "";
+
+    private ImageView marcador;
 
     private double latitudePonto = 0.0, longitudePonto = 0.0;
 
@@ -199,6 +202,9 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         categoria = ((SoliciteActivity) getActivity()).getCategoria();
+        if (categoria.isPosicaoLivre()) {
+            marcador.setVisibility(View.VISIBLE);
+        }
 
         timer = new Timer();
         timer.schedule(new Requester(), 0, 500);

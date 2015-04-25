@@ -220,6 +220,8 @@ public class CadastroActivity extends Activity implements OnClickListener {
                     response = client.execute(post);
                     if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
                         return EntityUtils.toString(response.getEntity(), "UTF-8");
+                    } else {
+                        Log.e("Error!", EntityUtils.toString(response.getEntity(), "UTF-8"));
                     }
                 }
             } catch (Exception e) {

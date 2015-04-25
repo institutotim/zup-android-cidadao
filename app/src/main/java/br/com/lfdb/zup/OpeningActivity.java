@@ -35,6 +35,9 @@ public class OpeningActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_opening);
 
+        findViewById(R.id.logo).setVisibility(getResources().getBoolean(R.bool.show_logo_header) ?
+                View.VISIBLE : View.INVISIBLE);
+
         List<Integer> images = new ArrayList<>();
         for (int i = 1; ; i++) {
             int identifier = getResources().getIdentifier("tour_img" + i, "drawable", getPackageName());
