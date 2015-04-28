@@ -16,6 +16,7 @@ public class Usuario implements Serializable {
 	private String bairro;
 	private String senha;
 	private String confirmacaoSenha;
+	private String senhaAntiga;
 
 	public Long getId() {
 		return id;
@@ -103,5 +104,13 @@ public class Usuario implements Serializable {
 
 	public void setConfirmacaoSenha(String confirmacaoSenha) {
 		this.confirmacaoSenha = confirmacaoSenha;
+	}
+
+	public void setSenhaAntiga(String senhaAntiga) {
+		this.senhaAntiga = senhaAntiga;
+	}
+
+	public String getSenhaAntiga() {
+		return senhaAntiga;
 	}
 }

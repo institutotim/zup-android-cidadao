@@ -52,6 +52,7 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
     private static final int REQUEST_CODE = 9999;
 
     private EditText campoNome;
+	private EditText campoSenhaAntiga;
 	private EditText campoSenha;
 	private EditText campoConfirmarSenha;
 	private EditText campoEmail;
@@ -76,13 +77,16 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
         TextView botaoCancelar = (TextView) findViewById(R.id.botaoCancelar);
 		botaoCancelar.setTypeface(FontUtils.getRegular(this));
 		botaoCancelar.setOnClickListener(v -> {
-            ViewUtils.hideKeyboard(EditarContaActivity.this, v.getWindowToken());
-            finish();
-        });
+			ViewUtils.hideKeyboard(EditarContaActivity.this, v.getWindowToken());
+			finish();
+		});
 
         TextView botaoCriar = (TextView) findViewById(R.id.botaoSalvar);
 		botaoCriar.setTypeface(FontUtils.getRegular(this));
 		botaoCriar.setOnClickListener(this);
+
+		campoSenhaAntiga = (EditText) findViewById(R.id.campoSenhaAntiga);
+		campoSenhaAntiga.setTypeface(FontUtils.getLight(this));
 		
 		campoNome = (EditText) findViewById(R.id.campoNome);
 		campoNome.setTypeface(FontUtils.getLight(this));
@@ -227,6 +231,7 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 		usuario.setTelefone(campoTelefone.getText().toString());
 		usuario.setSenha(campoSenha.getText().toString());
 		usuario.setConfirmacaoSenha(campoConfirmarSenha.getText().toString());
+		usuario.setSenhaAntiga(campoSenhaAntiga.getText().toString());
 		return usuario;
 	}
 	
@@ -318,6 +323,11 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 	
 	private List<Integer> validar() {
 		List<Integer> campos = new ArrayList<>();
+		if (!campoSenha.getText().toString().trim().isEmpty() && !campoConfirmarSenha.getText().toString().trim().isEmpty()
+				&& campoSenhaAntiga.getText().toString().trim().isEmpty()) {
+			campos.add(campoSenhaAntiga.getId());
+		}
+
 		if (!campoSenha.getText().toString().trim().isEmpty() && !campoConfirmarSenha.getText().toString().trim().isEmpty() 
 				&& !campoSenha.getText().toString().equals(campoConfirmarSenha.getText().toString())) {
 			campos.add(campoSenha.getId());

@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff" >
+    android:background="#fff">
 
     <RelativeLayout
         android:id="@+id/topbar"
@@ -13,7 +13,7 @@
         android:paddingBottom="10dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
-        android:paddingTop="10dp" >
+        android:paddingTop="10dp">
 
         <TextView
             android:id="@+id/editarConta"
@@ -59,21 +59,21 @@
         android:layout_height="match_parent"
         android:layout_below="@id/topbar"
         android:layout_marginTop="10dp"
-        android:background="#fff" >
+        android:background="#fff">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:orientation="vertical"
-            android:paddingBottom="15dp" >
+            android:paddingBottom="15dp">
 
             <RelativeLayout
                 android:id="@+id/info_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#e6e6e6"
-                android:padding="10dp" >
+                android:padding="10dp">
 
                 <TextView
                     android:id="@+id/instrucoes"
@@ -106,7 +106,7 @@
                 android:layout_marginBottom="10dp"
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal"
-                android:padding="15dp" >
+                android:padding="15dp">
 
                 <ImageButton
                     android:id="@+id/botao_logar_facebook"
@@ -143,7 +143,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#e6e6e6"
-                android:padding="10dp" >
+                android:padding="10dp">
 
                 <TextView
                     android:id="@+id/instrucoes_dados"
@@ -183,11 +183,23 @@
                 android:textColor="#000"
                 android:textSize="@dimen/navigation_text_size" />
 
+            <EditText
+                android:id="@+id/campoSenhaAntiga"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/textbox_bg"
+                android:hint="@string/old_password"
+                android:inputType="textEmailAddress"
+                android:padding="12dp"
+                android:textColor="#000"
+                android:textSize="@dimen/navigation_text_size" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:weightSum="2" >
+                android:weightSum="2">
 
                 <EditText
                     android:id="@+id/campoSenha"
@@ -221,7 +233,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:weightSum="2" >
+                android:weightSum="2">
 
                 <br.com.lfdb.zup.widget.PhoneEditText
                     android:id="@+id/campoTelefone"
@@ -264,7 +276,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:weightSum="2" >
+                android:weightSum="2">
 
                 <EditText
                     android:id="@+id/campoComplemento"

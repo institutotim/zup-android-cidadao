@@ -50,6 +50,7 @@ public class UsuarioService {
 		json.put("address", usuario.getEndereco());
 		json.put("name", usuario.getNome());
 		json.put("phone", usuario.getTelefone());
+		json.put("current_password", usuario.getSenhaAntiga());
 		json.put("password", usuario.getSenha());
 		json.put("password_confirmation", usuario.getConfirmacaoSenha());
         json.put("id", usuario.getId());
