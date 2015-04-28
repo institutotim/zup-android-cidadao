@@ -39,6 +39,7 @@ import java.util.List;
 
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SoliciteActivity;
+import br.com.lfdb.zup.api.ZupApi;
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.domain.Place;
 import br.com.lfdb.zup.domain.Solicitacao;
@@ -48,6 +49,8 @@ import br.com.lfdb.zup.util.GeoUtils;
 import br.com.lfdb.zup.util.ImageUtils;
 import br.com.lfdb.zup.util.ViewUtils;
 import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class SoliciteLocalFragment extends Fragment implements GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener, LocationListener, View.OnClickListener,
@@ -80,6 +83,8 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
     private AddressTask addressTask = null;
 
     private boolean updateCameraUser = true;
+
+    private boolean valid = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -162,7 +167,8 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
     }
 
     private void setAddressLoaderVisible(boolean visible) {
-        if (view != null) view.findViewById(R.id.loadingIndicator).setVisibility(visible ? View.VISIBLE : View.GONE);
+        if (view != null)
+            view.findViewById(R.id.loadingIndicator).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -281,7 +287,8 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                     final String num = ((TextView) dialogView.findViewById(R.id.numero)).getText().toString();
                     final String r = ((TextView) dialogView.findViewById(R.id.endereco)).getText().toString();
                     String referencia = ((TextView) dialogView.findViewById(R.id.referencia)).getText().toString();
-                    if (referencia != null && !referencia.trim().isEmpty()) ((SoliciteActivity) getActivity()).setReferencia(referencia);
+                    if (referencia != null && !referencia.trim().isEmpty())
+                        ((SoliciteActivity) getActivity()).setReferencia(referencia);
 
                     if (validarEndereco(r, num)) {
                         new AsyncTask<Void, Void, Void>() {
@@ -470,6 +477,11 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                         Address address = addresses.get(0);
                         if (address.getThoroughfare() != null) {
                             enderecoAtual = address;
+                            try {
+                                valid = ZupApi.validateCityBoundary(getActivity(), lat, lon);
+                            } catch (Exception e) {
+                                Log.e("Boundary validation", "Failed to validate boundary", e);
+                            }
 
                             if (!address.getThoroughfare().startsWith("null")) {
 
@@ -489,6 +501,8 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
             rua = values[0];
             tvEndereco.setAdapter(null);
             tvEndereco.setText(values[0]);
+
+            verifyValid();
 
             try {
                 if (!values[1].isEmpty() && StringUtils.isNumeric(values[1].substring(0, 1))) {
@@ -520,6 +534,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
         @Override
         protected Address doInBackground(Void... params) {
             try {
+                valid = ZupApi.validateCityBoundary(getActivity(), latitude, longitude);
                 return GPSUtils.getFromLocation(getActivity(), latitude, longitude).get(0);
             } catch (Exception e) {
                 Log.e("ZUP", e.getMessage(), e);
@@ -530,6 +545,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
         @Override
         protected void onPostExecute(Address addr) {
             setAddressLoaderVisible(false);
+            verifyValid();
             if (addr != null) {
                 rua = addr.getThoroughfare();
                 if (!addr.getFeatureName().isEmpty() && StringUtils.isNumeric(addr.getFeatureName().substring(0, 1))) {
@@ -546,6 +562,14 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                     tvEndereco.dismissDropDown();
                 }
             }
+        }
+    }
+
+    private void verifyValid() {
+        ((SoliciteActivity) getActivity()).enableNextButton(valid);
+        if (!valid) {
+            Crouton.cancelAllCroutons();
+            Crouton.makeText(getActivity(), "O endereço não pertence ao município.", Style.ALERT).show();
         }
     }
 
