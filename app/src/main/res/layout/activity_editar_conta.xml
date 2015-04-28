@@ -190,7 +190,7 @@
                 android:layout_margin="5dp"
                 android:background="@drawable/textbox_bg"
                 android:hint="@string/old_password"
-                android:inputType="textEmailAddress"
+                android:inputType="textPassword"
                 android:padding="12dp"
                 android:textColor="#000"
                 android:textSize="@dimen/navigation_text_size" />
