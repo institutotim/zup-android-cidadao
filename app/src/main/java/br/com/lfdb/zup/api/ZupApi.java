@@ -1,6 +1,7 @@
 package br.com.lfdb.zup.api;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -15,9 +16,8 @@ public class ZupApi {
 
     public static boolean validateCityBoundary(Context context, double latitude, double longitude)
             throws Exception {
-        String call = String.format(Constantes.REST_URL +
-                "/utils/city-boundary/validate?latitude=%f&longitude=%f",
-                latitude, longitude);
+        String call = Constantes.REST_URL + "/utils/city-boundary/validate?latitude=" + latitude +
+                "&longitude=" + longitude;
         String header = new LoginService().getToken(context);
 
         Request request = new Request.Builder()
@@ -25,8 +25,7 @@ public class ZupApi {
                 .header("X-App-Token", header)
                 .build();
         Response response = new OkHttpClient().newCall(request).execute();
-        String value = response.body().string();
-        JSONObject json = new JSONObject(value);
-        return !json.has("error");
+        JSONObject json = new JSONObject(response.body().string());
+        return json.optBoolean("inside_boundaries", false);
     }
 }
