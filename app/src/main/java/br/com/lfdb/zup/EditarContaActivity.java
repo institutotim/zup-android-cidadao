@@ -62,6 +62,7 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 	private EditText campoComplemento;
 	private EditText campoCEP;
 	private EditText campoBairro;
+	private EditText campoCidade;
 	private Usuario usuario;
 
 	@Override
@@ -117,6 +118,9 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 		
 		campoBairro = (EditText) findViewById(R.id.campoBairro);
 		campoBairro.setTypeface(FontUtils.getLight(this));
+
+		campoCidade = (EditText) findViewById(R.id.campoCidade);
+		campoCidade.setTypeface(FontUtils.getLight(this));
 
         if (!FeatureService.getInstance(this).isAnySocialEnabled()) {
             findViewById(R.id.textView1).setVisibility(View.GONE);
@@ -221,8 +225,9 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
     }
 	
 	private Usuario montarUsuario() {
-		usuario.setBairro(campoBairro.getText().toString());
-		usuario.setCep(campoCEP.getText().toString());
+		usuario.setBairro(campoBairro.getText().toString().trim());
+		usuario.setCidade(campoCidade.getText().toString().trim());
+		usuario.setCep(campoCEP.getText().toString().trim());
 		usuario.setComplemento(campoComplemento.getText().toString());
 		usuario.setCpf(campoCPF.getText().toString());
 		usuario.setEmail(campoEmail.getText().toString());
@@ -246,6 +251,7 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
 			if (usuario.getComplemento() != null) campoComplemento.setText(usuario.getComplemento());
 			if (usuario.getCep() != null) campoCEP.setText(usuario.getCep());
 			if (usuario.getBairro() != null) campoBairro.setText(usuario.getBairro());
+			if (usuario.getCidade() != null) campoCidade.setText(usuario.getCidade());
 		}
 	}
 	

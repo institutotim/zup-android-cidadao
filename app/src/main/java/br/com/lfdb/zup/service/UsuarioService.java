@@ -35,6 +35,7 @@ public class UsuarioService {
 		u.setNome(j.getString("name"));
 		u.setTelefone(j.getString("phone"));
 		u.setId(j.getLong("id"));
+		u.setCidade(j.optString("city"));
 		
 		return u;
 	}
@@ -54,6 +55,7 @@ public class UsuarioService {
 		json.put("password", usuario.getSenha());
 		json.put("password_confirmation", usuario.getConfirmacaoSenha());
         json.put("id", usuario.getId());
+		json.put("city", usuario.getCidade());
 		
 		return json;
 	}

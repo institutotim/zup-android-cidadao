@@ -208,7 +208,7 @@
                     android:layout_margin="5dp"
                     android:layout_weight="1"
                     android:background="@drawable/textbox_bg"
-                    android:hint="@string/senha"
+                    android:hint="@string/new_password"
                     android:inputType="textPassword"
                     android:padding="12dp"
                     android:textColor="#000"
@@ -311,6 +311,18 @@
                 android:layout_margin="5dp"
                 android:background="@drawable/textbox_bg"
                 android:hint="@string/bairro"
+                android:inputType="textNoSuggestions"
+                android:padding="12dp"
+                android:textColor="#000"
+                android:textSize="@dimen/navigation_text_size" />
+
+            <EditText
+                android:id="@+id/campoCidade"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/textbox_bg"
+                android:hint="@string/city"
                 android:inputType="textNoSuggestions"
                 android:padding="12dp"
                 android:textColor="#000"

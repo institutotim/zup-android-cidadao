@@ -122,7 +122,9 @@
     <string name="failed_social_auth">Falha na autenticação da rede social</string>
     <string name="selecione_a_categoria_subcategoria">SELECIONE A CATEGORIA E SUBCATEGORIA</string>
     <string name="confidential_disclaimer">As suas informações pessoais serão mantidas em absoluto sigilo e não serão divulgadas.</string>
-    <string name="old_password">Senha antiga</string>
+    <string name="old_password">Senha atual</string>
+    <string name="new_password">Nova senha</string>
+    <string name="city">Cidade</string>
 
     <string-array name="foto_menu">
         <item>Escolher foto do álbum</item>
