@@ -57,6 +57,7 @@ public class CadastroActivity extends Activity implements OnClickListener {
     private EditText campoComplemento;
     private EditText campoCEP;
     private EditText campoBairro;
+    private EditText campoCidade;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +102,10 @@ public class CadastroActivity extends Activity implements OnClickListener {
 
         campoBairro = (EditText) findViewById(R.id.campoBairro);
         campoBairro.setTypeface(FontUtils.getLight(this));
-        campoBairro.setOnEditorActionListener((v, actionId, event) -> {
+
+        campoCidade = (EditText) findViewById(R.id.campoCidade);
+        campoCidade.setTypeface(FontUtils.getLight(this));
+        campoCidade.setOnEditorActionListener((v, actionId, event) -> {
             boolean handled = false;
             if (actionId == EditorInfo.IME_ACTION_GO) {
                 validarECadastrar();
@@ -173,6 +177,7 @@ public class CadastroActivity extends Activity implements OnClickListener {
         usuario.setTelefone(campoTelefone.getText().toString());
         usuario.setSenha(campoSenha.getText().toString());
         usuario.setConfirmacaoSenha(campoConfirmarSenha.getText().toString());
+        usuario.setCidade(campoCidade.getText().toString().trim());
         new Tasker().execute(usuario);
     }
 

@@ -17,6 +17,7 @@ public class Usuario implements Serializable {
 	private String senha;
 	private String confirmacaoSenha;
 	private String senhaAntiga;
+	private String cidade;
 
 	public Long getId() {
 		return id;
@@ -112,5 +113,13 @@ public class Usuario implements Serializable {
 
 	public String getSenhaAntiga() {
 		return senhaAntiga;
+	}
+
+	public void setCidade(String cidade) {
+		this.cidade = cidade;
+	}
+
+	public String getCidade() {
+		return cidade;
 	}
 }
