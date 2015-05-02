@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.google.gson.reflect.TypeToken;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -18,6 +19,13 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import br.com.lfdb.zup.api.model.ReportCategory;
+import br.com.lfdb.zup.api.model.ReportCategoryStatus;
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.util.FileUtils;
@@ -33,6 +41,7 @@ public class Updater {
 			
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				saveCategories(context, EntityUtils.toString(response.getEntity(), "UTF-8"), "reports");
+                setupStatuses(context);
 			}
 			
 			get = new HttpGet(Constantes.REST_URL + "/inventory/categories" + ConstantesBase.getCategoriasInventarioQuery(context));
@@ -48,6 +57,19 @@ public class Updater {
 		}
 	}
 
+    private void setupStatuses(Context context) throws Exception {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String raw = prefs.getString("reports", "{\"categories\":[]}");
+        List<ReportCategory> categories = ConstantesBase.GSON.fromJson(new JSONObject(raw)
+                .getJSONArray("categories").toString(), new TypeToken<List<ReportCategory>>() {
+        }.getType());
+        Set<ReportCategoryStatus> statuses = new HashSet<>();
+        for (ReportCategory category : categories) {
+            statuses.addAll(category.getStatuses());
+        }
+        prefs.edit().putString("statuses", ConstantesBase.GSON.toJson(new ArrayList<>(statuses))).apply();
+    }
+
     private void updateFeatureFlags(Context context) throws Exception {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(Constantes.REST_URL + "/feature_flags").build();
@@ -57,7 +79,7 @@ public class Updater {
     }
 
     private void saveCategories(Context context, String json, String type) throws Exception {
-		JSONArray array = new JSONObject(json).getJSONArray("categories");
+        JSONArray array = new JSONObject(json).getJSONArray("categories");
 
         String density = ImageUtils.shouldDownloadRetinaIcon(context) ? "retina" : "default";
 		for (int i = 0; i < array.length(); i++) {

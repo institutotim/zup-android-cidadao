@@ -2,9 +2,21 @@ package br.com.lfdb.zup.core;
 
 import android.content.Context;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.joda.time.DateTime;
+
+import br.com.lfdb.zup.api.converter.DateTimeConverter;
 import br.com.lfdb.zup.util.ImageUtils;
 
 public class ConstantesBase {
+
+    public static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(DateTime.class, new DateTimeConverter())
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .create();
 
     public static String getItemInventarioQuery(Context context) {
         return new StringBuilder("?return_fields=")

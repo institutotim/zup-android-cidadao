@@ -6,14 +6,21 @@ import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.google.gson.reflect.TypeToken;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import br.com.lfdb.zup.api.model.ReportCategory;
+import br.com.lfdb.zup.api.model.ReportCategoryStatus;
+import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.domain.CategoriaInventario;
 import br.com.lfdb.zup.domain.CategoriaRelato;
 import br.com.lfdb.zup.util.ImageUtils;
@@ -73,44 +80,12 @@ public class CategoriaRelatoService {
 
     public CategoriaRelato.Status getStatusById(Context context, long categoriaId, long statusId) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String raw = prefs.getString("reports", "");
-        if (raw.isEmpty()) {
-            return null;
+        String raw = prefs.getString("statuses", "[]");
+        List<ReportCategoryStatus> statuses = ConstantesBase.GSON.fromJson(raw, new TypeToken<List<ReportCategoryStatus>>() {
+        }.getType());
+        for (ReportCategoryStatus status : statuses) {
+            if (status.getId() == statusId) return status.compat();
         }
-
-        try {
-            JSONArray array = new JSONObject(raw).getJSONArray("categories");
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject obj = array.getJSONObject(i);
-                if (obj.getLong("id") == categoriaId) {
-                    JSONArray statuses = obj.getJSONArray("statuses");
-                    for (int j = 0; j < statuses.length(); j++) {
-                        if (statuses.getJSONObject(j).getLong("id") == statusId) {
-                            return new CategoriaRelato.Status(statuses.getJSONObject(j).getLong("id"),
-                                    statuses.getJSONObject(j).getString("title"),
-                                    statuses.getJSONObject(j).getString("color"));
-                        }
-                    }
-                } else {
-                    for (int j = 0; j < obj.getJSONArray("subcategories").length(); j++) {
-                        JSONObject sub = array.getJSONObject(j);
-                        if (sub.getLong("id") == categoriaId) {
-                            JSONArray s = sub.getJSONArray("statuses");
-                            for (int k = 0; k < s.length(); k++) {
-                                if (s.getJSONObject(k).getLong("id") == statusId) {
-                                    return new CategoriaRelato.Status(s.getJSONObject(k).getLong("id"),
-                                            s.getJSONObject(k).getString("title"),
-                                            s.getJSONObject(k).getString("color"));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            Log.e("ZUP", e.getMessage(), e);
-        }
-
         return null;
     }
 

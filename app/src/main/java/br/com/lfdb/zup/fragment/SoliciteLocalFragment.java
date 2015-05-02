@@ -13,6 +13,8 @@ import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
@@ -49,8 +51,6 @@ import br.com.lfdb.zup.util.GeoUtils;
 import br.com.lfdb.zup.util.ImageUtils;
 import br.com.lfdb.zup.util.ViewUtils;
 import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class SoliciteLocalFragment extends Fragment implements GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener, LocationListener, View.OnClickListener,
@@ -63,6 +63,9 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
     private TimerEndereco task;
     private AutoCompleteTextView tvEndereco;
     private TextView tvNumero;
+    private View error;
+
+    private TextView message;
 
     private Address enderecoAtual = null;
 
@@ -103,13 +106,15 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
 
         ((SoliciteActivity) getActivity()).exibirBarraInferior(true);
         ((SoliciteActivity) getActivity()).setInfo(R.string.selecione_o_local);
-        ((SoliciteActivity) getActivity()).enableNextButton(true);
+        ((SoliciteActivity) getActivity()).enableNextButton(valid);
 
         try {
             view = inflater.inflate(R.layout.fragment_solicite_local, container, false);
         } catch (InflateException e) {
             Log.w("ZUP", e.getMessage());
         }
+
+        error = view.findViewById(R.id.error);
 
         map = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaLocal)).getMap();
         if (map != null) {
@@ -151,6 +156,9 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
 
         tvNumero = (TextView) view.findViewById(R.id.numero);
         tvNumero.setTypeface(FontUtils.getRegular(getActivity()));
+
+        message = (TextView) view.findViewById(R.id.message);
+        message.setTypeface(FontUtils.getSemibold(getActivity()));
 
         view.findViewById(R.id.editar).setOnClickListener(this);
 
@@ -197,7 +205,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
-            ((SoliciteActivity) getActivity()).enableNextButton(true);
+            ((SoliciteActivity) getActivity()).enableNextButton(valid);
             ((SoliciteActivity) getActivity()).setInfo(R.string.selecione_o_local);
             if (file != null && !file.isEmpty()) {
                 ((ImageView) view.findViewById(R.id.marcador)).setImageBitmap(ImageUtils.getScaled(getActivity(), "reports", file));
@@ -567,9 +575,44 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
 
     private void verifyValid() {
         ((SoliciteActivity) getActivity()).enableNextButton(valid);
-        if (!valid) {
-            Crouton.cancelAllCroutons();
-            Crouton.makeText(getActivity(), "O endereço não pertence ao município.", Style.ALERT).show();
+        if (!valid && error.getVisibility() != View.VISIBLE) {
+            AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
+            anim.setDuration(1000);
+            anim.setRepeatMode(Animation.REVERSE);
+            anim.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    error.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+            });
+            error.startAnimation(anim);
+        } else if (valid && error.getVisibility() != View.GONE){
+            AlphaAnimation anim = new AlphaAnimation(1.0f, 0.0f);
+            anim.setDuration(1000);
+            anim.setRepeatMode(Animation.REVERSE);
+            anim.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    error.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+            });
+            error.startAnimation(anim);
         }
     }
 
