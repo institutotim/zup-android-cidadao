@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ZUP SBC (server sbc)</string>
-    <string name="google_key">AIzaSyDhcGX9lOlIKE6nn54CH6H4qxiKxTtcHhk</string>
+    <string name="app_name">ZUP SBC</string>
+    <string name="google_key">AIzaSyD0R2hFDONVaH1IUUqny6zW7yzHS2klTos</string>
     <string name="gcm_project">42155023351</string>
     <string name="prefeitura">Prefeitura de São Bernardo do Campo</string>
 </resources>

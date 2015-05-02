@@ -103,6 +103,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 
     @Override
