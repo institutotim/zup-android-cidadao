@@ -99,9 +99,6 @@ dependencies {
     compile('com.facebook.android:facebook-android-sdk:3.23.0') {
         exclude module: 'support-v4'
     }
-    compile('de.keyboardsurfer.android.widget:crouton:1.8.5@aar') {
-        exclude group: 'com.google.android', module: 'support-v4'
-    }
     compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     compile project(':lib-simplecropimage')
     compile project(':lib-progresswheels')
