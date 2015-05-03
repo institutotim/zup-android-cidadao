@@ -44,6 +44,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InterruptedIOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -487,9 +488,22 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                 HttpClient client = new OkApacheClient();
                 HttpResponse response;
 
-                for (Long id : busca.getIdsCategoriaInventario()) {
+                if (!busca.getIdsCategoriaInventario().isEmpty()) {
+
+                    String query;
+                    if (busca.getIdsCategoriaInventario().size() == 1) {
+                        query = "&inventory_category_id=" + busca.getIdsCategoriaInventario().get(0);
+                    } else {
+                        StringBuilder builder = new StringBuilder("&inventory_category_ids=");
+                        for (Long id : busca.getIdsCategoriaInventario()) {
+                            builder.append(id).append(",");
+                        }
+                        query = builder.toString();
+                        query = query.substring(0, query.length() - 1);
+                    }
+
                     get = new HttpGet(Constantes.REST_URL + "/inventory/items" + ConstantesBase.getItemInventarioQuery(getActivity()) + "&position[latitude]=" + request.latitude + "&position[longitude]="
-                            + request.longitude + "&position[distance]=" + request.raio + "&max_items=" + MAX_ITEMS_PER_REQUEST + "&inventory_category_id=" + id);
+                            + request.longitude + "&position[distance]=" + request.raio + "&max_items=" + MAX_ITEMS_PER_REQUEST + query);
                     get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
 
                     if (isCancelled()) return null;
@@ -501,10 +515,23 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                     }
                 }
 
-                for (Long id : busca.getIdsCategoriaRelato()) {
+                if (!busca.getIdsCategoriaRelato().isEmpty()) {
+
+                    String categories;
+                    if (busca.getIdsCategoriaRelato().size() == 1) {
+                        categories = "&category_id=" + busca.getIdsCategoriaRelato().get(0);
+                    } else {
+                        StringBuilder builder = new StringBuilder("&category_ids=");
+                        for (Long id : busca.getIdsCategoriaRelato()) {
+                            builder.append(id).append(",");
+                        }
+                        categories = builder.toString();
+                        categories = categories.substring(0, categories.length() - 1);
+                    }
+
                     String query = Constantes.REST_URL + "/reports/items" + ConstantesBase.getItemRelatoQuery(getActivity()) + "&position[latitude]=" + request.latitude + "&position[longitude]="
-                            + request.longitude + "&position[distance]=" + request.raio + "&max_items=" + MAX_ITEMS_PER_REQUEST + "&category_id=" + id + "&begin_date="
-                            + busca.getPeriodo().getDateString() + "&display_type=full";
+                            + request.longitude + "&position[distance]=" + request.raio + "&max_items=" + MAX_ITEMS_PER_REQUEST + "&begin_date="
+                            + busca.getPeriodo().getDateString() + "&display_type=full" + categories;
                     if (busca.getStatus() != null) {
                         query += "&statuses=" + busca.getStatus().getId();
                     }
@@ -520,8 +547,9 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                         extrairItensRelato(EntityUtils.toString(response.getEntity(), "UTF-8"));
                     }
                 }
+
             } catch (Exception e) {
-                Log.e("ZUP", e.getMessage() != null ? e.getMessage() : "null", e);
+                if (!(e instanceof InterruptedIOException)) Log.e("ZUP", e.getMessage() != null ? e.getMessage() : "null", e);
                 return null;
             }
 

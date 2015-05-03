@@ -208,7 +208,6 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
 
             TextView titulo = (TextView) row.findViewById(R.id.titulo);
 
-
             TextView subcategoria = (TextView) row.findViewById(R.id.subcategoria);
             if (item.getCategoria().getCategoriaMae() != null) {
                 titulo.setText(item.getCategoria().getNome());
