@@ -66,6 +66,12 @@ public class Updater {
         Set<ReportCategoryStatus> statuses = new HashSet<>();
         for (ReportCategory category : categories) {
             statuses.addAll(category.getStatuses());
+
+            if (!category.getSubcategories().isEmpty()) {
+                for (ReportCategory subcategory : category.getSubcategories()) {
+                    statuses.addAll(subcategory.getStatuses());
+                }
+            }
         }
         prefs.edit().putString("statuses", ConstantesBase.GSON.toJson(new ArrayList<>(statuses))).apply();
     }
