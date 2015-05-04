@@ -10,6 +10,6 @@ public class Constantes {
     public static final String WEBSITE_URL = "http://zuphmg.saobernardo.sp.gov.br:8080/web";
     public static final String PLACES_KEY = "AIzaSyCOixuls1j6rqhYizrTjw4jymX_T23KTjw";
 
-    public static final double INITIAL_LATITUDE = -23.8047378;
-    public static final double INITIAL_LONGITUDE = -46.5297049;
+    public static final double INITIAL_LATITUDE = -23.7031669;
+    public static final double INITIAL_LONGITUDE = -46.5713678;
 }

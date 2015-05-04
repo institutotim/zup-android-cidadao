@@ -221,7 +221,6 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
                 subcategoria.setVisibility(View.GONE);
             }
 
-
             TextView data = (TextView) row.findViewById(R.id.data);
             data.setText(item.getData());
             data.setTypeface(FontUtils.getBold(getContext()));

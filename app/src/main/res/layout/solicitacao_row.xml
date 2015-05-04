@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bg"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -35,7 +36,8 @@
                 android:drawableRight="@drawable/seta_direita"
                 android:textAllCaps="true"
                 android:textColor="#666"
-                android:textSize="@dimen/row_date" />
+                android:textSize="@dimen/row_date"
+                tools:text="EXEMPLO" />
 
             <TextView
                 android:id="@+id/titulo"
@@ -44,7 +46,8 @@
                 android:layout_toLeftOf="@id/data"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:textSize="@dimen/row_title" />
+                android:textSize="@dimen/row_title"
+                tools:text="EXEMPLO" />
 
         </RelativeLayout>
 
@@ -53,7 +56,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:singleLine="true" />
+            android:singleLine="true"
+            tools:text="EXEMPLO" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -74,7 +78,6 @@
 
             <TextView
                 android:id="@+id/protocolo"
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"

@@ -326,7 +326,8 @@
                 android:inputType="textNoSuggestions"
                 android:padding="12dp"
                 android:textColor="#000"
-                android:textSize="@dimen/navigation_text_size" />
+                android:textSize="@dimen/navigation_text_size"
+                android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
 
