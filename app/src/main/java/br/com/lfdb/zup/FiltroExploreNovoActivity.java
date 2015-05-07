@@ -1,6 +1,7 @@
 package br.com.lfdb.zup;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -68,6 +69,8 @@ public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSee
 
     private BuscaExplore busca;
 
+    private ProgressDialog dialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,12 +82,22 @@ public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSee
 
         seekBar.setOnSeekBarChangeListener(this);
 
-        verificarTodasRemovidas();
+        dialog = new ProgressDialog(this);
+        dialog.setIndeterminate(true);
+        dialog.setCancelable(false);
+        dialog.setMessage("Aguarde...");
+        dialog.show();
 
-        preencherCategorias();
-        preencherInventario();
-        aplicarFiltroInicial();
-        popularListStatus();
+        new Thread(() -> {
+            verificarTodasRemovidas();
+
+            preencherCategorias();
+            preencherInventario();
+            aplicarFiltroInicial();
+            popularListStatus();
+
+            runOnUiThread(dialog::dismiss);
+        }).start();
     }
 
     private void preencherCategorias() {
@@ -195,7 +208,7 @@ public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSee
                 });
             }
 
-            categoriasContainer.addView(view);
+            runOnUiThread(() -> categoriasContainer.addView(view));
         }
     }
 

@@ -1,6 +1,7 @@
 package br.com.lfdb.zup.fragment;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -33,6 +34,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.ui.IconGenerator;
 import com.squareup.okhttp.apache.OkApacheClient;
 
 import org.apache.http.HttpResponse;
@@ -41,7 +43,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InterruptedIOException;
@@ -58,6 +59,7 @@ import br.com.lfdb.zup.FiltroExploreNovoActivity;
 import br.com.lfdb.zup.MainActivity;
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SolicitacaoDetalheActivity;
+import br.com.lfdb.zup.api.model.Cluster;
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.domain.BuscaExplore;
@@ -80,7 +82,7 @@ import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
 
 public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnCameraChangeListener, AdapterView.OnItemClickListener, GooglePlayServicesClient.ConnectionCallbacks,
-        GooglePlayServicesClient.OnConnectionFailedListener, LocationListener, View.OnClickListener {
+        GooglePlayServicesClient.OnConnectionFailedListener, LocationListener, View.OnClickListener, GoogleMap.OnMarkerClickListener {
 
     private double userLongitude;
     private double userLatitude;
@@ -90,6 +92,10 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
     private static View view;
 
     private boolean wasLocalized = false;
+
+    IconGenerator iconFactory;
+
+    private float zoom = 12f;
 
     @Override
     public void onConnected(Bundle bundle) {
@@ -130,6 +136,16 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
             CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
             map.animateCamera(update);
         }
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        Object marcador = marcadores.get(marker);
+        if (marcador instanceof Cluster) {
+            Cluster cluster = (Cluster) marcador;
+            increaseZoomTo(new LatLng(cluster.getLatitude(), cluster.getLongitude()));
+        }
+        return false;
     }
 
     private class Request {
@@ -189,6 +205,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
         map = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map)).getMap();
 
+        iconFactory = new IconGenerator(getActivity());
+
         boolean showLogo = getResources().getBoolean(R.bool.show_logo_header);
         if (showLogo) view.findViewById(R.id.logo_header).setVisibility(View.VISIBLE);
 
@@ -221,6 +239,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
             map.setOnInfoWindowClickListener(this);
             map.setOnCameraChangeListener(this);
             map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+            map.setOnMarkerClickListener(this);
 
             CameraPosition p = new CameraPosition.Builder().target(new LatLng(Constantes.INITIAL_LATITUDE,
                     Constantes.INITIAL_LONGITUDE)).zoom(12).build();
@@ -309,6 +328,13 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         startActivity(intent);
     }
 
+    private void increaseZoomTo(LatLng position) {
+        CameraPosition p = new CameraPosition.Builder().target(position)
+                .zoom(map.getCameraPosition().zoom + 0.5f).build();
+        CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
+        map.moveCamera(update);
+    }
+
     private void adicionarMarker(ItemInventario item) {
         itens.add(item);
         if (estaNoFiltro(item.getCategoria())) {
@@ -327,6 +353,25 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                     .icon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.getReportMarker(getActivity(), item.getCategoria().getMarcador())))
                     .title(item.getCategoria().getNome())), item);
         }
+    }
+
+    private void adicionarMarker(Cluster item) {
+        itens.add(item);
+        iconFactory.setColor(getClusterColor(item));
+        iconFactory.setTextAppearance(R.style.ClusterMarker);
+        marcadores.put(map.addMarker(new MarkerOptions()
+                        .position(new LatLng(item.getLatitude(), item.getLongitude()))
+                        .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(String.valueOf(item.getCount()))))
+        ), item);
+    }
+
+    private int getClusterColor(Cluster item) {
+        // TODO fix cluster color
+        //if (!item.isSingleCategory())
+            return Color.parseColor("#2ab4db");
+
+        //return item.isReport() ? new CategoriaRelatoService().getById(getActivity(),
+        //        item.getCategoryId()).get;
     }
 
     @Override
@@ -362,8 +407,13 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         latitude = cameraPosition.target.latitude;
         longitude = cameraPosition.target.longitude;
         raio = GeoUtils.getVisibleRadius(map);
-        removerItensMapa();
-        exibirElementos();
+        if (zoom != cameraPosition.zoom) {
+            removerTodosItensMapa();
+        } else {
+            zoom = cameraPosition.zoom;
+            removerItensMapa();
+            exibirElementos();
+        }
         refresh();
     }
 
@@ -387,7 +437,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         Iterator<Marker> it = marcadores.keySet().iterator();
         while (it.hasNext()) {
             Marker marker = it.next();
-            if (!GeoUtils.isVisible(map.getProjection().getVisibleRegion(), marker.getPosition())) {
+            if (!GeoUtils.isVisible(map.getProjection().getVisibleRegion(), marker.getPosition()) ||
+                    marcadores.get(marker) instanceof Cluster) {
                 marker.remove();
                 it.remove();
                 marcadores.remove(marker);
@@ -457,6 +508,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
         private List<ItemInventario> itensInventario = new CopyOnWriteArrayList<>();
         private List<ItemRelato> itensRelato = new CopyOnWriteArrayList<>();
+        private List<Cluster> clusters = new CopyOnWriteArrayList<>();
 
         private Request request;
 
@@ -502,8 +554,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                         query = query.substring(0, query.length() - 1);
                     }
 
-                    get = new HttpGet(Constantes.REST_URL + "/inventory/items" + ConstantesBase.getItemInventarioQuery(getActivity()) + "&position[latitude]=" + request.latitude + "&position[longitude]="
-                            + request.longitude + "&position[distance]=" + request.raio + "&max_items=" + MAX_ITEMS_PER_REQUEST + query);
+                    get = new HttpGet(Constantes.REST_URL + "/search/inventory/items" + ConstantesBase.getItemInventarioQuery(getActivity()) + "&position[latitude]=" + request.latitude + "&position[longitude]="
+                            + request.longitude + "&position[distance]=" + request.raio + "&max_items=" + MAX_ITEMS_PER_REQUEST + query + getClusterQuery());
                     get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
 
                     if (isCancelled()) return null;
@@ -529,9 +581,9 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                         categories = categories.substring(0, categories.length() - 1);
                     }
 
-                    String query = Constantes.REST_URL + "/reports/items" + ConstantesBase.getItemRelatoQuery(getActivity()) + "&position[latitude]=" + request.latitude + "&position[longitude]="
+                    String query = Constantes.REST_URL + "/search/reports/items" + ConstantesBase.getItemRelatoQuery(getActivity()) + "&position[latitude]=" + request.latitude + "&position[longitude]="
                             + request.longitude + "&position[distance]=" + request.raio + "&max_items=" + MAX_ITEMS_PER_REQUEST + "&begin_date="
-                            + busca.getPeriodo().getDateString() + "&display_type=full" + categories;
+                            + busca.getPeriodo().getDateString() + "&display_type=full" + categories + getClusterQuery();
                     if (busca.getStatus() != null) {
                         query += "&statuses=" + busca.getStatus().getId();
                     }
@@ -549,7 +601,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                 }
 
             } catch (Exception e) {
-                if (!(e instanceof InterruptedIOException)) Log.e("ZUP", e.getMessage() != null ? e.getMessage() : "null", e);
+                if (!(e instanceof InterruptedIOException))
+                    Log.e("ZUP", e.getMessage() != null ? e.getMessage() : "null", e);
                 return null;
             }
 
@@ -565,6 +618,12 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                 }
             }
 
+            for (Cluster item : clusters) {
+                if (!marcadores.containsValue(item)) {
+                    publishProgress(item);
+                }
+            }
+
             return null;
         }
 
@@ -574,11 +633,14 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                 adicionarMarker((ItemInventario) values[0]);
             else if (values[0] instanceof ItemRelato)
                 adicionarMarker((ItemRelato) values[0]);
+            else if (values[0] instanceof Cluster)
+                adicionarMarker((Cluster) values[0]);
         }
 
-        private void extrairItensInventario(String raw) throws JSONException {
+        private void extrairItensInventario(String raw) throws Exception {
             CategoriaInventarioService service = new CategoriaInventarioService();
-            JSONArray array = new JSONObject(raw).getJSONArray("items");
+            JSONObject root = new JSONObject(raw);
+            JSONArray array = root.getJSONArray("items");
             for (int i = 0; i < array.length(); i++) {
                 if (isCancelled()) return;
                 JSONObject json = array.getJSONObject(i);
@@ -589,11 +651,14 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                 item.setLongitude(json.getJSONObject("position").getDouble("longitude"));
                 itensInventario.add(item);
             }
+
+            addClusters(root.optJSONArray("clusters"), false);
         }
 
         private void extrairItensRelato(String raw) throws Exception {
             CategoriaRelatoService service = new CategoriaRelatoService();
-            JSONArray array = new JSONObject(raw).getJSONArray("reports");
+            JSONObject root = new JSONObject(raw);
+            JSONArray array = root.getJSONArray("reports");
             for (int i = 0; i < array.length(); i++) {
                 if (isCancelled()) return;
                 JSONObject json = array.getJSONObject(i);
@@ -617,7 +682,23 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
                 itensRelato.add(item);
             }
+
+            addClusters(root.optJSONArray("clusters"), true);
         }
+
+        private void addClusters(JSONArray array, boolean isReport) throws Exception {
+            if (array == null) return;
+
+            for (int i = 0; i < array.length(); i++) {
+                if (isCancelled()) return;
+                clusters.add(ConstantesBase.GSON.fromJson(array.get(i).toString(), Cluster.class)
+                        .setReport(isReport));
+            }
+        }
+    }
+
+    private String getClusterQuery() {
+        return "&clusterize=true&zoom=" + (int) zoom;
     }
 
     private class GeocoderTask extends AsyncTask<Place, Void, Address> {
