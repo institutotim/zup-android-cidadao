@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Address;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.squareup.okhttp.apache.OkApacheClient;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -55,6 +57,7 @@ import br.com.lfdb.zup.social.util.SocialUtils;
 import br.com.lfdb.zup.util.DateUtils;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.NetworkUtils;
+import br.com.lfdb.zup.util.Strings;
 import br.com.lfdb.zup.util.ViewUtils;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -348,13 +351,15 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
                     if (solicitacao.getReferencia() != null && !solicitacao.getReferencia().trim().isEmpty()) {
                         multipartEntity.addTextBody("reference", solicitacao.getReferencia(), ContentType.APPLICATION_JSON);
                     }
-                    solicitacao.setEndereco(localFragment.getEnderecoAtual());
+                    setAddress(multipartEntity, localFragment.getRawAddress(),
+                            localFragment.getRua(), localFragment.getNumero());
+                    //solicitacao.setEndereco(localFragment.getEnderecoAtual());
                 } else {
                     multipartEntity.addTextBody("inventory_item_id", String.valueOf(solicitacao.getIdItemInventario()));
-                    solicitacao.setEndereco(pontoFragment.getEndereco());
+                    setAddress(multipartEntity, pontoFragment.getAddress());
                     solicitacao.setLatitudeLongitude(pontoFragment.getLatitude(), pontoFragment.getLongitude());
                 }
-                multipartEntity.addTextBody("address", solicitacao.getEndereco(), ContentType.APPLICATION_JSON);
+                //multipartEntity.addTextBody("address", solicitacao.getEndereco(), ContentType.APPLICATION_JSON);
                 multipartEntity.addTextBody("category_id", String.valueOf(solicitacao.getCategoria().getId()));
 
                 for (String foto : solicitacao.getFotos()) {
@@ -368,7 +373,6 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
                     HttpResponse response = client.execute(post);
                     if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
                         SolicitacaoListItem item = getSolicitacao(EntityUtils.toString(response.getEntity(), "UTF-8"));
-
 
                         if (detalhesFragment.getPublicar()) {
                             SocialUtils.post(SoliciteActivity.this, "Estou colaborando com a minha cidade, reportando problemas e solicitações.\n" + Constantes.WEBSITE_URL + "/" + item.getId() + "\n#ZeladoriaUrbana");
@@ -522,5 +526,49 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    private void setAddress(MultipartEntityBuilder builder, Address address, String street, String number) {
+
+        builder.addTextBody("address", StringUtils.newStringUtf8(street.getBytes()), ContentType.APPLICATION_JSON); // Rua / Logradouro
+        builder.addTextBody("number", StringUtils.newStringUtf8(number.getBytes()), ContentType.APPLICATION_JSON);
+
+        if (!Strings.isNullOrEmpty(address.getSubLocality())) {
+            builder.addTextBody("district", StringUtils.newStringUtf8(address.getSubLocality().getBytes()), ContentType.APPLICATION_JSON); // Bairro
+        }
+
+        builder.addTextBody("city", StringUtils.newStringUtf8(getCity(address).getBytes())); // Cidade
+        if (!Strings.isNullOrEmpty(address.getAdminArea())) {
+            builder.addTextBody("state", StringUtils.newStringUtf8(address.getAdminArea().getBytes()), ContentType.APPLICATION_JSON); // Estado
+        }
+
+        if (!Strings.isNullOrEmpty(address.getCountryName())) {
+            builder.addTextBody("country", StringUtils.newStringUtf8(address.getCountryName().getBytes()), ContentType.APPLICATION_JSON); // País
+        }
+    }
+
+    private void setAddress(MultipartEntityBuilder builder, Address address) {
+        builder.addTextBody("address", StringUtils.newStringUtf8(address.getThoroughfare().getBytes()), ContentType.APPLICATION_JSON); // Rua / Logradouro
+        if (!Strings.isNullOrEmpty(address.getFeatureName())) {
+            builder.addTextBody("number", StringUtils.newStringUtf8(address.getFeatureName().getBytes()), ContentType.APPLICATION_JSON); // Número
+        }
+
+        if (!Strings.isNullOrEmpty(address.getSubLocality())) {
+            builder.addTextBody("district", StringUtils.newStringUtf8(address.getSubLocality().getBytes()), ContentType.APPLICATION_JSON); // Bairro
+        }
+
+        builder.addTextBody("city", StringUtils.newStringUtf8(getCity(address).getBytes()), ContentType.APPLICATION_JSON); // Cidade
+
+        if (!Strings.isNullOrEmpty(address.getAdminArea())) {
+            builder.addTextBody("state", StringUtils.newStringUtf8(address.getAdminArea().getBytes()), ContentType.APPLICATION_JSON); // Estado
+        }
+
+        if (!Strings.isNullOrEmpty(address.getCountryName())) {
+            builder.addTextBody("country", StringUtils.newStringUtf8(address.getCountryName().getBytes()), ContentType.APPLICATION_JSON); // País
+        }
+    }
+
+    private String getCity(Address address) {
+        return address.getSubAdminArea() != null ? address.getSubAdminArea() : address.getLocality();
     }
 }

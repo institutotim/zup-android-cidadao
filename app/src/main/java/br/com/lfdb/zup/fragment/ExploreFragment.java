@@ -407,13 +407,13 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         latitude = cameraPosition.target.latitude;
         longitude = cameraPosition.target.longitude;
         raio = GeoUtils.getVisibleRadius(map);
-        if (zoom != cameraPosition.zoom) {
+        if (Math.abs(zoom - cameraPosition.zoom) > 0.00001f) {
             removerTodosItensMapa();
         } else {
-            zoom = cameraPosition.zoom;
             removerItensMapa();
             exibirElementos();
         }
+        zoom = cameraPosition.zoom;
         refresh();
     }
 

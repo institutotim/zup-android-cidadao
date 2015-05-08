@@ -231,6 +231,18 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
         this.file = file;
     }
 
+    public Address getRawAddress() {
+        return enderecoAtual;
+    }
+
+    public String getRua() {
+        return rua;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
     public String getEnderecoAtual() {
         StringBuilder builder = new StringBuilder();
         builder.append(rua).append(", ").append(numero);

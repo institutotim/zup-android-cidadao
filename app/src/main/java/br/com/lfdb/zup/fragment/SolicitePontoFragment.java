@@ -109,6 +109,7 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
 
     private MarkerRetriever markerRetriever = null;
     private AddressTask addressTask = null;
+    private Address address;
 
     @Override
     public void onHiddenChanged(boolean hidden) {
@@ -340,6 +341,10 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
         return endereco;
     }
 
+    public Address getAddress() {
+        return address;
+    }
+
     private class MarkerRetriever extends AsyncTask<Void, ItemInventario, Void> {
 
         private List<ItemInventario> itensInventario = new CopyOnWriteArrayList<>();
@@ -569,6 +574,7 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
     }
 
     private String getFormattedAddress(Address address) {
+        this.address = address;
         StringBuilder builder = new StringBuilder();
         builder.append(address.getThoroughfare());
 
@@ -577,7 +583,6 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
         } else {
             builder.append(", s/nº");
         }
-
 
         if (address.getSubLocality() != null) {
             builder.append(" - ").append(address.getSubLocality());
