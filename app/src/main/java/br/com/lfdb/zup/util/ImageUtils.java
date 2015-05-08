@@ -1,7 +1,5 @@
 package br.com.lfdb.zup.util;
 
-import java.io.File;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -16,8 +14,13 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
+import android.util.Base64;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
+
+import java.io.File;
+import java.io.FileInputStream;
 
 public class ImageUtils {
 
@@ -90,7 +93,7 @@ public class ImageUtils {
         Bitmap original = ImageUtils.getScaled(activity, scale, ImageUtils.loadFromFile(activity, filename));
 		StateListDrawable states = new StateListDrawable();
 		states.addState(new int[] { android.R.attr.state_pressed }, new BitmapDrawable(activity.getResources(), original));
-		states.addState(new int[] {}, new BitmapDrawable(activity.getResources(), ImageUtils.toGrayscale(original)));
+		states.addState(new int[]{}, new BitmapDrawable(activity.getResources(), ImageUtils.toGrayscale(original)));
 		return states;
 	}
 
@@ -178,4 +181,19 @@ public class ImageUtils {
     public static boolean shouldDownloadRetinaIcon(Context context) {
         return context.getResources().getDisplayMetrics().density >= 1.5f;
     }
+
+	public static String encodeBase64(String path) {
+		try {
+			File file = new File(path);
+			FileInputStream imageInFile = new FileInputStream(file);
+			byte imageData[] = new byte[(int) file.length()];
+			imageInFile.read(imageData);
+			imageInFile.close();
+
+			return Base64.encodeToString(imageData, Base64.DEFAULT);
+		} catch (Exception e) {
+			Log.e("MakeMe", e.getMessage() != null ? e.getMessage() : "NullPointerException", e);
+			return null;
+		}
+	}
 }
