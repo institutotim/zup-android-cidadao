@@ -18,29 +18,19 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
-import com.squareup.okhttp.apache.OkApacheClient;
 
-import org.apache.commons.codec.binary.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.HttpHostConnectException;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
+import br.com.lfdb.zup.api.ZupApi;
+import br.com.lfdb.zup.api.model.ReportItem;
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.domain.CategoriaRelato;
 import br.com.lfdb.zup.domain.Solicitacao;
@@ -51,15 +41,15 @@ import br.com.lfdb.zup.fragment.SoliciteLocalFragment;
 import br.com.lfdb.zup.fragment.SolicitePontoFragment;
 import br.com.lfdb.zup.fragment.SoliciteTipoNovoFragment;
 import br.com.lfdb.zup.service.FeatureService;
-import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.service.UsuarioService;
 import br.com.lfdb.zup.social.util.SocialUtils;
 import br.com.lfdb.zup.util.DateUtils;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.NetworkUtils;
-import br.com.lfdb.zup.util.Strings;
 import br.com.lfdb.zup.util.ViewUtils;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
 
 public class SoliciteActivity extends FragmentActivity implements View.OnClickListener {
 
@@ -76,10 +66,6 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
     private SoliciteLocalFragment localFragment;
     private SolicitePontoFragment pontoFragment;
     private SoliciteDetalhesFragment detalhesFragment;
-
-    private enum Passo {
-        TIPO, LOCAL, FOTOS, COMENTARIOS
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,12 +118,16 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         findViewById(R.id.barra_navegacao).setVisibility(exibir ? View.VISIBLE : View.GONE);
     }
 
-    public void setReferencia(String referencia) {
-        solicitacao.setReferencia(referencia);
-    }
-
     public ArrayList<String> getFotos() {
         return solicitacao.getFotos();
+    }
+
+    public void enableNextButton(boolean enabled) {
+        botaoAvancar.setVisibility(enabled ? View.VISIBLE : View.GONE);
+    }
+
+    public CategoriaRelato getCategoria() {
+        return solicitacao.getCategoria();
     }
 
     public void setCategoria(CategoriaRelato categoria) {
@@ -148,14 +138,6 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         }
 
         exibirBarraInferior(true);
-    }
-
-    public void enableNextButton(boolean enabled) {
-        botaoAvancar.setVisibility(enabled ? View.VISIBLE : View.GONE);
-    }
-
-    public CategoriaRelato getCategoria() {
-        return solicitacao.getCategoria();
     }
 
     public void setInfo(int string) {
@@ -319,111 +301,8 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         return solicitacao.getReferencia() != null ? solicitacao.getReferencia() : "";
     }
 
-    public class Tasker extends AsyncTask<Void, Void, SolicitacaoListItem> implements DialogInterface.OnCancelListener {
-
-        private ProgressDialog dialog;
-        private HttpPost post;
-
-        @Override
-        protected void onPreExecute() {
-            dialog = new ProgressDialog(SoliciteActivity.this);
-            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            dialog.setIndeterminate(true);
-            dialog.setMessage("Enviando solicitação...");
-            dialog.show();
-            dialog.setOnCancelListener(this);
-        }
-
-        @Override
-        protected SolicitacaoListItem doInBackground(Void... params) {
-            try {
-                HttpClient client = new OkApacheClient();
-                post = new HttpPost(Constantes.REST_URL + "/reports/" + solicitacao.getCategoria().getId() + "/items");
-
-                MultipartEntityBuilder multipartEntity = MultipartEntityBuilder.create();
-                multipartEntity.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-                multipartEntity.setCharset(Charset.forName("UTF-8"));
-
-                multipartEntity.addTextBody("description", solicitacao.getComentario().trim(), ContentType.APPLICATION_JSON);
-                if (solicitacao.getCategoria().getCategoriasInventario().isEmpty()) {
-                    multipartEntity.addTextBody("latitude", String.valueOf(solicitacao.getLatitude()));
-                    multipartEntity.addTextBody("longitude", String.valueOf(solicitacao.getLongitude()));
-                    if (solicitacao.getReferencia() != null && !solicitacao.getReferencia().trim().isEmpty()) {
-                        multipartEntity.addTextBody("reference", solicitacao.getReferencia(), ContentType.APPLICATION_JSON);
-                    }
-                    setAddress(multipartEntity, localFragment.getRawAddress(),
-                            localFragment.getRua(), localFragment.getNumero());
-                    //solicitacao.setEndereco(localFragment.getEnderecoAtual());
-                } else {
-                    multipartEntity.addTextBody("inventory_item_id", String.valueOf(solicitacao.getIdItemInventario()));
-                    setAddress(multipartEntity, pontoFragment.getAddress());
-                    solicitacao.setLatitudeLongitude(pontoFragment.getLatitude(), pontoFragment.getLongitude());
-                }
-                //multipartEntity.addTextBody("address", solicitacao.getEndereco(), ContentType.APPLICATION_JSON);
-                multipartEntity.addTextBody("category_id", String.valueOf(solicitacao.getCategoria().getId()));
-
-                for (String foto : solicitacao.getFotos()) {
-                    multipartEntity.addPart("images[]", new FileBody(new File(foto)));
-                }
-
-                post.setEntity(multipartEntity.build());
-                post.setHeader("X-App-Token", new LoginService().getToken(SoliciteActivity.this));
-
-                if (!isCancelled() && !post.isAborted()) {
-                    HttpResponse response = client.execute(post);
-                    if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
-                        SolicitacaoListItem item = getSolicitacao(EntityUtils.toString(response.getEntity(), "UTF-8"));
-
-                        if (detalhesFragment.getPublicar()) {
-                            SocialUtils.post(SoliciteActivity.this, "Estou colaborando com a minha cidade, reportando problemas e solicitações.\n" + Constantes.WEBSITE_URL + "/" + item.getId() + "\n#ZeladoriaUrbana");
-                        }
-                        return item;
-                    } else {
-                        Log.i("ZUP", new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8")).toString(2));
-                    }
-                }
-            } catch (HttpHostConnectException e) {
-                Log.w("ZUP", e.getMessage());
-            } catch (Exception e) {
-                Log.e("ZUP", e.getMessage(), e);
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(SolicitacaoListItem result) {
-            dialog.dismiss();
-            if (result != null) {
-                new AlertDialog.Builder(SoliciteActivity.this)
-                        .setTitle("Solicitação enviada")
-                        .setMessage("Você será avisado quando sua solicitação for atualizada\n" +
-                                String.format("Anote seu protocolo: %s", result.getProtocolo()) +
-                                (FeatureService.getInstance(SoliciteActivity.this).isShowResolutionTimeToClientsEnabled() &&
-                                        solicitacao.getCategoria().isTempoResolucaoAtivado() &&
-                                        !solicitacao.getCategoria().isTempoResolucaoPrivado() ?
-                                        String.format("\nPrazo de solução: %s", DateUtils.getString(result.getCategoria().getTempoResolucao())) : ""))
-                        .setNeutralButton("OK", (dialog1, which) -> {
-                            Intent i = new Intent(SoliciteActivity.this, SolicitacaoDetalheActivity.class);
-                            i.putExtra("solicitacao", result);
-                            startActivity(i);
-
-                            setResult(Activity.RESULT_OK);
-                            finish();
-                        })
-                        .setCancelable(false)
-                        .show();
-            } else {
-                Toast.makeText(SoliciteActivity.this, "Falha no envio da solicitação", Toast.LENGTH_LONG).show();
-            }
-        }
-
-        @Override
-        public void onCancel(DialogInterface dialog) {
-            if (post != null) post.abort();
-            dialog.dismiss();
-            Toast.makeText(SoliciteActivity.this, "Envio de solicitação cancelado", Toast.LENGTH_SHORT).show();
-            cancel(true);
-        }
+    public void setReferencia(String referencia) {
+        solicitacao.setReferencia(referencia);
     }
 
     public void assertFragmentVisibility() {
@@ -528,47 +407,122 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
-    private void setAddress(MultipartEntityBuilder builder, Address address, String street, String number) {
-
-        builder.addTextBody("address", StringUtils.newStringUtf8(street.getBytes()), ContentType.APPLICATION_JSON); // Rua / Logradouro
-        builder.addTextBody("number", StringUtils.newStringUtf8(number.getBytes()), ContentType.APPLICATION_JSON);
-
-        if (!Strings.isNullOrEmpty(address.getSubLocality())) {
-            builder.addTextBody("district", StringUtils.newStringUtf8(address.getSubLocality().getBytes()), ContentType.APPLICATION_JSON); // Bairro
-        }
-
-        builder.addTextBody("city", StringUtils.newStringUtf8(getCity(address).getBytes())); // Cidade
-        if (!Strings.isNullOrEmpty(address.getAdminArea())) {
-            builder.addTextBody("state", StringUtils.newStringUtf8(address.getAdminArea().getBytes()), ContentType.APPLICATION_JSON); // Estado
-        }
-
-        if (!Strings.isNullOrEmpty(address.getCountryName())) {
-            builder.addTextBody("country", StringUtils.newStringUtf8(address.getCountryName().getBytes()), ContentType.APPLICATION_JSON); // País
-        }
+    private void setAddress(ReportItem item, Address address, String street, String number) {
+        item.setAddress(Strings.emptyToNull(street));
+        item.setNumber(Strings.emptyToNull(number));
+        item.setDistrict(Strings.emptyToNull(address.getSubLocality()));
+        item.setCity(Strings.emptyToNull(getCity(address)));
+        item.setState(Strings.emptyToNull(address.getAdminArea()));
+        item.setCountry(Strings.emptyToNull(address.getCountryName()));
+        item.setPostalCode(Strings.emptyToNull(address.getPostalCode()));
     }
 
-    private void setAddress(MultipartEntityBuilder builder, Address address) {
-        builder.addTextBody("address", StringUtils.newStringUtf8(address.getThoroughfare().getBytes()), ContentType.APPLICATION_JSON); // Rua / Logradouro
-        if (!Strings.isNullOrEmpty(address.getFeatureName())) {
-            builder.addTextBody("number", StringUtils.newStringUtf8(address.getFeatureName().getBytes()), ContentType.APPLICATION_JSON); // Número
-        }
-
-        if (!Strings.isNullOrEmpty(address.getSubLocality())) {
-            builder.addTextBody("district", StringUtils.newStringUtf8(address.getSubLocality().getBytes()), ContentType.APPLICATION_JSON); // Bairro
-        }
-
-        builder.addTextBody("city", StringUtils.newStringUtf8(getCity(address).getBytes()), ContentType.APPLICATION_JSON); // Cidade
-
-        if (!Strings.isNullOrEmpty(address.getAdminArea())) {
-            builder.addTextBody("state", StringUtils.newStringUtf8(address.getAdminArea().getBytes()), ContentType.APPLICATION_JSON); // Estado
-        }
-
-        if (!Strings.isNullOrEmpty(address.getCountryName())) {
-            builder.addTextBody("country", StringUtils.newStringUtf8(address.getCountryName().getBytes()), ContentType.APPLICATION_JSON); // País
-        }
+    private void setAddress(ReportItem item, Address address) {
+        setAddress(item, address, address.getThoroughfare(), address.getFeatureName());
     }
 
     private String getCity(Address address) {
         return address.getSubAdminArea() != null ? address.getSubAdminArea() : address.getLocality();
+    }
+
+    private enum Passo {
+        TIPO, LOCAL, FOTOS, COMENTARIOS
+    }
+
+    public class Tasker extends AsyncTask<Void, Void, ReportItem> implements DialogInterface.OnCancelListener {
+
+        private ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(SoliciteActivity.this);
+            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            dialog.setIndeterminate(true);
+            dialog.setMessage("Enviando solicitação...");
+            dialog.show();
+            dialog.setOnCancelListener(this);
+        }
+
+        @Override
+        protected ReportItem doInBackground(Void... params) {
+            try {
+                ReportItem item = new ReportItem();
+                item.setDescription(solicitacao.getComentario().trim());
+
+                if (solicitacao.getCategoria().getCategoriasInventario().isEmpty()) {
+                    item.setLatitude(String.valueOf(solicitacao.getLatitude()));
+                    item.setLongitude(String.valueOf(solicitacao.getLongitude()));
+                    if (solicitacao.getReferencia() != null && !solicitacao.getReferencia().trim().isEmpty()) {
+                        item.setReference(solicitacao.getReferencia());
+                    }
+                    setAddress(item, localFragment.getRawAddress(), localFragment.getRua(), localFragment.getNumero());
+                } else {
+                    item.setInventoryItemId(solicitacao.getIdItemInventario());
+                    setAddress(item, pontoFragment.getAddress());
+                    solicitacao.setLatitudeLongitude(pontoFragment.getLatitude(), pontoFragment.getLongitude());
+                }
+                item.setCategoryId(solicitacao.getCategoria().getId());
+
+                List<String> images = new ArrayList<>();
+                for (String foto : solicitacao.getFotos()) {
+                    images.add(encodeBase64(foto));
+                }
+                item.setImages(images);
+
+                if (!isCancelled()) {
+                    try {
+                        item = ZupApi.get(SoliciteActivity.this).createReport(item.getCategoryId(), item);
+                        if (detalhesFragment.getPublicar()) {
+                            SocialUtils.post(SoliciteActivity.this,
+                                    "Estou colaborando com a minha cidade, reportando problemas e solicitações.\n" +
+                                            Constantes.WEBSITE_URL + "/" + item.getId() + "\n#ZeladoriaUrbana");
+                        }
+                        return item;
+                    } catch (Throwable error) {
+                        Log.e("ZUP", error.toString());
+                        return null;
+                    }
+
+
+                }
+            } catch (Exception e) {
+                Log.e("ZUP", e.getMessage(), e);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(ReportItem result) {
+            dialog.dismiss();
+            if (result != null) {
+                new AlertDialog.Builder(SoliciteActivity.this)
+                        .setTitle("Solicitação enviada")
+                        .setMessage("Você será avisado quando sua solicitação for atualizada\n" +
+                                String.format("Anote seu protocolo: %s", result.getProtocol()) +
+                                (FeatureService.getInstance(SoliciteActivity.this).isShowResolutionTimeToClientsEnabled() &&
+                                        solicitacao.getCategoria().isTempoResolucaoAtivado() &&
+                                        !solicitacao.getCategoria().isTempoResolucaoPrivado() ?
+                                        String.format("\nPrazo de solução: %s", DateUtils.getString(result.getCategory().getResolutionTime())) : ""))
+                        .setNeutralButton("OK", (dialog1, which) -> {
+                            Intent i = new Intent(SoliciteActivity.this, SolicitacaoDetalheActivity.class);
+                            i.putExtra("solicitacao", result.compat());
+                            startActivity(i);
+
+                            setResult(Activity.RESULT_OK);
+                            finish();
+                        })
+                        .setCancelable(false)
+                        .show();
+            } else {
+                Toast.makeText(SoliciteActivity.this, "Falha no envio da solicitação", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        @Override
+        public void onCancel(DialogInterface dialog) {
+            dialog.dismiss();
+            Toast.makeText(SoliciteActivity.this, "Envio de solicitação cancelado", Toast.LENGTH_SHORT).show();
+            cancel(true);
+        }
     }
 }

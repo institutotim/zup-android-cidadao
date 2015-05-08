@@ -7,6 +7,7 @@ public class ReportCategory implements Serializable {
 
     private List<ReportCategoryStatus> statuses;
     private List<ReportCategory> subcategories;
+    private long resolutionTime;
 
     public List<ReportCategoryStatus> getStatuses() {
         return statuses;
@@ -22,5 +23,13 @@ public class ReportCategory implements Serializable {
 
     public void setSubcategories(List<ReportCategory> subcategories) {
         this.subcategories = subcategories;
+    }
+
+    public long getResolutionTime() {
+        return resolutionTime;
+    }
+
+    public void setResolutionTime(long resolutionTime) {
+        this.resolutionTime = resolutionTime;
     }
 }
