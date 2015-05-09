@@ -5,14 +5,12 @@ import android.content.Context;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import br.com.lfdb.zup.domain.CategoriaRelato;
 import br.com.lfdb.zup.domain.SolicitacaoListItem;
 import br.com.lfdb.zup.service.CategoriaRelatoService;
 
-public class ReportItem {
+public class ReportItemRequest {
 
     private long id;
     private String description;
@@ -30,7 +28,7 @@ public class ReportItem {
     private String city;
     private String state;
     private String country;
-    private List<ReportImage> images;
+    private List<String> images;
     private DateTime createdAt;
     private DateTime updatedAt;
     private Location position;
@@ -133,11 +131,11 @@ public class ReportItem {
         this.country = country;
     }
 
-    public List<ReportImage> getImages() {
+    public List<String> getImages() {
         return images;
     }
 
-    public void setImages(List<ReportImage> images) {
+    public void setImages(List<String> images) {
         this.images = images;
     }
 
@@ -163,30 +161,6 @@ public class ReportItem {
 
     public void setCategory(ReportCategory category) {
         this.category = category;
-    }
-
-    public SolicitacaoListItem compat(Context context) {
-        SolicitacaoListItem item = new SolicitacaoListItem();
-
-        item.setTitulo(category.getTitle());
-        item.setCategoria(new CategoriaRelatoService().getById(context, category.getId()));
-        item.setComentario(description);
-        item.setCreatorId(user.getId());
-        item.setData(createdAt.toString());
-        item.setEndereco(address);
-        ArrayList<String> images = new ArrayList<>();
-        for (ReportImage image : this.images) {
-            images.add(image.getOriginal());
-        }
-        item.setFotos(images);
-        item.setId(id);
-        item.setLatitude(position.getLatitude());
-        item.setLongitude(position.getLongitude());
-        item.setProtocolo(String.valueOf(protocol));
-        item.setReferencia(reference);
-        item.setStatus(status.compat2());
-
-        return item;
     }
 
     public String getPostalCode() {

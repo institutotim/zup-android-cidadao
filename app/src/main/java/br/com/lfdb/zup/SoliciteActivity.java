@@ -31,6 +31,7 @@ import java.util.Locale;
 
 import br.com.lfdb.zup.api.ZupApi;
 import br.com.lfdb.zup.api.model.ReportItem;
+import br.com.lfdb.zup.api.model.ReportItemRequest;
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.domain.CategoriaRelato;
 import br.com.lfdb.zup.domain.Solicitacao;
@@ -407,7 +408,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
-    private void setAddress(ReportItem item, Address address, String street, String number) {
+    private void setAddress(ReportItemRequest item, Address address, String street, String number) {
         item.setAddress(Strings.emptyToNull(street));
         item.setNumber(Strings.emptyToNull(number));
         item.setDistrict(Strings.emptyToNull(address.getSubLocality()));
@@ -417,7 +418,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         item.setPostalCode(Strings.emptyToNull(address.getPostalCode()));
     }
 
-    private void setAddress(ReportItem item, Address address) {
+    private void setAddress(ReportItemRequest item, Address address) {
         setAddress(item, address, address.getThoroughfare(), address.getFeatureName());
     }
 
@@ -446,7 +447,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         @Override
         protected ReportItem doInBackground(Void... params) {
             try {
-                ReportItem item = new ReportItem();
+                ReportItemRequest item = new ReportItemRequest();
                 item.setDescription(solicitacao.getComentario().trim());
 
                 if (solicitacao.getCategoria().getCategoriasInventario().isEmpty()) {
@@ -471,13 +472,13 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 
                 if (!isCancelled()) {
                     try {
-                        item = ZupApi.get(SoliciteActivity.this).createReport(item.getCategoryId(), item);
+                        ReportItem response = ZupApi.get(SoliciteActivity.this).createReport(item.getCategoryId(), item).getReport();
                         if (detalhesFragment.getPublicar()) {
                             SocialUtils.post(SoliciteActivity.this,
                                     "Estou colaborando com a minha cidade, reportando problemas e solicitações.\n" +
                                             Constantes.WEBSITE_URL + "/" + item.getId() + "\n#ZeladoriaUrbana");
                         }
-                        return item;
+                        return response;
                     } catch (Throwable error) {
                         Log.e("ZUP", error.toString());
                         return null;
@@ -505,7 +506,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
                                         String.format("\nPrazo de solução: %s", DateUtils.getString(result.getCategory().getResolutionTime())) : ""))
                         .setNeutralButton("OK", (dialog1, which) -> {
                             Intent i = new Intent(SoliciteActivity.this, SolicitacaoDetalheActivity.class);
-                            i.putExtra("solicitacao", result.compat());
+                            i.putExtra("solicitacao", result.compat(SoliciteActivity.this));
                             startActivity(i);
 
                             setResult(Activity.RESULT_OK);

@@ -9,6 +9,7 @@ import org.joda.time.DateTime;
 import java.io.Serializable;
 
 import br.com.lfdb.zup.domain.CategoriaRelato;
+import br.com.lfdb.zup.domain.SolicitacaoListItem;
 
 public class ReportCategoryStatus implements Serializable {
 
@@ -101,6 +102,13 @@ public class ReportCategoryStatus implements Serializable {
         status.setCor(Color.parseColor(color));
         status.setId(id);
         status.setNome(title);
+        return status;
+    }
+
+    public SolicitacaoListItem.Status compat2() {
+        SolicitacaoListItem.Status status = new SolicitacaoListItem.Status();
+        status.setNome(title);
+        status.setCor(Color.parseColor(color));
         return status;
     }
 }
