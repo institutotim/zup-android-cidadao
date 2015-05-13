@@ -5,25 +5,18 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.google.gson.reflect.TypeToken;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-import com.squareup.okhttp.apache.OkApacheClient;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import br.com.lfdb.zup.api.model.InventoryCategoriesResponse;
+import br.com.lfdb.zup.api.model.InventoryCategory;
+import br.com.lfdb.zup.api.model.ReportCategoriesResponse;
 import br.com.lfdb.zup.api.model.ReportCategory;
 import br.com.lfdb.zup.api.model.ReportCategoryStatus;
 import br.com.lfdb.zup.core.Constantes;
@@ -33,36 +26,34 @@ import br.com.lfdb.zup.util.ImageUtils;
 
 public class Updater {
 
-	public void update(Context context) throws Exception {
-		try {
-			HttpClient client = new OkApacheClient();
-            HttpGet get = new HttpGet(Constantes.REST_URL + "/reports/categories" + ConstantesBase.getCategoriasRelatoQuery(context) + "&display_type=full");
-			HttpResponse response = client.execute(get);
-			
-			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-				saveCategories(context, EntityUtils.toString(response.getEntity(), "UTF-8"), "reports");
-                setupStatuses(context);
-			}
-			
-			get = new HttpGet(Constantes.REST_URL + "/inventory/categories" + ConstantesBase.getCategoriasInventarioQuery(context));
-            response = client.execute(get);
-			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-				saveCategories(context, EntityUtils.toString(response.getEntity(), "UTF-8"), "inventory");
-			}
+    public void update(Context context) throws Exception {
+        long start = System.currentTimeMillis();
+        try {
+            Request request = new Request.Builder()
+                    .url(Constantes.REST_URL + "/reports/categories" + ConstantesBase.getCategoriasRelatoQuery(context) + "&display_type=full")
+                    .build();
+            Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
+            saveCategories(context, response.body().string(), "reports");
+            setupStatuses(context);
+
+            request = new Request.Builder()
+                    .url(Constantes.REST_URL + "/inventory/categories" + ConstantesBase.getCategoriasInventarioQuery(context))
+                    .build();
+            response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
+            saveCategories(context, response.body().string(), "inventory");
 
             updateFeatureFlags(context);
-		} catch (Exception e) {
-			Log.e("ZUP", e.getMessage(), e);
+        } catch (Exception e) {
+            Log.e("ZUP", e.getMessage(), e);
             throw e;
-		}
-	}
+        }
+        Log.d("UPDATE", "Update took " + (System.currentTimeMillis() - start) + " milliseconds");
+    }
 
     private void setupStatuses(Context context) throws Exception {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String raw = prefs.getString("reports", "{\"categories\":[]}");
-        List<ReportCategory> categories = ConstantesBase.GSON.fromJson(new JSONObject(raw)
-                .getJSONArray("categories").toString(), new TypeToken<List<ReportCategory>>() {
-        }.getType());
+        List<ReportCategory> categories = ConstantesBase.GSON.fromJson(raw, ReportCategoriesResponse.class).getCategories();
         Set<ReportCategoryStatus> statuses = new HashSet<>();
         for (ReportCategory category : categories) {
             statuses.addAll(category.getStatuses());
@@ -85,33 +76,45 @@ public class Updater {
     }
 
     private void saveCategories(Context context, String json, String type) throws Exception {
-        JSONArray array = new JSONObject(json).getJSONArray("categories");
-
         String density = ImageUtils.shouldDownloadRetinaIcon(context) ? "retina" : "default";
-		for (int i = 0; i < array.length(); i++) {
-			String markerUrl = array.getJSONObject(i).getJSONObject("marker").getJSONObject(density).getString("mobile");
-            FileUtils.downloadImage(context, type, markerUrl);
-            if (array.getJSONObject(i).has("pin")) {
-                markerUrl = array.getJSONObject(i).getJSONObject("pin").getJSONObject(density).getString("mobile");
-                FileUtils.downloadImage(context, type, markerUrl);
+        if (type.equals("reports")) {
+            long start = System.currentTimeMillis();
+            ReportCategoriesResponse response = ConstantesBase.GSON.fromJson(json, ReportCategoriesResponse.class);
+            Log.d("UPDATE", "Parsing took " + (System.currentTimeMillis() - start) + " milliseconds");
+            for (ReportCategory category : response.getCategories()) {
+                downloadImages(context, type, density, category);
+                for (ReportCategory sub : category.getSubcategories()) downloadImages(context, type, density, sub);
             }
-			JSONObject iconUrl = array.getJSONObject(i).getJSONObject("icon").getJSONObject(density).getJSONObject("mobile");
-			FileUtils.downloadImage(context, type, iconUrl.getString("active").startsWith("http") ? iconUrl.getString("active") : Constantes.REST_URL + iconUrl.getString("active"));
-            FileUtils.downloadImage(context, type, iconUrl.getString("disabled").startsWith("http") ? iconUrl.getString("disabled") : Constantes.REST_URL + iconUrl.getString("disabled"));
-
-            if (array.getJSONObject(i).has("subcategories")) {
-                for (int j = 0; j < array.getJSONObject(i).getJSONArray("subcategories").length(); j++) {
-                    JSONObject subcategory = array.getJSONObject(i).getJSONArray("subcategories").getJSONObject(j);
-
-                    String marker = subcategory.getJSONObject("marker").getJSONObject(density).getString("mobile");
-                    FileUtils.downloadImage(context, type, marker);
-                    JSONObject icon = subcategory.getJSONObject("icon").getJSONObject(density).getJSONObject("mobile");
-                    FileUtils.downloadImage(context, type, icon.getString("active").startsWith("http") ? icon.getString("active") : Constantes.REST_URL + icon.getString("active"));
-                    FileUtils.downloadImage(context, type, icon.getString("disabled").startsWith("http") ? icon.getString("disabled") : Constantes.REST_URL + icon.getString("disabled"));
+        } else {
+            InventoryCategoriesResponse response = ConstantesBase.GSON.fromJson(json, InventoryCategoriesResponse.class);
+            for (InventoryCategory category : response.getCategories()) {
+                if (density.equals("retina")) {
+                    if (category.getPin() != null) FileUtils.downloadImage(context, type, category.getPin().getRetina().getMobile());
+                    FileUtils.downloadImage(context, type, category.getMarker().getRetina().getMobile());
+                    FileUtils.downloadImage(context, type, category.getIcon().getRetina().getMobile().getActive());
+                    FileUtils.downloadImage(context, type, category.getIcon().getRetina().getMobile().getDisabled());
+                } else {
+                    if (category.getPin() != null) FileUtils.downloadImage(context, type, category.getPin().getCommon().getMobile());
+                    FileUtils.downloadImage(context, type, category.getMarker().getCommon().getMobile());
+                    FileUtils.downloadImage(context, type, category.getIcon().getCommon().getMobile().getActive());
+                    FileUtils.downloadImage(context, type, category.getIcon().getCommon().getMobile().getDisabled());
                 }
             }
-		}
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		prefs.edit().putString(type, json).apply();
-	}
+        }
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().putString(type, json).apply();
+    }
+
+    private void downloadImages(Context context, String type, String density, ReportCategory category) throws Exception {
+        if (density.equals("retina")) {
+            FileUtils.downloadImage(context, type, category.getMarker().getRetina().getMobile());
+            FileUtils.downloadImage(context, type, category.getIcon().getRetina().getMobile().getActive());
+            FileUtils.downloadImage(context, type, category.getIcon().getRetina().getMobile().getDisabled());
+        } else {
+            FileUtils.downloadImage(context, type, category.getMarker().getCommon().getMobile());
+            FileUtils.downloadImage(context, type, category.getIcon().getCommon().getMobile().getActive());
+            FileUtils.downloadImage(context, type, category.getIcon().getCommon().getMobile().getDisabled());
+        }
+    }
 }

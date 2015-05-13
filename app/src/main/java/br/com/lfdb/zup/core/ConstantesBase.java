@@ -5,6 +5,7 @@ import android.content.Context;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.squareup.okhttp.OkHttpClient;
 
 import org.joda.time.DateTime;
 
@@ -12,6 +13,8 @@ import br.com.lfdb.zup.api.converter.DateTimeConverter;
 import br.com.lfdb.zup.util.ImageUtils;
 
 public class ConstantesBase {
+
+    public static final OkHttpClient OK_HTTP_CLIENT = new OkHttpClient();
 
     public static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(DateTime.class, new DateTimeConverter())
