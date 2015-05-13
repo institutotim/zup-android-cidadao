@@ -1,18 +1,18 @@
 package br.com.lfdb.zup.util;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-
-import org.apache.http.util.ByteArrayBuffer;
-
 import android.content.Context;
 import android.os.Environment;
 
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import java.io.File;
+
 import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.core.ConstantesBase;
+import okio.BufferedSink;
+import okio.Okio;
 
 public class FileUtils {
 
@@ -57,18 +57,15 @@ public class FileUtils {
 		String[] parts = url.split("/");
 		String filename = parts[parts.length - 1];
 		if (!imageExists(context, filename)) {
-			URL u = new URL(url);
-			URLConnection ucon = u.openConnection();
-			InputStream is = ucon.getInputStream();
-	        BufferedInputStream bis = new BufferedInputStream(is);
-	        ByteArrayBuffer baf = new ByteArrayBuffer(50);
-	        int current;
-	        while ((current = bis.read()) != -1) {
-	            baf.append((byte) current);
-	        }
-	        FileOutputStream fos = new FileOutputStream(new File(getImagesFolder(context), filename));
-	        fos.write(baf.toByteArray());
-	        fos.close();
+            OkHttpClient client = ConstantesBase.OK_HTTP_CLIENT;
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+            Response response = client.newCall(request).execute();
+            File file = new File(getImagesFolder(context), filename);
+            BufferedSink sink = Okio.buffer(Okio.sink(file));
+            sink.writeAll(response.body().source());
+            sink.close();
 		}
 	}
 
@@ -78,18 +75,15 @@ public class FileUtils {
         String[] parts = url.split("/");
         String filename = parts[parts.length - 1];
         if (!imageExists(context, subfolder, filename)) {
-            URL u = new URL(url);
-            URLConnection ucon = u.openConnection();
-            InputStream is = ucon.getInputStream();
-            BufferedInputStream bis = new BufferedInputStream(is);
-            ByteArrayBuffer baf = new ByteArrayBuffer(50);
-            int current;
-            while ((current = bis.read()) != -1) {
-                baf.append((byte) current);
-            }
-            FileOutputStream fos = new FileOutputStream(new File(getImagesFolder(context, subfolder), filename));
-            fos.write(baf.toByteArray());
-            fos.close();
+            OkHttpClient client = ConstantesBase.OK_HTTP_CLIENT;
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+            Response response = client.newCall(request).execute();
+            File file = new File(getImagesFolder(context, subfolder), filename);
+            BufferedSink sink = Okio.buffer(Okio.sink(file));
+            sink.writeAll(response.body().source());
+            sink.close();
         }
     }
 }
