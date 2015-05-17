@@ -76,6 +76,7 @@ import br.com.lfdb.zup.util.BitmapUtils;
 import br.com.lfdb.zup.util.DateUtils;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.GeoUtils;
+import br.com.lfdb.zup.util.MapUtils;
 import br.com.lfdb.zup.util.PreferenceUtils;
 import br.com.lfdb.zup.util.ViewUtils;
 import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
@@ -96,6 +97,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
     IconGenerator iconFactory;
 
     private float zoom = 12f;
+    private SupportMapFragment fragment;
 
     @Override
     public void onConnected(Bundle bundle) {
@@ -203,7 +205,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
             Log.w("ZUP", e.getMessage());
         }
 
-        map = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map)).getMap();
+        fragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        map = fragment.getMap();
 
         iconFactory = new IconGenerator(getActivity());
 
@@ -361,7 +364,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         iconFactory.setTextAppearance(R.style.ClusterMarker);
         marcadores.put(map.addMarker(new MarkerOptions()
                         .position(new LatLng(item.getLatitude(), item.getLongitude()))
-                        .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(String.valueOf(item.getCount()))))
+                        //.icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(String.valueOf(item.getCount()))))
+                        .icon(BitmapDescriptorFactory.fromBitmap(MapUtils.createMarker(getActivity(), item.getCount())))
         ), item);
     }
 
