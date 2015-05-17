@@ -91,11 +91,8 @@ dependencies {
     compile('ch.acra:acra:4.5.0') {
         exclude module: 'json'
     }
-    compile('com.facebook.android:facebook-android-sdk:3.23.0') {
+    compile('com.facebook.android:facebook-android-sdk:3.23.1') {
         exclude module: 'support-v4'
-    }
-    compile('com.google.maps.android:android-maps-utils:0.3.4') {
-        exclude module: 'play-services-maps'
     }
     compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     compile project(':lib-simplecropimage')
