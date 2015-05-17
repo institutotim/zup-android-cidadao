@@ -34,7 +34,6 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.maps.android.ui.IconGenerator;
 import com.squareup.okhttp.apache.OkApacheClient;
 
 import org.apache.http.HttpResponse;
@@ -94,10 +93,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
     private boolean wasLocalized = false;
 
-    IconGenerator iconFactory;
-
     private float zoom = 12f;
-    private SupportMapFragment fragment;
 
     @Override
     public void onConnected(Bundle bundle) {
@@ -205,10 +201,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
             Log.w("ZUP", e.getMessage());
         }
 
-        fragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment fragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         map = fragment.getMap();
-
-        iconFactory = new IconGenerator(getActivity());
 
         boolean showLogo = getResources().getBoolean(R.bool.show_logo_header);
         if (showLogo) view.findViewById(R.id.logo_header).setVisibility(View.VISIBLE);
@@ -359,14 +353,62 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
     }
 
     private void adicionarMarker(Cluster item) {
+        validateCluster(item);
         itens.add(item);
-        iconFactory.setColor(getClusterColor(item));
-        iconFactory.setTextAppearance(R.style.ClusterMarker);
         marcadores.put(map.addMarker(new MarkerOptions()
                         .position(new LatLng(item.getLatitude(), item.getLongitude()))
-                        //.icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(String.valueOf(item.getCount()))))
                         .icon(BitmapDescriptorFactory.fromBitmap(MapUtils.createMarker(getActivity(), item.getCount())))
         ), item);
+    }
+
+    private void validateCluster(Cluster item) {
+        if (item.isReport()) {
+            for (Long id : item.getCategoriesIds()) {
+                removeReportMarkerIfContained(id);
+            }
+        } else {
+            for (Long id : item.getCategoriesIds()) {
+                removeInventoryMarkerIfContained(id);
+            }
+        }
+    }
+
+    private void removeInventoryMarkerIfContained(long id) {
+        ItemInventario itemInventario = null;
+        for (Object item : itens) {
+            if (item instanceof ItemInventario) {
+                if (((ItemInventario) item).getId() == id) {
+                    itemInventario = (ItemInventario) item;
+                    break;
+                }
+            }
+        }
+
+        if (itemInventario != null) {
+            itens.remove(itemInventario);
+            Marker marker = getKeyFromValue(marcadores, itemInventario);
+            marcadores.remove(marker);
+            marker.remove();
+        }
+    }
+
+    private void removeReportMarkerIfContained(long id) {
+        ItemRelato itemRelato = null;
+        for (Object item : itens) {
+            if (item instanceof ItemRelato) {
+                if (((ItemRelato) item).getId() == id) {
+                    itemRelato = (ItemRelato) item;
+                    break;
+                }
+            }
+        }
+
+        if (itemRelato != null) {
+            itens.remove(itemRelato);
+            Marker marker = getKeyFromValue(marcadores, itemRelato);
+            marcadores.remove(marker);
+            marker.remove();
+        }
     }
 
     private int getClusterColor(Cluster item) {
@@ -411,12 +453,12 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         latitude = cameraPosition.target.latitude;
         longitude = cameraPosition.target.longitude;
         raio = GeoUtils.getVisibleRadius(map);
-        if (Math.abs(zoom - cameraPosition.zoom) > 0.00001f) {
-            removerTodosItensMapa();
-        } else {
+        //if (Math.abs(zoom - cameraPosition.zoom) > 0.00001f) {
+        //    removerTodosItensMapa();
+        //} else {
             removerItensMapa();
             exibirElementos();
-        }
+        //}
         zoom = cameraPosition.zoom;
         refresh();
     }
@@ -441,8 +483,9 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         Iterator<Marker> it = marcadores.keySet().iterator();
         while (it.hasNext()) {
             Marker marker = it.next();
-            if (!GeoUtils.isVisible(map.getProjection().getVisibleRegion(), marker.getPosition()) ||
-                    marcadores.get(marker) instanceof Cluster) {
+            if (!GeoUtils.isVisible(map.getProjection().getVisibleRegion(), marker.getPosition())
+                    //|| marcadores.get(marker) instanceof Cluster
+                    ) {
                 marker.remove();
                 it.remove();
                 marcadores.remove(marker);
@@ -765,5 +808,14 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                 map.animateCamera(update);
             }
         }
+    }
+
+    public Marker getKeyFromValue(Map<Marker, Object> map, Object value) {
+        for (Marker m : map.keySet()) {
+            if (map.get(m).equals(value)) {
+                return m;
+            }
+        }
+        return null;
     }
 }

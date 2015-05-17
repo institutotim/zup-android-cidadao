@@ -1,6 +1,7 @@
 package br.com.lfdb.zup.api.model;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 public class Cluster implements Serializable {
@@ -38,7 +39,7 @@ public class Cluster implements Serializable {
     }
 
     public List<Long> getCategoriesIds() {
-        return categoriesIds;
+        return categoriesIds == null ? Collections.singletonList(categoryId) : categoriesIds;
     }
 
     public void setCategoriesIds(List<Long> categoriesIds) {
