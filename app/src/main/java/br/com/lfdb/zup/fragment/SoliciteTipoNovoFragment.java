@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 import br.com.lfdb.zup.R;
@@ -17,7 +19,6 @@ import br.com.lfdb.zup.SoliciteActivity;
 import br.com.lfdb.zup.domain.CategoriaRelato;
 import br.com.lfdb.zup.domain.Solicitacao;
 import br.com.lfdb.zup.service.CategoriaRelatoService;
-import br.com.lfdb.zup.util.ImageUtils;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -74,10 +75,12 @@ public class SoliciteTipoNovoFragment extends Fragment {
             TextView nomeCategoria = ButterKnife.findById(view, R.id.nomeCategoria);
 
             if (!categoria.equals(selecionada)) {
-                imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", categoria.getIconeInativo(), 0.75f));
+                //imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", categoria.getIconeInativo(), 0.75f));
+                getActivity().runOnUiThread(() -> Picasso.with(getActivity()).load(categoria.getIconeInativo(getActivity())).into(imagem));
                 nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
             } else {
-                imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", categoria.getIconeAtivo(), 0.75f));
+                //imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", categoria.getIconeAtivo(), 0.75f));
+                getActivity().runOnUiThread(() -> Picasso.with(getActivity()).load(categoria.getIconeAtivo(getActivity())).into(imagem));
             }
 
             final TextView expander = ButterKnife.findById(view, R.id.expander);
@@ -103,7 +106,8 @@ public class SoliciteTipoNovoFragment extends Fragment {
                     desmarcarTudo(categoria.getSubcategorias().isEmpty());
                     ((SoliciteActivity) getActivity()).setCategoria(categoria);
                     nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
-                    imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", categoria.getIconeAtivo(), 0.75f));
+                    //imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", categoria.getIconeAtivo(), 0.75f));
+                    getActivity().runOnUiThread(() -> Picasso.with(getActivity()).load(categoria.getIconeAtivo(getActivity())).into(imagem));
                 }
             });
 
@@ -120,7 +124,8 @@ public class SoliciteTipoNovoFragment extends Fragment {
                         expander.setText("Ocultar subcategorias");
                         expander.setTag(new Object());
                         nome.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
-                        imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", sub.getIconeAtivo(), 0.75f));
+                        //imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", sub.getIconeAtivo(), 0.75f));
+                        getActivity().runOnUiThread(() -> Picasso.with(getActivity()).load(sub.getIconeAtivo(getActivity())).into(imagem));
                     }
 
                     nome.setText(sub.getNome());
@@ -132,7 +137,8 @@ public class SoliciteTipoNovoFragment extends Fragment {
                         subcategorias.setVisibility(View.VISIBLE);
                         ((SoliciteActivity) getActivity()).setCategoria(sub);
                         nome.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
-                        imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", sub.getIconeAtivo(), 0.75f));
+                        //imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", sub.getIconeAtivo(), 0.75f));
+                        getActivity().runOnUiThread(() -> Picasso.with(getActivity()).load(sub.getIconeAtivo(getActivity())).into(imagem));
                     });
                 }
             }
@@ -152,7 +158,8 @@ public class SoliciteTipoNovoFragment extends Fragment {
             nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 
             ImageView imagem = ButterKnife.findById(view, R.id.imagemCategoria);
-            imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", ((CategoriaRelato) view.getTag()).getIconeInativo(), 0.75f));
+            //imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", ((CategoriaRelato) view.getTag()).getIconeInativo(), 0.75f));
+            getActivity().runOnUiThread(() -> Picasso.with(getActivity()).load(((CategoriaRelato) view.getTag()).getIconeInativo(getActivity())).into(imagem));
 
             ViewGroup subcategorias = ButterKnife.findById(view, R.id.subcategorias);
             subcategorias.setVisibility(collapse ? View.GONE : View.VISIBLE);

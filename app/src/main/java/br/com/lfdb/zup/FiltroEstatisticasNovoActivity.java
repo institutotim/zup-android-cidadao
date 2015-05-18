@@ -12,13 +12,14 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 import br.com.lfdb.zup.domain.BuscaEstatisticas;
 import br.com.lfdb.zup.domain.CategoriaRelato;
 import br.com.lfdb.zup.domain.Periodo;
 import br.com.lfdb.zup.service.CategoriaRelatoService;
-import br.com.lfdb.zup.util.ImageUtils;
 import br.com.lfdb.zup.widget.SeekbarWithIntervals;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -74,10 +75,12 @@ public class FiltroEstatisticasNovoActivity extends FragmentActivity implements 
             TextView nomeCategoria = ButterKnife.findById(view, R.id.nomeCategoria);
 
             if (busca.getCategoria() != null && !busca.getCategoria().equals(categoria.getId())) {
-                imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", categoria.getIconeInativo(), 0.75f));
+                //imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", categoria.getIconeInativo(), 0.75f));
+                runOnUiThread(() -> Picasso.with(this).load(categoria.getIconeInativo(this)).into(imagem));
                 nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
             } else {
-                imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", categoria.getIconeAtivo(), 0.75f));
+                //imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", categoria.getIconeAtivo(), 0.75f));
+                runOnUiThread(() -> Picasso.with(this).load(categoria.getIconeAtivo(this)).into(imagem));
             }
 
             nomeCategoria.setText(categoria.getNome());
@@ -85,7 +88,8 @@ public class FiltroEstatisticasNovoActivity extends FragmentActivity implements 
                 desmarcarTodas();
                 busca.setCategoria(categoria.getId());
                 nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
-                imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", categoria.getIconeAtivo(), 0.75f));
+                //imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", categoria.getIconeAtivo(), 0.75f));
+                runOnUiThread(() -> Picasso.with(this).load(categoria.getIconeAtivo(this)).into(imagem));
             });
 
             ButterKnife.findById(view, R.id.expander).setVisibility(View.GONE);
@@ -102,7 +106,8 @@ public class FiltroEstatisticasNovoActivity extends FragmentActivity implements 
             View view = categoriasContainer.getChildAt(i);
             TextView nomeCategoria = ButterKnife.findById(view, R.id.nomeCategoria);
             ImageView imagem = ButterKnife.findById(view, R.id.imagemCategoria);
-            imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", ((CategoriaRelato) view.getTag()).getIconeAtivo(), 0.75f));
+            //imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", ((CategoriaRelato) view.getTag()).getIconeAtivo(), 0.75f));
+            runOnUiThread(() -> Picasso.with(this).load(((CategoriaRelato) view.getTag()).getIconeAtivo(this)).into(imagem));
 
             nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
 
@@ -121,7 +126,8 @@ public class FiltroEstatisticasNovoActivity extends FragmentActivity implements 
             TextView nomeCategoria = ButterKnife.findById(view, R.id.nomeCategoria);
             nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
             ImageView imagem = ButterKnife.findById(view, R.id.imagemCategoria);
-            imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", ((CategoriaRelato) view.getTag()).getIconeInativo(), 0.75f));
+            //imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", ((CategoriaRelato) view.getTag()).getIconeInativo(), 0.75f));
+            runOnUiThread(() -> Picasso.with(this).load(((CategoriaRelato) view.getTag()).getIconeInativo(this)).into(imagem));
 
             ViewGroup subcategorias = ButterKnife.findById(view, R.id.subcategorias);
             for (int j = 0; j < subcategorias.getChildCount(); j++) {

@@ -14,6 +14,8 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -26,7 +28,6 @@ import br.com.lfdb.zup.domain.Periodo;
 import br.com.lfdb.zup.service.CategoriaInventarioService;
 import br.com.lfdb.zup.service.CategoriaRelatoService;
 import br.com.lfdb.zup.util.FontUtils;
-import br.com.lfdb.zup.util.ImageUtils;
 import br.com.lfdb.zup.widget.SeekbarWithIntervals;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -112,10 +113,12 @@ public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSee
             TextView nomeCategoria = ButterKnife.findById(view, R.id.nomeCategoria);
 
             if (!busca.getIdsCategoriaRelato().contains(categoria.getId())) {
-                imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", categoria.getIconeInativo(), 0.75f));
+                //imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", categoria.getIconeInativo(), 0.75f));
+                runOnUiThread(() -> Picasso.with(this).load(categoria.getIconeInativo(this)).into(imagem));
                 nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
             } else {
-                imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", categoria.getIconeAtivo(), 0.75f));
+                //imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", categoria.getIconeAtivo(), 0.75f));
+                runOnUiThread(() -> Picasso.with(this).load(categoria.getIconeAtivo(this)).into(imagem));
             }
 
 
@@ -127,7 +130,8 @@ public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSee
                     checkSubCategories(view, categoria, false);
                     busca.getIdsCategoriaRelato().remove(categoria.getId());
                     nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                    imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", categoria.getIconeInativo(), 0.75f));
+                    //imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", categoria.getIconeInativo(), 0.75f));
+                    runOnUiThread(() -> Picasso.with(this).load(categoria.getIconeInativo(this)).into(imagem));
 
                     verificarTodasRemovidas();
                 } else {
@@ -135,7 +139,8 @@ public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSee
                     checkSubCategories(view, categoria, true);
                     busca.getIdsCategoriaRelato().add(categoria.getId());
                     nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
-                    imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", categoria.getIconeAtivo(), 0.75f));
+                    //imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", categoria.getIconeAtivo(), 0.75f));
+                    runOnUiThread(() -> Picasso.with(this).load(categoria.getIconeAtivo(this)).into(imagem));
                 }
 
                 popularListStatus();
@@ -184,7 +189,8 @@ public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSee
                         }
 
                         if (todasSubCategoriasRemovidas) {
-                            imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", categoria.getIconeInativo(), 0.75f));
+                            //imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", categoria.getIconeInativo(), 0.75f));
+                            runOnUiThread(() -> Picasso.with(this).load(categoria.getIconeInativo(this)).into(imagem));
 
                             nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                             if (busca.getIdsCategoriaRelato().contains(sub.getCategoriaMae().getId()))
@@ -199,7 +205,8 @@ public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSee
                         nome.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
                         nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
 
-                        imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", categoria.getIconeAtivo(), 0.75f));
+                        //imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", categoria.getIconeAtivo(), 0.75f));
+                        runOnUiThread(() -> Picasso.with(this).load(categoria.getIconeAtivo(this)).into(imagem));
 
                         desativarLabel();
                     }
@@ -222,10 +229,12 @@ public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSee
             TextView nomeCategoria = ButterKnife.findById(view, R.id.nomeCategoria);
 
             if (!busca.getIdsCategoriaInventario().contains(categoria.getId())) {
-                imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeInativo(), 0.75f));
+                //imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeInativo(), 0.75f));
+                runOnUiThread(() -> Picasso.with(this).load(categoria.getIconeInativo(this)).into(imagem));
                 nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
             } else {
-                imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeAtivo(), 0.75f));
+                //imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeAtivo(), 0.75f));
+                runOnUiThread(() -> Picasso.with(this).load(categoria.getIconeAtivo(this)).into(imagem));
             }
 
             nomeCategoria.setText(categoria.getNome());
@@ -234,11 +243,13 @@ public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSee
                 if (busca.getIdsCategoriaInventario().contains(categoria.getId())) {
                     busca.getIdsCategoriaInventario().remove(categoria.getId());
                     nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                    imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeInativo(), 0.75f));
+                    //imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeInativo(), 0.75f));
+                    runOnUiThread(() -> Picasso.with(this).load(categoria.getIconeInativo(this)).into(imagem));
                 } else {
                     busca.getIdsCategoriaInventario().add(categoria.getId());
                     nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
-                    imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeAtivo(), 0.75f));
+                    //imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeAtivo(), 0.75f));
+                    runOnUiThread(() -> Picasso.with(this).load(categoria.getIconeAtivo(this)).into(imagem));
                 }
 
                 desmarcarCategoriasRelato();
@@ -263,7 +274,8 @@ public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSee
             nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 
             ImageView imagem = ButterKnife.findById(view, R.id.imagemCategoria);
-            imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", ((CategoriaRelato) view.getTag()).getIconeInativo(), 0.75f));
+            //imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", ((CategoriaRelato) view.getTag()).getIconeInativo(), 0.75f));
+            runOnUiThread(() -> Picasso.with(this).load(((CategoriaRelato) view.getTag()).getIconeInativo(this)).into(imagem));
 
             ViewGroup subcategorias = ButterKnife.findById(view, R.id.subcategorias);
             for (int j = 0; j < subcategorias.getChildCount(); j++) {
@@ -285,7 +297,8 @@ public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSee
             nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 
             ImageView imagem = ButterKnife.findById(view, R.id.imagemCategoria);
-            imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "inventory", ((CategoriaInventario) view.getTag()).getIconeInativo(), 0.75f));
+            //imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "inventory", ((CategoriaInventario) view.getTag()).getIconeInativo(), 0.75f));
+            runOnUiThread(() -> Picasso.with(this).load(((CategoriaInventario) view.getTag()).getIconeInativo(this)).into(imagem));
 
             ViewGroup subcategorias = ButterKnife.findById(view, R.id.subcategorias);
             for (int j = 0; j < subcategorias.getChildCount(); j++) {
@@ -369,7 +382,8 @@ public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSee
                 View view = categoriasContainer.getChildAt(i);
                 TextView nomeCategoria = ButterKnife.findById(view, R.id.nomeCategoria);
                 ImageView imagem = ButterKnife.findById(view, R.id.imagemCategoria);
-                imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", ((CategoriaRelato) view.getTag()).getIconeAtivo(), 0.75f));
+                //imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", ((CategoriaRelato) view.getTag()).getIconeAtivo(), 0.75f));
+                runOnUiThread(() -> Picasso.with(this).load(((CategoriaRelato) view.getTag()).getIconeAtivo(this)).into(imagem));
 
                 nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
 
@@ -391,7 +405,8 @@ public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSee
                 TextView nomeCategoria = ButterKnife.findById(view, R.id.nomeCategoria);
                 nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                 ImageView imagem = ButterKnife.findById(view, R.id.imagemCategoria);
-                imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", ((CategoriaRelato) view.getTag()).getIconeInativo(), 0.75f));
+                //imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "reports", ((CategoriaRelato) view.getTag()).getIconeInativo(), 0.75f));
+                runOnUiThread(() -> Picasso.with(this).load(((CategoriaRelato) view.getTag()).getIconeInativo(this)).into(imagem));
 
                 ViewGroup subcategorias = ButterKnife.findById(view, R.id.subcategorias);
                 for (int j = 0; j < subcategorias.getChildCount(); j++) {
