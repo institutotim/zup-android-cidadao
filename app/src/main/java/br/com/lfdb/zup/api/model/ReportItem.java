@@ -171,7 +171,7 @@ public class ReportItem {
         item.setCategoria(new CategoriaRelatoService().getById(context, category.getId()));
         item.setComentario(description);
         item.setCreatorId(user.getId());
-        item.setData((DateUtils.getIntervaloTempo(createdAt.toDate()));
+        item.setData((DateUtils.getIntervaloTempo(createdAt.toDate())));
         item.setEndereco(address);
         ArrayList<String> images = new ArrayList<>();
         for (ReportImage image : this.images) {
