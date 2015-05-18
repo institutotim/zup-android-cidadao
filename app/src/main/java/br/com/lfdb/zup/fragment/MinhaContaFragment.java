@@ -190,6 +190,18 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
         }
     }
 
+    public void refresh() {
+        lastPageLoaded = 0;
+        shouldContinueLoading = true;
+        lastResult = "";
+        adapter.clear();
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+            new Tasker().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else {
+            new Tasker().execute();
+        }
+    }
+
     public class SolicitacaoAdapter extends ArrayAdapter<SolicitacaoListItem> {
 
         private List<SolicitacaoListItem> items;
