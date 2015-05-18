@@ -29,7 +29,8 @@ public class CategoriaRelato implements Serializable {
     private boolean confidencial;
 
 	private ArrayList<Status> status;
-	
+	private String cor;
+
 	public CategoriaRelato() {
 	}
 	
@@ -171,6 +172,14 @@ public class CategoriaRelato implements Serializable {
 
 	public void setPosicaoLivre(boolean posicaoLivre) {
 		this.posicaoLivre = posicaoLivre;
+	}
+
+	public void setCor(String cor) {
+		this.cor = cor;
+	}
+
+	public String getCor() {
+		return cor;
 	}
 
 	public static class Status implements Serializable {

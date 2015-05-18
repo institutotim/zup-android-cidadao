@@ -12,6 +12,7 @@ public class CategoriaInventario implements Serializable {
 	private String nome;
     private String pin;
     private boolean showMarker;
+	private String cor;
 
 	public CategoriaInventario() {
 	}
@@ -97,4 +98,12 @@ public class CategoriaInventario implements Serializable {
     public void setShowMarker(boolean showMarker) {
         this.showMarker = showMarker;
     }
+
+	public void setCor(String cor) {
+		this.cor = cor;
+	}
+
+	public String getCor() {
+		return cor;
+	}
 }
