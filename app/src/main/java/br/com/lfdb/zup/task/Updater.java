@@ -78,9 +78,7 @@ public class Updater {
     private void saveCategories(Context context, String json, String type) throws Exception {
         String density = ImageUtils.shouldDownloadRetinaIcon(context) ? "retina" : "default";
         if (type.equals("reports")) {
-            long start = System.currentTimeMillis();
             ReportCategoriesResponse response = ConstantesBase.GSON.fromJson(json, ReportCategoriesResponse.class);
-            Log.d("UPDATE", "Parsing took " + (System.currentTimeMillis() - start) + " milliseconds");
             for (ReportCategory category : response.getCategories()) {
                 downloadImages(context, type, density, category);
                 for (ReportCategory sub : category.getSubcategories()) downloadImages(context, type, density, sub);
@@ -91,13 +89,13 @@ public class Updater {
                 if (density.equals("retina")) {
                     if (category.getPin() != null) FileUtils.downloadImage(context, type, category.getPin().getRetina().getMobile());
                     FileUtils.downloadImage(context, type, category.getMarker().getRetina().getMobile());
-                    FileUtils.downloadImage(context, type, category.getIcon().getRetina().getMobile().getActive());
-                    FileUtils.downloadImage(context, type, category.getIcon().getRetina().getMobile().getDisabled());
+                    //FileUtils.downloadImage(context, type, category.getIcon().getRetina().getMobile().getActive());
+                    //FileUtils.downloadImage(context, type, category.getIcon().getRetina().getMobile().getDisabled());
                 } else {
                     if (category.getPin() != null) FileUtils.downloadImage(context, type, category.getPin().getCommon().getMobile());
                     FileUtils.downloadImage(context, type, category.getMarker().getCommon().getMobile());
-                    FileUtils.downloadImage(context, type, category.getIcon().getCommon().getMobile().getActive());
-                    FileUtils.downloadImage(context, type, category.getIcon().getCommon().getMobile().getDisabled());
+                    //FileUtils.downloadImage(context, type, category.getIcon().getCommon().getMobile().getActive());
+                    //FileUtils.downloadImage(context, type, category.getIcon().getCommon().getMobile().getDisabled());
                 }
             }
         }
@@ -109,12 +107,12 @@ public class Updater {
     private void downloadImages(Context context, String type, String density, ReportCategory category) throws Exception {
         if (density.equals("retina")) {
             FileUtils.downloadImage(context, type, category.getMarker().getRetina().getMobile());
-            FileUtils.downloadImage(context, type, category.getIcon().getRetina().getMobile().getActive());
-            FileUtils.downloadImage(context, type, category.getIcon().getRetina().getMobile().getDisabled());
+            //FileUtils.downloadImage(context, type, category.getIcon().getRetina().getMobile().getActive());
+            //FileUtils.downloadImage(context, type, category.getIcon().getRetina().getMobile().getDisabled());
         } else {
             FileUtils.downloadImage(context, type, category.getMarker().getCommon().getMobile());
-            FileUtils.downloadImage(context, type, category.getIcon().getCommon().getMobile().getActive());
-            FileUtils.downloadImage(context, type, category.getIcon().getCommon().getMobile().getDisabled());
+            //FileUtils.downloadImage(context, type, category.getIcon().getCommon().getMobile().getActive());
+            //FileUtils.downloadImage(context, type, category.getIcon().getCommon().getMobile().getDisabled());
         }
     }
 }
