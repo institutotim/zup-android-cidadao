@@ -171,6 +171,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == SOLICITACAO_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             exploreFragment.refresh();
+            if (minhaContaFragment != null) minhaContaFragment.refresh();
         } else if (requestCode == FILTRO_CODE && resultCode == Activity.RESULT_OK) {
             exploreFragment.aplicarFiltro((BuscaExplore) data.getSerializableExtra("busca"));
         } else if (requestCode == EstatisticasFragment.REQUEST_FILTRO && resultCode == Activity.RESULT_OK) {
