@@ -5,12 +5,11 @@ import android.content.Context;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import br.com.lfdb.zup.domain.CategoriaRelato;
 import br.com.lfdb.zup.domain.SolicitacaoListItem;
 import br.com.lfdb.zup.service.CategoriaRelatoService;
+import br.com.lfdb.zup.util.DateUtils;
 
 public class ReportItem {
 
@@ -172,7 +171,7 @@ public class ReportItem {
         item.setCategoria(new CategoriaRelatoService().getById(context, category.getId()));
         item.setComentario(description);
         item.setCreatorId(user.getId());
-        item.setData(createdAt.toString());
+        item.setData((DateUtils.getIntervaloTempo(createdAt.toDate()));
         item.setEndereco(address);
         ArrayList<String> images = new ArrayList<>();
         for (ReportImage image : this.images) {

@@ -24,21 +24,4 @@ public class MapUtils {
         ((TextView) view.getChildAt(0)).setText(String.valueOf(number));
         return ViewUtils.getBitmapFromView(view);
     }
-
-
-
-    public static GradientDrawable getBackground(int color) {
-        int strokeWidth = 5; // 3px not dp
-        int roundRadius = 15; // 8px not dp
-        int strokeColor = Color.parseColor("#2E3135");
-        int fillColor = Color.parseColor("#DFDFE0");
-
-        GradientDrawable gd = new GradientDrawable();
-        gd.setShape(GradientDrawable.OVAL);
-        gd.setColor(fillColor);
-        gd.setCornerRadius(roundRadius);
-        gd.setStroke(strokeWidth, strokeColor);
-
-        return gd;
-    }
 }
