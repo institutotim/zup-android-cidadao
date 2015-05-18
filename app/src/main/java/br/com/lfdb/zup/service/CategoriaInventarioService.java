@@ -11,52 +11,53 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
 import br.com.lfdb.zup.domain.CategoriaInventario;
 import br.com.lfdb.zup.util.ImageUtils;
 
 public class CategoriaInventarioService {
 
-	public CategoriaInventario getById(Context context, long id) {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		String raw = prefs.getString("inventory", "");
-		if (raw.isEmpty()) {
-			return null;
-		}
+    public CategoriaInventario getById(Context context, long id) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String raw = prefs.getString("inventory", "");
+        if (raw.isEmpty()) {
+            return null;
+        }
 
         try {
-			JSONArray array = new JSONObject(raw).getJSONArray("categories");
-			for (int i = 0; i < array.length(); i++) {
-				JSONObject obj = array.getJSONObject(i);
-				if (obj.getLong("id") == id) {
-					return extract(context, obj);
-				}
-			}
-		} catch (Exception e) {
-			Log.e("ZUP", e.getMessage(), e);
-		}
+            JSONArray array = new JSONObject(raw).getJSONArray("categories");
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject obj = array.getJSONObject(i);
+                if (obj.getLong("id") == id) {
+                    return extract(context, obj);
+                }
+            }
+        } catch (Exception e) {
+            Log.e("ZUP", e.getMessage(), e);
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public List<CategoriaInventario> getCategorias(Context context) {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		String raw = prefs.getString("inventory", "");
-		if (raw.isEmpty()) {
-			return Collections.emptyList();
-		}
+    public List<CategoriaInventario> getCategorias(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String raw = prefs.getString("inventory", "");
+        if (raw.isEmpty()) {
+            return Collections.emptyList();
+        }
 
         try {
-			List<CategoriaInventario> categorias = new ArrayList<>();
-			JSONArray array = new JSONObject(raw).getJSONArray("categories");
-			for (int i = 0; i < array.length(); i++) {
-				categorias.add(extract(context, array.getJSONObject(i)));
-			}
-			return categorias;
-		} catch (Exception e) {
-			Log.e("ZUP", e.getMessage(), e);
-			return Collections.emptyList();
-		}
-	}
+            List<CategoriaInventario> categorias = new ArrayList<>();
+            JSONArray array = new JSONObject(raw).getJSONArray("categories");
+            for (int i = 0; i < array.length(); i++) {
+                categorias.add(extract(context, array.getJSONObject(i)));
+            }
+            return categorias;
+        } catch (Exception e) {
+            Log.e("ZUP", e.getMessage(), e);
+            return Collections.emptyList();
+        }
+    }
 
     private CategoriaInventario extract(Context context, JSONObject obj) throws Exception {
         String density = ImageUtils.shouldDownloadRetinaIcon(context) ? "retina" : "default";
@@ -69,6 +70,7 @@ public class CategoriaInventarioService {
         file = icon.getString("disabled").split("/");
         categoria.setIconeInativo(file[file.length - 1]);
         categoria.setId(obj.getLong("id"));
+        categoria.setCor(obj.getString("color"));
         file = obj.getJSONObject("marker").getJSONObject(density).getString("mobile").split("/");
         categoria.setMarcador(file[file.length - 1]);
         if (obj.has("pin")) {

@@ -197,6 +197,7 @@ public class CategoriaRelatoService {
         file = icon.getString("disabled").split("/");
         categoria.setIconeInativo(file[file.length - 1]);
         categoria.setId(json.getLong("id"));
+        categoria.setCor(json.getString("color"));
         categoria.setPosicaoLivre(json.optBoolean("allows_arbitrary_position", false));
         categoria.setTempoResolucao(json.optLong("resolution_time"));
         categoria.setTempoResposta(json.optLong("user_response_time"));

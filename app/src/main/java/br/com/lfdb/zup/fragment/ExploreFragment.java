@@ -357,7 +357,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         itens.add(item);
         marcadores.put(map.addMarker(new MarkerOptions()
                         .position(new LatLng(item.getLatitude(), item.getLongitude()))
-                        .icon(BitmapDescriptorFactory.fromBitmap(MapUtils.createMarker(getActivity(), item.getCount())))
+                        .icon(BitmapDescriptorFactory.fromBitmap(MapUtils.createMarker(getActivity(), getClusterColor(item), item.getCount())))
         ), item);
     }
 
@@ -412,12 +412,11 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
     }
 
     private int getClusterColor(Cluster item) {
-        // TODO fix cluster color
-        //if (!item.isSingleCategory())
-            return Color.parseColor("#2ab4db");
+        if (!item.isSingleCategory()) return Color.parseColor("#2ab4db");
 
-        //return item.isReport() ? new CategoriaRelatoService().getById(getActivity(),
-        //        item.getCategoryId()).get;
+        return Color.parseColor(item.isReport() ? new CategoriaRelatoService().getById(getActivity(),
+                item.getCategoryId()).getCor() : new CategoriaInventarioService().getById(getActivity(),
+                item.getCategoryId()).getCor());
     }
 
     @Override
