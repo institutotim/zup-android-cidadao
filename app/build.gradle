@@ -60,13 +60,12 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     dexOptions {
-        javaMaxHeapSize '4g'
+        javaMaxHeapSize "4g"
     }
 }
 
 dependencies {
     compile 'com.android.support:support-v4:22.1.1'
-    compile 'com.android.support:recyclerview-v7:22.1.1'
     compile 'com.google.android.gms:play-services:6.1.71'
     compile 'com.android.support:multidex:1.0.1'
     compile 'oauth.signpost:signpost-core:1.2.1.2'
@@ -76,14 +75,13 @@ dependencies {
     compile 'com.jakewharton:butterknife:6.1.0'
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
     compile 'org.twitter4j:twitter4j-core:4.0.3'
-    compile 'com.squareup.okhttp:okhttp:2.4.0-RC1'
-    compile 'com.squareup.okhttp:okhttp-apache:2.4.0-RC1'
-    compile 'com.squareup.okhttp:okhttp-urlconnection:2.4.0-RC1'
+    compile 'com.squareup.okhttp:okhttp:2.3.0'
+    compile 'com.squareup.okhttp:okhttp-apache:2.3.0'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.3.0'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.google.guava:guava:18.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'net.danlew:android.joda:2.7.2'
-    compile 'com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.7.0'
     compile('com.crashlytics.sdk.android:crashlytics:2.2.4@aar') {
         transitive = true;
     }

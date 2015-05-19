@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import br.com.lfdb.zup.api.model.InventoryCategoriesResponse;
 import br.com.lfdb.zup.api.model.InventoryCategory;
@@ -89,13 +91,13 @@ public class Updater {
                 if (density.equals("retina")) {
                     if (category.getPin() != null) FileUtils.downloadImage(context, type, category.getPin().getRetina().getMobile());
                     FileUtils.downloadImage(context, type, category.getMarker().getRetina().getMobile());
-                    //FileUtils.downloadImage(context, type, category.getIcon().getRetina().getMobile().getActive());
-                    //FileUtils.downloadImage(context, type, category.getIcon().getRetina().getMobile().getDisabled());
+                    FileUtils.downloadImage(context, type, category.getIcon().getRetina().getMobile().getActive());
+                    FileUtils.downloadImage(context, type, category.getIcon().getRetina().getMobile().getDisabled());
                 } else {
                     if (category.getPin() != null) FileUtils.downloadImage(context, type, category.getPin().getCommon().getMobile());
                     FileUtils.downloadImage(context, type, category.getMarker().getCommon().getMobile());
-                    //FileUtils.downloadImage(context, type, category.getIcon().getCommon().getMobile().getActive());
-                    //FileUtils.downloadImage(context, type, category.getIcon().getCommon().getMobile().getDisabled());
+                    FileUtils.downloadImage(context, type, category.getIcon().getCommon().getMobile().getActive());
+                    FileUtils.downloadImage(context, type, category.getIcon().getCommon().getMobile().getDisabled());
                 }
             }
         }
@@ -105,14 +107,65 @@ public class Updater {
     }
 
     private void downloadImages(Context context, String type, String density, ReportCategory category) throws Exception {
+        final AtomicInteger counter = new AtomicInteger(0);
+        final AtomicBoolean error = new AtomicBoolean(false);
         if (density.equals("retina")) {
-            FileUtils.downloadImage(context, type, category.getMarker().getRetina().getMobile());
-            //FileUtils.downloadImage(context, type, category.getIcon().getRetina().getMobile().getActive());
-            //FileUtils.downloadImage(context, type, category.getIcon().getRetina().getMobile().getDisabled());
+            new Thread(() -> {
+                try {
+                    FileUtils.downloadImage(context, type, category.getMarker().getRetina().getMobile());
+                } catch (Exception e) {
+                    Log.e("Error", "Failed to download", e);
+                    error.set(true);
+                }
+                counter.addAndGet(1);
+            }).start();
+            new Thread(() -> {
+                try {
+                    FileUtils.downloadImage(context, type, category.getIcon().getRetina().getMobile().getActive());
+                } catch (Exception e) {
+                    Log.e("Error", "Failed to download", e);
+                    error.set(true);
+                }
+                counter.addAndGet(1);
+            }).start();
+            new Thread(() -> {
+                try {
+                    FileUtils.downloadImage(context, type, category.getIcon().getRetina().getMobile().getDisabled());
+                } catch (Exception e) {
+                    Log.e("Error", "Failed to download", e);
+                    error.set(true);
+                }
+                counter.addAndGet(1);
+            }).start();
         } else {
-            FileUtils.downloadImage(context, type, category.getMarker().getCommon().getMobile());
-            //FileUtils.downloadImage(context, type, category.getIcon().getCommon().getMobile().getActive());
-            //FileUtils.downloadImage(context, type, category.getIcon().getCommon().getMobile().getDisabled());
+            new Thread(() -> {
+                try {
+                    FileUtils.downloadImage(context, type, category.getMarker().getCommon().getMobile());
+                } catch (Exception e) {
+                    Log.e("Error", "Failed to download", e);
+                    error.set(true);
+                }
+                counter.addAndGet(1);
+            }).start();
+            new Thread(() -> {
+                try {
+                    FileUtils.downloadImage(context, type, category.getIcon().getCommon().getMobile().getActive());
+                } catch (Exception e) {
+                    Log.e("Error", "Failed to download", e);
+                    error.set(true);
+                }
+                counter.addAndGet(1);
+            }).start();
+            new Thread(() -> {
+                try {
+                    FileUtils.downloadImage(context, type, category.getIcon().getCommon().getMobile().getDisabled());
+                } catch (Exception e) {
+                    Log.e("Error", "Failed to download", e);
+                    error.set(true);
+                }
+                counter.addAndGet(1);
+            }).start();
         }
+        while (counter.get() != 3 && !error.get());
     }
 }

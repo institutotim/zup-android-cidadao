@@ -1,6 +1,5 @@
 package br.com.lfdb.zup.domain;
 
-import android.content.Context;
 import android.graphics.Color;
 
 import java.io.Serializable;
@@ -8,24 +7,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import br.com.lfdb.zup.FiltroExploreNovoActivity;
-import br.com.lfdb.zup.api.model.Icon;
-import br.com.lfdb.zup.util.ImageUtils;
-
 public class CategoriaRelato implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private long id;
-    private String iconeAtivo;
+	private static final long serialVersionUID = 1L;
+	private long id;
+	private String iconeAtivo;
     private String iconeInativo;
-    private String marcador;
-    private String nome;
+	private String marcador;
+	private String nome;
     private ArrayList<CategoriaInventario> categoriasInventario;
     private ArrayList<CategoriaRelato> subcategorias;
     private CategoriaRelato categoriaMae;
-    private boolean posicaoLivre;
-
-    private Icon icon;
+	private boolean posicaoLivre;
 
     private Long tempoResposta;
     private Long tempoResolucao;
@@ -35,15 +28,15 @@ public class CategoriaRelato implements Serializable {
 
     private boolean confidencial;
 
-    private ArrayList<Status> status;
-    private String cor;
+	private ArrayList<Status> status;
+	private String cor;
 
-    public CategoriaRelato() {
-    }
-
-    public CategoriaRelato(long id) {
-        this.id = id;
-    }
+	public CategoriaRelato() {
+	}
+	
+	public CategoriaRelato(long id) {
+		this.id = id;
+	}
 
     public ArrayList<CategoriaInventario> getCategoriasInventario() {
         return categoriasInventario;
@@ -53,21 +46,21 @@ public class CategoriaRelato implements Serializable {
         this.categoriasInventario = categoriasInventario;
     }
 
-    public ArrayList<Status> getStatus() {
-        return status;
-    }
+	public ArrayList<Status> getStatus() {
+		return status;
+	}
 
-    public void setStatus(ArrayList<Status> status) {
-        this.status = status;
-    }
+	public void setStatus(ArrayList<Status> status) {
+		this.status = status;
+	}
 
-    public long getId() {
-        return id;
-    }
+	public long getId() {
+		return id;
+	}
 
-    public void setId(long id) {
-        this.id = id;
-    }
+	public void setId(long id) {
+		this.id = id;
+	}
 
     public String getIconeAtivo() {
         return iconeAtivo;
@@ -86,20 +79,20 @@ public class CategoriaRelato implements Serializable {
     }
 
     public String getMarcador() {
-        return marcador;
-    }
+		return marcador;
+	}
 
-    public void setMarcador(String marcador) {
-        this.marcador = marcador;
-    }
+	public void setMarcador(String marcador) {
+		this.marcador = marcador;
+	}
 
-    public String getNome() {
-        return nome;
-    }
+	public String getNome() {
+		return nome;
+	}
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
 
     public List<CategoriaRelato> getSubcategorias() {
         if (subcategorias == null) return Collections.<CategoriaRelato>emptyList();
@@ -173,131 +166,107 @@ public class CategoriaRelato implements Serializable {
         this.tempoResolucaoPrivado = tempoResolucaoPrivado;
     }
 
-    public boolean isPosicaoLivre() {
-        return posicaoLivre;
-    }
+	public boolean isPosicaoLivre() {
+		return posicaoLivre;
+	}
 
-    public void setPosicaoLivre(boolean posicaoLivre) {
-        this.posicaoLivre = posicaoLivre;
-    }
+	public void setPosicaoLivre(boolean posicaoLivre) {
+		this.posicaoLivre = posicaoLivre;
+	}
 
-    public void setCor(String cor) {
-        this.cor = cor;
-    }
+	public void setCor(String cor) {
+		this.cor = cor;
+	}
 
-    public String getCor() {
-        return cor;
-    }
+	public String getCor() {
+		return cor;
+	}
 
-    public String getIconeInativo(Context context) {
-        if (ImageUtils.shouldDownloadRetinaIcon(context)) {
-            return icon.getRetina().getMobile().getDisabled();
-        } else {
-            return icon.getCommon().getMobile().getDisabled();
-        }
-    }
+	public static class Status implements Serializable {
+		private long id;
+		private int cor;
+		private String nome;
+		
+		public Status() {
+		}
+		
+		public Status(long id, String nome, String corHtml) {
+			this.id = id;
+			this.nome = nome;
+			this.cor = Color.parseColor(corHtml);
+		}
+		
+		public Status(String nome, String corHtml) {
+			this.nome = nome;
+			this.cor = Color.parseColor(corHtml);
+		}
 
-    public String getIconeAtivo(Context context) {
-        if (ImageUtils.shouldDownloadRetinaIcon(context)) {
-            return icon.getRetina().getMobile().getActive();
-        } else {
-            return icon.getCommon().getMobile().getActive();
-        }
-    }
+		public long getId() {
+			return id;
+		}
 
-    public Icon getIcon() {
-        return icon;
-    }
+		public void setId(long id) {
+			this.id = id;
+		}
 
-    public void setIcon(Icon icon) {
-        this.icon = icon;
-    }
+		public int getCor() {
+			return cor;
+		}
 
-    public static class Status implements Serializable {
-        private long id;
-        private int cor;
-        private String nome;
+		public void setCor(int cor) {
+			this.cor = cor;
+		}
 
-        public Status() {
-        }
+		public String getNome() {
+			return nome;
+		}
 
-        public Status(long id, String nome, String corHtml) {
-            this.id = id;
-            this.nome = nome;
-            this.cor = Color.parseColor(corHtml);
-        }
+		public void setNome(String nome) {
+			this.nome = nome;
+		}
 
-        public Status(String nome, String corHtml) {
-            this.nome = nome;
-            this.cor = Color.parseColor(corHtml);
-        }
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + (int) (id ^ (id >>> 32));
+			return result;
+		}
 
-        public long getId() {
-            return id;
-        }
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (!(obj instanceof Status))
+				return false;
+			Status other = (Status) obj;
+			if (id != other.id)
+				return false;
+			return true;
+		}
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
+		return result;
+	}
 
-        public void setId(long id) {
-            this.id = id;
-        }
-
-        public int getCor() {
-            return cor;
-        }
-
-        public void setCor(int cor) {
-            this.cor = cor;
-        }
-
-        public String getNome() {
-            return nome;
-        }
-
-        public void setNome(String nome) {
-            this.nome = nome;
-        }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + (int) (id ^ (id >>> 32));
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (!(obj instanceof Status))
-                return false;
-            Status other = (Status) obj;
-            if (id != other.id)
-                return false;
-            return true;
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (int) (id ^ (id >>> 32));
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (!(obj instanceof CategoriaRelato))
-            return false;
-        CategoriaRelato other = (CategoriaRelato) obj;
-        if (id != other.id)
-            return false;
-        return true;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof CategoriaRelato))
+			return false;
+		CategoriaRelato other = (CategoriaRelato) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
 }

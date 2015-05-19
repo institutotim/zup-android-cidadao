@@ -12,8 +12,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import br.com.lfdb.zup.api.model.Icon;
-import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.domain.CategoriaInventario;
 import br.com.lfdb.zup.util.ImageUtils;
 
@@ -72,7 +70,6 @@ public class CategoriaInventarioService {
         file = icon.getString("disabled").split("/");
         categoria.setIconeInativo(file[file.length - 1]);
         categoria.setId(obj.getLong("id"));
-        categoria.setIcon(ConstantesBase.GSON.fromJson(obj.getJSONObject("icon").toString(), Icon.class));
         categoria.setCor(obj.getString("color"));
         file = obj.getJSONObject("marker").getJSONObject(density).getString("mobile").split("/");
         categoria.setMarcador(file[file.length - 1]);

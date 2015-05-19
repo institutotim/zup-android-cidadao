@@ -16,9 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import br.com.lfdb.zup.api.model.Icon;
 import br.com.lfdb.zup.api.model.ReportCategoryStatus;
-import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.domain.CategoriaInventario;
 import br.com.lfdb.zup.domain.CategoriaRelato;
@@ -200,7 +198,6 @@ public class CategoriaRelatoService {
         categoria.setIconeInativo(file[file.length - 1]);
         categoria.setId(json.getLong("id"));
         categoria.setCor(json.getString("color"));
-        categoria.setIcon(ConstantesBase.GSON.fromJson(json.getJSONObject("icon").toString(), Icon.class));
         categoria.setPosicaoLivre(json.optBoolean("allows_arbitrary_position", false));
         categoria.setTempoResolucao(json.optLong("resolution_time"));
         categoria.setTempoResposta(json.optLong("user_response_time"));
