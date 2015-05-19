@@ -22,7 +22,6 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.okhttp.apache.OkApacheClient;
-import com.squareup.picasso.Picasso;
 import com.viewpagerindicator.IconPageIndicator;
 import com.viewpagerindicator.PageIndicator;
 
@@ -145,17 +144,13 @@ public class SolicitacaoDetalheActivity extends FragmentActivity {
         indicadorStatus.setText(solicitacao.getStatus().getNome());
 
         if (solicitacao.getCategoria().getCategoriaMae() != null) {
-            //categoryIcon.setImageBitmap(ImageUtils.getScaledCustom(this, "reports",
-            //        solicitacao.getCategoria().getCategoriaMae().getIconeInativo(), 0.75f));
-            runOnUiThread(() -> Picasso.with(this).load(solicitacao.getCategoria().getCategoriaMae()
-                    .getIconeAtivo(this)).into(categoryIcon));
+            categoryIcon.setImageBitmap(ImageUtils.getScaledCustom(this, "reports",
+                    solicitacao.getCategoria().getCategoriaMae().getIconeAtivo(), 0.75f));
             categoryName.setText(solicitacao.getCategoria().getNome());
             subcategoryName.setText(solicitacao.getCategoria().getCategoriaMae().getNome());
         } else {
-            //categoryIcon.setImageBitmap(ImageUtils.getScaledCustom(this, "reports",
-            //        solicitacao.getCategoria().getIconeInativo(), 0.75f));
-            runOnUiThread(() -> Picasso.with(this).load(solicitacao.getCategoria().getIconeAtivo(this))
-                    .into(categoryIcon));
+            categoryIcon.setImageBitmap(ImageUtils.getScaledCustom(this, "reports",
+                    solicitacao.getCategoria().getIconeAtivo(), 0.75f));
             categoryName.setText(solicitacao.getCategoria().getNome());
             subcategoryName.setVisibility(View.GONE);
         }
