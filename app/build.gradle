@@ -15,8 +15,8 @@ android {
     defaultConfig {
         minSdkVersion 10
         targetSdkVersion 22
-        versionCode 1
-        versionName '0.2.37'
+        versionCode 10000
+        versionName '1.0.0'
         multiDexEnabled = true
     }
     signingConfigs {
@@ -26,33 +26,38 @@ android {
             storeFile file('key/cognita.keystore')
             storePassword 'ntxp4ss'
         }
+        sbc {
+            keyAlias System.getenv('KEY_ALIAS') != null ? System.getenv('KEY_ALIAS') : 'cognita'
+            keyPassword System.getenv('KEY_PASSWORD') != null ? System.getenv('KEY_PASSWORD') : 'ntxp4ss'
+            storeFile file(System.getenv('KEY_FILE') != null ? System.getenv('KEY_FILE') : 'key/cognita.keystore')
+            storePassword System.getenv('KEY_PASSWORD') != null ? System.getenv('KEY_PASSWORD') : 'ntxp4ss'
+        }
     }
     productFlavors {
         staging {
+            signingConfig signingConfigs.alpha
             applicationId 'br.com.lfdb.zup'
         }
         boavista {
+            signingConfig signingConfigs.alpha
             applicationId 'br.com.lfdb.zup.boavista'
         }
         sbc {
-            applicationId 'br.com.lfdb.zup.sbc'
+            signingConfig signingConfigs.sbc
+            applicationId 'br.org.institutotim.zup.sbc'
         }
         maceio {
+            signingConfig signingConfigs.alpha
             applicationId 'br.com.lfdb.zup.maceio'
         }
         florianopolis {
+            signingConfig signingConfigs.alpha
             applicationId 'br.com.lfdb.zup.florianopolis'
         }
     }
     buildTypes {
         release {
-            debuggable false
             minifyEnabled false
-            signingConfig signingConfigs.alpha
-        }
-        debug {
-            debuggable true
-            signingConfig signingConfigs.alpha
         }
     }
     compileOptions {
