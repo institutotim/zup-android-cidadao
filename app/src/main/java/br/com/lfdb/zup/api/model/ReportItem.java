@@ -172,7 +172,7 @@ public class ReportItem {
         item.setComentario(description);
         item.setCreatorId(user.getId());
         item.setData((DateUtils.getIntervaloTempo(createdAt.toDate())));
-        item.setEndereco(address);
+        item.setEndereco(address + ", " + number + ", " + postalCode + ", " + district);
         ArrayList<String> images = new ArrayList<>();
         for (ReportImage image : this.images) {
             images.add(image.getOriginal());

@@ -711,7 +711,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                 item.setId(json.getLong("id"));
                 item.setDescricao(json.getString("description"));
                 item.setProtocolo(json.optString("protocol", null));
-                item.setEndereco(json.getString("address"));
+                item.setEndereco(json.getString("address") + ", " + json.getString("number") + ", " + json.getString("postal_code") + ", " + json.getString("district"));
                 item.setData(DateUtils.getIntervaloTempo(DateUtils.parseRFC3339Date(json.getString("created_at"))));
                 item.setCategoria(service.getById(getActivity(), json.getJSONObject("category").getLong("id")));
                 item.setLatitude(json.getJSONObject("position").getDouble("latitude"));
