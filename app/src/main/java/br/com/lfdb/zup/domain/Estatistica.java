@@ -75,7 +75,7 @@ public class Estatistica {
 		if (getClass() != obj.getClass())
 			return false;
 		Estatistica other = (Estatistica) obj;
-		if (id != other.id)
+		if (!texto.equalsIgnoreCase(other.texto))
 			return false;
 		return true;
 	}
