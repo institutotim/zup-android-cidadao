@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Cluster implements Serializable {
 
-    private List<Integer> itemIds;
+    private List<Long> itemsIds;
     private List<Double> position;
     private Long categoryId;
     private List<Long> categoriesIds;
@@ -14,12 +14,12 @@ public class Cluster implements Serializable {
 
     private boolean report;
 
-    public List<Integer> getItemIds() {
-        return itemIds;
+    public List<Long> getItemsIds() {
+        return itemsIds;
     }
 
-    public void setItemIds(List<Integer> itemIds) {
-        this.itemIds = itemIds;
+    public void setItemsIds(List<Long> itemsIds) {
+        this.itemsIds = itemsIds;
     }
 
     public List<Double> getPosition() {

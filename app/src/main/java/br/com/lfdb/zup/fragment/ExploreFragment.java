@@ -45,6 +45,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.InterruptedIOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -329,7 +330,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         CameraPosition p = new CameraPosition.Builder().target(position)
                 .zoom(map.getCameraPosition().zoom + 0.5f).build();
         CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
-        map.moveCamera(update);
+        map.animateCamera(update);
     }
 
     private void adicionarMarker(ItemInventario item) {
@@ -414,9 +415,9 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
     private int getClusterColor(Cluster item) {
         if (!item.isSingleCategory()) return Color.parseColor("#2ab4db");
 
-        return Color.parseColor(item.isReport() ? new CategoriaRelatoService().getById(getActivity(),
-                item.getCategoryId()).getCor() : new CategoriaInventarioService().getById(getActivity(),
-                item.getCategoryId()).getCor());
+        return Color.parseColor(item.isReport() ?
+                new CategoriaRelatoService().getById(getActivity(), item.getCategoryId()).getCor() :
+                new CategoriaInventarioService().getById(getActivity(), item.getCategoryId()).getCor());
     }
 
     @Override
@@ -455,8 +456,8 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         //if (Math.abs(zoom - cameraPosition.zoom) > 0.00001f) {
         //    removerTodosItensMapa();
         //} else {
-            removerItensMapa();
-            exibirElementos();
+        removerItensMapa();
+        exibirElementos();
         //}
         zoom = cameraPosition.zoom;
         refresh();
@@ -482,9 +483,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         Iterator<Marker> it = marcadores.keySet().iterator();
         while (it.hasNext()) {
             Marker marker = it.next();
-            if (!GeoUtils.isVisible(map.getProjection().getVisibleRegion(), marker.getPosition())
-                    //|| marcadores.get(marker) instanceof Cluster
-                    ) {
+            if (!GeoUtils.isVisible(map.getProjection().getVisibleRegion(), marker.getPosition())) {
                 marker.remove();
                 it.remove();
                 marcadores.remove(marker);
@@ -528,9 +527,9 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
                         markerRetriever = new MarkerRetriever(request);
                         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
-                            markerRetriever.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                            getActivity().runOnUiThread(() -> markerRetriever.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR));
                         } else {
-                            markerRetriever.execute();
+                            getActivity().runOnUiThread(() -> markerRetriever.execute());
                         }
                         request = null;
                     }
@@ -735,11 +734,48 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         private void addClusters(JSONArray array, boolean isReport) throws Exception {
             if (array == null) return;
 
+            List<Long> ids = new ArrayList<>();
+            List<Cluster> clusters = new ArrayList<>();
             for (int i = 0; i < array.length(); i++) {
                 if (isCancelled()) return;
-                clusters.add(ConstantesBase.GSON.fromJson(array.get(i).toString(), Cluster.class)
-                        .setReport(isReport));
+                Cluster cluster = ConstantesBase.GSON.fromJson(array.get(i).toString(), Cluster.class)
+                        .setReport(isReport);
+                ids.addAll(cluster.getItemsIds());
+                clusters.add(cluster);
             }
+
+            getActivity().runOnUiThread(() -> {
+                Iterator<Marker> it = marcadores.keySet().iterator();
+                while (it.hasNext()) {
+                    Marker marker = it.next();
+                    if (marcadores.get(marker) instanceof Cluster) {
+                        marker.remove();
+                        it.remove();
+                        marcadores.remove(marker);
+                    } else if (marcadores.get(marker) instanceof ItemRelato) {
+                        ItemRelato item = (ItemRelato) marcadores.get(marker);
+                        if (ids.contains(item.getId())) {
+                            marker.remove();
+                            it.remove();
+                            marcadores.remove(marker);
+                            Log.d("TAG", "true " + item.getId());
+                        } else {
+                            Log.d("TAG", "false");
+                        }
+                    } else if (marcadores.get(marker) instanceof ItemInventario) {
+                        ItemInventario item = (ItemInventario) marcadores.get(marker);
+                        if (ids.contains(item.getId())) {
+                            marker.remove();
+                            it.remove();
+                            marcadores.remove(marker);
+                            Log.d("TAG", "true " + item.getId());
+                        } else {
+                            Log.d("TAG", "false");
+                        }
+                    }
+                }
+            });
+            this.clusters = clusters;
         }
     }
 
