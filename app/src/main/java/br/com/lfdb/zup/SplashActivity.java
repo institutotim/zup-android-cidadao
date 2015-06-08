@@ -97,10 +97,10 @@ public class SplashActivity extends Activity {
 					} catch (Exception e) {
 						Log.w("ZUP", e.getMessage());
 					}
-				Intent intent = new Intent(SplashActivity.this, OpeningActivity.class);
+				Intent intent = new Intent(SplashActivity.this, TestActivity.class);
 				startActivity(intent);
                 if (item != null) {
-                    intent = new Intent(SplashActivity.this, SolicitacaoDetalheActivity.class);
+                    intent = new Intent(SplashActivity.this, TestActivity.class);
                     intent.putExtra("solicitacao", item);
                     startActivity(intent);
                 }
