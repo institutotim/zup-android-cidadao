@@ -34,13 +34,10 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.squareup.okhttp.apache.OkApacheClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -147,7 +144,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         return false;
     }
 
-    private class Request {
+    private class Requisicao {
         double latitude, longitude;
         long raio;
     }
@@ -160,7 +157,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
     private static final int MAX_ITEMS_PER_REQUEST = 50;
 
-    private Request request = null;
+    private Requisicao requisicao = null;
 
     private AutoCompleteTextView autoCompView;
 
@@ -504,11 +501,11 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
     }
 
     public void refresh() {
-        Request request = new Request();
-        request.latitude = latitude;
-        request.longitude = longitude;
-        request.raio = raio;
-        this.request = request;
+        Requisicao requisicao = new Requisicao();
+        requisicao.latitude = latitude;
+        requisicao.longitude = longitude;
+        requisicao.raio = raio;
+        this.requisicao = requisicao;
     }
 
     private class Timer extends AsyncTask<Void, Void, Void> {
@@ -520,18 +517,18 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
             while (run) {
                 try {
                     Thread.sleep(400);
-                    if (request != null) {
+                    if (requisicao != null) {
                         if (markerRetriever != null) {
                             markerRetriever.cancel(true);
                         }
 
-                        markerRetriever = new MarkerRetriever(request);
+                        markerRetriever = new MarkerRetriever(requisicao);
                         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
                             getActivity().runOnUiThread(() -> markerRetriever.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR));
                         } else {
                             getActivity().runOnUiThread(() -> markerRetriever.execute());
                         }
-                        request = null;
+                        requisicao = null;
                     }
                 } catch (Exception e) {
                     Log.e("ZUP", e.getMessage(), e);
@@ -555,11 +552,11 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         private List<ItemRelato> itensRelato = new CopyOnWriteArrayList<>();
         private List<Cluster> clusters = new CopyOnWriteArrayList<>();
 
-        private Request request;
+        private Requisicao request;
 
         private HttpGet get;
 
-        public MarkerRetriever(Request request) {
+        public MarkerRetriever(Requisicao request) {
             this.request = request;
         }
 
@@ -582,16 +579,14 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
         @Override
         protected Void doInBackground(Void... voids) {
             try {
-                HttpClient client = new OkApacheClient();
-                HttpResponse response;
-
+                com.squareup.okhttp.Request requisicao;
                 if (!busca.getIdsCategoriaInventario().isEmpty()) {
 
                     String query;
                     if (busca.getIdsCategoriaInventario().size() == 1) {
-                        query = "&inventory_category_id=" + busca.getIdsCategoriaInventario().get(0);
+                        query = "&inventory_categories_ids=" + busca.getIdsCategoriaInventario().get(0);
                     } else {
-                        StringBuilder builder = new StringBuilder("&inventory_category_ids=");
+                        StringBuilder builder = new StringBuilder("&inventory_categories_ids=");
                         for (Long id : busca.getIdsCategoriaInventario()) {
                             builder.append(id).append(",");
                         }
@@ -599,16 +594,18 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                         query = query.substring(0, query.length() - 1);
                     }
 
-                    get = new HttpGet(Constantes.REST_URL + "/search/inventory/items" + ConstantesBase.getItemInventarioQuery(getActivity()) + "&position[latitude]=" + request.latitude + "&position[longitude]="
-                            + request.longitude + "&position[distance]=" + request.raio + "&max_items=" + MAX_ITEMS_PER_REQUEST + query + getClusterQuery());
-                    get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
+                    requisicao = new Request.Builder()
+                            .url(Constantes.REST_URL + "/search/inventory/items" + ConstantesBase.getItemInventarioQuery(getActivity()) + "&position[latitude]=" + request.latitude + "&position[longitude]="
+                                    + request.longitude + "&position[distance]=" + request.raio + "&max_items=" + MAX_ITEMS_PER_REQUEST + query + getClusterQuery())
+                            .addHeader("X-App-Token", new LoginService().getToken(getActivity()))
+                            .build();
 
                     if (isCancelled()) return null;
 
-                    response = client.execute(get);
-                    if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                    Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(requisicao).execute();
+                    if (response.isSuccessful()) {
                         if (isCancelled()) return null;
-                        extrairItensInventario(EntityUtils.toString(response.getEntity(), "UTF-8"));
+                        extrairItensInventario(response.body().string());
                     }
                 }
 
@@ -616,9 +613,9 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
                     String categories;
                     if (busca.getIdsCategoriaRelato().size() == 1) {
-                        categories = "&category_id=" + busca.getIdsCategoriaRelato().get(0);
+                        categories = "&reports_categories_ids=" + busca.getIdsCategoriaRelato().get(0);
                     } else {
-                        StringBuilder builder = new StringBuilder("&category_ids=");
+                        StringBuilder builder = new StringBuilder("&reports_categories_ids=");
                         for (Long id : busca.getIdsCategoriaRelato()) {
                             builder.append(id).append(",");
                         }
@@ -633,15 +630,16 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                         query += "&statuses=" + busca.getStatus().getId();
                     }
                     Log.d("REQUEST", query);
-                    get = new HttpGet(query);
-                    get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
-
+                    requisicao = new Request.Builder()
+                            .url(query)
+                            .addHeader("X-App-Token", new LoginService().getToken(getActivity()))
+                            .build();
                     if (isCancelled()) return null;
 
-                    response = client.execute(get);
-                    if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                    Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(requisicao).execute();
+                    if (response.isSuccessful()) {
                         if (isCancelled()) return null;
-                        extrairItensRelato(EntityUtils.toString(response.getEntity(), "UTF-8"));
+                        extrairItensRelato(response.body().string());
                     }
                 }
 
@@ -711,7 +709,10 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
                 item.setId(json.getLong("id"));
                 item.setDescricao(json.getString("description"));
                 item.setProtocolo(json.optString("protocol", null));
-                item.setEndereco(json.getString("address") + ", " + json.getString("number") + ", " + json.getString("postal_code") + ", " + json.getString("district"));
+                item.setEndereco(json.getString("address") +
+                        (json.has("number") && !json.isNull("number") ? ", " + json.getString("number") : "") +
+                        (json.has("postal_code") && !json.isNull("postal_code") ? ", " + json.getString("postal_code") : "") +
+                        (json.has("district") && !json.isNull("district") ? ", " + json.getString("district") : ""));
                 item.setData(DateUtils.getIntervaloTempo(DateUtils.parseRFC3339Date(json.getString("created_at"))));
                 item.setCategoria(service.getById(getActivity(), json.getJSONObject("category").getLong("id")));
                 item.setLatitude(json.getJSONObject("position").getDouble("latitude"));
