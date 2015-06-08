@@ -21,7 +21,10 @@ public class SolicitacaoListItemAdapter {
         item.setId(json.getLong("id"));
         item.setComentario(json.getString("description"));
         item.setData(DateUtils.getIntervaloTempo(DateUtils.parseRFC3339Date(json.getString("created_at"))));
-        item.setEndereco(json.getString("address") + ", " + json.getString("number") + ", " + json.getString("postal_code") + ", " + json.getString("district"));
+        item.setEndereco(json.getString("address") +
+                (json.has("number") && !json.isNull("number") ? ", " + json.getString("number") : "") +
+                (json.has("postal_code") && !json.isNull("postal_code") ? ", " + json.getString("postal_code") : "") +
+                (json.has("district") && !json.isNull("district") ? ", " + json.getString("district") : ""));
         item.setReferencia(json.optString("reference"));
         item.setFotos(new ArrayList<>());
 
