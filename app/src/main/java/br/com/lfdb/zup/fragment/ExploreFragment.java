@@ -38,6 +38,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import org.apache.http.client.methods.HttpGet;
+import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -625,7 +626,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
 
                     String query = Constantes.REST_URL + "/search/reports/items" + ConstantesBase.getItemRelatoQuery(getActivity()) + "&position[latitude]=" + request.latitude + "&position[longitude]="
                             + request.longitude + "&position[distance]=" + request.raio + "&max_items=" + MAX_ITEMS_PER_REQUEST + "&begin_date="
-                            + busca.getPeriodo().getDateString() + "&display_type=full" + categories + getClusterQuery();
+                            + busca.getPeriodo().getDateString() + "&end_date=" + DateTime.now() + "&display_type=full" + categories + getClusterQuery();
                     if (busca.getStatus() != null) {
                         query += "&statuses=" + busca.getStatus().getId();
                     }
