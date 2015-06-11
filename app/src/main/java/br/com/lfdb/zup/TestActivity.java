@@ -30,7 +30,26 @@ public class TestActivity extends Activity {
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new Adapter());
+        final Adapter adapter = new Adapter();
+        recyclerView.setAdapter(adapter);
+        adapter.addAll();
+
+        findViewById(R.id.toggleAll).setOnClickListener(v -> {
+            TextView text = (TextView) v.findViewById(R.id.textoTodos);
+            ImageView icon = (ImageView) v.findViewById(R.id.iconeTodos);
+
+            if (v.getTag() != null) {
+                v.setTag(new Object());
+                text.setText("Ativar todas as categorias");
+                icon.setImageResource(R.drawable.filtros_check_todascategorias_ativar);
+                adapter.addAll();
+            } else {
+                v.setTag(null);
+                text.setText("Desativar todas as categorias");
+                icon.setImageResource(R.drawable.filtros_check_todascategorias_desativar);
+                adapter.removeAll();
+            }
+        });
     }
 
     public Activity getContext() {
@@ -46,6 +65,7 @@ public class TestActivity extends Activity {
 
         private final List<CategoriaRelato> categories;
         private final Set<Long> expanded = new HashSet<>();
+        private final Set<CategoriaRelato> selecionadas = new HashSet<>();
 
         public Adapter() {
             categories = new CategoriaRelatoService().getCategorias(getContext());
@@ -56,21 +76,53 @@ public class TestActivity extends Activity {
             return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_expandable_category, parent, false));
         }
 
+        public void addAll() {
+            for (int i = 0; i < categories.size(); i++) {
+                selecionadas.add(categories.get(i));
+                selecionadas.addAll(categories.get(i).getSubcategorias());
+            }
+            notifyDataSetChanged();
+        }
+
+        public void removeAll() {
+            selecionadas.clear();
+            notifyDataSetChanged();
+        }
+
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             final CategoriaRelato categoria = categories.get(position);
 
-            holder.imagem.setImageBitmap(ImageUtils.getScaledCustom(getContext(), "reports", categoria.getIconeInativo(), 0.75f));
+            holder.imagem.setImageBitmap(ImageUtils.getScaledCustom(getContext(), "reports", selecionadas.contains(categoria) ?
+                    categoria.getIconeAtivo() : categoria.getIconeInativo(), 0.75f));
             holder.nomeCategoria.setText(categoria.getNome());
+            holder.nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, selecionadas.contains(categoria) ?
+                    R.drawable.filtros_check_categoria : 0, 0);
             holder.expander.setOnClickListener(v -> {
                 switchState(categoria.getId());
                 checkExpanded(categoria, holder);
+            });
+
+            holder.nomeCategoria.setOnClickListener(v -> {
+                if (selecionadas.contains(categoria)) {
+                    selecionadas.remove(categoria);
+                    selecionadas.removeAll(categoria.getSubcategorias());
+                } else {
+                    selecionadas.add(categoria);
+                    selecionadas.addAll(categoria.getSubcategorias());
+                }
+                checkExpanded(categoria, holder);
+                holder.nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, selecionadas.contains(categoria) ?
+                        R.drawable.filtros_check_categoria : 0, 0);
+                holder.imagem.setImageBitmap(ImageUtils.getScaledCustom(getContext(), "reports", selecionadas.contains(categoria) ?
+                        categoria.getIconeAtivo() : categoria.getIconeInativo(), 0.75f));
             });
 
             checkExpanded(categoria, holder);
         }
 
         protected void checkExpanded(CategoriaRelato categoria, ViewHolder holder) {
+            if (holder.subcategorias.getChildCount() > 0) holder.subcategorias.removeAllViews();
             if (expanded.contains(categoria.getId())) {
                 holder.expander.setText("Ocultar subcategorias");
                 holder.subcategorias.setVisibility(View.VISIBLE);
@@ -78,18 +130,26 @@ public class TestActivity extends Activity {
             } else {
                 holder.expander.setText("Ver subcategorias");
                 holder.subcategorias.setVisibility(View.GONE);
-                holder.subcategorias.removeAllViews();
             }
         }
 
         private void addSubcategoria(CategoriaRelato subcategory, ViewGroup parent) {
             View view = getLayoutInflater().inflate(R.layout.item_subcategoria, parent, false);
+            view.setTag(subcategory);
             final TextView nome = ButterKnife.findById(view, R.id.nome);
-
-            // TODO check logic
-            nome.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
-
+            nome.setCompoundDrawablesWithIntrinsicBounds(0, 0, selecionadas.contains(subcategory) ? R.drawable.filtros_check_categoria : 0, 0);
             nome.setText(subcategory.getNome());
+
+            view.setOnClickListener(v -> {
+                if (selecionadas.contains(subcategory)) {
+                    selecionadas.remove(subcategory);
+                } else {
+                    selecionadas.add(subcategory);
+                }
+                nome.setCompoundDrawablesWithIntrinsicBounds(0, 0, selecionadas.contains(subcategory) ?
+                        R.drawable.filtros_check_categoria : 0, 0);
+            });
+
             parent.addView(view);
         }
 
