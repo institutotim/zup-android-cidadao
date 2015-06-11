@@ -110,6 +110,61 @@
                 android:orientation="horizontal"
                 android:weightSum="2" />
 
+            <LinearLayout
+                android:id="@+id/line_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/line_5"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="25dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:weightSum="2" />
+
+            <LinearLayout
+                android:id="@+id/line_7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/line_6"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="25dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:weightSum="2" />
+
+            <LinearLayout
+                android:id="@+id/line_8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/line_7"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="25dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:weightSum="2" />
+
+            <LinearLayout
+                android:id="@+id/line_9"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/line_8"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="25dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:weightSum="2" />
+
+            <LinearLayout
+                android:id="@+id/line_10"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/line_9"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="25dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:weightSum="2" />
+
         </RelativeLayout>
     </ScrollView>
 
