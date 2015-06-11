@@ -140,7 +140,8 @@ public class EstatisticasFragment extends Fragment {
                         JSONArray statuses = array.getJSONObject(i).getJSONArray("statuses");
                         for (int j = 0; j < statuses.length(); j++) {
                             JSONObject status = statuses.getJSONObject(j);
-                            Estatistica estatistica = new Estatistica(status.getInt("status_id"), Color.parseColor(status.getString("color")),
+                            Estatistica estatistica = new Estatistica(status.getInt("status_id"), status.isNull("color") ?
+                                    Color.BLACK : Color.parseColor(status.getString("color")),
                                     status.getInt("count"), status.getString("title"));
                             if (estatisticas.contains(estatistica)) {
                                 for (Estatistica e : estatisticas) {

@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_weight="1"
     android:gravity="center_horizontal"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <com.todddavies.components.progressbar.ProgressWheel
         android:id="@+id/spinner"
@@ -29,6 +29,8 @@
         android:id="@+id/txtLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center_horizontal"
         android:text="@string/resolvidas"
         android:textSize="@dimen/medium_chart_text" />
 
