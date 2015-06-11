@@ -39,12 +39,12 @@ public class TestActivity extends Activity {
             ImageView icon = (ImageView) v.findViewById(R.id.iconeTodos);
 
             if (v.getTag() != null) {
-                v.setTag(new Object());
+                v.setTag(null);
                 text.setText("Ativar todas as categorias");
                 icon.setImageResource(R.drawable.filtros_check_todascategorias_ativar);
                 adapter.addAll();
             } else {
-                v.setTag(null);
+                v.setTag(new Object());
                 text.setText("Desativar todas as categorias");
                 icon.setImageResource(R.drawable.filtros_check_todascategorias_desativar);
                 adapter.removeAll();
