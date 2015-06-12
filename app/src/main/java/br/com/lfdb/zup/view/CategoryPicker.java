@@ -1,36 +1,74 @@
-package br.com.lfdb.zup;
+package br.com.lfdb.zup.view;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.os.Bundle;
+import android.os.Build;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.domain.CategoriaRelato;
 import br.com.lfdb.zup.service.CategoriaRelatoService;
 import br.com.lfdb.zup.util.ImageUtils;
 import butterknife.ButterKnife;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class TestActivity extends Activity {
+public class CategoryPicker extends LinearLayout {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_test);
+    private Adapter adapter;
+
+    public void removeAll() {
+        adapter.removeAll();
+    }
+
+    public void addAll() {
+        adapter.addAll();
+    }
+
+    public List<Long> getSelectedCategories() {
+        return adapter.getSelectedCategories();
+    }
+
+    public CategoryPicker(Context context) {
+        super(context);
+        init();
+    }
+
+    public CategoryPicker(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public CategoryPicker(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public CategoryPicker(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        init();
+    }
+
+    private void init() {
+        inflate(getContext(), R.layout.view_category_picker, this);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        final Adapter adapter = new Adapter();
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new Adapter();
         recyclerView.setAdapter(adapter);
         adapter.addAll();
 
@@ -40,25 +78,16 @@ public class TestActivity extends Activity {
 
             if (v.getTag() != null) {
                 v.setTag(null);
-                text.setText("Ativar todas as categorias");
-                icon.setImageResource(R.drawable.filtros_check_todascategorias_ativar);
+                text.setText("Desativar todas as categorias");
+                icon.setImageResource(R.drawable.filtros_check_todascategorias_desativar);
                 adapter.addAll();
             } else {
                 v.setTag(new Object());
-                text.setText("Desativar todas as categorias");
-                icon.setImageResource(R.drawable.filtros_check_todascategorias_desativar);
+                text.setText("Ativar todas as categorias");
+                icon.setImageResource(R.drawable.filtros_check_todascategorias_ativar);
                 adapter.removeAll();
             }
         });
-    }
-
-    public Activity getContext() {
-        return this;
-    }
-
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
@@ -93,7 +122,7 @@ public class TestActivity extends Activity {
         public void onBindViewHolder(ViewHolder holder, int position) {
             final CategoriaRelato categoria = categories.get(position);
 
-            holder.imagem.setImageBitmap(ImageUtils.getScaledCustom(getContext(), "reports", selecionadas.contains(categoria) ?
+            holder.imagem.setImageBitmap(ImageUtils.getScaledCustom((Activity) getContext(), "reports", selecionadas.contains(categoria) ?
                     categoria.getIconeAtivo() : categoria.getIconeInativo(), 0.75f));
             holder.nomeCategoria.setText(categoria.getNome());
             holder.nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, selecionadas.contains(categoria) ?
@@ -114,7 +143,7 @@ public class TestActivity extends Activity {
                 checkExpanded(categoria, holder);
                 holder.nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, selecionadas.contains(categoria) ?
                         R.drawable.filtros_check_categoria : 0, 0);
-                holder.imagem.setImageBitmap(ImageUtils.getScaledCustom(getContext(), "reports", selecionadas.contains(categoria) ?
+                holder.imagem.setImageBitmap(ImageUtils.getScaledCustom((Activity) getContext(), "reports", selecionadas.contains(categoria) ?
                         categoria.getIconeAtivo() : categoria.getIconeInativo(), 0.75f));
             });
 
@@ -134,7 +163,7 @@ public class TestActivity extends Activity {
         }
 
         private void addSubcategoria(CategoriaRelato subcategory, ViewGroup parent) {
-            View view = getLayoutInflater().inflate(R.layout.item_subcategoria, parent, false);
+            View view = LayoutInflater.from(getContext()).inflate(R.layout.item_subcategoria, parent, false);
             view.setTag(subcategory);
             final TextView nome = ButterKnife.findById(view, R.id.nome);
             nome.setCompoundDrawablesWithIntrinsicBounds(0, 0, selecionadas.contains(subcategory) ? R.drawable.filtros_check_categoria : 0, 0);
@@ -151,6 +180,14 @@ public class TestActivity extends Activity {
             });
 
             parent.addView(view);
+        }
+
+        public List<Long> getSelectedCategories() {
+            List<Long> values = new ArrayList<>();
+            for (CategoriaRelato categoria : selecionadas) {
+                values.add(categoria.getId());
+            }
+            return values;
         }
 
         protected void switchState(long id) {
