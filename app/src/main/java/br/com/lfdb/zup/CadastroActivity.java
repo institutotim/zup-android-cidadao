@@ -149,6 +149,9 @@ public class CadastroActivity extends Activity implements OnClickListener {
                 !campoSenha.getText().toString().equals(campoConfirmarSenha.getText().toString())) {
             campos.add(campoSenha.getId());
             campos.add(campoConfirmarSenha.getId());
+        } else if (campoSenha.getText().toString().trim().length() < 6) {
+            campos.add(campoSenha.getId());
+            Toast.makeText(this, "A senha deve ter pelo menos 6 caracteres!", Toast.LENGTH_SHORT).show();
         }
 
         for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF, R.id.campoTelefone,

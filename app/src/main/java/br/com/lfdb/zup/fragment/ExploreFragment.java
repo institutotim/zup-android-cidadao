@@ -304,6 +304,7 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
             item.setTitulo(marker.getTitle());
             item.setComentario(ir.getDescricao());
             item.setData(ir.getData());
+            item.setId(ir.getId());
             item.setEndereco(ir.getEndereco());
             item.setFotos(ir.getFotos());
             item.setProtocolo(ir.getProtocolo());

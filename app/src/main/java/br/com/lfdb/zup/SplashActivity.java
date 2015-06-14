@@ -30,42 +30,42 @@ public class SplashActivity extends Activity {
 
     private SolicitacaoListItem item = null;
 
-	@SuppressLint("NewApi")
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @SuppressLint("NewApi")
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
-			getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-		}
-		
-		setContentView(R.layout.activity_splash);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+        }
+
+        setContentView(R.layout.activity_splash);
 
         new CategoriaUpdater().execute();
-	}
+    }
 
     @Override
-	public void onBackPressed() {
-	}
+    public void onBackPressed() {
+    }
 
-	private class CategoriaUpdater extends AsyncTask<Void, Void, Boolean> {
+    private class CategoriaUpdater extends AsyncTask<Void, Void, Boolean> {
 
-		long start, finish;
+        long start, finish;
         boolean error = false;
 
-		@Override
-		protected void onPreExecute() {
-			start = System.currentTimeMillis();
-		}
+        @Override
+        protected void onPreExecute() {
+            start = System.currentTimeMillis();
+        }
 
-		@Override
-		protected Boolean doInBackground(Void... params) {
-			if (!NetworkUtils.isInternetPresent(SplashActivity.this))
-				return Boolean.FALSE;
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            if (!NetworkUtils.isInternetPresent(SplashActivity.this))
+                return Boolean.FALSE;
 
             try {
                 Context context = SplashActivity.this;
-			    new Updater().update(context);
+                new Updater().update(context);
 
                 long reportId = getIntent().getLongExtra("report_id", -1);
                 if (reportId != -1 && new LoginService().usuarioLogado(context)) {
@@ -84,28 +84,28 @@ public class SplashActivity extends Activity {
                 error = true;
                 return Boolean.FALSE;
             }
-			return Boolean.TRUE;
-		}
+            return Boolean.TRUE;
+        }
 
         @Override
-		protected void onPostExecute(Boolean result) {
-			if (result) {
-				finish = System.currentTimeMillis();
-				if (finish - start < 3500)
-					try {
-						Thread.sleep(finish - start);
-					} catch (Exception e) {
-						Log.w("ZUP", e.getMessage());
-					}
-				Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-				startActivity(intent);
+        protected void onPostExecute(Boolean result) {
+            if (result) {
+                finish = System.currentTimeMillis();
+                if (finish - start < 3500)
+                    try {
+                        Thread.sleep(finish - start);
+                    } catch (Exception e) {
+                        Log.w("ZUP", e.getMessage());
+                    }
+                Intent intent = new Intent(SplashActivity.this, OpeningActivity.class);
+                startActivity(intent);
                 if (item != null) {
-                    intent = new Intent(SplashActivity.this, MainActivity.class);
+                    intent = new Intent(SplashActivity.this, SolicitacaoDetalheActivity.class);
                     intent.putExtra("solicitacao", item);
                     startActivity(intent);
                 }
                 finish();
-			} else {
+            } else {
                 if (error) {
                     new AlertDialog.Builder(SplashActivity.this)
                             .setTitle("Falha na sincronização")
@@ -123,7 +123,7 @@ public class SplashActivity extends Activity {
                     Toast.makeText(getApplicationContext(), "Conexão com a Internet indisponível", Toast.LENGTH_SHORT).show();
                     finish();
                 }
-			}
-		}
-	}
+            }
+        }
+    }
 }

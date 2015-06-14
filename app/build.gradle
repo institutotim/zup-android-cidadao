@@ -16,7 +16,7 @@ android {
         minSdkVersion 10
         targetSdkVersion 22
         versionCode 10000
-        versionName '1.0.0.1'
+        versionName '1.0.0.3'
         multiDexEnabled = true
     }
     signingConfigs {
@@ -57,11 +57,7 @@ android {
     }
     buildTypes {
         release {
-            signingConfig signingConfigs.alpha
             minifyEnabled false
-        }
-        debug {
-            signingConfig signingConfigs.alpha
         }
     }
     compileOptions {
