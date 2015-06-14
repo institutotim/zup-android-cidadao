@@ -21,8 +21,10 @@ import br.com.lfdb.zup.RedesSociaisCadastroActivity;
 import br.com.lfdb.zup.SoliciteActivity;
 import br.com.lfdb.zup.TermosDeUsoActivity;
 import br.com.lfdb.zup.domain.Solicitacao;
+import br.com.lfdb.zup.service.FeatureService;
 import br.com.lfdb.zup.social.SocialConstants;
 import br.com.lfdb.zup.util.FontUtils;
+import butterknife.ButterKnife;
 
 public class SoliciteDetalhesFragment extends Fragment implements View.OnClickListener {
 
@@ -102,11 +104,20 @@ public class SoliciteDetalhesFragment extends Fragment implements View.OnClickLi
     }
 
     private void checkSocial() {
+        boolean socialEnabled = new FeatureService().isAnySocialEnabled();
+        if (!socialEnabled) {
+            ButterKnife.findById(getView(), R.id.postSocial).setVisibility(View.GONE);
+            ButterKnife.findById(getView(), R.id.loginSocial).setVisibility(View.GONE);
+            return;
+        }
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String social = prefs.getString(SocialConstants.PREF_LOGGED_SOCIAL, "");
         if (social.equals("")) {
             getView().findViewById(R.id.postSocial).setVisibility(View.GONE);
+            getView().findViewById(R.id.loginSocial).setVisibility(View.VISIBLE);
         } else {
+            getView().findViewById(R.id.loginSocial).setVisibility(View.GONE);
             getView().findViewById(R.id.postSocial).setVisibility(View.VISIBLE);
 
             if (social.startsWith("google")) social += "+";

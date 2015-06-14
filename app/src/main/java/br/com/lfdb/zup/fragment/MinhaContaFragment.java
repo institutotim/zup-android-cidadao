@@ -27,13 +27,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-import com.squareup.okhttp.apache.OkApacheClient;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -46,6 +40,7 @@ import br.com.lfdb.zup.OpeningActivity;
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SolicitacaoDetalheActivity;
 import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.domain.SolicitacaoListItem;
 import br.com.lfdb.zup.domain.Usuario;
 import br.com.lfdb.zup.service.LoginService;
@@ -300,12 +295,13 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
             if (shouldContinueLoading) {
                 try {
                     isLoading = true;
-                    HttpClient client = new OkApacheClient();
-                    HttpGet get = new HttpGet(Constantes.REST_URL + "/reports/users/me/items?per_page=10&page=" + (lastPageLoaded + 1) + "&sort=created_at&order=DESC");
-                    get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
-                    HttpResponse response = client.execute(get);
-                    if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                        String json = EntityUtils.toString(response.getEntity(), "UTF-8");
+                    Request request = new Request.Builder()
+                            .url(Constantes.REST_URL + "/reports/users/me/items?per_page=10&page=" + (lastPageLoaded + 1) + "&sort=created_at&order=DESC")
+                            .addHeader("X-App-Token", new LoginService().getToken(getActivity()))
+                            .build();
+                    Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
+                    if (response.isSuccessful()) {
+                        String json = response.body().string();
 
                         if (lastResult.equals(json)) {
                             shouldContinueLoading = false;

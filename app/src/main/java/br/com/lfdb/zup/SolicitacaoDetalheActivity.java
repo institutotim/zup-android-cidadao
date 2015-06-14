@@ -21,15 +21,11 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.squareup.okhttp.apache.OkApacheClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import com.viewpagerindicator.IconPageIndicator;
 import com.viewpagerindicator.PageIndicator;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.util.EntityUtils;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -38,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.domain.ComentarioRelato;
 import br.com.lfdb.zup.domain.SolicitacaoListItem;
 import br.com.lfdb.zup.service.LoginService;
@@ -166,12 +163,13 @@ public class SolicitacaoDetalheActivity extends FragmentActivity {
     private void loadComments() {
         new Thread(() -> {
             try {
-                HttpClient client = new OkApacheClient();
-                HttpGet get = new HttpGet(Constantes.REST_URL + String.format("/reports/%d/comments", solicitacao.getId()));
-                get.setHeader("X-App-Token", new LoginService().getToken(this));
-                HttpResponse response = client.execute(get);
-                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                    String raw = EntityUtils.toString(response.getEntity(), "UTF-8");
+                Request request = new Request.Builder()
+                        .addHeader("X-App-Token", new LoginService().getToken(this))
+                        .url(Constantes.REST_URL + String.format("/reports/%d/comments", solicitacao.getId()))
+                        .build();
+                Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
+                if (response.isSuccessful()) {
+                    String raw = response.body().string();
                     fillData(new JSONObject(raw).getJSONArray("comments"));
                 }
             } catch (Exception e) {

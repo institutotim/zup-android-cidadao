@@ -15,26 +15,20 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.okhttp.apache.OkApacheClient;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.domain.Usuario;
 import br.com.lfdb.zup.service.FeatureService;
 import br.com.lfdb.zup.service.LoginService;
@@ -52,84 +46,84 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
     private static final int REQUEST_CODE = 9999;
 
     private EditText campoNome;
-	private EditText campoSenhaAntiga;
-	private EditText campoSenha;
-	private EditText campoConfirmarSenha;
-	private EditText campoEmail;
-	private EditText campoCPF;
-	private EditText campoTelefone;
-	private EditText campoEndereco;
-	private EditText campoComplemento;
-	private EditText campoCEP;
-	private EditText campoBairro;
-	private EditText campoCidade;
-	private Usuario usuario;
+    private EditText campoSenhaAntiga;
+    private EditText campoSenha;
+    private EditText campoConfirmarSenha;
+    private EditText campoEmail;
+    private EditText campoCPF;
+    private EditText campoTelefone;
+    private EditText campoEndereco;
+    private EditText campoComplemento;
+    private EditText campoCEP;
+    private EditText campoBairro;
+    private EditText campoCidade;
+    private Usuario usuario;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_editar_conta);
-		
-		((TextView) findViewById(R.id.editarConta)).setTypeface(FontUtils.getLight(this));
-		((TextView) findViewById(R.id.instrucoes)).setTypeface(FontUtils.getBold(this));
-		((TextView) findViewById(R.id.instrucoes_dados)).setTypeface(FontUtils.getBold(this));
-		((TextView) findViewById(R.id.textView1)).setTypeface(FontUtils.getLight(this));
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_editar_conta);
+
+        ((TextView) findViewById(R.id.editarConta)).setTypeface(FontUtils.getLight(this));
+        ((TextView) findViewById(R.id.instrucoes)).setTypeface(FontUtils.getBold(this));
+        ((TextView) findViewById(R.id.instrucoes_dados)).setTypeface(FontUtils.getBold(this));
+        ((TextView) findViewById(R.id.textView1)).setTypeface(FontUtils.getLight(this));
 
         TextView botaoCancelar = (TextView) findViewById(R.id.botaoCancelar);
-		botaoCancelar.setTypeface(FontUtils.getRegular(this));
-		botaoCancelar.setOnClickListener(v -> {
-			ViewUtils.hideKeyboard(EditarContaActivity.this, v.getWindowToken());
-			finish();
-		});
+        botaoCancelar.setTypeface(FontUtils.getRegular(this));
+        botaoCancelar.setOnClickListener(v -> {
+            ViewUtils.hideKeyboard(EditarContaActivity.this, v.getWindowToken());
+            finish();
+        });
 
         TextView botaoCriar = (TextView) findViewById(R.id.botaoSalvar);
-		botaoCriar.setTypeface(FontUtils.getRegular(this));
-		botaoCriar.setOnClickListener(this);
+        botaoCriar.setTypeface(FontUtils.getRegular(this));
+        botaoCriar.setOnClickListener(this);
 
-		campoSenhaAntiga = (EditText) findViewById(R.id.campoSenhaAntiga);
-		campoSenhaAntiga.setTypeface(FontUtils.getLight(this));
-		
-		campoNome = (EditText) findViewById(R.id.campoNome);
-		campoNome.setTypeface(FontUtils.getLight(this));
+        campoSenhaAntiga = (EditText) findViewById(R.id.campoSenhaAntiga);
+        campoSenhaAntiga.setTypeface(FontUtils.getLight(this));
 
-		campoSenha = (EditText) findViewById(R.id.campoSenha);
-		campoSenha.setTypeface(FontUtils.getLight(this));
+        campoNome = (EditText) findViewById(R.id.campoNome);
+        campoNome.setTypeface(FontUtils.getLight(this));
 
-		campoConfirmarSenha = (EditText) findViewById(R.id.campoConfirmarSenha);
-		campoConfirmarSenha.setTypeface(FontUtils.getLight(this));
+        campoSenha = (EditText) findViewById(R.id.campoSenha);
+        campoSenha.setTypeface(FontUtils.getLight(this));
 
-		campoEmail = (EditText) findViewById(R.id.campoEmail);
-		campoEmail.setTypeface(FontUtils.getLight(this));
-		
-		campoCPF = (EditText) findViewById(R.id.campoCPF);
-		campoCPF.setTypeface(FontUtils.getLight(this));
-		
-		campoTelefone = (EditText) findViewById(R.id.campoTelefone);
-		campoTelefone.setTypeface(FontUtils.getLight(this));
-		
-		campoEndereco = (EditText) findViewById(R.id.campoEndereco);
-		campoEndereco.setTypeface(FontUtils.getLight(this));
-		
-		campoComplemento = (EditText) findViewById(R.id.campoComplemento);
-		campoComplemento.setTypeface(FontUtils.getLight(this));
-		
-		campoCEP = (EditText) findViewById(R.id.campoCEP);
-		campoCEP.setTypeface(FontUtils.getLight(this));
-		
-		campoBairro = (EditText) findViewById(R.id.campoBairro);
-		campoBairro.setTypeface(FontUtils.getLight(this));
+        campoConfirmarSenha = (EditText) findViewById(R.id.campoConfirmarSenha);
+        campoConfirmarSenha.setTypeface(FontUtils.getLight(this));
 
-		campoCidade = (EditText) findViewById(R.id.campoCidade);
-		campoCidade.setTypeface(FontUtils.getLight(this));
+        campoEmail = (EditText) findViewById(R.id.campoEmail);
+        campoEmail.setTypeface(FontUtils.getLight(this));
+
+        campoCPF = (EditText) findViewById(R.id.campoCPF);
+        campoCPF.setTypeface(FontUtils.getLight(this));
+
+        campoTelefone = (EditText) findViewById(R.id.campoTelefone);
+        campoTelefone.setTypeface(FontUtils.getLight(this));
+
+        campoEndereco = (EditText) findViewById(R.id.campoEndereco);
+        campoEndereco.setTypeface(FontUtils.getLight(this));
+
+        campoComplemento = (EditText) findViewById(R.id.campoComplemento);
+        campoComplemento.setTypeface(FontUtils.getLight(this));
+
+        campoCEP = (EditText) findViewById(R.id.campoCEP);
+        campoCEP.setTypeface(FontUtils.getLight(this));
+
+        campoBairro = (EditText) findViewById(R.id.campoBairro);
+        campoBairro.setTypeface(FontUtils.getLight(this));
+
+        campoCidade = (EditText) findViewById(R.id.campoCidade);
+        campoCidade.setTypeface(FontUtils.getLight(this));
 
         if (!FeatureService.getInstance(this).isAnySocialEnabled()) {
             findViewById(R.id.textView1).setVisibility(View.GONE);
             findViewById(R.id.social).setVisibility(View.GONE);
             findViewById(R.id.info_label).setVisibility(View.GONE);
         }
-		
-		preencherTela();
-	}
+
+        preencherTela();
+    }
 
     @Override
     protected void onResume() {
@@ -172,7 +166,7 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
     }
 
     @Override
-	public void onClick(View v) {
+    public void onClick(View v) {
         ViewUtils.hideKeyboard(this, campoNome);
         if (v.getId() == R.id.botaoSalvar) {
             limparFundoCampos();
@@ -202,7 +196,7 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
                 startActivityForResult(new Intent(this, FacebookAuth.class), REQUEST_CODE);
             }
         }
-	}
+    }
 
     private void logout(final String social, final ImageButton imgButton) {
         new AlertDialog.Builder(this)
@@ -223,132 +217,131 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         return prefs.getString(SocialConstants.PREF_LOGGED_SOCIAL, "").equals(social);
     }
-	
-	private Usuario montarUsuario() {
-		usuario.setBairro(campoBairro.getText().toString().trim());
-		usuario.setCidade(campoCidade.getText().toString().trim());
-		usuario.setCep(campoCEP.getText().toString().trim());
-		usuario.setComplemento(campoComplemento.getText().toString());
-		usuario.setCpf(campoCPF.getText().toString());
-		usuario.setEmail(campoEmail.getText().toString());
-		usuario.setEndereco(campoEndereco.getText().toString());
-		usuario.setNome(campoNome.getText().toString());
-		usuario.setTelefone(campoTelefone.getText().toString());
-		usuario.setSenha(campoSenha.getText().toString());
-		usuario.setConfirmacaoSenha(campoConfirmarSenha.getText().toString());
-		usuario.setSenhaAntiga(campoSenhaAntiga.getText().toString());
-		return usuario;
-	}
-	
-	private void preencherTela() {
-		usuario = new UsuarioService().getUsuarioAtivo(this);
-		if (usuario != null) {
-			if (usuario.getNome() != null) campoNome.setText(usuario.getNome());
-			if (usuario.getEmail() != null) campoEmail.setText(usuario.getEmail());
-			if (usuario.getCpf() != null) campoCPF.setText(usuario.getCpf());
-			if (usuario.getTelefone() != null) campoTelefone.setText(usuario.getTelefone());
-			if (usuario.getEndereco() != null) campoEndereco.setText(usuario.getEndereco());
-			if (usuario.getComplemento() != null) campoComplemento.setText(usuario.getComplemento());
-			if (usuario.getCep() != null) campoCEP.setText(usuario.getCep());
-			if (usuario.getBairro() != null) campoBairro.setText(usuario.getBairro());
-			if (usuario.getCidade() != null) campoCidade.setText(usuario.getCidade());
-		}
-	}
-	
-	public class Tasker extends AsyncTask<Void, Void, String> {
-		
-		private ProgressDialog dialog;
 
-		@Override
-		protected void onPreExecute() {
-			dialog = new ProgressDialog(EditarContaActivity.this);
-			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			dialog.setIndeterminate(true);
-			dialog.setMessage("Por favor, aguarde...");
-			dialog.show();
-		}
+    private Usuario montarUsuario() {
+        usuario.setBairro(campoBairro.getText().toString().trim());
+        usuario.setCidade(campoCidade.getText().toString().trim());
+        usuario.setCep(campoCEP.getText().toString().trim());
+        usuario.setComplemento(campoComplemento.getText().toString());
+        usuario.setCpf(campoCPF.getText().toString());
+        usuario.setEmail(campoEmail.getText().toString());
+        usuario.setEndereco(campoEndereco.getText().toString());
+        usuario.setNome(campoNome.getText().toString());
+        usuario.setTelefone(campoTelefone.getText().toString());
+        usuario.setSenha(campoSenha.getText().toString());
+        usuario.setConfirmacaoSenha(campoConfirmarSenha.getText().toString());
+        usuario.setSenhaAntiga(campoSenhaAntiga.getText().toString());
+        return usuario;
+    }
 
-		@SuppressWarnings("unchecked")
-		@Override
-		protected String doInBackground(Void... params) {
-			try {
-				HttpClient client = new OkApacheClient();
-				HttpPut put = new HttpPut(Constantes.REST_URL + "/users/" + usuario.getId());
-				JSONObject json = new UsuarioService().converterParaJSON(usuario);
-				List<NameValuePair> nameValuePairs = new ArrayList<>(json.length());
-				Iterator<String> iterator = json.keys();
-				while (iterator.hasNext()) {
-					String key = iterator.next();
-					if (!json.isNull(key) && !json.getString(key).isEmpty()) {
-						nameValuePairs.add(new BasicNameValuePair(key, json.getString(key)));
-					}
-				}
-				put.setHeader("X-App-Token", new LoginService().getToken(EditarContaActivity.this));
-				put.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-				HttpResponse response = client.execute(put);
-				if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-					return EntityUtils.toString(response.getEntity(), "UTF-8");
-				}
-			} catch (Exception e) {
-				Log.e("ZUP", e.getMessage(), e);
-			}
-			return null;
-		}
-		
-		@Override
-		protected void onPostExecute(String result) {
-			dialog.dismiss();
-			if (result != null) {
-				try {
-					new LoginService().atualizarUsuario(EditarContaActivity.this, new UsuarioService().converterParaJSON(usuario));
-				} catch (JSONException e) {
-					Log.e("ZUP", e.getMessage(), e);
-				}
-				Toast.makeText(EditarContaActivity.this, "Dados atualizados com sucesso", Toast.LENGTH_LONG).show();
-				setResult(Activity.RESULT_OK);
-				finish();
-			} else {
-				Toast.makeText(EditarContaActivity.this, "Falha no atualização dos dados", Toast.LENGTH_LONG).show();
-			}
-		}
-	}
-	
-	private void destacarCampos(List<Integer> campos) {
-		for (Integer id : campos) {
-			findViewById(id).setBackgroundResource(R.drawable.textbox_red);
-		}
-		Toast.makeText(this, "Complete ou corrija os campos indicados", Toast.LENGTH_LONG).show();
-	}
-	
-	private void limparFundoCampos() {
-		for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF, R.id.campoTelefone,
-				R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro, R.id.campoSenha, R.id.campoConfirmarSenha)) {
-			findViewById(id).setBackgroundResource(R.drawable.textbox_bg);
-		}
-	}
-	
-	private List<Integer> validar() {
-		List<Integer> campos = new ArrayList<>();
-		if (!campoSenha.getText().toString().trim().isEmpty() && !campoConfirmarSenha.getText().toString().trim().isEmpty()
-				&& campoSenhaAntiga.getText().toString().trim().isEmpty()) {
-			campos.add(campoSenhaAntiga.getId());
-		}
+    private void preencherTela() {
+        usuario = new UsuarioService().getUsuarioAtivo(this);
+        if (usuario != null) {
+            if (usuario.getNome() != null) campoNome.setText(usuario.getNome());
+            if (usuario.getEmail() != null) campoEmail.setText(usuario.getEmail());
+            if (usuario.getCpf() != null) campoCPF.setText(usuario.getCpf());
+            if (usuario.getTelefone() != null) campoTelefone.setText(usuario.getTelefone());
+            if (usuario.getEndereco() != null) campoEndereco.setText(usuario.getEndereco());
+            if (usuario.getComplemento() != null)
+                campoComplemento.setText(usuario.getComplemento());
+            if (usuario.getCep() != null) campoCEP.setText(usuario.getCep());
+            if (usuario.getBairro() != null) campoBairro.setText(usuario.getBairro());
+            if (usuario.getCidade() != null) campoCidade.setText(usuario.getCidade());
+        }
+    }
 
-		if (!campoSenha.getText().toString().trim().isEmpty() && !campoConfirmarSenha.getText().toString().trim().isEmpty() 
-				&& !campoSenha.getText().toString().equals(campoConfirmarSenha.getText().toString())) {
-			campos.add(campoSenha.getId());
-			campos.add(campoConfirmarSenha.getId());
-		}
+    public class Tasker extends AsyncTask<Void, Void, String> {
 
-		for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF, R.id.campoTelefone,
-				R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro)) {
-			if (((TextView) findViewById(id)).getText().toString().trim().isEmpty()) {
-				campos.add(id);
-			}
-		}
-		
-		return campos;
-	}
+        private ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(EditarContaActivity.this);
+            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            dialog.setIndeterminate(true);
+            dialog.setMessage("Por favor, aguarde...");
+            dialog.show();
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        protected String doInBackground(Void... params) {
+            try {
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),
+                        new UsuarioService().converterParaJSON(usuario).toString());
+                Request request = new Request.Builder()
+                        .addHeader("X-App-Token", new LoginService().getToken(EditarContaActivity.this))
+                        .url(Constantes.REST_URL + "/users/" + usuario.getId())
+                        .put(body)
+                        .build();
+                Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
+                if (response.isSuccessful()) {
+                    return response.body().string();
+                }
+            } catch (Exception e) {
+                Log.e("ZUP", e.getMessage(), e);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            dialog.dismiss();
+            if (result != null) {
+                try {
+                    new LoginService().atualizarUsuario(EditarContaActivity.this, new UsuarioService().converterParaJSON(usuario));
+                } catch (JSONException e) {
+                    Log.e("ZUP", e.getMessage(), e);
+                }
+                Toast.makeText(EditarContaActivity.this, "Dados atualizados com sucesso", Toast.LENGTH_LONG).show();
+                setResult(Activity.RESULT_OK);
+                finish();
+            } else {
+                Toast.makeText(EditarContaActivity.this, "Falha no atualização dos dados", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private void destacarCampos(List<Integer> campos) {
+        for (Integer id : campos) {
+            findViewById(id).setBackgroundResource(R.drawable.textbox_red);
+        }
+        Toast.makeText(this, "Complete ou corrija os campos indicados", Toast.LENGTH_LONG).show();
+    }
+
+    private void limparFundoCampos() {
+        for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF, R.id.campoTelefone,
+                R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro, R.id.campoSenha, R.id.campoConfirmarSenha)) {
+            findViewById(id).setBackgroundResource(R.drawable.textbox_bg);
+        }
+    }
+
+    private List<Integer> validar() {
+        List<Integer> campos = new ArrayList<>();
+        if (!campoSenha.getText().toString().trim().isEmpty() && !campoConfirmarSenha.getText().toString().trim().isEmpty()
+                && campoSenhaAntiga.getText().toString().trim().isEmpty()) {
+            campos.add(campoSenhaAntiga.getId());
+        } else if (!campoSenha.getText().toString().trim().isEmpty() && !campoConfirmarSenha.getText().toString().trim().isEmpty()
+                && campoSenha.getText().toString().trim().length() < 6) {
+            campos.add(campoSenha.getId());
+            Toast.makeText(this, "A senha deve ter pelo menos 6 caracteres!", Toast.LENGTH_SHORT).show();
+        }
+
+        if (!campoSenha.getText().toString().trim().isEmpty() && !campoConfirmarSenha.getText().toString().trim().isEmpty()
+                && !campoSenha.getText().toString().equals(campoConfirmarSenha.getText().toString())) {
+            campos.add(campoSenha.getId());
+            campos.add(campoConfirmarSenha.getId());
+        }
+
+        for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF, R.id.campoTelefone,
+                R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro)) {
+            if (((TextView) findViewById(id)).getText().toString().trim().isEmpty()) {
+                campos.add(id);
+            }
+        }
+
+        return campos;
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
