@@ -5,11 +5,11 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.TextView;
 
+import br.com.lfdb.zup.base.BaseActivity;
 import br.com.lfdb.zup.domain.BuscaEstatisticas;
 import br.com.lfdb.zup.domain.BuscaExplore;
 import br.com.lfdb.zup.fragment.EstatisticasFragment;
@@ -20,7 +20,7 @@ import br.com.lfdb.zup.service.FeatureService;
 import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.util.FontUtils;
 
-public class MainActivity extends FragmentActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private static final int SOLICITACAO_REQUEST_CODE = 1010;
     public static final int FILTRO_CODE = 1007;
@@ -177,5 +177,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         } else if (requestCode == EstatisticasFragment.REQUEST_FILTRO && resultCode == Activity.RESULT_OK) {
             estatisticasFragment.aplicarFiltro((BuscaEstatisticas) data.getSerializableExtra("busca"));
         }
+    }
+
+    @Override
+    protected String getScreenName() {
+        return "Tela Principal";
     }
 }

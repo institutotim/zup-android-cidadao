@@ -7,7 +7,6 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.InflateException;
 import android.view.LayoutInflater;
@@ -42,6 +41,7 @@ import java.util.List;
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SoliciteActivity;
 import br.com.lfdb.zup.api.ZupApi;
+import br.com.lfdb.zup.base.BaseFragment;
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.domain.Place;
 import br.com.lfdb.zup.domain.Solicitacao;
@@ -52,7 +52,7 @@ import br.com.lfdb.zup.util.ImageUtils;
 import br.com.lfdb.zup.util.ViewUtils;
 import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
 
-public class SoliciteLocalFragment extends Fragment implements GooglePlayServicesClient.ConnectionCallbacks,
+public class SoliciteLocalFragment extends BaseFragment implements GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener, LocationListener, View.OnClickListener,
         AdapterView.OnItemClickListener {
 
@@ -461,6 +461,11 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
         }
     }
 
+    @Override
+    protected String getScreenName() {
+        return "Seleção de Local (Novo Relato)";
+    }
+
     private class TimerEndereco extends AsyncTask<Void, String, Void> {
 
         private double lat, lon;
@@ -606,7 +611,7 @@ public class SoliciteLocalFragment extends Fragment implements GooglePlayService
                 }
             });
             error.startAnimation(anim);
-        } else if (valid && error.getVisibility() != View.GONE){
+        } else if (valid && error.getVisibility() != View.GONE) {
             AlphaAnimation anim = new AlphaAnimation(1.0f, 0.0f);
             anim.setDuration(1000);
             anim.setRepeatMode(Animation.REVERSE);

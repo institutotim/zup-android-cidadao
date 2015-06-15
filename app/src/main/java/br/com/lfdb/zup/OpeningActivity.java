@@ -3,7 +3,6 @@ package br.com.lfdb.zup;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -18,12 +17,13 @@ import com.viewpagerindicator.PageIndicator;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.lfdb.zup.base.BaseActivity;
 import br.com.lfdb.zup.service.FeatureService;
 import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.widget.ImageResourcePagerAdapter;
 
-public class OpeningActivity extends FragmentActivity {
+public class OpeningActivity extends BaseActivity {
 
     private static final int LOGIN_REQUEST = 1010;
     private static final int REGISTER_REQUEST = 1011;
@@ -112,5 +112,10 @@ public class OpeningActivity extends FragmentActivity {
             return false;
         }
         return true;
+    }
+
+    @Override
+    protected String getScreenName() {
+        return "Tela de Slides (abertura)";
     }
 }

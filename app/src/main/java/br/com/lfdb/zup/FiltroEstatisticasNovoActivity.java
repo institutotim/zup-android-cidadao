@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -14,6 +13,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import br.com.lfdb.zup.base.BaseActivity;
 import br.com.lfdb.zup.domain.BuscaEstatisticas;
 import br.com.lfdb.zup.domain.CategoriaRelato;
 import br.com.lfdb.zup.domain.Periodo;
@@ -25,7 +25,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class FiltroEstatisticasNovoActivity extends FragmentActivity implements SeekBar.OnSeekBarChangeListener {
+public class FiltroEstatisticasNovoActivity extends BaseActivity implements SeekBar.OnSeekBarChangeListener {
 
     @InjectView(R.id.seekBar)
     SeekbarWithIntervals seekBar;
@@ -156,5 +156,10 @@ public class FiltroEstatisticasNovoActivity extends FragmentActivity implements 
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
+    }
+
+    @Override
+    protected String getScreenName() {
+        return "Filtro de Estatísticas";
     }
 }

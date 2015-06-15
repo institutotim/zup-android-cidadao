@@ -3,13 +3,13 @@ package br.com.lfdb.zup;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.widget.TextView;
 
+import br.com.lfdb.zup.base.BaseActivity;
 import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.util.FontUtils;
 
-public class WarningActivity extends FragmentActivity {
+public class WarningActivity extends BaseActivity {
 
     private static final int LOGIN_REQUEST = 1010;
     private static final int REGISTER_REQUEST = 1011;
@@ -47,5 +47,10 @@ public class WarningActivity extends FragmentActivity {
             setResult(Activity.RESULT_OK);
             finish();
         }
+    }
+
+    @Override
+    protected String getScreenName() {
+        return "Aviso Criação de Relato sem Cadastro";
     }
 }

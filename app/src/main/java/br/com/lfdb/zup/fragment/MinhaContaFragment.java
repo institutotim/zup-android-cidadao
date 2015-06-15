@@ -39,6 +39,7 @@ import br.com.lfdb.zup.EditarContaActivity;
 import br.com.lfdb.zup.OpeningActivity;
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SolicitacaoDetalheActivity;
+import br.com.lfdb.zup.base.BaseFragment;
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.domain.SolicitacaoListItem;
@@ -49,7 +50,7 @@ import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.ImageUtils;
 import br.com.lfdb.zup.widget.SolicitacaoListItemAdapter;
 
-public class MinhaContaFragment extends Fragment implements AdapterView.OnItemClickListener,
+public class MinhaContaFragment extends BaseFragment implements AdapterView.OnItemClickListener,
         AbsListView.OnScrollListener {
 
     private static final int REQUEST_EDIT_USER = 1099;
@@ -195,6 +196,11 @@ public class MinhaContaFragment extends Fragment implements AdapterView.OnItemCl
         } else {
             new Tasker().execute();
         }
+    }
+
+    @Override
+    protected String getScreenName() {
+        return "Minha Conta";
     }
 
     public class SolicitacaoAdapter extends ArrayAdapter<SolicitacaoListItem> {

@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import br.com.lfdb.zup.base.BaseActivity;
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.domain.Usuario;
 import br.com.lfdb.zup.service.FeatureService;
@@ -43,7 +44,7 @@ import br.com.lfdb.zup.service.UsuarioService;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.validador.CpfValidador;
 
-public class CadastroActivity extends Activity implements OnClickListener {
+public class CadastroActivity extends BaseActivity implements OnClickListener {
 
     private static final int REQUEST_SOCIAL = 9876;
 
@@ -182,6 +183,11 @@ public class CadastroActivity extends Activity implements OnClickListener {
         usuario.setConfirmacaoSenha(campoConfirmarSenha.getText().toString());
         usuario.setCidade(campoCidade.getText().toString().trim());
         new Tasker().execute(usuario);
+    }
+
+    @Override
+    protected String getScreenName() {
+        return "Cadastro";
     }
 
     public class Tasker extends AsyncTask<Usuario, Void, String> {

@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import br.com.lfdb.zup.base.BaseActivity;
 import br.com.lfdb.zup.domain.BuscaExplore;
 import br.com.lfdb.zup.domain.CategoriaInventario;
 import br.com.lfdb.zup.domain.CategoriaRelato;
@@ -34,7 +35,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSeekBarChangeListener {
+public class FiltroExploreNovoActivity extends BaseActivity implements SeekBar.OnSeekBarChangeListener {
 
     @InjectView(R.id.formCategorias)
     CategoryPicker formCategorias;
@@ -318,5 +319,10 @@ public class FiltroExploreNovoActivity extends Activity implements SeekBar.OnSee
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
+    }
+
+    @Override
+    protected String getScreenName() {
+        return "Filtro do Explore";
     }
 }

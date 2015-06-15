@@ -31,11 +31,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.lfdb.zup.base.BaseActivity;
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.util.FontUtils;
 
-public class LoginActivity extends Activity implements View.OnClickListener {
+public class LoginActivity extends BaseActivity implements View.OnClickListener {
 
     private TextView botaoEntrar;
     private EditText campoSenha;
@@ -82,6 +83,11 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         } else if (v.getId() == botaoEntrar.getId()) {
             new Tasker().execute();
         }
+    }
+
+    @Override
+    protected String getScreenName() {
+        return "Login";
     }
 
     public class Tasker extends AsyncTask<Void, Void, String> {

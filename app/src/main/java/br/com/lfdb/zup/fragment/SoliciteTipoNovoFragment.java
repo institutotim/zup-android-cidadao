@@ -2,7 +2,6 @@ package br.com.lfdb.zup.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,7 @@ import java.util.List;
 
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SoliciteActivity;
+import br.com.lfdb.zup.base.BaseFragment;
 import br.com.lfdb.zup.domain.CategoriaRelato;
 import br.com.lfdb.zup.domain.Solicitacao;
 import br.com.lfdb.zup.service.CategoriaRelatoService;
@@ -21,7 +21,7 @@ import br.com.lfdb.zup.util.ImageUtils;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class SoliciteTipoNovoFragment extends Fragment {
+public class SoliciteTipoNovoFragment extends BaseFragment {
 
     @InjectView(R.id.categoriasContainer)
     LinearLayout categoriasContainer;
@@ -173,5 +173,10 @@ public class SoliciteTipoNovoFragment extends Fragment {
         if (!hidden) {
             ((SoliciteActivity) getActivity()).setInfo(R.string.selecione_a_categoria_subcategoria);
         }
+    }
+
+    @Override
+    protected String getScreenName() {
+        return "Seleção de Categoria (Novo Relato)";
     }
 }

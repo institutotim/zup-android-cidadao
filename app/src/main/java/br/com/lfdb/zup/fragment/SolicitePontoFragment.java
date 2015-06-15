@@ -5,7 +5,6 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.InflateException;
 import android.view.LayoutInflater;
@@ -55,6 +54,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SoliciteActivity;
+import br.com.lfdb.zup.base.BaseFragment;
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.domain.CategoriaInventario;
@@ -70,7 +70,7 @@ import br.com.lfdb.zup.util.ImageUtils;
 import br.com.lfdb.zup.util.ViewUtils;
 import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
 
-public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCameraChangeListener,
+public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnCameraChangeListener,
         GoogleMap.OnMarkerClickListener, GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener, LocationListener, AdapterView.OnItemClickListener {
 
@@ -267,7 +267,7 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
     private void exibirElementos() {
         for (Object pontoMapa : itens) {
             if (pontoMapa instanceof ItemInventario) {
-               adicionarMarker((ItemInventario) pontoMapa);
+                adicionarMarker((ItemInventario) pontoMapa);
             }
         }
     }
@@ -343,6 +343,11 @@ public class SolicitePontoFragment extends Fragment implements GoogleMap.OnCamer
 
     public Address getAddress() {
         return address;
+    }
+
+    @Override
+    protected String getScreenName() {
+        return "Seleção de Local (Novo Relato)";
     }
 
     private class MarkerRetriever extends AsyncTask<Void, ItemInventario, Void> {

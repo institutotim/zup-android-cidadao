@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,13 +19,14 @@ import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.RedesSociaisCadastroActivity;
 import br.com.lfdb.zup.SoliciteActivity;
 import br.com.lfdb.zup.TermosDeUsoActivity;
+import br.com.lfdb.zup.base.BaseFragment;
 import br.com.lfdb.zup.domain.Solicitacao;
 import br.com.lfdb.zup.service.FeatureService;
 import br.com.lfdb.zup.social.SocialConstants;
 import br.com.lfdb.zup.util.FontUtils;
 import butterknife.ButterKnife;
 
-public class SoliciteDetalhesFragment extends Fragment implements View.OnClickListener {
+public class SoliciteDetalhesFragment extends BaseFragment implements View.OnClickListener {
 
     private boolean publicar = false;
 
@@ -35,7 +35,7 @@ public class SoliciteDetalhesFragment extends Fragment implements View.OnClickLi
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-            if (!hidden) {
+        if (!hidden) {
             ((SoliciteActivity) getActivity()).setInfo(R.string.concluir_solicitacao);
             sigioso.setVisibility(((SoliciteActivity) getActivity()).getCategoria().isConfidencial() ?
                     View.VISIBLE : View.GONE);
@@ -144,5 +144,10 @@ public class SoliciteDetalhesFragment extends Fragment implements View.OnClickLi
 
     public String getComentario() {
         return ((TextView) getView().findViewById(R.id.comentario)).getText().toString();
+    }
+
+    @Override
+    protected String getScreenName() {
+        return "Comentário do Relato (Novo Relato)";
     }
 }
