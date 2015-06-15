@@ -15,8 +15,8 @@ android {
     defaultConfig {
         minSdkVersion 10
         targetSdkVersion 22
-        versionCode 10000
-        versionName '1.0.0.3'
+        versionCode 10001
+        versionName '1.0.1'
         multiDexEnabled = true
     }
     signingConfigs {

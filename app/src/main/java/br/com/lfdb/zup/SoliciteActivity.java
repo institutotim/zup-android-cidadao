@@ -430,7 +430,7 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
         TIPO, LOCAL, FOTOS, COMENTARIOS
     }
 
-    public class Tasker extends AsyncTask<Void, Void, ReportItem> implements DialogInterface.OnCancelListener {
+    public class Tasker extends AsyncTask<Void, Void, ReportItem> {
 
         private ProgressDialog dialog;
 
@@ -440,8 +440,8 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             dialog.setIndeterminate(true);
             dialog.setMessage("Enviando solicitação...");
+            dialog.setCancelable(false);
             dialog.show();
-            dialog.setOnCancelListener(this);
         }
 
         @Override
@@ -517,13 +517,6 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
             } else {
                 Toast.makeText(SoliciteActivity.this, "Falha no envio da solicitação", Toast.LENGTH_LONG).show();
             }
-        }
-
-        @Override
-        public void onCancel(DialogInterface dialog) {
-            dialog.dismiss();
-            Toast.makeText(SoliciteActivity.this, "Envio de solicitação cancelado", Toast.LENGTH_SHORT).show();
-            cancel(true);
         }
     }
 }
