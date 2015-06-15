@@ -17,26 +17,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.squareup.okhttp.apache.OkApacheClient;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import br.com.lfdb.zup.base.BaseActivity;
 import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.domain.Usuario;
 import br.com.lfdb.zup.service.FeatureService;
 import br.com.lfdb.zup.service.LoginService;
@@ -211,31 +206,30 @@ public class CadastroActivity extends BaseActivity implements OnClickListener {
                 GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(CadastroActivity.this);
                 prefs.edit().putString("gcm", gcm.register(CadastroActivity.this.getString(R.string.gcm_project))).apply();
 
-                HttpClient client = new OkApacheClient();
-                HttpPost post = new HttpPost(Constantes.REST_URL + "/users");
-                JSONObject json = new UsuarioService().converterParaJSON(params[0]);
-                List<NameValuePair> nameValuePairs = new ArrayList<>(json.length());
-                Iterator<String> iterator = json.keys();
-                while (iterator.hasNext()) {
-                    String key = iterator.next();
-                    nameValuePairs.add(new BasicNameValuePair(key, json.getString(key)));
-                }
-                post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                HttpResponse response = client.execute(post);
-                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
-                    post = new HttpPost(Constantes.REST_URL + "/authenticate");
-                    nameValuePairs = new ArrayList<>(2);
-                    nameValuePairs.add(new BasicNameValuePair("email", params[0].getEmail()));
-                    nameValuePairs.add(new BasicNameValuePair("password", params[0].getSenha()));
-                    nameValuePairs.add(new BasicNameValuePair("device_type", "android"));
-                    nameValuePairs.add(new BasicNameValuePair("device_token", PreferenceManager.getDefaultSharedPreferences(CadastroActivity.this)
-                            .getString("gcm", "")));
-                    post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                    response = client.execute(post);
-                    if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
-                        return EntityUtils.toString(response.getEntity(), "UTF-8");
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),
+                        new UsuarioService().converterParaJSON(params[0]).toString());
+                Request request = new Request.Builder()
+                        .url(Constantes.REST_URL + "/users")
+                        .post(body)
+                        .build();
+                Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
+                if (response.isSuccessful()) {
+                    body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),
+                            new UsuarioService().loginData(
+                                    params[0].getEmail(),
+                                    params[0].getSenha(),
+                                    PreferenceManager.getDefaultSharedPreferences(CadastroActivity.this)
+                                            .getString("gcm", "")
+                            ));
+                    request = new Request.Builder()
+                            .url(Constantes.REST_URL + "/authenticate")
+                            .post(body)
+                            .build();
+                    response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
+                    if (response.isSuccessful()) {
+                        return response.body().toString();
                     } else {
-                        Log.e("Error!", EntityUtils.toString(response.getEntity(), "UTF-8"));
+                        Log.e("Error!", response.body().toString());
                     }
                 }
             } catch (Exception e) {
