@@ -227,7 +227,7 @@ public class CadastroActivity extends BaseActivity implements OnClickListener {
                             .build();
                     response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
                     if (response.isSuccessful()) {
-                        return response.body().toString();
+                        return response.body().string();
                     } else {
                         Log.e("Error!", response.body().toString());
                     }
