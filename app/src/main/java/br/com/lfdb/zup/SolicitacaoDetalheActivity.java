@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -33,6 +32,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.lfdb.zup.base.BaseActivity;
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.domain.ComentarioRelato;
@@ -46,7 +46,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class SolicitacaoDetalheActivity extends FragmentActivity {
+public class SolicitacaoDetalheActivity extends BaseActivity {
 
     @InjectView(R.id.categoryIcon)
     ImageView categoryIcon;
@@ -204,5 +204,10 @@ public class SolicitacaoDetalheActivity extends FragmentActivity {
             autor.setText(String.format("Resposta do município enviada: %s", DateUtils.formatDate(this, comentario.getCriacao())));
             commentContainer.addView(view);
         }
+    }
+
+    @Override
+    protected String getScreenName() {
+        return "Detalhes de um Relato";
     }
 }

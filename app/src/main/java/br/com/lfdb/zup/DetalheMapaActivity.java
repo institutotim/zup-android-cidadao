@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import br.com.lfdb.zup.base.BaseActivity;
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.domain.ItemInventario;
@@ -36,7 +37,7 @@ import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.widget.SolicitacaoListItemAdapter;
 
-public class DetalheMapaActivity extends FragmentActivity implements View.OnClickListener {
+public class DetalheMapaActivity extends BaseActivity implements View.OnClickListener {
 
 	private InformacoesFragment infoFragment;
 	private SolicitacoesFragment solFragment;
@@ -106,7 +107,12 @@ public class DetalheMapaActivity extends FragmentActivity implements View.OnClic
 		
 		((TextView) findViewById(v.getId())).setTextColor(Color.WHITE);
 	}
-	
+
+	@Override
+	protected String getScreenName() {
+		return "Informações de um Item de Inventário";
+	}
+
 	private class Tasker extends AsyncTask<Void, Void, Boolean> implements DialogInterface.OnCancelListener {
 		
 		private ProgressDialog dialog;

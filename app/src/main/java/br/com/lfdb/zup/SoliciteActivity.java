@@ -5,13 +5,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
@@ -32,6 +30,7 @@ import java.util.Locale;
 import br.com.lfdb.zup.api.ZupApi;
 import br.com.lfdb.zup.api.model.ReportItem;
 import br.com.lfdb.zup.api.model.ReportItemRequest;
+import br.com.lfdb.zup.base.BaseActivity;
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.domain.CategoriaRelato;
 import br.com.lfdb.zup.domain.Solicitacao;
@@ -52,7 +51,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
 
-public class SoliciteActivity extends FragmentActivity implements View.OnClickListener {
+public class SoliciteActivity extends BaseActivity implements View.OnClickListener {
 
     public static final int LOGIN_REQUEST = 1578;
 
@@ -424,6 +423,11 @@ public class SoliciteActivity extends FragmentActivity implements View.OnClickLi
 
     private String getCity(Address address) {
         return address.getSubAdminArea() != null ? address.getSubAdminArea() : address.getLocality();
+    }
+
+    @Override
+    protected String getScreenName() {
+        return "Criação de Relato";
     }
 
     private enum Passo {

@@ -1,6 +1,5 @@
 package br.com.lfdb.zup;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,9 +12,10 @@ import com.google.common.io.CharStreams;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import br.com.lfdb.zup.base.BaseActivity;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class TermosDeUsoActivity extends Activity {
+public class TermosDeUsoActivity extends BaseActivity {
 
     private float downX;
 
@@ -64,5 +64,10 @@ public class TermosDeUsoActivity extends Activity {
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    @Override
+    protected String getScreenName() {
+        return "Termos de Uso";
     }
 }

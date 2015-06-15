@@ -58,6 +58,7 @@ import br.com.lfdb.zup.MainActivity;
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SolicitacaoDetalheActivity;
 import br.com.lfdb.zup.api.model.Cluster;
+import br.com.lfdb.zup.base.BaseFragment;
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.domain.BuscaExplore;
@@ -79,7 +80,7 @@ import br.com.lfdb.zup.util.PreferenceUtils;
 import br.com.lfdb.zup.util.ViewUtils;
 import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
 
-public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowClickListener,
+public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnCameraChangeListener, AdapterView.OnItemClickListener, GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener, LocationListener, View.OnClickListener, GoogleMap.OnMarkerClickListener {
 
@@ -143,6 +144,11 @@ public class ExploreFragment extends Fragment implements GoogleMap.OnInfoWindowC
             increaseZoomTo(new LatLng(cluster.getLatitude(), cluster.getLongitude()));
         }
         return false;
+    }
+
+    @Override
+    protected String getScreenName() {
+        return "Explore";
     }
 
     private class Requisicao {

@@ -8,13 +8,14 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import br.com.lfdb.zup.base.BaseActivity;
 import br.com.lfdb.zup.service.FeatureService;
 import br.com.lfdb.zup.social.auth.FacebookAuth;
 import br.com.lfdb.zup.social.auth.GooglePlusAuth;
 import br.com.lfdb.zup.social.auth.TwitterAuth;
 import br.com.lfdb.zup.util.FontUtils;
 
-public class RedesSociaisCadastroActivity extends Activity implements View.OnClickListener {
+public class RedesSociaisCadastroActivity extends BaseActivity implements View.OnClickListener {
 
 	private static final int REQUEST_CODE = 9999;
 
@@ -83,5 +84,10 @@ public class RedesSociaisCadastroActivity extends Activity implements View.OnCli
 				Toast.makeText(this, getString(R.string.failed_social_auth), Toast.LENGTH_LONG).show();
 			}
 		}
+	}
+
+	@Override
+	protected String getScreenName() {
+		return "Seleção de Redes Sociais (cadastro)";
 	}
 }

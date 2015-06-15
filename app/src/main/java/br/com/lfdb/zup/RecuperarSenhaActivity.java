@@ -24,10 +24,11 @@ import org.apache.http.util.EntityUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.lfdb.zup.base.BaseActivity;
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.util.FontUtils;
 
-public class RecuperarSenhaActivity extends Activity implements View.OnClickListener {
+public class RecuperarSenhaActivity extends BaseActivity implements View.OnClickListener {
 
     private EditText campoEmail;
 
@@ -54,7 +55,12 @@ public class RecuperarSenhaActivity extends Activity implements View.OnClickList
 	public void onClick(View v) {
 		new Tasker().execute();
 	}
-	
+
+	@Override
+	protected String getScreenName() {
+		return "Recuperar Senha";
+	}
+
 	public class Tasker extends AsyncTask<Void, Void, String> {
 		
 		private ProgressDialog dialog;

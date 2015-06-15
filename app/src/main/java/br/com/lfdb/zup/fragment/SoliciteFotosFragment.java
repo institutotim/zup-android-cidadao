@@ -9,7 +9,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +23,7 @@ import java.util.List;
 
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SoliciteActivity;
+import br.com.lfdb.zup.base.BaseFragment;
 import br.com.lfdb.zup.domain.Solicitacao;
 import br.com.lfdb.zup.service.FeatureService;
 import br.com.lfdb.zup.util.FileUtils;
@@ -31,7 +31,7 @@ import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.ImageUtils;
 import eu.janmuller.android.simplecropimage.CropImage;
 
-public class SoliciteFotosFragment extends Fragment implements View.OnClickListener {
+public class SoliciteFotosFragment extends BaseFragment implements View.OnClickListener {
 
     private TextView fotoButton;
     private static final int CAMERA_RETURN = 1406;
@@ -286,5 +286,10 @@ public class SoliciteFotosFragment extends Fragment implements View.OnClickListe
         containerFotos.setVisibility(View.VISIBLE);
         containerFotos.setWeightSum(listaFotos.size());
         containerFotos.addView(layout);
+    }
+
+    @Override
+    protected String getScreenName() {
+        return "Adição de Fotos (Novo Relato)";
     }
 }

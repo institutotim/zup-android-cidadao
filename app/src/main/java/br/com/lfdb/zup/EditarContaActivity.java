@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import br.com.lfdb.zup.base.BaseActivity;
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.domain.Usuario;
@@ -41,7 +42,7 @@ import br.com.lfdb.zup.social.util.SocialUtils;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.ViewUtils;
 
-public class EditarContaActivity extends Activity implements View.OnClickListener {
+public class EditarContaActivity extends BaseActivity implements View.OnClickListener {
 
     private static final int REQUEST_CODE = 9999;
 
@@ -248,6 +249,11 @@ public class EditarContaActivity extends Activity implements View.OnClickListene
             if (usuario.getBairro() != null) campoBairro.setText(usuario.getBairro());
             if (usuario.getCidade() != null) campoCidade.setText(usuario.getCidade());
         }
+    }
+
+    @Override
+    protected String getScreenName() {
+        return "Editar Conta";
     }
 
     public class Tasker extends AsyncTask<Void, Void, String> {

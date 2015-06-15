@@ -27,6 +27,7 @@ import java.util.List;
 
 import br.com.lfdb.zup.FiltroEstatisticasNovoActivity;
 import br.com.lfdb.zup.R;
+import br.com.lfdb.zup.base.BaseFragment;
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.domain.BuscaEstatisticas;
@@ -35,7 +36,7 @@ import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.ImageUtils;
 
-public class EstatisticasFragment extends Fragment {
+public class EstatisticasFragment extends BaseFragment {
 
     public static final int REQUEST_FILTRO = 1478;
 
@@ -76,6 +77,11 @@ public class EstatisticasFragment extends Fragment {
         } else {
             new Tasker(busca).execute();
         }
+    }
+
+    @Override
+    protected String getScreenName() {
+        return "Estatísticas";
     }
 
     public class Tasker extends AsyncTask<Void, Void, String> {
