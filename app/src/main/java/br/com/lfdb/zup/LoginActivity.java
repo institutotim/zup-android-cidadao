@@ -108,7 +108,12 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             try {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
                 GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(LoginActivity.this);
-                prefs.edit().putString("gcm", gcm.register(LoginActivity.this.getString(R.string.gcm_project))).apply();
+
+                try {
+                    prefs.edit().putString("gcm", gcm.register(LoginActivity.this.getString(R.string.gcm_project))).apply();
+                } catch (Exception e) {
+                    Log.e("ZUP", e.getMessage(), e);
+                }
 
                 HttpClient client = new OkApacheClient();
                 HttpPost post = new HttpPost(Constantes.REST_URL + "/authenticate");
