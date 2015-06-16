@@ -3,15 +3,13 @@ package br.com.lfdb.zup.util;
 import android.location.Address;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.VisibleRegion;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,7 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import br.com.lfdb.zup.BuildConfig;
 import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.domain.Place;
 
 public class GeoUtils {
@@ -51,13 +51,13 @@ public class GeoUtils {
 
     public static Address search(String str, double lat, double lng) {
 
-        HttpGet httpGet = new HttpGet("https://maps.googleapis.com/maps/api/place/search/json" + "?sensor=true" + "&name=" + str.replace(" ", "%20") + "&key=" + Constantes.PLACES_KEY + "&radius=" + 50000 + "&location=" + lat + ',' + lng + "&language=pt-BR");
-        HttpClient client = new DefaultHttpClient();
-        HttpResponse response;
-
+        Request request = new Request.Builder()
+                .url("https://maps.googleapis.com/maps/api/place/search/json" + "?sensor=true" + "&name=" + str.replace(" ", "%20") + "&key=" + Constantes.PLACES_KEY + "&radius=" + 50000 + "&location=" + lat + ',' + lng + "&language=pt-BR")
+                .build();
         try {
-            response = client.execute(httpGet);
-            JSONObject jsonObject = new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8"));
+            Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
+            String raw = response.body().string();
+            JSONObject jsonObject = new JSONObject(raw);
 
             if ("OK".equalsIgnoreCase(jsonObject.getString("status"))) {
                 JSONObject result = jsonObject.getJSONArray("results").getJSONObject(0);
@@ -67,6 +67,8 @@ public class GeoUtils {
                 addr.setLatitude(result.getJSONObject("geometry").getJSONObject("location").getDouble("lat"));
                 addr.setLongitude(result.getJSONObject("geometry").getJSONObject("location").getDouble("lng"));
                 return addr;
+            } else {
+                if (!BuildConfig.DEBUG) Crashlytics.getInstance().core.log("Places API: " + raw);
             }
         } catch (IOException e) {
             Log.e("ZUP", "Error calling Google geocode webservice.", e);
@@ -80,13 +82,13 @@ public class GeoUtils {
     public static Address getFromPlace(Place place) {
         String address = "https://maps.googleapis.com/maps/api/place/details/json?reference=" +
                 place.getReference() + "&sensor=true&language=" + Locale.getDefault() + "&key=" + Constantes.PLACES_KEY;
-        HttpGet httpGet = new HttpGet(address);
-        HttpClient client = new DefaultHttpClient();
-        HttpResponse response;
-
+        Request request = new Request.Builder()
+                .url(address)
+                .build();
         try {
-            response = client.execute(httpGet);
-            JSONObject jsonObject = new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8"));
+            Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
+            String raw = response.body().string();
+            JSONObject jsonObject = new JSONObject(raw);
 
             if ("OK".equalsIgnoreCase(jsonObject.getString("status"))) {
                 JSONObject result = jsonObject.getJSONObject("result");
@@ -96,6 +98,8 @@ public class GeoUtils {
                 addr.setLatitude(result.getJSONObject("geometry").getJSONObject("location").getDouble("lat"));
                 addr.setLongitude(result.getJSONObject("geometry").getJSONObject("location").getDouble("lng"));
                 return addr;
+            } else {
+                if (!BuildConfig.DEBUG) Crashlytics.getInstance().core.log("Places API: " + raw);
             }
         } catch (IOException e) {
             Log.e("ZUP", "Error calling Google geocode webservice.", e);
@@ -108,15 +112,16 @@ public class GeoUtils {
 
     public static List<Address> getFromLocation(double lat, double lng, int maxResults) {
         String address = String.format(Locale.ENGLISH, "http://maps.googleapis.com/maps/api/geocode/json?latlng=%1$f,%2$f&sensor=true&language=" + Locale.getDefault().getCountry(), lat, lng);
-        HttpGet httpGet = new HttpGet(address);
-        HttpClient client = new DefaultHttpClient();
-        HttpResponse response;
 
         List<Address> retList = null;
 
         try {
-            response = client.execute(httpGet);
-            JSONObject jsonObject = new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8"));
+            Request request = new Request.Builder()
+                    .url(address)
+                    .build();
+            Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
+            String raw = response.body().string();
+            JSONObject jsonObject = new JSONObject(raw);
 
             retList = new ArrayList<>();
 
@@ -131,6 +136,8 @@ public class GeoUtils {
                     addr.setLongitude(result.getJSONObject("geometry").getJSONObject("location").getDouble("lng"));
                     retList.add(addr);
                 }
+            } else {
+                if (!BuildConfig.DEBUG) Crashlytics.getInstance().core.log("Geocode API: " + raw);
             }
         } catch (IOException e) {
             Log.e("ZUP", "Error calling Google geocode webservice.", e);
