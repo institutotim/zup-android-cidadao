@@ -124,6 +124,8 @@ public class SolicitacaoListItem implements Serializable {
     }
 
     public String getComentario() {
+        if (comentario == null || comentario.trim().isEmpty() ||
+                comentario.equalsIgnoreCase("null")) return "";
         return comentario;
     }
 
