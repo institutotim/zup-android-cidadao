@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import br.com.lfdb.zup.ZupApplication;
 import br.com.lfdb.zup.api.model.ReportCategoryStatus;
 import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.domain.CategoriaInventario;
@@ -87,6 +88,7 @@ public class CategoriaRelatoService {
     }
 
     public CategoriaRelato getById(Context context, long id) {
+        if (context == null) context = ZupApplication.getContext();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String raw = prefs.getString("reports", "");
         if (raw.isEmpty()) {

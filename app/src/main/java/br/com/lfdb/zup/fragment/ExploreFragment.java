@@ -532,9 +532,9 @@ public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWin
 
                         markerRetriever = new MarkerRetriever(requisicao);
                         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
-                            getActivity().runOnUiThread(() -> markerRetriever.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR));
+                            markerRetriever.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                         } else {
-                            getActivity().runOnUiThread(() -> markerRetriever.execute());
+                            markerRetriever.execute();
                         }
                         requisicao = null;
                     }
