@@ -314,6 +314,8 @@ public class SoliciteLocalFragment extends BaseFragment implements GooglePlaySer
                         new AsyncTask<Void, Void, Void>() {
                             @Override
                             protected Void doInBackground(Void... params) {
+                                if (enderecoAtual == null) return null;
+
                                 List<Address> addresses = GPSUtils.getFromLocationName(getActivity(), r + ", " + num + " - " + (
                                         enderecoAtual.getSubAdminArea() != null ? enderecoAtual.getSubAdminArea() : enderecoAtual.getLocality()));
                                 if (addresses.isEmpty()) {
@@ -591,6 +593,8 @@ public class SoliciteLocalFragment extends BaseFragment implements GooglePlaySer
     }
 
     private void verifyValid() {
+        if (!isAdded()) return;
+
         ((SoliciteActivity) getActivity()).enableNextButton(valid);
         if (!valid && error.getVisibility() != View.VISIBLE) {
             AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
