@@ -6,52 +6,12 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.InflateException;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.location.LocationClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.squareup.okhttp.apache.OkApacheClient;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SoliciteActivity;
 import br.com.lfdb.zup.base.BaseFragment;
@@ -63,12 +23,25 @@ import br.com.lfdb.zup.domain.ItemInventario;
 import br.com.lfdb.zup.domain.Place;
 import br.com.lfdb.zup.service.CategoriaInventarioService;
 import br.com.lfdb.zup.service.LoginService;
-import br.com.lfdb.zup.util.BitmapUtils;
-import br.com.lfdb.zup.util.FontUtils;
-import br.com.lfdb.zup.util.GeoUtils;
-import br.com.lfdb.zup.util.ImageUtils;
-import br.com.lfdb.zup.util.ViewUtils;
+import br.com.lfdb.zup.util.*;
 import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.*;
+import com.squareup.okhttp.Response;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnCameraChangeListener,
         GoogleMap.OnMarkerClickListener, GooglePlayServicesClient.ConnectionCallbacks,
@@ -356,8 +329,6 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
 
         private Request request;
 
-        private HttpGet get;
-
         public MarkerRetriever(Request request) {
             this.request = request;
         }
@@ -374,7 +345,6 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
 
         @Override
         protected void onCancelled() {
-            if (get != null) get.abort();
             progressBar.post(() -> progressBar.setVisibility(View.GONE));
             Log.d("ZUP", "Request cancelled");
         }
@@ -383,21 +353,23 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
         protected Void doInBackground(Void... voids) {
             Log.i("ZUP", "Request started");
             try {
-                HttpClient client = new OkApacheClient();
-
-                HttpResponse response;
-
                 for (CategoriaInventario c : categoria.getCategoriasInventario()) {
-                    get = new HttpGet(Constantes.REST_URL + "/inventory/items" + ConstantesBase.getItemInventarioQuery(getActivity()) + "&position[latitude]=" + request.latitude + "&position[longitude]="
-                            + request.longitude + "&position[distance]=" + request.raio + "&max_items=" + MAX_ITEMS_PER_REQUEST + "&inventory_category_id=" + c.getId());
-                    get.setHeader("X-App-Token", new LoginService().getToken(getActivity()));
+                    com.squareup.okhttp.Request request1 = new com.squareup.okhttp.Request.Builder()
+                            .addHeader("X-App-Token", new LoginService().getToken(getActivity()))
+                            .url(Constantes.REST_URL + "/inventory/items" + ConstantesBase.getItemInventarioQuery(getActivity()) + "&position[latitude]=" + request.latitude + "&position[longitude]="
+                                    + request.longitude + "&position[distance]=" + request.raio + "&max_items=" + MAX_ITEMS_PER_REQUEST + "&inventory_category_id=" + c.getId())
+                            .build();
+
 
                     if (isCancelled()) return null;
 
-                    response = client.execute(get);
-                    if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                    Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(request1).execute();
+                    if (response.isSuccessful()) {
                         if (isCancelled()) return null;
-                        extrairItensInventario(EntityUtils.toString(response.getEntity(), "UTF-8"));
+                        extrairItensInventario(response.body().string());
+                    } else if (response.code() == 401) {
+                        AuthHelper.redirectSessionExpired(getActivity());
+                        return null;
                     }
                 }
             } catch (Exception e) {

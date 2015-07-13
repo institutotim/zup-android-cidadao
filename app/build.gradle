@@ -15,8 +15,8 @@ android {
     defaultConfig {
         minSdkVersion 10
         targetSdkVersion 22
-        versionCode 10003
-        versionName '1.0.3'
+        versionCode 10004
+        versionName '1.0.4'
         multiDexEnabled = true
     }
     signingConfigs {
@@ -88,7 +88,7 @@ dependencies {
     compile 'com.google.guava:guava:18.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'net.danlew:android.joda:2.8.0'
-    compile('com.crashlytics.sdk.android:crashlytics:2.3.2@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.4.0@aar') {
         transitive = true;
     }
     compile('oauth.signpost:signpost-commonshttp4:1.2.1.2') {

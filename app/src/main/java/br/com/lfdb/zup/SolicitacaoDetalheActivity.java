@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import br.com.lfdb.zup.util.AuthHelper;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -171,6 +172,8 @@ public class SolicitacaoDetalheActivity extends BaseActivity {
                 if (response.isSuccessful()) {
                     String raw = response.body().string();
                     fillData(new JSONObject(raw).getJSONArray("comments"));
+                } else if (response.code() == 401) {
+                    AuthHelper.redirectSessionExpired(getApplicationContext());
                 }
             } catch (Exception e) {
                 Log.e("ZUP", "Couldn't retrieve comments", e);

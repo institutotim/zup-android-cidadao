@@ -11,30 +11,11 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import android.widget.*;
 import br.com.lfdb.zup.EditarContaActivity;
 import br.com.lfdb.zup.OpeningActivity;
 import br.com.lfdb.zup.R;
@@ -46,9 +27,20 @@ import br.com.lfdb.zup.domain.SolicitacaoListItem;
 import br.com.lfdb.zup.domain.Usuario;
 import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.service.UsuarioService;
+import br.com.lfdb.zup.util.AuthHelper;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.ImageUtils;
 import br.com.lfdb.zup.widget.SolicitacaoListItemAdapter;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MinhaContaFragment extends BaseFragment implements AdapterView.OnItemClickListener,
         AbsListView.OnScrollListener {
@@ -96,6 +88,8 @@ public class MinhaContaFragment extends BaseFragment implements AdapterView.OnIt
                                 startActivity(new Intent(getActivity(), OpeningActivity.class));
                                 new LoginService().registrarLogout(getActivity());
                                 getActivity().finish();
+                            } else if (response.code() == 401) {
+                                AuthHelper.redirectSessionExpired(getActivity());
                             } else {
                                 dialog1.dismiss();
                                 getActivity().runOnUiThread(() -> Toast.makeText(getActivity(), "Ops... Não foi possível realizar seu logout...", Toast.LENGTH_SHORT).show());
@@ -318,6 +312,9 @@ public class MinhaContaFragment extends BaseFragment implements AdapterView.OnIt
 
 
                         return json;
+                    } else if (response.code() == 401) {
+                        AuthHelper.redirectSessionExpired(getActivity());
+                        return null;
                     }
                 } catch (Exception e) {
                     Log.e("ZUP", e.getMessage(), e);

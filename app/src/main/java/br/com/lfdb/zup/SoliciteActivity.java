@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import br.com.lfdb.zup.util.*;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
@@ -43,10 +44,7 @@ import br.com.lfdb.zup.fragment.SoliciteTipoNovoFragment;
 import br.com.lfdb.zup.service.FeatureService;
 import br.com.lfdb.zup.service.UsuarioService;
 import br.com.lfdb.zup.social.util.SocialUtils;
-import br.com.lfdb.zup.util.DateUtils;
-import br.com.lfdb.zup.util.FontUtils;
-import br.com.lfdb.zup.util.NetworkUtils;
-import br.com.lfdb.zup.util.ViewUtils;
+import retrofit.RetrofitError;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
@@ -485,6 +483,13 @@ public class SoliciteActivity extends BaseActivity implements View.OnClickListen
                         return response;
                     } catch (Throwable error) {
                         Log.e("ZUP", error.toString());
+
+                        if (error instanceof RetrofitError) {
+                            RetrofitError retrofitError = (RetrofitError) error;
+                            if (retrofitError.getResponse().getStatus() == 401) {
+                                AuthHelper.redirectSessionExpired(getApplicationContext());
+                            }
+                        }
                         return null;
                     }
 

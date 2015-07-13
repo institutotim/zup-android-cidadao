@@ -15,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import br.com.lfdb.zup.util.AuthHelper;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
@@ -283,6 +284,9 @@ public class EditarContaActivity extends BaseActivity implements View.OnClickLis
                 Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
                 if (response.isSuccessful()) {
                     return response.body().string();
+                } else if (response.code() == 401) {
+                    AuthHelper.redirectSessionExpired(getApplicationContext());
+                    return null;
                 }
             } catch (Exception e) {
                 Log.e("ZUP", e.getMessage(), e);

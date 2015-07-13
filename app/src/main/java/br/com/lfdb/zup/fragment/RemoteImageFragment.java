@@ -6,12 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
-
-import com.squareup.picasso.Picasso;
-
 import br.com.lfdb.zup.R;
 import butterknife.ButterKnife;
+import com.squareup.picasso.Picasso;
 
 public class RemoteImageFragment extends Fragment {
 
