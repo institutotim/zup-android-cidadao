@@ -13,10 +13,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import br.com.lfdb.zup.R;
+import br.com.lfdb.zup.ZupApplication;
 
 public class MapUtils {
 
     public static Bitmap createMarker(Context context, int color, int number) {
+        if (context == null) context = ZupApplication.getContext();
         ViewGroup view = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.cluster_marker, null);
         GradientDrawable bgDrawable = (GradientDrawable) view.getBackground().mutate();
         bgDrawable.setColor(color);
