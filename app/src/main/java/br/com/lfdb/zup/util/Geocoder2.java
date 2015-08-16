@@ -3,10 +3,9 @@ package br.com.lfdb.zup.util;
 import android.location.Address;
 import android.util.Log;
 
-import com.squareup.okhttp.apache.OkApacheClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,6 +15,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import br.com.lfdb.zup.core.ConstantesBase;
 
 public class Geocoder2 {
 
@@ -48,9 +49,9 @@ public class Geocoder2 {
     }
 
     private static JSONObject getLocationInfo(String s) throws IOException {
-        HttpGet httpGet = new HttpGet(s);
-        httpGet.setHeader("Accept-Encoding", "gzip");
-        String s1 = EntityUtils.toString(new OkApacheClient().execute(httpGet).getEntity(), "UTF-8");
+        Request request = new Request.Builder().url(s).build();
+        Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
+        String s1 = response.body().string();
         try {
             return new JSONObject(s1);
         } catch (Exception e) {

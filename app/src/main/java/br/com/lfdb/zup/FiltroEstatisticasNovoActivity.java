@@ -21,19 +21,19 @@ import br.com.lfdb.zup.service.CategoriaRelatoService;
 import br.com.lfdb.zup.util.ImageUtils;
 import br.com.lfdb.zup.widget.SeekbarWithIntervals;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class FiltroEstatisticasNovoActivity extends BaseActivity implements SeekBar.OnSeekBarChangeListener {
 
-    @InjectView(R.id.seekBar)
+    @Bind(R.id.seekBar)
     SeekbarWithIntervals seekBar;
-    @InjectView(R.id.categoriasContainer)
+    @Bind(R.id.categoriasContainer)
     LinearLayout categoriasContainer;
-    @InjectView(R.id.iconeTodos)
+    @Bind(R.id.iconeTodos)
     ImageView iconeTodos;
-    @InjectView(R.id.textoTodos)
+    @Bind(R.id.textoTodos)
     TextView textoTodos;
 
     private BuscaEstatisticas busca = new BuscaEstatisticas();
@@ -42,7 +42,7 @@ public class FiltroEstatisticasNovoActivity extends BaseActivity implements Seek
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filtro_estatisticas_novo);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         seekBar.setOnSeekBarChangeListener(this);
 

@@ -15,7 +15,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.squareup.okhttp.apache.OkApacheClient;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -33,6 +36,7 @@ import java.util.List;
 
 import br.com.lfdb.zup.base.BaseActivity;
 import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.util.FontUtils;
 
@@ -115,18 +119,18 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     Log.e("ZUP", e.getMessage(), e);
                 }
 
-                HttpClient client = new OkApacheClient();
-                HttpPost post = new HttpPost(Constantes.REST_URL + "/authenticate");
-                List<NameValuePair> nameValuePairs = new ArrayList<>(2);
-                nameValuePairs.add(new BasicNameValuePair("email", campoEmail.getText().toString()));
-                nameValuePairs.add(new BasicNameValuePair("password", campoSenha.getText().toString()));
-                nameValuePairs.add(new BasicNameValuePair("device_type", "android"));
-                nameValuePairs.add(new BasicNameValuePair("device_token", PreferenceManager.getDefaultSharedPreferences(LoginActivity.this)
-                        .getString("gcm", "")));
-                post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                HttpResponse response = client.execute(post);
-                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
-                    return EntityUtils.toString(response.getEntity(), "UTF-8");
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),
+                        String.format("{\"email\":\"%s\",\"password\":\"%s\",\"device_type\":\"android\",\"device_token\":\"%s\"}",
+                                campoEmail.getText().toString().trim(),
+                                campoSenha.getText().toString(),
+                                PreferenceManager.getDefaultSharedPreferences(LoginActivity.this).getString("gcm", "")));
+                Request request = new Request.Builder()
+                        .url(Constantes.REST_URL + "/authenticate")
+                        .post(body)
+                        .build();
+                Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
+                if (response.isSuccessful()) {
+                    return response.body().string();
                 }
             } catch (Exception e) {
                 Log.e("ZUP", e.getMessage(), e);

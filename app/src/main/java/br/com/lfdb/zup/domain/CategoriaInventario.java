@@ -4,30 +4,31 @@ import java.io.Serializable;
 
 public class CategoriaInventario implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-	private long id;
-	private String iconeAtivo;
+    private static final long serialVersionUID = 1L;
+    private long id;
+    private String iconeAtivo;
     private String iconeInativo;
-	private String marcador;
-	private String nome;
+    private String marcador;
+    private String nome;
     private String pin;
     private boolean showMarker;
-	private String cor;
+    private String cor;
+    private boolean privada;
 
-	public CategoriaInventario() {
-	}
-	
-	public CategoriaInventario(long id) {
-		this.id = id;
-	}
-	
-	public long getId() {
-		return id;
-	}
+    public CategoriaInventario() {
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public CategoriaInventario(long id) {
+        this.id = id;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public String getIconeInativo() {
         return iconeInativo;
@@ -46,42 +47,42 @@ public class CategoriaInventario implements Serializable {
     }
 
     public String getMarcador() {
-		return marcador;
-	}
+        return marcador;
+    }
 
-	public void setMarcador(String marcador) {
-		this.marcador = marcador;
-	}
+    public void setMarcador(String marcador) {
+        this.marcador = marcador;
+    }
 
-	public String getNome() {
-		return nome;
-	}
+    public String getNome() {
+        return nome;
+    }
 
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (int) (id ^ (id >>> 32));
-		return result;
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (id ^ (id >>> 32));
+        return result;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof CategoriaInventario))
-			return false;
-		CategoriaInventario other = (CategoriaInventario) obj;
-		if (id != other.id)
-			return false;
-		return true;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (!(obj instanceof CategoriaInventario))
+            return false;
+        CategoriaInventario other = (CategoriaInventario) obj;
+        if (id != other.id)
+            return false;
+        return true;
+    }
 
     public String getPin() {
         return pin;
@@ -99,11 +100,19 @@ public class CategoriaInventario implements Serializable {
         this.showMarker = showMarker;
     }
 
-	public void setCor(String cor) {
-		this.cor = cor;
-	}
+    public void setCor(String cor) {
+        this.cor = cor;
+    }
 
-	public String getCor() {
-		return cor;
-	}
+    public String getCor() {
+        return cor;
+    }
+
+    public boolean isPrivada() {
+        return privada;
+    }
+
+    public void setPrivada(boolean privada) {
+        this.privada = privada;
+    }
 }

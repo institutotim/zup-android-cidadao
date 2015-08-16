@@ -31,35 +31,35 @@ import br.com.lfdb.zup.util.ImageUtils;
 import br.com.lfdb.zup.view.CategoryPicker;
 import br.com.lfdb.zup.widget.SeekbarWithIntervals;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class FiltroExploreNovoActivity extends BaseActivity implements SeekBar.OnSeekBarChangeListener {
 
-    @InjectView(R.id.formCategorias)
+    @Bind(R.id.formCategorias)
     CategoryPicker formCategorias;
-    @InjectView(R.id.formInventario)
+    @Bind(R.id.formInventario)
     View formInventario;
-    @InjectView(R.id.formPeriodo)
+    @Bind(R.id.formPeriodo)
     View formPeriodo;
 
-    @InjectView(R.id.seletorInventario)
+    @Bind(R.id.seletorInventario)
     TextView seletorInventario;
-    @InjectView(R.id.seletorPeriodo)
+    @Bind(R.id.seletorPeriodo)
     TextView seletorPeriodo;
-    @InjectView(R.id.seletorCategorias)
+    @Bind(R.id.seletorCategorias)
     TextView seletorCategorias;
 
-    @InjectView(R.id.inventarioContainer)
+    @Bind(R.id.inventarioContainer)
     LinearLayout inventarioContainer;
 
-    @InjectView(R.id.opcoes)
+    @Bind(R.id.opcoes)
     LinearLayout opcoes;
-    @InjectView(R.id.status)
+    @Bind(R.id.status)
     TextView status;
 
-    @InjectView(R.id.seekBar)
+    @Bind(R.id.seekBar)
     SeekbarWithIntervals seekBar;
 
     private BuscaExplore busca;
@@ -70,7 +70,7 @@ public class FiltroExploreNovoActivity extends BaseActivity implements SeekBar.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filtro_explore_novo);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         busca = (BuscaExplore) getIntent().getSerializableExtra("busca");
         if (busca == null) busca = new BuscaExplore();
