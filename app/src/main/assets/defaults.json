@@ -1,0 +1,39 @@
+{
+  "category": {
+    "id": 1,
+    "title": "Random name 1",
+    "description": "A cool category",
+    "marker": {
+      "retina": {
+        "web": "/uploads/inventory/category/1/markers/retina_web_valid_report_category_marker.png",
+        "mobile": "/uploads/inventory/category/1/markers/retina_mobile_valid_report_category_marker.png"
+      },
+      "default": {
+        "web": "/uploads/inventory/category/1/markers/default_web_valid_report_category_marker.png",
+        "mobile": "/uploads/inventory/category/1/markers/default_mobile_valid_report_category_marker.png"
+      }
+    },
+    "icon": {
+      "retina": {
+        "web": {
+          "active": "/uploads/inventory/category/1/icons/retina_web_active_valid_report_category_icon.png",
+          "disabled": "/uploads/inventory/category/1/icons/retina_web_disabled_valid_report_category_icon.png"
+        },
+        "mobile": {
+          "active": "/uploads/inventory/category/1/icons/retina_mobile_active_valid_report_category_icon.png",
+          "disabled": "/uploads/inventory/category/1/icons/retina_mobile_disabled_valid_report_category_icon.png"
+        }
+      },
+      "default": {
+        "web": {
+          "active": "/uploads/inventory/category/1/icons/default_web_active_valid_report_category_icon.png",
+          "disabled": "/uploads/inventory/category/1/icons/default_web_disabled_valid_report_category_icon.png"
+        },
+        "mobile": {
+          "active": "/uploads/inventory/category/1/icons/default_mobile_active_valid_report_category_icon.png",
+          "disabled": "/uploads/inventory/category/1/icons/default_mobile_disabled_valid_report_category_icon.png"
+        }
+      }
+    }
+  }
+}

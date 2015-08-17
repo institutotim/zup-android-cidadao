@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -101,24 +102,34 @@ public class FiltroExploreNovoActivity extends BaseActivity implements SeekBar.O
 
             TextView nomeCategoria = ButterKnife.findById(view, R.id.nomeCategoria);
 
+            Bitmap bitmap;
             if (!busca.getIdsCategoriaInventario().contains(categoria.getId())) {
-                imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeInativo(), 0.75f));
+                bitmap = ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeInativo(), 0.75f);
+                if (bitmap == null) bitmap = ImageUtils.loadDefaultIcon(this, false, 0.75f);
+                imagem.setImageBitmap(bitmap);
                 nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
             } else {
-                imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeAtivo(), 0.75f));
+                bitmap = ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeAtivo(), 0.75f);
+                if (bitmap == null) bitmap = ImageUtils.loadDefaultIcon(this, true, 0.75f);
+                imagem.setImageBitmap(bitmap);
             }
 
             nomeCategoria.setText(categoria.getNome());
             nomeCategoria.setOnClickListener(v -> {
                 desmarcarCategoriasInventario();
+                Bitmap bitmap1;
                 if (busca.getIdsCategoriaInventario().contains(categoria.getId())) {
                     busca.getIdsCategoriaInventario().remove(categoria.getId());
                     nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                    imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeInativo(), 0.75f));
+                    bitmap1 = ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeInativo(), 0.75f);
+                    if (bitmap1 == null) bitmap1 = ImageUtils.loadDefaultIcon(this, false, 0.75f);
+                    imagem.setImageBitmap(bitmap1);
                 } else {
                     busca.getIdsCategoriaInventario().add(categoria.getId());
                     nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
-                    imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeAtivo(), 0.75f));
+                    bitmap1 = ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeAtivo(), 0.75f);
+                    if (bitmap1 == null) bitmap1 = ImageUtils.loadDefaultIcon(this, true, 0.75f);
+                    imagem.setImageBitmap(bitmap1);
                 }
 
                 desmarcarCategoriasRelato();

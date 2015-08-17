@@ -3,6 +3,7 @@ package br.com.lfdb.zup.view;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,17 +14,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.domain.CategoriaRelato;
 import br.com.lfdb.zup.service.CategoriaRelatoService;
 import br.com.lfdb.zup.util.ImageUtils;
 import butterknife.ButterKnife;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class CategoryPicker extends LinearLayout {
 
@@ -122,8 +122,12 @@ public class CategoryPicker extends LinearLayout {
         public void onBindViewHolder(ViewHolder holder, int position) {
             final CategoriaRelato categoria = categories.get(position);
 
-            holder.imagem.setImageBitmap(ImageUtils.getScaledCustom((Activity) getContext(), "reports", selecionadas.contains(categoria) ?
-                    categoria.getIconeAtivo() : categoria.getIconeInativo(), 0.75f));
+            Bitmap bitmap = ImageUtils.getScaledCustom((Activity) getContext(), "reports", selecionadas.contains(categoria) ?
+                    categoria.getIconeAtivo() : categoria.getIconeInativo(), 0.75f);
+
+            if (bitmap == null) bitmap = ImageUtils.loadDefaultIcon((Activity) getContext(),
+                    selecionadas.contains(categoria), 0.75f);
+            holder.imagem.setImageBitmap(bitmap);
             holder.nomeCategoria.setText(categoria.getNome());
             holder.nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, selecionadas.contains(categoria) ?
                     R.drawable.filtros_check_categoria : 0, 0);
@@ -143,8 +147,12 @@ public class CategoryPicker extends LinearLayout {
                 checkExpanded(categoria, holder);
                 holder.nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, selecionadas.contains(categoria) ?
                         R.drawable.filtros_check_categoria : 0, 0);
-                holder.imagem.setImageBitmap(ImageUtils.getScaledCustom((Activity) getContext(), "reports", selecionadas.contains(categoria) ?
-                        categoria.getIconeAtivo() : categoria.getIconeInativo(), 0.75f));
+                Bitmap bitmap1 = ImageUtils.getScaledCustom((Activity) getContext(), "reports", selecionadas.contains(categoria) ?
+                        categoria.getIconeAtivo() : categoria.getIconeInativo(), 0.75f);
+                if (bitmap1 == null) bitmap1 = ImageUtils.loadDefaultIcon((Activity) getContext(),
+                        selecionadas.contains(categoria), 0.75f);
+
+                holder.imagem.setImageBitmap(bitmap1);
             });
 
             checkExpanded(categoria, holder);
