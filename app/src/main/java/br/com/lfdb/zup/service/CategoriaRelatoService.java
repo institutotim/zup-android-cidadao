@@ -154,6 +154,7 @@ public class CategoriaRelatoService {
 
                 for (int j = 0; j < array.getJSONObject(i).getJSONArray("subcategories").length(); j++) {
                     CategoriaRelato filha = extrairDoJson(context, array.getJSONObject(i).getJSONArray("subcategories").getJSONObject(j));
+                    if (filha.isPrivada()) continue;
                     filha.setCategoriaMae(categoria);
                     categoria.addSubcategoria(filha);
                 }
