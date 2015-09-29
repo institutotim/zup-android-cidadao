@@ -7,19 +7,24 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.InflateException;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
+import br.com.lfdb.zup.*;
+import br.com.lfdb.zup.api.model.Cluster;
+import br.com.lfdb.zup.base.BaseFragment;
+import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.core.ConstantesBase;
+import br.com.lfdb.zup.domain.*;
+import br.com.lfdb.zup.service.CategoriaInventarioService;
+import br.com.lfdb.zup.service.CategoriaRelatoService;
+import br.com.lfdb.zup.service.LoginService;
+import br.com.lfdb.zup.util.*;
+import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
@@ -29,56 +34,16 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.*;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-
-import org.apache.http.client.methods.HttpGet;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.InterruptedIOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import br.com.lfdb.zup.DetalheMapaActivity;
-import br.com.lfdb.zup.FiltroExploreNovoActivity;
-import br.com.lfdb.zup.MainActivity;
-import br.com.lfdb.zup.R;
-import br.com.lfdb.zup.SolicitacaoDetalheActivity;
-import br.com.lfdb.zup.api.model.Cluster;
-import br.com.lfdb.zup.base.BaseFragment;
-import br.com.lfdb.zup.core.Constantes;
-import br.com.lfdb.zup.core.ConstantesBase;
-import br.com.lfdb.zup.domain.BuscaExplore;
-import br.com.lfdb.zup.domain.CategoriaInventario;
-import br.com.lfdb.zup.domain.CategoriaRelato;
-import br.com.lfdb.zup.domain.ItemInventario;
-import br.com.lfdb.zup.domain.ItemRelato;
-import br.com.lfdb.zup.domain.Place;
-import br.com.lfdb.zup.domain.SolicitacaoListItem;
-import br.com.lfdb.zup.service.CategoriaInventarioService;
-import br.com.lfdb.zup.service.CategoriaRelatoService;
-import br.com.lfdb.zup.service.LoginService;
-import br.com.lfdb.zup.util.BitmapUtils;
-import br.com.lfdb.zup.util.DateUtils;
-import br.com.lfdb.zup.util.FontUtils;
-import br.com.lfdb.zup.util.GeoUtils;
-import br.com.lfdb.zup.util.MapUtils;
-import br.com.lfdb.zup.util.PreferenceUtils;
-import br.com.lfdb.zup.util.ViewUtils;
-import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
 
 public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnCameraChangeListener, AdapterView.OnItemClickListener, GooglePlayServicesClient.ConnectionCallbacks,
@@ -562,8 +527,6 @@ public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWin
 
         private Requisicao request;
 
-        private HttpGet get;
-
         public MarkerRetriever(Requisicao request) {
             this.request = request;
         }
@@ -580,7 +543,6 @@ public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWin
 
         @Override
         protected void onCancelled() {
-            if (get != null) get.abort();
             progressBar.post(() -> progressBar.setVisibility(View.GONE));
         }
 
@@ -614,6 +576,9 @@ public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWin
                     if (response.isSuccessful()) {
                         if (isCancelled()) return null;
                         extrairItensInventario(response.body().string());
+                    } else if (response.code() == 401) {
+                        AuthHelper.redirectSessionExpired(getActivity());
+                        return null;
                     }
                 }
 
@@ -648,6 +613,9 @@ public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWin
                     if (response.isSuccessful()) {
                         if (isCancelled()) return null;
                         extrairItensRelato(response.body().string());
+                    } else if (response.code() == 401) {
+                        AuthHelper.redirectSessionExpired(getActivity());
+                        return null;
                     }
                 }
 

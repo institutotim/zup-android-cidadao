@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import br.com.lfdb.zup.util.AuthHelper;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -43,19 +44,19 @@ import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.ImageUtils;
 import br.com.lfdb.zup.widget.ImagePagerAdapter;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class SolicitacaoDetalheActivity extends BaseActivity {
 
-    @InjectView(R.id.categoryIcon)
+    @Bind(R.id.categoryIcon)
     ImageView categoryIcon;
-    @InjectView(R.id.categoryName)
+    @Bind(R.id.categoryName)
     TextView categoryName;
-    @InjectView(R.id.subcategoryName)
+    @Bind(R.id.subcategoryName)
     TextView subcategoryName;
 
-    @InjectView(R.id.comment_container)
+    @Bind(R.id.comment_container)
     ViewGroup commentContainer;
 
     SolicitacaoListItem solicitacao;
@@ -66,7 +67,7 @@ public class SolicitacaoDetalheActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_solicitacao_detalhe);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         solicitacao = (SolicitacaoListItem) getIntent().getExtras().getSerializable("solicitacao");
         boolean alterarLabel = getIntent().getExtras().getBoolean("alterar_botao", false);
@@ -171,6 +172,8 @@ public class SolicitacaoDetalheActivity extends BaseActivity {
                 if (response.isSuccessful()) {
                     String raw = response.body().string();
                     fillData(new JSONObject(raw).getJSONArray("comments"));
+                } else if (response.code() == 401) {
+                    AuthHelper.redirectSessionExpired(getApplicationContext());
                 }
             } catch (Exception e) {
                 Log.e("ZUP", "Couldn't retrieve comments", e);

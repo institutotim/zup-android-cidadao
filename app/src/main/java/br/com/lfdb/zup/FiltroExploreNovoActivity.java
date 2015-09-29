@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -31,35 +32,35 @@ import br.com.lfdb.zup.util.ImageUtils;
 import br.com.lfdb.zup.view.CategoryPicker;
 import br.com.lfdb.zup.widget.SeekbarWithIntervals;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class FiltroExploreNovoActivity extends BaseActivity implements SeekBar.OnSeekBarChangeListener {
 
-    @InjectView(R.id.formCategorias)
+    @Bind(R.id.formCategorias)
     CategoryPicker formCategorias;
-    @InjectView(R.id.formInventario)
+    @Bind(R.id.formInventario)
     View formInventario;
-    @InjectView(R.id.formPeriodo)
+    @Bind(R.id.formPeriodo)
     View formPeriodo;
 
-    @InjectView(R.id.seletorInventario)
+    @Bind(R.id.seletorInventario)
     TextView seletorInventario;
-    @InjectView(R.id.seletorPeriodo)
+    @Bind(R.id.seletorPeriodo)
     TextView seletorPeriodo;
-    @InjectView(R.id.seletorCategorias)
+    @Bind(R.id.seletorCategorias)
     TextView seletorCategorias;
 
-    @InjectView(R.id.inventarioContainer)
+    @Bind(R.id.inventarioContainer)
     LinearLayout inventarioContainer;
 
-    @InjectView(R.id.opcoes)
+    @Bind(R.id.opcoes)
     LinearLayout opcoes;
-    @InjectView(R.id.status)
+    @Bind(R.id.status)
     TextView status;
 
-    @InjectView(R.id.seekBar)
+    @Bind(R.id.seekBar)
     SeekbarWithIntervals seekBar;
 
     private BuscaExplore busca;
@@ -70,7 +71,7 @@ public class FiltroExploreNovoActivity extends BaseActivity implements SeekBar.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filtro_explore_novo);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         busca = (BuscaExplore) getIntent().getSerializableExtra("busca");
         if (busca == null) busca = new BuscaExplore();
@@ -101,24 +102,34 @@ public class FiltroExploreNovoActivity extends BaseActivity implements SeekBar.O
 
             TextView nomeCategoria = ButterKnife.findById(view, R.id.nomeCategoria);
 
+            Bitmap bitmap;
             if (!busca.getIdsCategoriaInventario().contains(categoria.getId())) {
-                imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeInativo(), 0.75f));
+                bitmap = ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeInativo(), 0.75f);
+                if (bitmap == null) bitmap = ImageUtils.loadDefaultIcon(this, false, 0.75f);
+                imagem.setImageBitmap(bitmap);
                 nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
             } else {
-                imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeAtivo(), 0.75f));
+                bitmap = ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeAtivo(), 0.75f);
+                if (bitmap == null) bitmap = ImageUtils.loadDefaultIcon(this, true, 0.75f);
+                imagem.setImageBitmap(bitmap);
             }
 
             nomeCategoria.setText(categoria.getNome());
             nomeCategoria.setOnClickListener(v -> {
                 desmarcarCategoriasInventario();
+                Bitmap bitmap1;
                 if (busca.getIdsCategoriaInventario().contains(categoria.getId())) {
                     busca.getIdsCategoriaInventario().remove(categoria.getId());
                     nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                    imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeInativo(), 0.75f));
+                    bitmap1 = ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeInativo(), 0.75f);
+                    if (bitmap1 == null) bitmap1 = ImageUtils.loadDefaultIcon(this, false, 0.75f);
+                    imagem.setImageBitmap(bitmap1);
                 } else {
                     busca.getIdsCategoriaInventario().add(categoria.getId());
                     nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
-                    imagem.setImageBitmap(ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeAtivo(), 0.75f));
+                    bitmap1 = ImageUtils.getScaledCustom(this, "inventory", categoria.getIconeAtivo(), 0.75f);
+                    if (bitmap1 == null) bitmap1 = ImageUtils.loadDefaultIcon(this, true, 0.75f);
+                    imagem.setImageBitmap(bitmap1);
                 }
 
                 desmarcarCategoriasRelato();

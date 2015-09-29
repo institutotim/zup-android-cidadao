@@ -150,9 +150,11 @@ public class CategoriaRelatoService {
             JSONArray array = new JSONObject(raw).getJSONArray("categories");
             for (int i = 0; i < array.length(); i++) {
                 CategoriaRelato categoria = extrairDoJson(context, array.getJSONObject(i));
+                if (categoria.isPrivada()) continue;
 
                 for (int j = 0; j < array.getJSONObject(i).getJSONArray("subcategories").length(); j++) {
                     CategoriaRelato filha = extrairDoJson(context, array.getJSONObject(i).getJSONArray("subcategories").getJSONObject(j));
+                    if (filha.isPrivada()) continue;
                     filha.setCategoriaMae(categoria);
                     categoria.addSubcategoria(filha);
                 }
@@ -199,6 +201,7 @@ public class CategoriaRelatoService {
         file = icon.getString("disabled").split("/");
         categoria.setIconeInativo(file[file.length - 1]);
         categoria.setId(json.getLong("id"));
+        categoria.setPrivada(json.optBoolean("private", false));
         categoria.setCor(json.getString("color"));
         categoria.setPosicaoLivre(json.optBoolean("allows_arbitrary_position", false));
         categoria.setTempoResolucao(json.optLong("resolution_time"));

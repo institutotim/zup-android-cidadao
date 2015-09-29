@@ -50,7 +50,9 @@ public class CategoriaInventarioService {
             List<CategoriaInventario> categorias = new ArrayList<>();
             JSONArray array = new JSONObject(raw).getJSONArray("categories");
             for (int i = 0; i < array.length(); i++) {
-                categorias.add(extract(context, array.getJSONObject(i)));
+                CategoriaInventario category = extract(context, array.getJSONObject(i));
+                if (category.isPrivada()) continue;
+                categorias.add(category);
             }
             return categorias;
         } catch (Exception e) {
@@ -71,6 +73,7 @@ public class CategoriaInventarioService {
         categoria.setIconeInativo(file[file.length - 1]);
         categoria.setId(obj.getLong("id"));
         categoria.setCor(obj.getString("color"));
+        categoria.setPrivada(obj.optBoolean("private", false));
         file = obj.getJSONObject("marker").getJSONObject(density).getString("mobile").split("/");
         categoria.setMarcador(file[file.length - 1]);
         if (obj.has("pin")) {

@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 
 import br.com.lfdb.zup.ZupApplication;
+import br.com.lfdb.zup.base.Defaults;
 
 public class ImageUtils {
 
@@ -78,16 +79,20 @@ public class ImageUtils {
         DisplayMetrics metrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-        int width = bitmapOrg.getWidth();
-        int height = bitmapOrg.getHeight();
+        try {
+            int width = bitmapOrg.getWidth();
+            int height = bitmapOrg.getHeight();
 
-        float scaleWidth = metrics.scaledDensity * scale;
-        float scaleHeight = metrics.scaledDensity * scale;
+            float scaleWidth = metrics.scaledDensity * scale;
+            float scaleHeight = metrics.scaledDensity * scale;
 
-        Matrix matrix = new Matrix();
-        matrix.postScale(scaleWidth, scaleHeight);
+            Matrix matrix = new Matrix();
+            matrix.postScale(scaleWidth, scaleHeight);
 
-        return Bitmap.createBitmap(bitmapOrg, 0, 0, width, height, matrix, true);
+            return Bitmap.createBitmap(bitmapOrg, 0, 0, width, height, matrix, true);
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
     public static StateListDrawable getStateListDrawable(Activity activity, String filename) {
@@ -198,5 +203,16 @@ public class ImageUtils {
             Log.e("MakeMe", e.getMessage() != null ? e.getMessage() : "NullPointerException", e);
             return null;
         }
+    }
+
+    public static Bitmap loadDefaultIcon(Activity activity, boolean active, float scale) {
+        float divider = ImageUtils.shouldDownloadRetinaIcon(activity) ? 2f : 1f;
+        return getScaled(activity, scale / divider, ImageUtils.loadFromFile(activity, "default", active ?
+                Defaults.getDefaultActiveIcon() : Defaults.getDefaultInactiveIcon()));
+    }
+
+    public static Bitmap loadDefaultMarker(Activity activity, float scale) {
+        float divider = ImageUtils.shouldDownloadRetinaIcon(activity) ? 2f : 1f;
+        return getScaled(activity, scale / divider, ImageUtils.loadFromFile(activity, "default", Defaults.getDefaultMarker()));
     }
 }

@@ -4,27 +4,25 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
-
+import br.com.lfdb.zup.api.model.*;
+import br.com.lfdb.zup.base.Defaults;
+import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.core.ConstantesBase;
+import br.com.lfdb.zup.util.FileUtils;
+import br.com.lfdb.zup.util.ImageUtils;
+import com.google.common.io.CharStreams;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import org.json.JSONObject;
 
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import br.com.lfdb.zup.api.model.InventoryCategoriesResponse;
-import br.com.lfdb.zup.api.model.InventoryCategory;
-import br.com.lfdb.zup.api.model.ReportCategoriesResponse;
-import br.com.lfdb.zup.api.model.ReportCategory;
-import br.com.lfdb.zup.api.model.ReportCategoryStatus;
-import br.com.lfdb.zup.core.Constantes;
-import br.com.lfdb.zup.core.ConstantesBase;
-import br.com.lfdb.zup.util.FileUtils;
-import br.com.lfdb.zup.util.ImageUtils;
 
 public class Updater {
 
@@ -44,12 +42,22 @@ public class Updater {
             response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
             saveCategories(context, response.body().string(), "inventory");
 
+            downloadDefaultImages(context);
+
             updateFeatureFlags(context);
         } catch (Exception e) {
             Log.e("ZUP", e.getMessage(), e);
             throw e;
         }
         Log.d("UPDATE", "Update took " + (System.currentTimeMillis() - start) + " milliseconds");
+    }
+
+    private void downloadDefaultImages(Context context) throws Exception {
+        JSONObject json = new JSONObject(CharStreams.toString(new InputStreamReader(context.getResources().getAssets().open("defaults.json")))).getJSONObject("category");
+        ReportCategory category = ConstantesBase.GSON.fromJson(json.toString(), ReportCategory.class);
+        String density = ImageUtils.shouldDownloadRetinaIcon(context) ? "retina" : "default";
+        Defaults.setup(category, density.equals("retina"));
+        downloadImages(context, "default", density, category);
     }
 
     private void setupStatuses(Context context) throws Exception {

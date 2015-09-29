@@ -19,11 +19,11 @@ import br.com.lfdb.zup.domain.Solicitacao;
 import br.com.lfdb.zup.service.CategoriaRelatoService;
 import br.com.lfdb.zup.util.ImageUtils;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class SoliciteTipoNovoFragment extends BaseFragment {
 
-    @InjectView(R.id.categoriasContainer)
+    @Bind(R.id.categoriasContainer)
     LinearLayout categoriasContainer;
 
     @Override
@@ -35,7 +35,7 @@ public class SoliciteTipoNovoFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_solicite_tipo_novo, container, false);
-        ButterKnife.inject(this, view);
+        ButterKnife.bind(this, view);
 
         ((SoliciteActivity) getActivity()).exibirBarraInferior(false);
         ((SoliciteActivity) getActivity()).setInfo(R.string.selecione_a_categoria_subcategoria);
