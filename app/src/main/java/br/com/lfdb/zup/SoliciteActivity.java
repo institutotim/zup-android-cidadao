@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import br.com.lfdb.zup.fragment.SoliciteLocalFragment_;
 import br.com.lfdb.zup.util.*;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -38,7 +39,6 @@ import br.com.lfdb.zup.domain.Solicitacao;
 import br.com.lfdb.zup.domain.SolicitacaoListItem;
 import br.com.lfdb.zup.fragment.SoliciteDetalhesFragment;
 import br.com.lfdb.zup.fragment.SoliciteFotosFragment;
-import br.com.lfdb.zup.fragment.SoliciteLocalFragment;
 import br.com.lfdb.zup.fragment.SolicitePontoFragment;
 import br.com.lfdb.zup.fragment.SoliciteTipoNovoFragment;
 import br.com.lfdb.zup.service.FeatureService;
@@ -61,7 +61,7 @@ public class SoliciteActivity extends BaseActivity implements View.OnClickListen
 
     private SoliciteTipoNovoFragment tipoFragment;
     private SoliciteFotosFragment fotosFragment;
-    private SoliciteLocalFragment localFragment;
+    private SoliciteLocalFragment_ localFragment;
     private SolicitePontoFragment pontoFragment;
     private SoliciteDetalhesFragment detalhesFragment;
 
@@ -104,7 +104,6 @@ public class SoliciteActivity extends BaseActivity implements View.OnClickListen
         if (fotosFragment != null) {
             outState.putString("imagemTemporaria", fotosFragment.getImagemTemporaria());
         }
-
         outState.putBoolean("tipo", tipoFragment != null);
         outState.putBoolean("fotos", fotosFragment != null);
         outState.putBoolean("local", localFragment != null);
@@ -207,7 +206,7 @@ public class SoliciteActivity extends BaseActivity implements View.OnClickListen
                     }
                 } else {
                     if (localFragment == null) {
-                        localFragment = new SoliciteLocalFragment();
+                        localFragment = new SoliciteLocalFragment_();
                         localFragment.setMarcador(solicitacao.getCategoria().getMarcador());
                         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                         if (pontoFragment != null) {
@@ -367,7 +366,7 @@ public class SoliciteActivity extends BaseActivity implements View.OnClickListen
         }
 
         if (bundle.getBoolean("local")) {
-            localFragment = new SoliciteLocalFragment();
+            localFragment = new SoliciteLocalFragment_();
             localFragment.setArguments(params);
             ft.add(R.id.fragments_place, localFragment);
 
@@ -458,7 +457,7 @@ public class SoliciteActivity extends BaseActivity implements View.OnClickListen
                     if (solicitacao.getReferencia() != null && !solicitacao.getReferencia().trim().isEmpty()) {
                         item.setReference(solicitacao.getReferencia());
                     }
-                    setAddress(item, localFragment.getRawAddress(), localFragment.getRua(), localFragment.getNumero());
+                    setAddress(item, localFragment.getRawAddress(), localFragment.getStreet(), localFragment.getNumber());
                 } else {
                     item.setInventoryItemId(solicitacao.getIdItemInventario());
                     setAddress(item, pontoFragment.getAddress());
