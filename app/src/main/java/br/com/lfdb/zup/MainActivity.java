@@ -95,7 +95,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
 
         if (v.getId() == R.id.soliciteButton) {
-            startActivityForResult(new Intent(this, SoliciteActivity.class), SOLICITACAO_REQUEST_CODE);
+            startActivityForResult(new Intent(this, SoliciteActivity_.class), SOLICITACAO_REQUEST_CODE);
             return;
         }
 

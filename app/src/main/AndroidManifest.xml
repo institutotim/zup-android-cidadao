@@ -55,7 +55,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SoliciteActivity"
+            android:name=".SoliciteActivity_"
             android:screenOrientation="portrait" />
         <activity
             android:name=".SolicitacaoDetalheActivity"
