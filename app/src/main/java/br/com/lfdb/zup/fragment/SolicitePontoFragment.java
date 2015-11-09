@@ -26,10 +26,10 @@ import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.util.*;
 import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -44,8 +44,8 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnCameraChangeListener,
-        GoogleMap.OnMarkerClickListener, GooglePlayServicesClient.ConnectionCallbacks,
-        GooglePlayServicesClient.OnConnectionFailedListener, LocationListener, AdapterView.OnItemClickListener {
+        GoogleMap.OnMarkerClickListener, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, LocationListener, AdapterView.OnItemClickListener {
 
     private static final int MAX_ITEMS_PER_REQUEST = 30;
 
@@ -59,7 +59,6 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
     private AutoCompleteTextView autoCompView;
     private Timer timer;
 
-    private LocationClient mLocationClient;
     private boolean wasLocalized = false;
     private Request request;
     private CategoriaRelato categoria;
@@ -83,6 +82,8 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
     private MarkerRetriever markerRetriever = null;
     private AddressTask addressTask = null;
     private Address address;
+
+    private GoogleApiClient googleApiClient;
 
     @Override
     public void onHiddenChanged(boolean hidden) {
@@ -158,14 +159,14 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
     public void onResume() {
         super.onResume();
         setUpLocationClientIfNeeded();
-        mLocationClient.connect();
+        googleApiClient.connect();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (mLocationClient != null) {
-            mLocationClient.disconnect();
+        if (googleApiClient != null) {
+            googleApiClient.disconnect();
         }
     }
 
@@ -185,23 +186,24 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
     }
 
     private void setUpLocationClientIfNeeded() {
-        if (mLocationClient == null) {
-            mLocationClient = new LocationClient(
-                    getActivity(),
-                    this,  // ConnectionCallbacks
-                    this); // OnConnectionFailedListener
+        if (googleApiClient == null) {
+            googleApiClient = new GoogleApiClient.Builder(getActivity())
+                    .addApi(LocationServices.API)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .build();
         }
     }
 
     @Override
     public void onConnected(Bundle bundle) {
         if (!wasLocalized) {
-            mLocationClient.requestLocationUpdates(REQUEST, this);
+            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, REQUEST, this);
         }
     }
 
     @Override
-    public void onDisconnected() {
+    public void onConnectionSuspended(int i) {
 
     }
 
@@ -223,7 +225,7 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
                 location.getLongitude())).zoom(18.5f).build();
         CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
         map.animateCamera(update);
-        mLocationClient.removeLocationUpdates(this);
+        LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
         wasLocalized = true;
     }
 

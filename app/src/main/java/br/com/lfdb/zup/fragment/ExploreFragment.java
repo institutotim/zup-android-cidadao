@@ -1,9 +1,11 @@
 package br.com.lfdb.zup.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +16,8 @@ import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import br.com.lfdb.zup.*;
 import br.com.lfdb.zup.api.model.Cluster;
 import br.com.lfdb.zup.base.BaseFragment;
@@ -25,18 +29,24 @@ import br.com.lfdb.zup.service.CategoriaRelatoService;
 import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.util.*;
 import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
+
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.*;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+
 import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -45,42 +55,82 @@ import java.io.InterruptedIOException;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+// http://stackoverflow.com/questions/29314457/error-with-google-play-service-client
+
 public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWindowClickListener,
-        GoogleMap.OnCameraChangeListener, AdapterView.OnItemClickListener, GooglePlayServicesClient.ConnectionCallbacks,
-        GooglePlayServicesClient.OnConnectionFailedListener, LocationListener, View.OnClickListener, GoogleMap.OnMarkerClickListener {
+        GoogleMap.OnCameraChangeListener, AdapterView.OnItemClickListener, LocationListener,
+        View.OnClickListener, GoogleMap.OnMarkerClickListener, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, LocationSource, GoogleMap.OnMyLocationButtonClickListener {
 
     private double userLongitude;
     private double userLatitude;
-
     private boolean updateCameraUser = true;
-
     private static View view;
-
     private boolean wasLocalized = false;
-
     private float zoom = 12f;
+
+    private static final long ONE_MIN = 1000 * 60;
+    private static final long TWO_MIN = ONE_MIN * 2;
+    private static final long FIVE_MIN = ONE_MIN * 5;
+    private static final long POLLING_FREQ = 1000 * 30;
+    private static final long FASTEST_UPDATE_FREQ = 1000 * 5;
+    private static final float MIN_ACCURACY = 25.0f;
+    private static final float MIN_LAST_READ_ACCURACY = 500.0f;
+
+    OnLocationChangedListener mMapLocationListener = null;
+    private GoogleApiClient googleApiClient;
+    private LocationRequest locationRequest;
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
 
     @Override
     public void onConnected(Bundle bundle) {
         if (!wasLocalized) {
-            mLocationClient.requestLocationUpdates(REQUEST, this);
+            createLocationRequest();
+            startLocationUpdates();
+            showMyLocation();
+        }
+    }
+
+    protected void startLocationUpdates() {
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                googleApiClient, locationRequest, this);
+    }
+
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil
+                .isGooglePlayServicesAvailable(getActivity());
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, getActivity(),
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Toast.makeText(getActivity(), getString(R.string.no_location_detected), Toast.LENGTH_LONG).show();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    public void showMyLocation() {
+        if (googleApiClient.isConnected()) {
+            String msg = "Location = "
+                    + LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+            Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
-    public void onDisconnected() {
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
-    }
-
-    @Override
     public void onLocationChanged(Location location) {
+        if (mMapLocationListener != null) {
+            mMapLocationListener.onLocationChanged(location);
+        }
         userLatitude = location.getLatitude();
         userLongitude = location.getLongitude();
-
         if (updateCameraUser) {
             CameraPosition position = new CameraPosition.Builder().target(new LatLng(location.getLatitude(),
                     location.getLongitude())).zoom(15).build();
@@ -91,7 +141,30 @@ public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWin
         }
     }
 
-    @Override
+    private Location bestLastKnownLocation(float minAccuracy, long minTime) {
+        Location bestResult = null;
+        float bestAccuracy = Float.MAX_VALUE;
+        long bestTime = Long.MIN_VALUE;
+        Location mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation
+                (googleApiClient);
+        if (mCurrentLocation != null) {
+            float accuracy = mCurrentLocation.getAccuracy();
+            long time = mCurrentLocation.getTime();
+            if (accuracy < bestAccuracy) {
+                bestResult = mCurrentLocation;
+                bestAccuracy = accuracy;
+                bestTime = time;
+            }
+        }
+        if (bestAccuracy > minAccuracy || bestTime < minTime) {
+            return null;
+        }
+        else {
+            return bestResult;
+        }
+    }
+
+   @Override
     public void onClick(View v) {
         if (v.getId() == R.id.locationButton) {
             CameraPosition position = new CameraPosition.Builder().target(new LatLng(userLatitude,
@@ -116,16 +189,40 @@ public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWin
         return "Explore";
     }
 
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void activate(OnLocationChangedListener onLocationChangedListener) {
+        mMapLocationListener = onLocationChangedListener;
+    }
+
+    @Override
+    public void deactivate() {
+        mMapLocationListener = null;
+    }
+
+    @Override
+    public boolean onMyLocationButtonClick() {
+        Toast.makeText(getActivity(), "MyLocation button clicked", Toast.LENGTH_SHORT).show();
+        // Return false so that we don't consume the event and the default behavior still occurs
+        // (the camera animates to the user's current position).
+        return false;
+    }
+
     private class Requisicao {
         double latitude, longitude;
         long raio;
     }
 
-    private LocationClient mLocationClient;
-    private static final LocationRequest REQUEST = LocationRequest.create()
-            .setInterval(5000)         // 5 seconds
-            .setFastestInterval(16)    // 16ms = 60fps
-            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    void createLocationRequest() {
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(POLLING_FREQ);
+        locationRequest.setFastestInterval(FASTEST_UPDATE_FREQ);
+    }
 
     private static final int MAX_ITEMS_PER_REQUEST = 50;
 
@@ -145,15 +242,23 @@ public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWin
     private long raio = 0l;
 
     private ProgressBar progressBar;
+    private LocationManager locationManager;
 
     private MarkerRetriever markerRetriever = null;
 
-    private void setUpLocationClientIfNeeded() {
-        if (mLocationClient == null) {
-            mLocationClient = new LocationClient(
-                    getActivity(),
-                    this,  // ConnectionCallbacks
-                    this); // OnConnectionFailedListener
+    protected synchronized void buildGoogleApiClient() {
+        try {
+            locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            if (gpsEnabled) {
+                googleApiClient = new GoogleApiClient.Builder(getActivity())
+                        .addConnectionCallbacks(this)
+                        .addOnConnectionFailedListener(this)
+                        .addApi(LocationServices.API)
+                        .build();
+            }
+        } catch (Exception ex) {
+            Log.e("TAG", "GPS Error : " + ex.getLocalizedMessage());
         }
     }
 
@@ -164,7 +269,9 @@ public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWin
             if (parent != null)
                 parent.removeView(view);
         }
-
+        map.setLocationSource(this);
+        map.setMyLocationEnabled(true);
+        map.setOnMyLocationButtonClickListener(this);
         try {
             view = inflater.inflate(R.layout.fragment_explore, container, false);
         } catch (InflateException e) {
@@ -229,36 +336,38 @@ public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWin
         });
         view.findViewById(R.id.clean).setOnClickListener(v -> autoCompView.setText(""));
 
-        view.findViewById(R.id.locationButton).setOnClickListener(this);
-
-        return view;
+        view.findViewById(R.id.locationButton).setOnClickListener(this);        return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        setUpLocationClientIfNeeded();
-        mLocationClient.connect();
+        if (checkPlayServices()) {
+            buildGoogleApiClient();
+        }
+        if (googleApiClient != null) {
+            googleApiClient.connect();
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (mLocationClient != null) {
-            mLocationClient.disconnect();
+        if (googleApiClient != null) {
+            googleApiClient.disconnect();
         }
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setUpLocationClientIfNeeded();
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
             new Timer().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             new Timer().execute();
         }
+        buildGoogleApiClient();
     }
 
     @Override

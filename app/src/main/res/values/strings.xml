@@ -125,6 +125,9 @@
     <string name="old_password">Senha atual</string>
     <string name="new_password">Nova senha</string>
     <string name="city">Cidade</string>
+    <string name="screen_name_select_local">Seleção de Local (Novo Relato)</string>
+    <string name="ok">Ok</string>
+    <string name="no_location_detected">Localização não encontrada</string>
 
     <string-array name="foto_menu">
         <item>Escolher foto do álbum</item>
