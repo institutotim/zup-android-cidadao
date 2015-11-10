@@ -101,8 +101,8 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
   @Override public void onClick(View v) {
     if (listaFotos != null && listaFotos.size() == 3) {
       new AlertDialog.Builder(getActivity()).setMessage(
-          "É possível adicionar apenas 3 fotos para um relato")
-          .setNeutralButton("Ok", (dialog, which) -> dialog.dismiss())
+          getString(R.string.only_three_photos))
+          .setNeutralButton(getString(R.string.ok), (dialog, which) -> dialog.dismiss())
           .show();
       return;
     }
@@ -164,9 +164,7 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
           temp = null;
           return;
         }
-
         removerFoto(temp);
-
         ((SoliciteActivity) getActivity()).adicionarFoto(path);
         ((SoliciteActivity) getActivity()).assertFragmentVisibility();
         adicionarFoto(path);
@@ -198,7 +196,6 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
         break;
     }
   }
-
   public String getImagemTemporaria() {
     return imagemTemporaria != null ? imagemTemporaria.getPath() : "";
   }

@@ -267,9 +267,7 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
   @UiThread public void setInfo(int string) {
     instrucoes.setText(string);
     instrucoes.setTypeface(FontUtils.getBold(this));
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-      instrucoes.setText(instrucoes.getText().toString().toUpperCase(Locale.US));
-    }
+    instrucoes.setText(instrucoes.getText().toString().toUpperCase(Locale.US));
   }
 
   public void adicionarFoto(String foto) {
@@ -314,8 +312,8 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
   private void enviarSolicitacao() {
     if (!NetworkUtils.isInternetPresent(this)) {
       new AlertDialog.Builder(this).setMessage(
-          "Sua conexão com a Internet encontra-se indisponível. Verifique a conexão e tente novamente")
-          .setNeutralButton("OK", (dialog, which) -> dialog.dismiss())
+          getString(R.string.no_connection))
+          .setNeutralButton(getString(R.string.ok), (dialog, which) -> dialog.dismiss())
           .show();
       return;
     }
@@ -516,15 +514,17 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
   }
 
   @UiThread void showAlertDialog(ReportItemRequest item, ReportItem response) {
-    new AlertDialog.Builder(SoliciteActivity.this).setTitle("Solicitação enviada")
-        .setMessage("Você será avisado quando sua solicitação for atualizada\n" +
-            String.format("Anote seu protocolo: %s", item.getProtocol()) +
-            (FeatureService.getInstance(SoliciteActivity.this)
-                .isShowResolutionTimeToClientsEnabled() &&
-                solicitacao.getCategoria().isTempoResolucaoAtivado() &&
-                !solicitacao.getCategoria().isTempoResolucaoPrivado() ? String.format(
-                "\nPrazo de solução: %s",
-                DateUtils.getString(item.getCategory().getResolutionTime())) : ""))
+      StringBuilder message = new StringBuilder();
+      message.append(getString(R.string.dialog_info));
+      message.append(getString(R.string.line_separator));
+      message.append(getString(R.string.note_protocol));
+      message.append(item.getProtocol());
+              (FeatureService.getInstance(SoliciteActivity.this).isShowResolutionTimeToClientsEnabled()
+                      && solicitacao.getCategoria().isTempoResolucaoAtivado()
+                      && !solicitacao.getCategoria().isTempoResolucaoPrivado()
+                      ? String.format("\nPrazo de solução: %s", DateUtils.getString(item.getCategory().getResolutionTime())) : "")
+    new AlertDialog.Builder(SoliciteActivity.this).setTitle(getString(R.string.request_sent))
+        .setMessage()
         .setNeutralButton("OK", (dialog1, which) -> {
           Intent i = new Intent(SoliciteActivity.this, SolicitacaoDetalheActivity.class);
           i.putExtra("solicitacao", response.compat(SoliciteActivity.this));
@@ -536,103 +536,3 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
         .show();
   }
 }
-
-  /*public class Tasker extends AsyncTask<Void, Void, ReportItem> {
-
-    private ProgressDialog dialog;
-
-    @Override protected void onPreExecute() {
-      dialog = new ProgressDialog(SoliciteActivity.this);
-      dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-      dialog.setIndeterminate(true);
-      dialog.setMessage("Enviando solicitação...");
-      dialog.setCancelable(false);
-      dialog.show();
-    }
-
-    @Override protected ReportItem doInBackground(Void... params) {
-      try {
-        ReportItemRequest item = new ReportItemRequest();
-        item.setDescription(solicitacao.getComentario().trim());
-
-        if (solicitacao.getCategoria().getCategoriasInventario().isEmpty()) {
-          item.setLatitude(String.valueOf(solicitacao.getLatitude()));
-          item.setLongitude(String.valueOf(solicitacao.getLongitude()));
-          if (solicitacao.getReferencia() != null && !solicitacao.getReferencia()
-              .trim()
-              .isEmpty()) {
-            item.setReference(solicitacao.getReferencia());
-          }
-          setAddress(item, localFragment.getRawAddress(), localFragment.getStreet(),
-              localFragment.getNumber());
-        } else {
-          item.setInventoryItemId(solicitacao.getIdItemInventario());
-          setAddress(item, pontoFragment.getAddress());
-          solicitacao.setLatitudeLongitude(pontoFragment.getLatitude(),
-              pontoFragment.getLongitude());
-        }
-        item.setCategoryId(solicitacao.getCategoria().getId());
-
-        List<String> images = new ArrayList<>();
-        for (String foto : solicitacao.getFotos()) {
-          images.add(encodeBase64(foto));
-        }
-        item.setImages(images);
-
-        if (!isCancelled()) {
-          try {
-            ReportItem response = ZupApi.get(SoliciteActivity.this)
-                .createReport(item.getCategoryId(), item)
-                .getReport();
-            if (detalhesFragment.getPublicar()) {
-              SocialUtils.post(SoliciteActivity.this,
-                  "Estou colaborando com a minha cidade, reportando problemas e solicitações.\n" +
-                      Constantes.WEBSITE_URL + "/" + item.getId() + "\n#ZeladoriaUrbana");
-            }
-            return response;
-          } catch (Throwable error) {
-            Log.e("ZUP", error.toString());
-
-            if (error instanceof RetrofitError) {
-              RetrofitError retrofitError = (RetrofitError) error;
-              if (retrofitError.getResponse().getStatus() == 401) {
-                AuthHelper.redirectSessionExpired(getApplicationContext());
-              }
-            }
-            return null;
-          }
-        }
-      } catch (Exception e) {
-        Log.e("ZUP", e.getMessage(), e);
-      }
-      return null;
-    }
-
-    @Override protected void onPostExecute(ReportItem result) {
-      dialog.dismiss();
-      if (result != null) {
-        new AlertDialog.Builder(SoliciteActivity.this).setTitle("Solicitação enviada")
-            .setMessage("Você será avisado quando sua solicitação for atualizada\n" +
-                String.format("Anote seu protocolo: %s", result.getProtocol()) +
-                (FeatureService.getInstance(SoliciteActivity.this)
-                    .isShowResolutionTimeToClientsEnabled() &&
-                    solicitacao.getCategoria().isTempoResolucaoAtivado() &&
-                    !solicitacao.getCategoria().isTempoResolucaoPrivado() ? String.format(
-                    "\nPrazo de solução: %s",
-                    DateUtils.getString(result.getCategory().getResolutionTime())) : ""))
-            .setNeutralButton("OK", (dialog1, which) -> {
-              Intent i = new Intent(SoliciteActivity.this, SolicitacaoDetalheActivity.class);
-              i.putExtra("solicitacao", result.compat(SoliciteActivity.this));
-              startActivity(i);
-
-              setResult(Activity.RESULT_OK);
-              finish();
-            })
-            .setCancelable(false)
-            .show();
-      } else {
-        Toast.makeText(SoliciteActivity.this, "Falha no envio da solicitação", Toast.LENGTH_LONG)
-            .show();
-      }
-    }
-  }*/
