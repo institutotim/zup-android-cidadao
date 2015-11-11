@@ -23,9 +23,8 @@ apply plugin: 'me.tatarka.retrolambda'
 def AAVersion = '3.3'
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 21
     buildToolsVersion '23.0.0'
-    useLibrary  'org.apache.http.legacy'
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/NOTICE'
@@ -35,7 +34,7 @@ android {
     }
     defaultConfig {
         minSdkVersion 10
-        targetSdkVersion 23
+        targetSdkVersion 21
         versionCode 10004
         versionName '1.0.4.2'
         multiDexEnabled = true

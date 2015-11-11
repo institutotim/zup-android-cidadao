@@ -134,6 +134,7 @@
     <string name="dialog_info">Você será avisado quando sua solicitação for atualizada</string>
     <string name="line_separator">\\n</string>
     <string name="note_protocol">Anote seu protocolo:</string>
+    <string name="solution_due">Prazo de solução:</string>
 
     <string-array name="foto_menu">
         <item>Escolher foto do álbum</item>

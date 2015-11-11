@@ -10,85 +10,171 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.*;
+import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import br.com.lfdb.zup.*;
-import br.com.lfdb.zup.api.model.Cluster;
-import br.com.lfdb.zup.base.BaseFragment;
-import br.com.lfdb.zup.core.Constantes;
-import br.com.lfdb.zup.core.ConstantesBase;
-import br.com.lfdb.zup.domain.*;
-import br.com.lfdb.zup.service.CategoriaInventarioService;
-import br.com.lfdb.zup.service.CategoriaRelatoService;
-import br.com.lfdb.zup.service.LoginService;
-import br.com.lfdb.zup.util.*;
-import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
-
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.*;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Background;
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.UiThread;
+import org.androidannotations.annotations.ViewById;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.InterruptedIOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-// http://stackoverflow.com/questions/29314457/error-with-google-play-service-client
+import br.com.lfdb.zup.DetalheMapaActivity;
+import br.com.lfdb.zup.FiltroExploreNovoActivity;
+import br.com.lfdb.zup.MainActivity;
+import br.com.lfdb.zup.R;
+import br.com.lfdb.zup.SolicitacaoDetalheActivity;
+import br.com.lfdb.zup.api.model.Cluster;
+import br.com.lfdb.zup.base.BaseFragment;
+import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.core.ConstantesBase;
+import br.com.lfdb.zup.domain.BuscaExplore;
+import br.com.lfdb.zup.domain.CategoriaInventario;
+import br.com.lfdb.zup.domain.CategoriaRelato;
+import br.com.lfdb.zup.domain.ItemInventario;
+import br.com.lfdb.zup.domain.ItemRelato;
+import br.com.lfdb.zup.domain.Place;
+import br.com.lfdb.zup.domain.SolicitacaoListItem;
+import br.com.lfdb.zup.service.CategoriaInventarioService;
+import br.com.lfdb.zup.service.CategoriaRelatoService;
+import br.com.lfdb.zup.service.LoginService;
+import br.com.lfdb.zup.util.AuthHelper;
+import br.com.lfdb.zup.util.BitmapUtils;
+import br.com.lfdb.zup.util.DateUtils;
+import br.com.lfdb.zup.util.FontUtils;
+import br.com.lfdb.zup.util.GeoUtils;
+import br.com.lfdb.zup.util.MapUtils;
+import br.com.lfdb.zup.util.PreferenceUtils;
+import br.com.lfdb.zup.util.ViewUtils;
+import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
 
+@EFragment(R.layout.fragment_explore)
 public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnCameraChangeListener, AdapterView.OnItemClickListener, LocationListener,
-        View.OnClickListener, GoogleMap.OnMarkerClickListener, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationSource, GoogleMap.OnMyLocationButtonClickListener {
+        GoogleMap.OnMarkerClickListener, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
+
+    @ViewById
+    RelativeLayout header;
+
+    @ViewById
+    ImageView logo_header;
+
+    @ViewById
+    TextView botaoFiltrar;
+
+    @ViewById
+    ProgressBar loading;
+
+    @ViewById
+    ImageView clean;
+
+    @ViewById
+    ImageView locationButton;
+
+    @ViewById
+    AutoCompleteTextView autocomplete;
 
     private double userLongitude;
     private double userLatitude;
     private boolean updateCameraUser = true;
-    private static View view;
     private boolean wasLocalized = false;
     private float zoom = 12f;
-
-    private static final long ONE_MIN = 1000 * 60;
-    private static final long TWO_MIN = ONE_MIN * 2;
-    private static final long FIVE_MIN = ONE_MIN * 5;
     private static final long POLLING_FREQ = 1000 * 30;
     private static final long FASTEST_UPDATE_FREQ = 1000 * 5;
-    private static final float MIN_ACCURACY = 25.0f;
-    private static final float MIN_LAST_READ_ACCURACY = 500.0f;
-
-    OnLocationChangedListener mMapLocationListener = null;
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
+    private static final int MAX_ITEMS_PER_REQUEST = 50;
+    private Requisicao requisicao = null;
+    private GoogleMap map;
+    private BuscaExplore busca;
+    public static double latitude = 0.0, longitude = 0.0;
+    private Set<Object> itens = new HashSet<>();
+    private Map<Marker, Object> marcadores = new HashMap<>();
+    private Marker pontoBusca;
+    private long raio = 0l;
+    private LocationManager locationManager;
+    private MarkerRetriever markerRetriever = null;
 
     @Override
     public void onConnected(Bundle bundle) {
         if (!wasLocalized) {
             createLocationRequest();
             startLocationUpdates();
-            showMyLocation();
         }
+    }
+
+    private class Requisicao {
+        double latitude, longitude;
+        long raio;
+    }
+
+    void createLocationRequest() {
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(POLLING_FREQ);
+        locationRequest.setFastestInterval(FASTEST_UPDATE_FREQ);
+    }
+
+    @Click
+    void botaoFiltrar() {
+        Intent intent = new Intent(getActivity(), FiltroExploreNovoActivity.class);
+        intent.putExtra("busca", busca);
+        getActivity().startActivityForResult(intent, MainActivity.FILTRO_CODE);
+    }
+
+    @Click
+    void clean() {
+        autocomplete.setText("");
+    }
+
+    @Click
+    void locationButton() {
+        CameraPosition position = new CameraPosition.Builder().target(new LatLng(userLatitude,
+                userLongitude)).zoom(15).build();
+        CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+        map.animateCamera(update);
     }
 
     protected void startLocationUpdates() {
@@ -116,19 +202,8 @@ public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWin
 
     }
 
-    public void showMyLocation() {
-        if (googleApiClient.isConnected()) {
-            String msg = "Location = "
-                    + LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-            Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
-        }
-    }
-
     @Override
     public void onLocationChanged(Location location) {
-        if (mMapLocationListener != null) {
-            mMapLocationListener.onLocationChanged(location);
-        }
         userLatitude = location.getLatitude();
         userLongitude = location.getLongitude();
         if (updateCameraUser) {
@@ -138,39 +213,6 @@ public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWin
             map.animateCamera(update);
             updateCameraUser = false;
             wasLocalized = true;
-        }
-    }
-
-    private Location bestLastKnownLocation(float minAccuracy, long minTime) {
-        Location bestResult = null;
-        float bestAccuracy = Float.MAX_VALUE;
-        long bestTime = Long.MIN_VALUE;
-        Location mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation
-                (googleApiClient);
-        if (mCurrentLocation != null) {
-            float accuracy = mCurrentLocation.getAccuracy();
-            long time = mCurrentLocation.getTime();
-            if (accuracy < bestAccuracy) {
-                bestResult = mCurrentLocation;
-                bestAccuracy = accuracy;
-                bestTime = time;
-            }
-        }
-        if (bestAccuracy > minAccuracy || bestTime < minTime) {
-            return null;
-        }
-        else {
-            return bestResult;
-        }
-    }
-
-   @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.locationButton) {
-            CameraPosition position = new CameraPosition.Builder().target(new LatLng(userLatitude,
-                    userLongitude)).zoom(15).build();
-            CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
-            map.animateCamera(update);
         }
     }
 
@@ -186,65 +228,13 @@ public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWin
 
     @Override
     protected String getScreenName() {
-        return "Explore";
+        return getString(R.string.explore);
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
     }
-
-    @Override
-    public void activate(OnLocationChangedListener onLocationChangedListener) {
-        mMapLocationListener = onLocationChangedListener;
-    }
-
-    @Override
-    public void deactivate() {
-        mMapLocationListener = null;
-    }
-
-    @Override
-    public boolean onMyLocationButtonClick() {
-        Toast.makeText(getActivity(), "MyLocation button clicked", Toast.LENGTH_SHORT).show();
-        // Return false so that we don't consume the event and the default behavior still occurs
-        // (the camera animates to the user's current position).
-        return false;
-    }
-
-    private class Requisicao {
-        double latitude, longitude;
-        long raio;
-    }
-
-    void createLocationRequest() {
-        locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(POLLING_FREQ);
-        locationRequest.setFastestInterval(FASTEST_UPDATE_FREQ);
-    }
-
-    private static final int MAX_ITEMS_PER_REQUEST = 50;
-
-    private Requisicao requisicao = null;
-
-    private AutoCompleteTextView autoCompView;
-
-    private GoogleMap map;
-    //private static View view;
-    private BuscaExplore busca;
-    public static double latitude = 0.0, longitude = 0.0;
-
-    private Set<Object> itens = new HashSet<>();
-    private Map<Marker, Object> marcadores = new HashMap<>();
-
-    private Marker pontoBusca;
-    private long raio = 0l;
-
-    private ProgressBar progressBar;
-    private LocationManager locationManager;
-
-    private MarkerRetriever markerRetriever = null;
 
     protected synchronized void buildGoogleApiClient() {
         try {
@@ -262,38 +252,22 @@ public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWin
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        if (view != null) {
-            ViewGroup parent = (ViewGroup) view.getParent();
-            if (parent != null)
-                parent.removeView(view);
-        }
-        map.setLocationSource(this);
-        map.setMyLocationEnabled(true);
-        map.setOnMyLocationButtonClickListener(this);
-        try {
-            view = inflater.inflate(R.layout.fragment_explore, container, false);
-        } catch (InflateException e) {
-            Log.w("ZUP", e.getMessage());
-        }
+    @UiThread
+    void fontFace() {
+        botaoFiltrar.setTypeface(FontUtils.getRegular(getActivity()));
+        autocomplete.setTypeface(FontUtils.getRegular(getActivity()));
 
+    }
+
+    @AfterViews
+    void init() {
+        fontFace();
         SupportMapFragment fragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         map = fragment.getMap();
-
         boolean showLogo = getResources().getBoolean(R.bool.show_logo_header);
-        if (showLogo) view.findViewById(R.id.logo_header).setVisibility(View.VISIBLE);
-
-        TextView botaoFiltrar = (TextView) view.findViewById(R.id.botaoFiltrar);
-        botaoFiltrar.setTypeface(FontUtils.getRegular(getActivity()));
-        botaoFiltrar.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), FiltroExploreNovoActivity.class);
-            intent.putExtra("busca", busca);
-            getActivity().startActivityForResult(intent, MainActivity.FILTRO_CODE);
-        });
-
-        progressBar = (ProgressBar) view.findViewById(R.id.loading);
-
+        if (showLogo){
+            logo_header.setVisibility(View.VISIBLE);
+        }
         busca = PreferenceUtils.obterBuscaExplore(getActivity());
         if (busca == null) {
             busca = new BuscaExplore();
@@ -305,38 +279,36 @@ public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWin
                 }
             }
         }
-
-        if (map != null) {
-            map.setMyLocationEnabled(true);
-            map.getUiSettings().setMyLocationButtonEnabled(false);
-            map.getUiSettings().setZoomControlsEnabled(false);
-            map.setOnInfoWindowClickListener(this);
-            map.setOnCameraChangeListener(this);
-            map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-            map.setOnMarkerClickListener(this);
-
-            CameraPosition p = new CameraPosition.Builder().target(new LatLng(Constantes.INITIAL_LATITUDE,
-                    Constantes.INITIAL_LONGITUDE)).zoom(12).build();
-            CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
-            map.moveCamera(update);
-        }
-
-        autoCompView = (AutoCompleteTextView) view.findViewById(R.id.autocomplete);
-        autoCompView.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, ExploreFragment.class));
-        autoCompView.setTypeface(FontUtils.getRegular(getActivity()));
-        autoCompView.setOnItemClickListener(this);
-        autoCompView.setOnEditorActionListener((v, actionId, event) -> {
+        mapSettings();
+        autocomplete.setAdapter(new PlacesAutoCompleteAdapter(getActivity(),
+                R.layout.autocomplete_list_item,
+                ExploreFragment.class));
+        autocomplete.setOnEditorActionListener((v, actionId, event) -> {
             boolean handled = false;
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                realizarBuscaAutocomplete(v.getText().toString());
+                searchTask(v.getText().toString());
                 ViewUtils.hideKeyboard(getActivity(), v);
                 handled = true;
             }
             return handled;
         });
-        view.findViewById(R.id.clean).setOnClickListener(v -> autoCompView.setText(""));
+    }
 
-        view.findViewById(R.id.locationButton).setOnClickListener(this);        return view;
+    void mapSettings() {
+        if (map == null) {
+            return;
+        }
+        map.setMyLocationEnabled(true);
+        map.getUiSettings().setMyLocationButtonEnabled(false);
+        map.getUiSettings().setZoomControlsEnabled(false);
+        map.setOnInfoWindowClickListener(this);
+        map.setOnCameraChangeListener(this);
+        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        map.setOnMarkerClickListener(this);
+        CameraPosition p = new CameraPosition.Builder().target(new LatLng(Constantes.INITIAL_LATITUDE,
+                Constantes.INITIAL_LONGITUDE)).zoom(12).build();
+        CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
+        map.moveCamera(update);
     }
 
     @Override
@@ -362,11 +334,7 @@ public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWin
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
-            new Timer().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        } else {
-            new Timer().execute();
-        }
+        timerTask();
         buildGoogleApiClient();
     }
 
@@ -507,24 +475,8 @@ public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWin
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        realizarBuscaAutocomplete((Place) adapterView.getItemAtPosition(i));
-        ViewUtils.hideKeyboard(getActivity(), autoCompView);
-    }
-
-    private void realizarBuscaAutocomplete(Place place) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
-            new GeocoderTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, place);
-        } else {
-            new GeocoderTask().execute(place);
-        }
-    }
-
-    private void realizarBuscaAutocomplete(String query) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
-            new SearchTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, query);
-        } else {
-            new SearchTask().execute(query);
-        }
+        geocoderTask((Place) adapterView.getItemAtPosition(i));
+        ViewUtils.hideKeyboard(getActivity(), autocomplete);
     }
 
     @Override
@@ -590,42 +542,41 @@ public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWin
         this.requisicao = requisicao;
     }
 
-    private class Timer extends AsyncTask<Void, Void, Void> {
-
-        private boolean run = true;
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            while (run) {
-                try {
-                    Thread.sleep(400);
-                    if (requisicao != null) {
-                        if (markerRetriever != null) {
-                            markerRetriever.cancel(true);
-                        }
-
-                        markerRetriever = new MarkerRetriever(requisicao);
-                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
-                            markerRetriever.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                        } else {
-                            markerRetriever.execute();
-                        }
-                        requisicao = null;
+    @Background
+    void timerTask() {
+        boolean run = true;
+        while (run) {
+            try {
+                Thread.sleep(400);
+                if (requisicao != null) {
+                    if (markerRetriever != null) {
+                        markerRetriever.cancel(true);
                     }
-                } catch (Exception e) {
-                    Log.e("ZUP", e.getMessage(), e);
+
+                    markerRetriever = new MarkerRetriever(requisicao);
+                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+                        markerRetriever.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    } else {
+                        markerRetriever.execute();
+                    }
+                    requisicao = null;
                 }
+            } catch (Exception e) {
+                Log.e("ZUP", e.getMessage(), e);
             }
-            return null;
         }
     }
 
     private boolean estaNoFiltro(CategoriaRelato categoria) {
-        return busca != null && busca.getIdsCategoriaRelato() != null && busca.getIdsCategoriaRelato().contains(categoria.getId());
+        return busca != null
+                && busca.getIdsCategoriaRelato() != null
+                && busca.getIdsCategoriaRelato().contains(categoria.getId());
     }
 
     private boolean estaNoFiltro(CategoriaInventario categoria) {
-        return busca != null && busca.getIdsCategoriaInventario() != null && busca.getIdsCategoriaInventario().contains(categoria.getId());
+        return busca != null
+                && busca.getIdsCategoriaInventario() != null
+                && busca.getIdsCategoriaInventario().contains(categoria.getId());
     }
 
     private class MarkerRetriever extends AsyncTask<Void, Object, Void> {
@@ -642,17 +593,17 @@ public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWin
 
         @Override
         protected void onPreExecute() {
-            progressBar.post(() -> progressBar.setVisibility(View.VISIBLE));
+            loading.post(() -> loading.setVisibility(View.VISIBLE));
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            progressBar.post(() -> progressBar.setVisibility(View.GONE));
+            loading.post(() -> loading.setVisibility(View.GONE));
         }
 
         @Override
         protected void onCancelled() {
-            progressBar.post(() -> progressBar.setVisibility(View.GONE));
+            loading.post(() -> loading.setVisibility(View.GONE));
         }
 
         @Override
@@ -869,67 +820,51 @@ public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWin
         return "&clusterize=true&zoom=" + (int) zoom;
     }
 
-    private class GeocoderTask extends AsyncTask<Place, Void, Address> {
-
-        @Override
-        protected Address doInBackground(Place... params) {
-            try {
-                return GeoUtils.getFromPlace(params[0]);
-            } catch (Exception e) {
-                Log.e("ZUP", e.getMessage(), e);
-                return null;
+    @Background
+    void geocoderTask(Place place) {
+        try {
+            Address addr = GeoUtils.getFromPlace(place);
+            if (addr == null) {
+                return;
             }
-        }
-
-        @Override
-        protected void onPostExecute(Address addr) {
-            if (addr != null) {
-                if (pontoBusca != null) {
-                    pontoBusca.remove();
-                }
-
-                pontoBusca = map.addMarker(new MarkerOptions()
-                        .position(new LatLng(addr.getLatitude(), addr.getLongitude()))
-                        .icon(BitmapDescriptorFactory.defaultMarker()));
-
-                CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
-                        addr.getLongitude())).zoom(15).build();
-                CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
-                map.animateCamera(update);
+            if (pontoBusca != null) {
+                pontoBusca.remove();
             }
+            pontoBusca = map.addMarker(new MarkerOptions()
+                    .position(new LatLng(addr.getLatitude(), addr.getLongitude()))
+                    .icon(BitmapDescriptorFactory.defaultMarker()));
+
+            CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
+                    addr.getLongitude())).zoom(15).build();
+            CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
+            map.animateCamera(update);
+        } catch (Exception e) {
+            Log.e("ZUP", e.getMessage(), e);
         }
     }
 
-    private class SearchTask extends AsyncTask<String, Void, Address> {
-
-        @Override
-        protected Address doInBackground(String... params) {
-            try {
-                return GeoUtils.search(params[0], latitude, longitude);
-            } catch (Exception e) {
-                Log.e("ZUP", e.getMessage(), e);
-                return null;
+    @Background
+    void searchTask(String param) {
+        try {
+            Address addr = GeoUtils.search(param, latitude, longitude);
+            if (addr == null) {
+                return;
             }
-        }
-
-        @Override
-        protected void onPostExecute(Address addr) {
-            if (addr != null) {
-                if (pontoBusca != null) {
-                    pontoBusca.remove();
-                }
-
-                pontoBusca = map.addMarker(new MarkerOptions()
-                        .position(new LatLng(addr.getLatitude(), addr.getLongitude()))
-                        .icon(BitmapDescriptorFactory.defaultMarker()));
-
-                CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
-                        addr.getLongitude())).zoom(15).build();
-                CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
-                map.animateCamera(update);
+            if (pontoBusca != null) {
+                pontoBusca.remove();
             }
+            pontoBusca = map.addMarker(new MarkerOptions()
+                    .position(new LatLng(addr.getLatitude(), addr.getLongitude()))
+                    .icon(BitmapDescriptorFactory.defaultMarker()));
+            CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
+                    addr.getLongitude())).zoom(15).build();
+            CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
+            map.animateCamera(update);
+        } catch (Exception e) {
+            Log.e("ZUP", e.getMessage(), e);
         }
     }
+
 
     public Marker getKeyFromValue(Map<Marker, Object> map, Object value) {
         for (Marker m : map.keySet()) {

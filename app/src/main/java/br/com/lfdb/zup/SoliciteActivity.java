@@ -519,13 +519,10 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
       message.append(getString(R.string.line_separator));
       message.append(getString(R.string.note_protocol));
       message.append(item.getProtocol());
-              (FeatureService.getInstance(SoliciteActivity.this).isShowResolutionTimeToClientsEnabled()
-                      && solicitacao.getCategoria().isTempoResolucaoAtivado()
-                      && !solicitacao.getCategoria().isTempoResolucaoPrivado()
-                      ? String.format("\nPrazo de solução: %s", DateUtils.getString(item.getCategory().getResolutionTime())) : "")
-    new AlertDialog.Builder(SoliciteActivity.this).setTitle(getString(R.string.request_sent))
-        .setMessage()
-        .setNeutralButton("OK", (dialog1, which) -> {
+      message.append(getSolutionDue(message, item));
+      new AlertDialog.Builder(SoliciteActivity.this).setTitle(getString(R.string.request_sent))
+        .setMessage(message)
+        .setNeutralButton(getString(R.string.ok), (dialog1, which) -> {
           Intent i = new Intent(SoliciteActivity.this, SolicitacaoDetalheActivity.class);
           i.putExtra("solicitacao", response.compat(SoliciteActivity.this));
           startActivity(i);
@@ -534,5 +531,17 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
         })
         .setCancelable(false)
         .show();
+  }
+
+  private String getSolutionDue(StringBuilder message, ReportItemRequest item){
+    if (FeatureService.getInstance(SoliciteActivity.this).isShowResolutionTimeToClientsEnabled()
+            && solicitacao.getCategoria().isTempoResolucaoAtivado()
+            && !solicitacao.getCategoria().isTempoResolucaoPrivado()){
+      message.append(getString(R.string.line_separator));
+      message.append(getString(R.string.solution_due));
+      message.append(DateUtils.getString(item.getCategory().getResolutionTime()));
+      return message.toString();
+    }
+    return "";
   }
 }

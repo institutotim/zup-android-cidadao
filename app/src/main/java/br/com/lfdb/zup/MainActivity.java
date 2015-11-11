@@ -13,7 +13,7 @@ import br.com.lfdb.zup.base.BaseActivity;
 import br.com.lfdb.zup.domain.BuscaEstatisticas;
 import br.com.lfdb.zup.domain.BuscaExplore;
 import br.com.lfdb.zup.fragment.EstatisticasFragment;
-import br.com.lfdb.zup.fragment.ExploreFragment;
+import br.com.lfdb.zup.fragment.ExploreFragment_;
 import br.com.lfdb.zup.fragment.MinhaContaFragment;
 import br.com.lfdb.zup.service.CategoriaRelatoService;
 import br.com.lfdb.zup.service.FeatureService;
@@ -28,7 +28,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private TextView current;
 
     private EstatisticasFragment estatisticasFragment;
-    private ExploreFragment exploreFragment;
+    private ExploreFragment_ exploreFragment;
     private MinhaContaFragment minhaContaFragment;
 
     private Fragment atual;
@@ -66,7 +66,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         if (FeatureService.getInstance(this).isExploreEnabled()) {
             current = exploreButton;
-            exploreFragment = new ExploreFragment();
+            exploreFragment = new ExploreFragment_();
             setFragment(exploreFragment);
         } else {
             exploreButton.setVisibility(View.GONE);
@@ -119,7 +119,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case R.id.exploreButton:
                 view.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.tabbar_icon_explore_active), null, null);
                 if (exploreFragment == null) {
-                    exploreFragment = new ExploreFragment();
+                    exploreFragment = new ExploreFragment_();
                     setFragment(exploreFragment);
                 } else {
                     activeFragment(exploreFragment);
