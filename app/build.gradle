@@ -1,10 +1,30 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+    }
+}
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+    mavenCentral()
+}
+
 apply plugin: 'com.android.application'
+apply plugin: 'android-apt'
 apply plugin: 'io.fabric'
 apply plugin: 'me.tatarka.retrolambda'
 
+def AAVersion = '3.3'
+
 android {
-    compileSdkVersion 22
-    buildToolsVersion '22.0.1'
+    compileSdkVersion 21
+    buildToolsVersion '23.0.0'
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/NOTICE'
@@ -14,7 +34,7 @@ android {
     }
     defaultConfig {
         minSdkVersion 10
-        targetSdkVersion 22
+        targetSdkVersion 21
         versionCode 10004
         versionName '1.0.4.2'
         multiDexEnabled = true
@@ -29,8 +49,10 @@ android {
         sbc {
             keyAlias System.getenv('KEY_ALIAS') != null ? System.getenv('KEY_ALIAS') : 'cognita'
             keyPassword System.getenv('KEY_PASSWORD') != null ? System.getenv('KEY_PASSWORD') : 'ntxp4ss'
-            storeFile file(System.getenv('KEY_FILE') != null ? System.getenv('KEY_FILE') : 'key/cognita.keystore')
-            storePassword System.getenv('KEY_PASSWORD') != null ? System.getenv('KEY_PASSWORD') : 'ntxp4ss'
+            storeFile file(
+                System.getenv('KEY_FILE') != null ? System.getenv('KEY_FILE') : 'key/cognita.keystore')
+            storePassword System.getenv('KEY_PASSWORD') != null ? System.getenv('KEY_PASSWORD') :
+                'ntxp4ss'
         }
     }
     productFlavors {
@@ -67,12 +89,37 @@ android {
     dexOptions {
         javaMaxHeapSize "4g"
     }
+    sourceSets {
+        main {
+            manifest.srcFile 'src/main/AndroidManifest.xml'
+            java.srcDirs = ['src/main/java', 'build/generated/source/apt/${variant.dirName}']
+            resources.srcDirs = ['src/main/res']
+            res.srcDirs = ['src/main/res']
+            assets.srcDirs = ['src/main/assets']
+        }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES.txt'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/dependencies.txt'
+        exclude 'META-INF/LGPL2.1'
+    }
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:22.2.1'
-    compile 'com.android.support:recyclerview-v7:22.2.1'
-    compile 'com.google.android.gms:play-services:6.1.71'
+    apt "org.androidannotations:androidannotations:$AAVersion"
+    compile "org.androidannotations:androidannotations:$AAVersion"
+    compile 'com.android.support:support-v4:23.1.0'
+    compile 'com.android.support:recyclerview-v7:23.1.0'
+    compile 'com.google.android.gms:play-services:7.8.0'
     compile 'com.android.support:multidex:1.0.1'
     compile 'oauth.signpost:signpost-core:1.2.1.2'
     compile 'com.google.code.gson:gson:2.3.1'
@@ -86,7 +133,7 @@ dependencies {
     compile 'com.google.guava:guava:18.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'net.danlew:android.joda:2.8.2'
-    compile('com.crashlytics.sdk.android:crashlytics:2.5.1@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.2@aar') {
         transitive = true;
     }
     compile('oauth.signpost:signpost-commonshttp4:1.2.1.2') {
@@ -99,4 +146,15 @@ dependencies {
     compile project(':lib-simplecropimage')
     compile project(':lib-progresswheels')
     compile project(':lib-androidviewpagerindicator')
+    compile('com.twitter.sdk.android:twitter:1.8.0@aar') {
+        transitive = true;
+    }
 }
+
+apt {
+    arguments {
+        androidManifestFile variant.outputs[0].processResources.manifestFile
+        resourcePackageName 'br.com.lfdb.zup'
+    }
+}
+

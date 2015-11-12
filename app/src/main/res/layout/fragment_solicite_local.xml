@@ -92,7 +92,7 @@
                 android:background="#ccc" />
 
             <TextView
-                android:id="@+id/numero"
+                android:id="@+id/tvNumero"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"

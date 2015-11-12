@@ -125,6 +125,16 @@
     <string name="old_password">Senha atual</string>
     <string name="new_password">Nova senha</string>
     <string name="city">Cidade</string>
+    <string name="screen_name_select_local">Seleção de Local (Novo Relato)</string>
+    <string name="ok">Ok</string>
+    <string name="no_location_detected">Localização não encontrada</string>
+    <string name="no_connection">Sua conexão com a Internet encontra-se indisponível. Verifique a conexão e tente novamente</string>
+    <string name="only_three_photos">É possível adicionar apenas 3 fotos para um relato</string>
+    <string name="request_sent">Solicitação enviada</string>
+    <string name="dialog_info">Você será avisado quando sua solicitação for atualizada</string>
+    <string name="line_separator">\\n</string>
+    <string name="note_protocol">Anote seu protocolo:</string>
+    <string name="solution_due">Prazo de solução:</string>
 
     <string-array name="foto_menu">
         <item>Escolher foto do álbum</item>
