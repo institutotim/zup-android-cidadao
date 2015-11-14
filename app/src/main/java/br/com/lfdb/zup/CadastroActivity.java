@@ -22,7 +22,6 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -54,87 +53,90 @@ public class CadastroActivity extends BaseActivity implements OnClickListener {
     private EditText campoCEP;
     private EditText campoBairro;
     private EditText campoCidade;
+    private TextView novaConta;
+    private TextView botaoCancelar;
+    private TextView botaoCriar;
+    private TextView termos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro);
-
-        ((TextView) findViewById(R.id.novaConta)).setTypeface(FontUtils.getLight(this));
-
-        TextView botaoCancelar = (TextView) findViewById(R.id.botaoCancelar);
-        botaoCancelar.setTypeface(FontUtils.getRegular(this));
-        botaoCancelar.setOnClickListener(v -> finish());
-        TextView botaoCriar = (TextView) findViewById(R.id.botaoCriar);
-        botaoCriar.setTypeface(FontUtils.getRegular(this));
+        bindViews();
+        loadTypeface();
+        loadTerms();
         botaoCriar.setOnClickListener(this);
-
-        campoNome = (EditText) findViewById(R.id.campoNome);
-        campoNome.setTypeface(FontUtils.getLight(this));
-
-        campoSenha = (EditText) findViewById(R.id.campoSenha);
-        campoSenha.setTypeface(FontUtils.getLight(this));
-
-        campoConfirmarSenha = (EditText) findViewById(R.id.campoConfirmarSenha);
-        campoConfirmarSenha.setTypeface(FontUtils.getLight(this));
-
-        campoEmail = (EditText) findViewById(R.id.campoEmail);
-        campoEmail.setTypeface(FontUtils.getLight(this));
-
-        campoCPF = (EditText) findViewById(R.id.campoCPF);
-        campoCPF.setTypeface(FontUtils.getLight(this));
-
-        campoTelefone = (EditText) findViewById(R.id.campoTelefone);
-        campoTelefone.setTypeface(FontUtils.getLight(this));
-
-        campoEndereco = (EditText) findViewById(R.id.campoEndereco);
-        campoEndereco.setTypeface(FontUtils.getLight(this));
-
-        campoComplemento = (EditText) findViewById(R.id.campoComplemento);
-        campoComplemento.setTypeface(FontUtils.getLight(this));
-
-        campoCEP = (EditText) findViewById(R.id.campoCEP);
-        campoCEP.setTypeface(FontUtils.getLight(this));
-
-        campoBairro = (EditText) findViewById(R.id.campoBairro);
-        campoBairro.setTypeface(FontUtils.getLight(this));
-
-        campoCidade = (EditText) findViewById(R.id.campoCidade);
-        campoCidade.setTypeface(FontUtils.getLight(this));
+        botaoCancelar.setOnClickListener(v -> finish());
         campoCidade.setOnEditorActionListener((v, actionId, event) -> {
             boolean handled = false;
             if (actionId == EditorInfo.IME_ACTION_GO) {
-                validarECadastrar();
+                validateRegister();
                 handled = true;
             }
             return handled;
         });
+    }
 
-        TextView termos = (TextView) findViewById(R.id.termos);
+    private void bindViews() {
+        campoNome = (EditText) findViewById(R.id.campoNome);
+        campoSenha = (EditText) findViewById(R.id.campoSenha);
+        campoConfirmarSenha = (EditText) findViewById(R.id.campoConfirmarSenha);
+        campoEmail = (EditText) findViewById(R.id.campoEmail);
+        campoCPF = (EditText) findViewById(R.id.campoCPF);
+        campoTelefone = (EditText) findViewById(R.id.campoTelefone);
+        campoEndereco = (EditText) findViewById(R.id.campoEndereco);
+        campoComplemento = (EditText) findViewById(R.id.campoComplemento);
+        campoBairro = (EditText) findViewById(R.id.campoBairro);
+        campoCEP = (EditText) findViewById(R.id.campoCEP);
+        campoCidade = (EditText) findViewById(R.id.campoCidade);
+        novaConta = (TextView) findViewById(R.id.novaConta);
+        botaoCancelar = (TextView) findViewById(R.id.botaoCancelar);
+        botaoCriar = (TextView) findViewById(R.id.botaoCriar);
+        termos = (TextView) findViewById(R.id.termos);
+    }
+
+    private void loadTypeface() {
+        campoNome.setTypeface(FontUtils.getLight(this));
+        campoSenha.setTypeface(FontUtils.getLight(this));
+        campoConfirmarSenha.setTypeface(FontUtils.getLight(this));
+        campoEmail.setTypeface(FontUtils.getLight(this));
+        campoCPF.setTypeface(FontUtils.getLight(this));
+        campoTelefone.setTypeface(FontUtils.getLight(this));
+        campoEndereco.setTypeface(FontUtils.getLight(this));
+        campoComplemento.setTypeface(FontUtils.getLight(this));
+        campoCEP.setTypeface(FontUtils.getLight(this));
+        campoBairro.setTypeface(FontUtils.getLight(this));
+        campoCidade.setTypeface(FontUtils.getLight(this));
+        novaConta.setTypeface(FontUtils.getLight(this));
+        botaoCancelar.setTypeface(FontUtils.getRegular(this));
+        botaoCriar.setTypeface(FontUtils.getRegular(this));
+    }
+
+    private void loadTerms() {
         termos.setText(Html.fromHtml(getString(R.string.termos_de_uso_cadastro)));
         termos.setTypeface(FontUtils.getLight(this));
         termos.setOnClickListener(v -> startActivity(new Intent(CadastroActivity.this, TermosDeUsoActivity.class)));
     }
 
-    private void validarECadastrar() {
-        limparFundoCampos();
+    private void validateRegister() {
+        clear();
         List<Integer> validadores = validar();
-        if (validadores.isEmpty()) {
-            if (FeatureService.getInstance(this).isAnySocialEnabled()) {
-                startActivityForResult(new Intent(this, RedesSociaisCadastroActivity.class), REQUEST_SOCIAL);
-            } else {
-                cadastrar();
-            }
-        } else {
+        if (!validadores.isEmpty()) {
             destacarCampos(validadores);
+            return;
         }
+        if (FeatureService.getInstance(this).isAnySocialEnabled()) {
+            startActivityForResult(new Intent(this, RedesSociaisCadastroActivity.class), REQUEST_SOCIAL);
+            return;
+        }
+        register();
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.botaoCriar:
-                validarECadastrar();
+                validateRegister();
                 break;
         }
     }
@@ -147,24 +149,21 @@ public class CadastroActivity extends BaseActivity implements OnClickListener {
             campos.add(campoConfirmarSenha.getId());
         } else if (campoSenha.getText().toString().trim().length() < 6) {
             campos.add(campoSenha.getId());
-            Toast.makeText(this, "A senha deve ter pelo menos 6 caracteres!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.pass_length_message), Toast.LENGTH_SHORT).show();
         }
-
         for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF, R.id.campoTelefone,
                 R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro)) {
             if (((TextView) findViewById(id)).getText().toString().trim().isEmpty()) {
                 campos.add(id);
             }
         }
-
         if (!CpfValidador.isValid(campoCPF.getText().toString().trim().replace("-", "").replace(".", ""))) {
             campos.add(campoCPF.getId());
         }
-
         return campos;
     }
 
-    private void cadastrar() {
+    private void register() {
         Usuario usuario = new Usuario();
         usuario.setBairro(campoBairro.getText().toString());
         usuario.setCep(campoCEP.getText().toString());
@@ -181,8 +180,29 @@ public class CadastroActivity extends BaseActivity implements OnClickListener {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_SOCIAL && resultCode == Activity.RESULT_OK) {
+            register();
+        }
+    }
+
+    private void destacarCampos(List<Integer> campos) {
+        for (Integer id : campos) {
+            findViewById(id).setBackgroundResource(R.drawable.textbox_red);
+        }
+        Toast.makeText(this, getString(R.string.review_fields_message), Toast.LENGTH_LONG).show();
+    }
+
+    private void clear() {
+        for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF, R.id.campoTelefone,
+                R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro, R.id.campoSenha, R.id.campoConfirmarSenha)) {
+            findViewById(id).setBackgroundResource(R.drawable.textbox_bg);
+        }
+    }
+
+    @Override
     protected String getScreenName() {
-        return "Cadastro";
+        return getString(R.string.cadastro);
     }
 
     public class Tasker extends AsyncTask<Usuario, Void, String> {
@@ -194,7 +214,7 @@ public class CadastroActivity extends BaseActivity implements OnClickListener {
             dialog = new ProgressDialog(CadastroActivity.this);
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             dialog.setIndeterminate(true);
-            dialog.setMessage("Por favor, aguarde...");
+            dialog.setMessage(getString(R.string.waiting_message));
             dialog.show();
         }
 
@@ -240,43 +260,22 @@ public class CadastroActivity extends BaseActivity implements OnClickListener {
 
         @Override
         protected void onPostExecute(String result) {
-            dialog.dismiss();
-            if (result != null) {
-                try {
-                    JSONObject json = new JSONObject(result);
-                    new LoginService().registrarLogin(CadastroActivity.this,
-                            json.getJSONObject("user"),
-                            json.getString("token"));
-                } catch (JSONException e) {
-                    Log.e("ZUP", e.getMessage(), e);
+            try {
+                dialog.dismiss();
+                if (result == null) {
+                    Toast.makeText(CadastroActivity.this, getString(R.string.register_fail), Toast.LENGTH_LONG).show();
+                    return;
                 }
-                Toast.makeText(CadastroActivity.this, "Login realizado com sucesso", Toast.LENGTH_LONG).show();
+                JSONObject json = new JSONObject(result);
+                new LoginService().registrarLogin(CadastroActivity.this,
+                        json.getJSONObject("user"),
+                        json.getString("token"));
+                Toast.makeText(CadastroActivity.this, getString(R.string.login_success), Toast.LENGTH_LONG).show();
                 setResult(Activity.RESULT_OK);
                 finish();
-            } else {
-                Toast.makeText(CadastroActivity.this, "Falha no cadastro", Toast.LENGTH_LONG).show();
+            } catch (Exception e) {
+                Log.e("ZUP Register error", e.getMessage());
             }
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_SOCIAL && resultCode == Activity.RESULT_OK) {
-            cadastrar();
-        }
-    }
-
-    private void destacarCampos(List<Integer> campos) {
-        for (Integer id : campos) {
-            findViewById(id).setBackgroundResource(R.drawable.textbox_red);
-        }
-        Toast.makeText(this, "Complete ou corrija os campos indicados", Toast.LENGTH_LONG).show();
-    }
-
-    private void limparFundoCampos() {
-        for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF, R.id.campoTelefone,
-                R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro, R.id.campoSenha, R.id.campoConfirmarSenha)) {
-            findViewById(id).setBackgroundResource(R.drawable.textbox_bg);
         }
     }
 }
