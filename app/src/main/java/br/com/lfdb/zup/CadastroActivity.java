@@ -143,8 +143,9 @@ public class CadastroActivity extends BaseActivity implements OnClickListener {
 
     private List<Integer> validar() {
         List<Integer> campos = new ArrayList<>();
-        if (campoSenha.getText().toString().trim().isEmpty() || campoConfirmarSenha.getText().toString().trim().isEmpty() ||
-                !campoSenha.getText().toString().equals(campoConfirmarSenha.getText().toString())) {
+        if (campoSenha.getText().toString().trim().isEmpty()
+                || campoConfirmarSenha.getText().toString().trim().isEmpty()
+                || !campoSenha.getText().toString().equals(campoConfirmarSenha.getText().toString())) {
             campos.add(campoSenha.getId());
             campos.add(campoConfirmarSenha.getId());
         } else if (campoSenha.getText().toString().trim().length() < 6) {
@@ -152,7 +153,7 @@ public class CadastroActivity extends BaseActivity implements OnClickListener {
             Toast.makeText(this, getString(R.string.pass_length_message), Toast.LENGTH_SHORT).show();
         }
         for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF, R.id.campoTelefone,
-                R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro)) {
+                R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro, R.id.campoCidade)) {
             if (((TextView) findViewById(id)).getText().toString().trim().isEmpty()) {
                 campos.add(id);
             }
@@ -195,7 +196,8 @@ public class CadastroActivity extends BaseActivity implements OnClickListener {
 
     private void clear() {
         for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF, R.id.campoTelefone,
-                R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro, R.id.campoSenha, R.id.campoConfirmarSenha)) {
+                R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro, R.id.campoSenha, R.id.campoConfirmarSenha,
+                R.id.campoCidade)) {
             findViewById(id).setBackgroundResource(R.drawable.textbox_bg);
         }
     }

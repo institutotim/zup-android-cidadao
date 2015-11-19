@@ -243,6 +243,7 @@ public class SoliciteLocalFragment extends BaseFragment
                 .show();
     }
 
+    @UiThread
     void verifyValid() {
         if (!isAdded()) {
             return;
@@ -412,12 +413,20 @@ public class SoliciteLocalFragment extends BaseFragment
                 return;
             }
             LatLng latLong = new LatLng(addr.getLatitude(), addr.getLongitude());
-            CameraPosition p = new CameraPosition.Builder().target(latLong).zoom(16f).build();
-            CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
-            map.animateCamera(update);
+            loadMapPosition(latLong);
         } catch (Exception e) {
             Log.e("ZUP", e.getMessage(), e);
         }
+    }
+
+    @UiThread
+    void loadMapPosition(LatLng latLong){
+        CameraPosition p = new CameraPosition.Builder().target(latLong).zoom(16f).build();
+        CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
+        map.animateCamera(update);
+        latitude = latLong.latitude;
+        longitude = latLong.longitude;
+        addressTask();
     }
 
     @Background
