@@ -15,7 +15,7 @@
         android:paddingTop="10dp">
 
         <TextView
-            android:id="@+id/novaConta"
+            android:id="@+id/addAccount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
@@ -24,7 +24,7 @@
             android:textSize="@dimen/title_text_size" />
 
         <TextView
-            android:id="@+id/botaoCancelar"
+            android:id="@+id/btnCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -35,7 +35,7 @@
             android:textSize="@dimen/topbar_button_font_size" />
 
         <TextView
-            android:id="@+id/botaoCriar"
+            android:id="@+id/btnCreate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -67,7 +67,7 @@
             android:paddingBottom="15dp">
 
             <EditText
-                android:id="@+id/campoNome"
+                android:id="@+id/nameField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
@@ -81,7 +81,7 @@
                 android:textSize="@dimen/navigation_text_size" />
 
             <EditText
-                android:id="@+id/campoEmail"
+                android:id="@+id/emailField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
@@ -100,7 +100,7 @@
                 android:weightSum="2">
 
                 <EditText
-                    android:id="@+id/campoSenha"
+                    android:id="@+id/passField"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
@@ -114,7 +114,7 @@
                     android:textSize="@dimen/navigation_text_size" />
 
                 <EditText
-                    android:id="@+id/campoConfirmarSenha"
+                    android:id="@+id/confirmPassField"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
@@ -136,7 +136,7 @@
                 android:weightSum="2">
 
                 <br.com.lfdb.zup.widget.PhoneEditText
-                    android:id="@+id/campoTelefone"
+                    android:id="@+id/phoneField"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
@@ -149,7 +149,7 @@
                     android:textSize="@dimen/navigation_text_size" />
 
                 <br.com.lfdb.zup.widget.CpfEditText
-                    android:id="@+id/campoCPF"
+                    android:id="@+id/documentField"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
@@ -163,7 +163,7 @@
             </LinearLayout>
 
             <EditText
-                android:id="@+id/campoEndereco"
+                android:id="@+id/addressField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
@@ -182,7 +182,7 @@
                 android:weightSum="2">
 
                 <EditText
-                    android:id="@+id/campoComplemento"
+                    android:id="@+id/complField"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
@@ -196,7 +196,7 @@
                     android:textSize="@dimen/navigation_text_size" />
 
                 <br.com.lfdb.zup.widget.CepEditText
-                    android:id="@+id/campoCEP"
+                    android:id="@+id/cepField"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
@@ -210,7 +210,7 @@
             </LinearLayout>
 
             <EditText
-                android:id="@+id/campoBairro"
+                android:id="@+id/neighborhooFieldd"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
@@ -223,7 +223,7 @@
                 android:textSize="@dimen/navigation_text_size" />
 
             <EditText
-                android:id="@+id/campoCidade"
+                android:id="@+id/cityField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
@@ -236,7 +236,7 @@
                 android:textSize="@dimen/navigation_text_size" />
 
             <TextView
-                android:id="@+id/termos"
+                android:id="@+id/terms"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"

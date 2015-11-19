@@ -69,7 +69,7 @@
             android:label="@string/termos_de_uso"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".CadastroActivity"
+            android:name=".CadastroActivity_"
             android:screenOrientation="portrait" />
         <activity
             android:name=".RedesSociaisCadastroActivity"
