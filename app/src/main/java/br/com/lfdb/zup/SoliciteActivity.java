@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import br.com.lfdb.zup.api.ZupApi;
 import br.com.lfdb.zup.api.model.ReportItem;
 import br.com.lfdb.zup.api.model.ReportItemRequest;
@@ -35,12 +36,15 @@ import br.com.lfdb.zup.util.DateUtils;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.NetworkUtils;
 import br.com.lfdb.zup.util.ViewUtils;
+
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Click;
@@ -49,6 +53,7 @@ import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import retrofit.RetrofitError;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -193,6 +198,7 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
 
   @Click void botaoVoltar() {
     botaoAvancar.setText(R.string.proximo);
+    botaoAvancar.setVisibility(View.VISIBLE);
     switch (atual) {
       case COMENTARIOS:
         getSupportFragmentManager().beginTransaction()
@@ -239,7 +245,7 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
     finish();
   }
 
-  public void exibirBarraInferior(boolean exibir) {
+  @UiThread public void exibirBarraInferior(boolean exibir) {
     barra_navegacao.setVisibility(exibir ? View.VISIBLE : View.GONE);
   }
 
@@ -247,7 +253,7 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
     return solicitacao.getFotos();
   }
 
-  public void enableNextButton(boolean enabled) {
+  @UiThread public void enableNextButton(boolean enabled) {
     botaoAvancar.setVisibility(enabled ? View.VISIBLE : View.GONE);
   }
 
@@ -255,7 +261,7 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
     return solicitacao.getCategoria();
   }
 
-  public void setCategoria(CategoriaRelato categoria) {
+  @UiThread public void setCategoria(CategoriaRelato categoria) {
     solicitacao.setCategoria(categoria);
     if (new UsuarioService().getUsuarioAtivo(this) == null) {
       startActivityForResult(new Intent(this, WarningActivity.class), LOGIN_REQUEST);
@@ -270,15 +276,15 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
     instrucoes.setText(instrucoes.getText().toString().toUpperCase(Locale.US));
   }
 
-  public void adicionarFoto(String foto) {
+  @UiThread public void adicionarFoto(String foto) {
     solicitacao.adicionarFoto(foto);
   }
 
-  public void removerFoto(String foto) {
+  @UiThread public void removerFoto(String foto) {
     solicitacao.removerFoto(foto);
   }
 
-  public void solicitar() {
+  @UiThread public void solicitar() {
     solicitacao.setComentario(detalhesFragment.getComentario());
     if (solicitacao.getComentario().length() > 800) {
       alertarTamanhoComentario();
@@ -297,27 +303,32 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
     enviarSolicitacao();
   }
 
-  private void alertarItemInventario() {
+  @UiThread void alertarItemInventario() {
     new AlertDialog.Builder(this).setMessage("O local do relato não foi selecionado corretamente")
         .setNeutralButton("OK", (dialog, which) -> dialog.dismiss())
         .show();
   }
 
-  private void alertarTamanhoComentario() {
+  @UiThread void alertarTamanhoComentario() {
     new AlertDialog.Builder(this).setMessage("O comentário deve ter menos de 800 caracteres")
         .setNeutralButton("OK", (dialog, which) -> dialog.dismiss())
         .show();
   }
 
-  private void enviarSolicitacao() {
+  @UiThread void enviarSolicitacao() {
     if (!NetworkUtils.isInternetPresent(this)) {
-      new AlertDialog.Builder(this).setMessage(
-          getString(R.string.no_connection))
+      new AlertDialog.Builder(this).setMessage(getString(R.string.no_connection))
           .setNeutralButton(getString(R.string.ok), (dialog, which) -> dialog.dismiss())
           .show();
       return;
     }
-    tasker();
+    ProgressDialog dialog = new ProgressDialog(this);
+    dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+    dialog.setIndeterminate(true);
+    dialog.setMessage("Enviando solicitação...");
+    dialog.setCancelable(false);
+    dialog.show();
+    tasker(dialog);
   }
 
   public String getReferencia() {
@@ -328,7 +339,7 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
     solicitacao.setReferencia(referencia);
   }
 
-  public void assertFragmentVisibility() {
+  @UiThread public void assertFragmentVisibility() {
     getSupportFragmentManager().beginTransaction()
         .hide(localFragment != null ? localFragment : pontoFragment)
         .show(fotosFragment)
@@ -368,7 +379,7 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
     return item;
   }
 
-  private void restoreFragmentsStates(Bundle bundle) {
+  @UiThread void restoreFragmentsStates(Bundle bundle) {
     Bundle params = new Bundle();
     params.putSerializable("solicitacao", solicitacao);
     params.putString("imagemTemporaria", bundle.getString("imagemTemporaria"));
@@ -455,14 +466,8 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
     return "Criação de Relato";
   }
 
-  @Background void tasker() {
+  @Background void tasker(ProgressDialog dialog) {
     try {
-      ProgressDialog dialog = new ProgressDialog(SoliciteActivity.this);
-      dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-      dialog.setIndeterminate(true);
-      dialog.setMessage("Enviando solicitação...");
-      dialog.setCancelable(false);
-      dialog.show();
       ReportItemRequest item = new ReportItemRequest();
       ReportItem response = null;
 
@@ -486,8 +491,7 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
         images.add(encodeBase64(foto));
       }
       item.setImages(images);
-      response =
-          ZupApi.get(SoliciteActivity.this).createReport(item.getCategoryId(), item).getReport();
+      response = ZupApi.get(this).createReport(item.getCategoryId(), item).getReport();
       if (detalhesFragment.getPublicar()) {
         SocialUtils.post(SoliciteActivity.this,
             "Estou colaborando com a minha cidade, reportando problemas e solicitações.\n" +
@@ -510,21 +514,21 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
   }
 
   @UiThread void toast(String msg) {
-    Toast.makeText(SoliciteActivity.this, msg, Toast.LENGTH_LONG).show();
+    Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
   }
 
   @UiThread void showAlertDialog(ReportItemRequest item, ReportItem response) {
-      StringBuilder message = new StringBuilder();
-      message.append(getString(R.string.dialog_info));
-      message.append(getString(R.string.line_separator));
-      message.append(getString(R.string.note_protocol));
-      message.append(item.getProtocol());
-      message.append(getSolutionDue(message, item));
-      new AlertDialog.Builder(SoliciteActivity.this).setTitle(getString(R.string.request_sent))
+    StringBuilder message = new StringBuilder();
+    message.append(getString(R.string.dialog_info));
+    message.append(getString(R.string.line_separator));
+    message.append(getString(R.string.note_protocol));
+    message.append(response.getProtocol());
+    message.append(getSolutionDue(message, item));
+    new AlertDialog.Builder(this).setTitle(getString(R.string.request_sent))
         .setMessage(message)
         .setNeutralButton(getString(R.string.ok), (dialog1, which) -> {
-          Intent i = new Intent(SoliciteActivity.this, SolicitacaoDetalheActivity.class);
-          i.putExtra("solicitacao", response.compat(SoliciteActivity.this));
+          Intent i = new Intent(this, SolicitacaoDetalheActivity.class);
+          i.putExtra("solicitacao", response.compat(this));
           startActivity(i);
           setResult(Activity.RESULT_OK);
           finish();
@@ -533,10 +537,10 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
         .show();
   }
 
-  private String getSolutionDue(StringBuilder message, ReportItemRequest item){
-    if (FeatureService.getInstance(SoliciteActivity.this).isShowResolutionTimeToClientsEnabled()
-            && solicitacao.getCategoria().isTempoResolucaoAtivado()
-            && !solicitacao.getCategoria().isTempoResolucaoPrivado()){
+  private String getSolutionDue(StringBuilder message, ReportItemRequest item) {
+    if (FeatureService.getInstance(this).isShowResolutionTimeToClientsEnabled()
+        && solicitacao.getCategoria().isTempoResolucaoAtivado()
+        && !solicitacao.getCategoria().isTempoResolucaoPrivado()) {
       message.append(getString(R.string.line_separator));
       message.append(getString(R.string.solution_due));
       message.append(DateUtils.getString(item.getCategory().getResolutionTime()));

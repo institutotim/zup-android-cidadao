@@ -8,6 +8,7 @@ import br.com.lfdb.zup.api.model.*;
 import br.com.lfdb.zup.base.Defaults;
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.core.ConstantesBase;
+import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.util.FileUtils;
 import br.com.lfdb.zup.util.ImageUtils;
 import com.google.common.io.CharStreams;

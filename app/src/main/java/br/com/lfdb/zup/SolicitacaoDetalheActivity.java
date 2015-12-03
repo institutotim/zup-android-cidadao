@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import br.com.lfdb.zup.util.AuthHelper;
+
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -106,10 +107,15 @@ public class SolicitacaoDetalheActivity extends BaseActivity {
                     solicitacao.getLongitude())).zoom(15).build();
             CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
             map.moveCamera(update);
-
-            map.addMarker(new MarkerOptions()
-                    .position(new LatLng(solicitacao.getLatitude(), solicitacao.getLongitude()))
-                    .icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(this, "reports", solicitacao.getCategoria().getMarcador()))));
+            try {
+                MarkerOptions marker = new MarkerOptions();
+                LatLng latLong = new LatLng(solicitacao.getLatitude(), solicitacao.getLongitude());
+                marker.position(latLong);
+                //marker.icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(this, "reports", solicitacao.getCategoria().getMarcador())));
+                map.addMarker(marker);
+            } catch (Exception e) {
+                e.getMessage();
+            }
         } else {
             findViewById(R.id.map).setVisibility(View.GONE);
             ImagePagerAdapter mAdapter = new ImagePagerAdapter(getSupportFragmentManager(), solicitacao.getFotos());
