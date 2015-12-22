@@ -280,6 +280,7 @@ public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWin
             }
         }
         mapSettings();
+        autocomplete.setOnItemClickListener(this);
         autocomplete.setAdapter(new PlacesAutoCompleteAdapter(getActivity(),
                 R.layout.autocomplete_list_item,
                 ExploreFragment.class));
@@ -830,17 +831,22 @@ public class ExploreFragment extends BaseFragment implements GoogleMap.OnInfoWin
             if (pontoBusca != null) {
                 pontoBusca.remove();
             }
-            pontoBusca = map.addMarker(new MarkerOptions()
-                    .position(new LatLng(addr.getLatitude(), addr.getLongitude()))
-                    .icon(BitmapDescriptorFactory.defaultMarker()));
-
-            CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
-                    addr.getLongitude())).zoom(15).build();
-            CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
-            map.animateCamera(update);
+            geocoderUiUpdate(addr);
         } catch (Exception e) {
             Log.e("ZUP", e.getMessage(), e);
         }
+    }
+
+    @UiThread
+    void geocoderUiUpdate(Address addr){
+        pontoBusca = map.addMarker(new MarkerOptions()
+                .position(new LatLng(addr.getLatitude(), addr.getLongitude()))
+                .icon(BitmapDescriptorFactory.defaultMarker()));
+
+        CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
+                addr.getLongitude())).zoom(15).build();
+        CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
+        map.animateCamera(update);
     }
 
     @Background

@@ -135,6 +135,12 @@
     <string name="line_separator">\\n</string>
     <string name="note_protocol">Anote seu protocolo:</string>
     <string name="solution_due">Prazo de solução:</string>
+    <string name="pass_length_message">A senha deve ter pelo menos 6 caracteres!</string>
+    <string name="cadastro">Cadastro</string>
+    <string name="waiting_message">Por favor, aguarde...</string>
+    <string name="login_success">Login realizado com sucesso</string>
+    <string name="register_fail">Falha no cadastro</string>
+    <string name="review_fields_message">Complete ou corrija os campos indicados</string>
 
     <string-array name="foto_menu">
         <item>Escolher foto do álbum</item>
