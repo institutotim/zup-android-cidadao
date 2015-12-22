@@ -44,7 +44,6 @@ public class MarkerRetriever extends AsyncTask<Void, Object, Void> {
   private Context context;
   private RequestModel request;
   private ProgressBar loading;
-  private float zoom = 12f;
   private Map<Marker, Object> marcadores = new HashMap<>();
   private ExploreFragment fragment;
 
@@ -304,6 +303,6 @@ public class MarkerRetriever extends AsyncTask<Void, Object, Void> {
   }
 
   private String getClusterQuery() {
-    return "&clusterize=true&zoom=" + (int) zoom;
+    return "&clusterize=true&zoom=" + (int) fragment.zoom;
   }
 }

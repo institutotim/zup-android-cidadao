@@ -97,7 +97,7 @@ import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
   private double userLatitude;
   private boolean updateCameraUser = true;
   private boolean wasLocalized = false;
-  private float zoom = 12f;
+  public float zoom = 12f;
   private static final long POLLING_FREQ = 1000 * 30;
   private static final long FASTEST_UPDATE_FREQ = 1000 * 5;
   private GoogleApiClient googleApiClient;
@@ -332,7 +332,7 @@ import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
     startActivity(intent);
   }
 
-  private void increaseZoomTo(LatLng position) {
+  @UiThread void increaseZoomTo(LatLng position) {
     CameraPosition p = new CameraPosition.Builder().target(position)
         .zoom(map.getCameraPosition().zoom + 0.5f)
         .build();
@@ -401,7 +401,7 @@ import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
     }
   }
 
-  private void removeInventoryMarkerIfContained(long id) {
+  @UiThread void removeInventoryMarkerIfContained(long id) {
     ItemInventario itemInventario = null;
     for (Object item : itens) {
       if (item instanceof ItemInventario) {
@@ -420,7 +420,7 @@ import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
     }
   }
 
-  private void removeReportMarkerIfContained(long id) {
+  @UiThread void removeReportMarkerIfContained(long id) {
     ItemRelato itemRelato = null;
     for (Object item : itens) {
       if (item instanceof ItemRelato) {
@@ -485,7 +485,7 @@ import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
     }
   }
 
-  private void removerItensMapa() {
+  @UiThread void removerItensMapa() {
     Iterator<Marker> it = marcadores.keySet().iterator();
     while (it.hasNext()) {
       Marker marker = it.next();
@@ -509,7 +509,7 @@ import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
     refresh();
   }
 
-  public void refresh() {
+  @UiThread void refresh() {
     requestModel = new RequestModel(latitude, longitude, raio);
   }
 
@@ -557,7 +557,7 @@ import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
       if (pontoBusca != null) {
         pontoBusca.remove();
       }
-      updateCameraWithMarker(addr);
+      updateCameraWithMarkerb(addr);
     } catch (Exception e) {
       Log.e("ZUP", e.getMessage(), e);
     }
@@ -588,7 +588,7 @@ import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
     map.animateCamera(update);
   }
 
-  @UiThread void updateCameraWithMarker (Address addr) {
+  @UiThread void updateCameraWithMarkerb (Address addr) {
     LatLng latLong = new LatLng(addr.getLatitude(), addr.getLongitude());
     pontoBusca = map.addMarker(
         new MarkerOptions().position(latLong)
