@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -147,8 +148,8 @@ import org.apache.commons.lang3.StringUtils;
 
     new AlertDialog.Builder(getActivity()).setTitle("Endereço do Relato")
         .setView(dialogView)
-        .setNegativeButton("Cancelar", (dialog, which) -> dialog.dismiss())
-        .setPositiveButton("OK", (dialog, which) -> {
+        .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
+        .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
           final String num = ((TextView) dialogView.findViewById(R.id.numero)).getText().toString();
           final String r = ((TextView) dialogView.findViewById(R.id.endereco)).getText().toString();
           String referencia =
@@ -187,9 +188,9 @@ import org.apache.commons.lang3.StringUtils;
 
   public boolean validarEndereco() {
     if (!street.equalsIgnoreCase(autocompleteEndereco.getText().toString())) {
-      new AlertDialog.Builder(getActivity()).setTitle("Endereço inválido")
-          .setMessage("O endereço inserido é inválido")
-          .setNegativeButton("OK", null)
+      new AlertDialog.Builder(getActivity()).setTitle(getString(R.string.invalid_address))
+          .setMessage(getString(R.string.invalid_address_inserted))
+          .setNegativeButton(getString(R.string.ok), null)
           .show();
       return false;
     }
@@ -197,8 +198,10 @@ import org.apache.commons.lang3.StringUtils;
   }
 
   boolean validarEndereco(final String r, final String num) {
-    if (r.isEmpty()) return false;
-    if ("".equals(num)) {
+    if (TextUtils.isEmpty(r)){
+      return false;
+    }
+    if (TextUtils.isEmpty(num)) {
       dialogNumberView(r);
       return false;
     }
@@ -209,7 +212,7 @@ import org.apache.commons.lang3.StringUtils;
     View dialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_numero, null);
     new AlertDialog.Builder(getActivity()).setTitle(r)
         .setView(dialogView)
-        .setNegativeButton("Sem número", (dialog, which) -> {
+        .setNegativeButton(getString(R.string.no_number), (dialog, which) -> {
           dialog.dismiss();
           number = "s/n";
           atualizarCampoEndereco();
@@ -278,7 +281,7 @@ import org.apache.commons.lang3.StringUtils;
         street + ", " + num1 + " - " + (currentAddress.getSubAdminArea() != null
             ? currentAddress.getSubAdminArea() : currentAddress.getLocality()));
     if (addresses.isEmpty()) {
-      toast("Endereço não encontrado");
+      toast(getString(R.string.address_not_found));
       dialog.dismiss();
     } else {
       final Address address = addresses.get(0);
@@ -345,7 +348,7 @@ import org.apache.commons.lang3.StringUtils;
         return;
       }
       street = addr.getThoroughfare();
-      if (!addr.getFeatureName().isEmpty() && StringUtils.isNumeric(
+      if (!TextUtils.isEmpty(addr.getFeatureName()) && StringUtils.isNumeric(
           addr.getFeatureName().substring(0, 1))) {
         number = addr.getFeatureName();
       } else {
@@ -413,12 +416,12 @@ import org.apache.commons.lang3.StringUtils;
     List<Address> addresses =
         GPSUtils.getFromLocationName(getActivity(), r + ", " + num + " - " + (addressCompl));
     if (addresses.isEmpty()) {
-      toast("Endereço não encontrado");
+      toast(getString(R.string.address_not_found));
       dialog.dismiss();
     } else {
       final Address address = addresses.get(0);
       street = address.getThoroughfare();
-      if (!num.isEmpty() && StringUtils.isNumeric(num.substring(0, 1))) {
+      if (!TextUtils.isEmpty(num) && StringUtils.isNumeric(num.substring(0, 1))) {
         number = num;
       } else {
         number = "";
@@ -503,7 +506,7 @@ import org.apache.commons.lang3.StringUtils;
       CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
       map.moveCamera(update);
     }
-    if (file != null && !file.isEmpty()) {
+    if (!TextUtils.isEmpty(file)) {
       marcador.setImageBitmap(ImageUtils.getScaled(getActivity(), "reports", file));
     }
   }

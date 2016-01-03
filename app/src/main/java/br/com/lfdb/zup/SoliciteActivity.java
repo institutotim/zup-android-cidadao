@@ -325,7 +325,7 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
     ProgressDialog dialog = new ProgressDialog(this);
     dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
     dialog.setIndeterminate(true);
-    dialog.setMessage("Enviando solicitação...");
+    dialog.setMessage(getString(R.string.sending_request));
     dialog.setCancelable(false);
     dialog.show();
     tasker(dialog);

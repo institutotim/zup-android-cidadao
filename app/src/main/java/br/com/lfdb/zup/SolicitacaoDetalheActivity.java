@@ -111,7 +111,6 @@ public class SolicitacaoDetalheActivity extends BaseActivity {
                 MarkerOptions marker = new MarkerOptions();
                 LatLng latLong = new LatLng(solicitacao.getLatitude(), solicitacao.getLongitude());
                 marker.position(latLong);
-                //marker.icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(this, "reports", solicitacao.getCategoria().getMarcador())));
                 map.addMarker(marker);
             } catch (Exception e) {
                 e.getMessage();

@@ -2,17 +2,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff">
+    android:background="@color/zup_white">
 
     <RelativeLayout
         android:id="@+id/topbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:background="@android:color/white"
-        android:paddingBottom="10dp"
-        android:paddingLeft="5dp"
-        android:paddingTop="10dp">
+        android:background="@color/zup_white"
+        android:paddingBottom="@dimen/padding_default"
+        android:paddingLeft="@dimen/padding_default_side"
+        android:paddingTop="@dimen/padding_default">
 
         <TextView
             android:id="@+id/botaoVoltar"
@@ -22,7 +22,7 @@
             android:layout_centerVertical="true"
             android:background="@drawable/side_button_black_bg"
             android:text="@string/voltar"
-            android:textColor="#fff" />
+            android:textColor="@color/zup_white" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -30,8 +30,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/topbar"
-        android:background="#e6e6e6"
-        android:padding="10dp">
+        android:background="@color/zup_silver"
+        android:padding="@dimen/padding_default">
 
         <TextView
             android:id="@+id/indicadorStatus"
@@ -39,9 +39,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="3dp"
+            android:layout_marginLeft="@dimen/margin_small"
             android:textAllCaps="true"
-            android:textColor="#fff"
+            android:textColor="@color/zup_white"
             android:textSize="@dimen/row_status" />
 
     </RelativeLayout>
@@ -51,15 +51,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/info_label"
-        android:background="#f3f3f3"
+        android:background="@color/zup_lightsilver"
         android:orientation="horizontal"
-        android:padding="15dp">
+        android:padding="@dimen/padding_default">
 
         <ImageView
             android:id="@+id/categoryIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp" />
+            android:layout_marginRight="@dimen/margin_default" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -91,13 +91,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#fff"
+            android:background="@color/zup_white"
             android:orientation="vertical">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="10dp">
+                android:padding="@dimen/padding_default">
 
                 <TextView
                     android:id="@+id/endereco"
@@ -105,8 +105,8 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
                     android:layout_below="@id/titulo"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:layout_marginLeft="@dimen/margin"
                     android:textSize="@dimen/topbar_button_font_size" />
 
                 <TextView
@@ -114,7 +114,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
-                    android:layout_marginLeft="5dp"
+                    android:layout_marginLeft="@dimen/margin"
                     android:layout_below="@id/endereco"
                     android:textSize="@dimen/topbar_button_font_size" />
 
@@ -125,7 +125,7 @@
                     android:layout_below="@id/referencia"
                     android:layout_marginLeft="5dp"
                     android:textAllCaps="true"
-                    android:textColor="#666"
+                    android:textColor="@color/zup_white"
                     android:textSize="@dimen/small_text_size" />
 
                 <TextView
@@ -134,8 +134,8 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/data"
                     android:textAllCaps="true"
-                    android:textColor="#666"
-                    android:layout_marginLeft="5dp"
+                    android:textColor="@color/zup_white"
+                    android:layout_marginLeft="@dimen/margin_default"
                     android:textSize="@dimen/small_text_size" />
             </RelativeLayout>
 
@@ -161,14 +161,14 @@
                 android:id="@+id/comentario"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:padding="15dp" />
+                android:layout_marginTop="@dimen/margin_default"
+                android:padding="@dimen/padding_large" />
 
             <LinearLayout
                 android:id="@+id/comment_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#f3f3f3"
+                android:background="@color/zup_lightsilver"
                 android:orientation="vertical" />
 
             <TextView
@@ -176,9 +176,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="true"
-                android:padding="15dp"
+                android:padding="@dimen/padding_large"
                 android:textAllCaps="true"
-                android:textColor="#2ab4dc"
+                android:textColor="@color/zup_blue_alternative"
                 android:visibility="gone" />
         </LinearLayout>
     </ScrollView>

@@ -9,5 +9,8 @@
     <dimen name="padding_3_icons">5dp</dimen>
     <dimen name="topbar_button_padding">1dp</dimen>
     <dimen name="topbar_button_font_size">12sp</dimen>
+    <dimen name="margin_small">3dp</dimen>
+    <dimen name="margin">5dp</dimen>
+    <dimen name="margin_default">10dp</dimen>
 
 </resources>

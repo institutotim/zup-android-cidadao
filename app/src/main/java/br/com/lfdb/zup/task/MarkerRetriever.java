@@ -161,7 +161,7 @@ public class MarkerRetriever extends AsyncTask<Void, Object, Void> {
       }
     } catch (Exception e) {
       if (!(e instanceof InterruptedIOException)) {
-        Log.e("ZUP", e.getMessage() != null ? e.getMessage() : "null", e);
+        Log.e("ZUP", "Erro ao buscar inventário", e);
       }
       return null;
     }

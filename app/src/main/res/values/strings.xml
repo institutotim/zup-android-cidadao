@@ -141,6 +141,11 @@
     <string name="login_success">Login realizado com sucesso</string>
     <string name="register_fail">Falha no cadastro</string>
     <string name="review_fields_message">Complete ou corrija os campos indicados</string>
+    <string name="sending_request">Enviando solicitação...</string>
+    <string name="invalid_address">Endereço inválido</string>
+    <string name="invalid_address_inserted">O endereço inserido é inválido</string>
+    <string name="no_number">Sem número</string>
+    <string name="address_not_found">Endereço não encontrado</string>
 
     <string-array name="foto_menu">
         <item>Escolher foto do álbum</item>
