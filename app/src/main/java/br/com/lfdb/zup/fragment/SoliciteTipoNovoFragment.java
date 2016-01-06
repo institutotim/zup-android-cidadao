@@ -102,6 +102,7 @@ public class SoliciteTipoNovoFragment extends BaseFragment {
                 } else {
                     desmarcarTudo(categoria.getSubcategorias().isEmpty());
                     ((SoliciteActivity) getActivity()).setCategoria(categoria);
+                    ((SoliciteActivity) getActivity()).exibirBarraInferior(true);
                     nomeCategoria.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.filtros_check_categoria, 0);
                     imagem.setImageBitmap(ImageUtils.getScaledCustom(getActivity(), "reports", categoria.getIconeAtivo(), 0.75f));
                 }

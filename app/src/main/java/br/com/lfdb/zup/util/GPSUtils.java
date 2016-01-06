@@ -33,15 +33,16 @@ public class GPSUtils {
 
     public static List<Address> getFromLocation(Context context, double latitude, double longitude) {
         try {
+            if (context == null){
+                return Collections.emptyList();
+            }
             Geocoder geocoder = new Geocoder(context);
-            List<Address> list = filterResults(geocoder.getFromLocation(latitude, longitude, 10));
-            if (!list.isEmpty()) return list;
-        } catch (IOException e) {
-            Log.w("ZUP", e.getMessage(), e);
-        }
-
-        try {
-            return filterResults(Geocoder2.getFromLocation(latitude, longitude));
+            List<Address> list = filterResults(geocoder.getFromLocation(latitude, longitude, 6));
+            if (list != null || !list.isEmpty()) {
+                return list;
+            }
+            List<Address> addrs = filterResults(Geocoder2.getFromLocation(latitude, longitude));
+            return addrs;
         } catch (IOException e) {
             Log.e("ZUP", e.getMessage(), e);
             return Collections.emptyList();

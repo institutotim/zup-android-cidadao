@@ -125,10 +125,7 @@
         <!-- Google Maps -->
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyBClDez-fV6ZogdNffUA0Njs3p1GuqJ3Jk"/>
-        <!-- SBC android:value="AIzaSyC7gX48UhEQCzznqspcgTqWyaqvtxqH_Xw" />-->
-        <!-- ORIGINAL android:value="@string/google_key" />-->
-        <!-- STAGING android:value="AIzaSyCtS3vPoCTSVjHW0ULAl3zNoa3tnmREiEE"/> -->
+            android:value="@string/google_key"/>
         <!-- Google Play Services -->
         <meta-data
             android:name="com.google.android.gms.version"

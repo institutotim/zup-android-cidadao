@@ -173,7 +173,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             exploreFragment.refresh();
             if (minhaContaFragment != null) minhaContaFragment.refresh();
         } else if (requestCode == FILTRO_CODE && resultCode == Activity.RESULT_OK) {
-            exploreFragment.aplicarFiltro((BuscaExplore) data.getSerializableExtra("busca"));
+            exploreFragment.applyFilter((BuscaExplore) data.getSerializableExtra("busca"));
         } else if (requestCode == EstatisticasFragment.REQUEST_FILTRO && resultCode == Activity.RESULT_OK) {
             estatisticasFragment.aplicarFiltro((BuscaEstatisticas) data.getSerializableExtra("busca"));
         }

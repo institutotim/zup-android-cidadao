@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ZUP Staging</string>
-    <string name="google_key">AIzaSyDQm-4GmbP4DFV_Sq72N6ZGaLbDYMTfAlg</string>
+    <string name="google_key">AIzaSyCtS3vPoCTSVjHW0ULAl3zNoa3tnmREiEE</string>
     <string name="gcm_project">273436268697</string>
     <string name="prefeitura">Prefeitura de São Bernardo do Campo</string>
 </resources>
