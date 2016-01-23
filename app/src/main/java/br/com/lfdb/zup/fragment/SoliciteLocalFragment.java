@@ -37,6 +37,7 @@ import br.com.lfdb.zup.util.ImageUtils;
 import br.com.lfdb.zup.util.ViewUtils;
 import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -97,35 +98,39 @@ import org.apache.commons.lang3.StringUtils;
           .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
   @AfterViews void init() {
-    setRetainInstance(true);
-    ((SoliciteActivity) getActivity()).exibirBarraInferior(true);
-    ((SoliciteActivity) getActivity()).setInfo(R.string.selecione_o_local);
-    ((SoliciteActivity) getActivity()).enableNextButton(valid);
-    map =
-        ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaLocal)).getMap();
-    if (map != null) {
-      mapInit();
-    }
-    PlacesAutoCompleteAdapter placesAutoCompleteAdapter =
-        new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item,
-            ExploreFragment.class);
-    autocompleteEndereco.setTypeface(FontUtils.getRegular(getActivity()));
-    autocompleteEndereco.setAdapter(placesAutoCompleteAdapter);
-    autocompleteEndereco.setOnItemClickListener(this);
-    autocompleteEndereco.setOnEditorActionListener((v, actionId, event) -> {
-      boolean handled = false;
-      if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-        searchTask(v.getText().toString());
-        ViewUtils.hideKeyboard(getActivity(), v);
-        handled = true;
+    try {
+      setRetainInstance(true);
+      ((SoliciteActivity) getActivity()).exibirBarraInferior(true);
+      ((SoliciteActivity) getActivity()).setInfo(R.string.selecione_o_local);
+      ((SoliciteActivity) getActivity()).enableNextButton(valid);
+      map = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaLocal)).getMap();
+      if (map != null) {
+        mapInit();
       }
-      return handled;
-    });
-    tvNumero.setTypeface(FontUtils.getRegular(getActivity()));
-    message.setTypeface(FontUtils.getSemibold(getActivity()));
-    timerEnderecoTask(latitude, longitude);
-    if (file != null && !file.isEmpty()) {
-      marcador.setImageBitmap(ImageUtils.getScaled(getActivity(), "reports", file));
+      PlacesAutoCompleteAdapter placesAutoCompleteAdapter =
+          new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item,
+              ExploreFragment.class);
+      autocompleteEndereco.setTypeface(FontUtils.getRegular(getActivity()));
+      autocompleteEndereco.setAdapter(placesAutoCompleteAdapter);
+      autocompleteEndereco.setOnItemClickListener(this);
+      autocompleteEndereco.setOnEditorActionListener((v, actionId, event) -> {
+        boolean handled = false;
+        if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+          searchTask(v.getText().toString());
+          ViewUtils.hideKeyboard(getActivity(), v);
+          handled = true;
+        }
+        return handled;
+      });
+      tvNumero.setTypeface(FontUtils.getRegular(getActivity()));
+      message.setTypeface(FontUtils.getSemibold(getActivity()));
+      timerEnderecoTask(latitude, longitude);
+      if (file != null && !file.isEmpty()) {
+        marcador.setImageBitmap(ImageUtils.getScaled(getActivity(), "reports", file));
+      }
+    } catch(Exception e){
+      Log.e("ZUP", e.getMessage(), e);
+      Crashlytics.logException(e);
     }
   }
 
@@ -139,30 +144,33 @@ import org.apache.commons.lang3.StringUtils;
   }
 
   @Click void editar() {
-    final View dialogView =
-        LayoutInflater.from(getActivity()).inflate(R.layout.dialog_endereco, null);
-    ((TextView) dialogView.findViewById(R.id.endereco)).setText(street);
-    ((TextView) dialogView.findViewById(R.id.numero)).setText(number);
-    ((TextView) dialogView.findViewById(R.id.referencia)).setText(
-        ((SoliciteActivity) getActivity()).getReferencia());
+    try {
+      final View dialogView =
+          LayoutInflater.from(getActivity()).inflate(R.layout.dialog_endereco, null);
+      ((TextView) dialogView.findViewById(R.id.endereco)).setText(street);
+      ((TextView) dialogView.findViewById(R.id.numero)).setText(number);
+      ((TextView) dialogView.findViewById(R.id.referencia)).setText(((SoliciteActivity) getActivity()).getReferencia());
 
-    new AlertDialog.Builder(getActivity()).setTitle("Endereço do Relato")
-        .setView(dialogView)
-        .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
-        .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
-          final String num = ((TextView) dialogView.findViewById(R.id.numero)).getText().toString();
-          final String r = ((TextView) dialogView.findViewById(R.id.endereco)).getText().toString();
-          String referencia =
-              ((TextView) dialogView.findViewById(R.id.referencia)).getText().toString();
-          if (referencia != null && !referencia.trim().isEmpty()) {
-            ((SoliciteActivity) getActivity()).setReferencia(referencia);
-          }
-          if (validarEndereco(r, num)) {
-            task(r, num, dialog);
-            dialog.dismiss();
-          }
-        })
-        .show();
+      new AlertDialog.Builder(getActivity()).setTitle("Endereço do Relato")
+          .setView(dialogView)
+          .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
+          .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
+            final String num = ((TextView) dialogView.findViewById(R.id.numero)).getText().toString();
+            final String r = ((TextView) dialogView.findViewById(R.id.endereco)).getText().toString();
+            String referencia = ((TextView) dialogView.findViewById(R.id.referencia)).getText().toString();
+            if (referencia != null && !referencia.trim().isEmpty()) {
+              ((SoliciteActivity) getActivity()).setReferencia(referencia);
+            }
+            if (validarEndereco(r, num)) {
+              task(r, num, dialog);
+              dialog.dismiss();
+            }
+          })
+          .show();
+    } catch(Exception e){
+      Log.e("ZUP", e.getMessage(), e);
+      Crashlytics.logException(e);
+    }
   }
 
   @UiThread void mapInit() {
@@ -228,42 +236,47 @@ import org.apache.commons.lang3.StringUtils;
   }
 
   @UiThread void verifyValid() {
-    if (!isAdded()) {
-      return;
-    }
-    ((SoliciteActivity) getActivity()).enableNextButton(valid);
-    if (!valid && error.getVisibility() != View.VISIBLE) {
-      AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
-      anim.setDuration(1000);
-      anim.setRepeatMode(Animation.REVERSE);
-      anim.setAnimationListener(new Animation.AnimationListener() {
-        @Override public void onAnimationStart(Animation animation) {
-        }
+    try {
+      if (!isAdded()) {
+        return;
+      }
+      ((SoliciteActivity) getActivity()).enableNextButton(valid);
+      if (!valid && error.getVisibility() != View.VISIBLE) {
+        AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
+        anim.setDuration(1000);
+        anim.setRepeatMode(Animation.REVERSE);
+        anim.setAnimationListener(new Animation.AnimationListener() {
+          @Override public void onAnimationStart(Animation animation) {
+          }
 
-        @Override public void onAnimationEnd(Animation animation) {
-          error.setVisibility(View.VISIBLE);
-        }
+          @Override public void onAnimationEnd(Animation animation) {
+            error.setVisibility(View.VISIBLE);
+          }
 
-        @Override public void onAnimationRepeat(Animation animation) {
-        }
-      });
-      error.startAnimation(anim);
-    } else if (valid && error.getVisibility() != View.GONE) {
-      AlphaAnimation anim = new AlphaAnimation(1.0f, 0.0f);
-      anim.setDuration(1000);
-      anim.setRepeatMode(Animation.REVERSE);
-      anim.setAnimationListener(new Animation.AnimationListener() {
-        @Override public void onAnimationStart(Animation animation) {
-        }
+          @Override public void onAnimationRepeat(Animation animation) {
+          }
+        });
+        error.startAnimation(anim);
+      } else if (valid && error.getVisibility() != View.GONE) {
+        AlphaAnimation anim = new AlphaAnimation(1.0f, 0.0f);
+        anim.setDuration(1000);
+        anim.setRepeatMode(Animation.REVERSE);
+        anim.setAnimationListener(new Animation.AnimationListener() {
+          @Override public void onAnimationStart(Animation animation) {
+          }
 
-        @Override public void onAnimationEnd(Animation animation) {
-          error.setVisibility(View.GONE);
-        }
+          @Override public void onAnimationEnd(Animation animation) {
+            error.setVisibility(View.GONE);
+          }
 
-        @Override public void onAnimationRepeat(Animation animation) {
-        }
-      });
-      error.startAnimation(anim);
+          @Override public void onAnimationRepeat(Animation animation) {
+          }
+        });
+        error.startAnimation(anim);
+      }
+    } catch(Exception e){
+      Log.e("ZUP", e.getMessage(), e);
+      Crashlytics.logException(e);
     }
   }
 
@@ -328,8 +341,9 @@ import org.apache.commons.lang3.StringUtils;
 
           showHideLoading(false);
         }
-      } catch (Exception e) {
-        Log.e("Boundary validation", "Failed to validate boundary", e);
+      } catch(Exception e){
+        Log.e("ZUP", e.getMessage(), e);
+        Crashlytics.logException(e);
       }
     }
   }
@@ -356,9 +370,9 @@ import org.apache.commons.lang3.StringUtils;
       }
       updateUi(addr, number);
       updateUiAdapter(addr);
-    } catch (Exception e) {
-      e.printStackTrace();
-      Log.e("Address Task", e.getMessage(), e);
+    } catch(Exception e){
+      Log.e("ZUP", e.getMessage(), e);
+      Crashlytics.logException(e);
     }
   }
 
@@ -376,8 +390,9 @@ import org.apache.commons.lang3.StringUtils;
               .build();
       CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
       map.animateCamera(update);
-    } catch (Exception e) {
+    } catch(Exception e){
       Log.e("ZUP", e.getMessage(), e);
+      Crashlytics.logException(e);
     }
   }
 
@@ -391,8 +406,9 @@ import org.apache.commons.lang3.StringUtils;
       }
       LatLng latLong = new LatLng(addr.getLatitude(), addr.getLongitude());
       updateCamera(latLong);
-    } catch (Exception e) {
+    } catch(Exception e){
       Log.e("ZUP", e.getMessage(), e);
+      Crashlytics.logException(e);
     }
   }
 
@@ -401,8 +417,9 @@ import org.apache.commons.lang3.StringUtils;
       CameraPosition p = new CameraPosition.Builder().target(latLong).zoom(16f).build();
       CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
       map.animateCamera(update);
-    } catch (Exception e) {
+    } catch(Exception e){
       Log.e("ZUP", e.getMessage(), e);
+      Crashlytics.logException(e);
     }
   }
 
@@ -451,8 +468,9 @@ import org.apache.commons.lang3.StringUtils;
           new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item,
               ExploreFragment.class));
       tvNumero.setText(number);
-    } catch (Exception e){
-      e.printStackTrace();
+    } catch(Exception e){
+      Log.e("ZUP", e.getMessage(), e);
+      Crashlytics.logException(e);
     }
   }
 

@@ -21,9 +21,33 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import br.com.lfdb.zup.DetalheMapaActivity;
+import br.com.lfdb.zup.FiltroExploreNovoActivity;
+import br.com.lfdb.zup.MainActivity;
+import br.com.lfdb.zup.R;
+import br.com.lfdb.zup.SolicitacaoDetalheActivity;
+import br.com.lfdb.zup.api.model.Cluster;
+import br.com.lfdb.zup.base.BaseFragment;
+import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.domain.BuscaExplore;
+import br.com.lfdb.zup.domain.CategoriaInventario;
+import br.com.lfdb.zup.domain.CategoriaRelato;
+import br.com.lfdb.zup.domain.ItemInventario;
+import br.com.lfdb.zup.domain.ItemRelato;
+import br.com.lfdb.zup.domain.Place;
 import br.com.lfdb.zup.domain.RequestModel;
+import br.com.lfdb.zup.domain.SolicitacaoListItem;
+import br.com.lfdb.zup.service.CategoriaInventarioService;
+import br.com.lfdb.zup.service.CategoriaRelatoService;
 import br.com.lfdb.zup.task.MarkerRetriever;
+import br.com.lfdb.zup.util.BitmapUtils;
+import br.com.lfdb.zup.util.FontUtils;
+import br.com.lfdb.zup.util.GeoUtils;
+import br.com.lfdb.zup.util.MapUtils;
+import br.com.lfdb.zup.util.PreferenceUtils;
+import br.com.lfdb.zup.util.ViewUtils;
+import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -40,45 +64,18 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Background;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.UiThread;
-import org.androidannotations.annotations.ViewById;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import br.com.lfdb.zup.DetalheMapaActivity;
-import br.com.lfdb.zup.FiltroExploreNovoActivity;
-import br.com.lfdb.zup.MainActivity;
-import br.com.lfdb.zup.R;
-import br.com.lfdb.zup.SolicitacaoDetalheActivity;
-import br.com.lfdb.zup.api.model.Cluster;
-import br.com.lfdb.zup.base.BaseFragment;
-import br.com.lfdb.zup.core.Constantes;
-import br.com.lfdb.zup.domain.BuscaExplore;
-import br.com.lfdb.zup.domain.CategoriaInventario;
-import br.com.lfdb.zup.domain.CategoriaRelato;
-import br.com.lfdb.zup.domain.ItemInventario;
-import br.com.lfdb.zup.domain.ItemRelato;
-import br.com.lfdb.zup.domain.Place;
-import br.com.lfdb.zup.domain.SolicitacaoListItem;
-import br.com.lfdb.zup.service.CategoriaInventarioService;
-import br.com.lfdb.zup.service.CategoriaRelatoService;
-import br.com.lfdb.zup.util.BitmapUtils;
-import br.com.lfdb.zup.util.FontUtils;
-import br.com.lfdb.zup.util.GeoUtils;
-import br.com.lfdb.zup.util.MapUtils;
-import br.com.lfdb.zup.util.PreferenceUtils;
-import br.com.lfdb.zup.util.ViewUtils;
-import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Background;
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.UiThread;
+import org.androidannotations.annotations.ViewById;
 
 @EFragment(R.layout.fragment_explore) public class ExploreFragment extends BaseFragment
     implements GoogleMap.OnInfoWindowClickListener, GoogleMap.OnCameraChangeListener,
@@ -222,39 +219,45 @@ import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
   }
 
   @AfterViews void init() {
-    fontFace();
-    SupportMapFragment fragment =
-        (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-    map = fragment.getMap();
-    boolean showLogo = getResources().getBoolean(R.bool.show_logo_header);
-    if (showLogo) {
-      logo_header.setVisibility(View.VISIBLE);
-    }
-    busca = PreferenceUtils.obterBuscaExplore(getActivity());
-    if (busca == null) {
-      busca = new BuscaExplore();
-      List<CategoriaRelato> categorias = new CategoriaRelatoService().getCategorias(getActivity());
-      for (CategoriaRelato categoria : categorias) {
-        busca.getIdsCategoriaRelato().add(categoria.getId());
-        for (CategoriaRelato sub : categoria.getSubcategorias()) {
-          busca.getIdsCategoriaRelato().add(sub.getId());
+    try {
+      fontFace();
+      SupportMapFragment fragment =
+          (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+      map = fragment.getMap();
+      boolean showLogo = getResources().getBoolean(R.bool.show_logo_header);
+      if (showLogo) {
+        logo_header.setVisibility(View.VISIBLE);
+      }
+      busca = PreferenceUtils.obterBuscaExplore(getActivity());
+      if (busca == null) {
+        busca = new BuscaExplore();
+        List<CategoriaRelato> categorias =
+            new CategoriaRelatoService().getCategorias(getActivity());
+        for (CategoriaRelato categoria : categorias) {
+          busca.getIdsCategoriaRelato().add(categoria.getId());
+          for (CategoriaRelato sub : categoria.getSubcategorias()) {
+            busca.getIdsCategoriaRelato().add(sub.getId());
+          }
         }
       }
+      mapSettings();
+      autocomplete.setAdapter(
+          new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item,
+              ExploreFragment.class));
+      autocomplete.setOnItemClickListener(this);
+      autocomplete.setOnEditorActionListener((v, actionId, event) -> {
+        boolean handled = false;
+        if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+          searchTask(v.getText().toString());
+          ViewUtils.hideKeyboard(getActivity(), v);
+          handled = true;
+        }
+        return handled;
+      });
+    } catch (Exception e) {
+      Log.e("ZUP", e.getMessage(), e);
+      Crashlytics.logException(e);
     }
-    mapSettings();
-    autocomplete.setAdapter(
-        new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item,
-            ExploreFragment.class));
-    autocomplete.setOnItemClickListener(this);
-    autocomplete.setOnEditorActionListener((v, actionId, event) -> {
-      boolean handled = false;
-      if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-        searchTask(v.getText().toString());
-        ViewUtils.hideKeyboard(getActivity(), v);
-        handled = true;
-      }
-      return handled;
-    });
   }
 
   @UiThread void mapSettings() {
@@ -300,7 +303,6 @@ import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
 
   @Override public void onInfoWindowClick(Marker marker) {
     Intent intent = null;
-
     Object marcador = marcadores.get(marker);
     if (marcador instanceof ItemInventario) {
       intent = new Intent(getActivity(), DetalheMapaActivity.class);
@@ -328,7 +330,6 @@ import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
       intent = new Intent(getActivity(), SolicitacaoDetalheActivity.class);
       intent.putExtra("solicitacao", item);
     }
-
     startActivity(intent);
   }
 
@@ -341,52 +342,67 @@ import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
   }
 
   @UiThread public void addMarkerInventory(ItemInventario item) {
-    itens.add(item);
-    if (!isInsideFilter(item.getCategoria())) {
-      return;
+    try {
+      itens.add(item);
+      if (!isInsideFilter(item.getCategoria())) {
+        return;
+      }
+      LatLng latLong = new LatLng(item.getLatitude(), item.getLongitude());
+      String markerToInventory = "";
+      if (item.getCategoria().isShowMarker()) {
+        markerToInventory = item.getCategoria().getMarcador();
+      } else {
+        markerToInventory = item.getCategoria().getPin();
+      }
+      Bitmap marker = BitmapUtils.getInventoryMarker(getActivity(), markerToInventory);
+      BitmapDescriptor bdf = BitmapDescriptorFactory.fromBitmap(marker);
+      MarkerOptions optionsMarker = new MarkerOptions();
+      optionsMarker.position(latLong);
+      optionsMarker.icon(bdf);
+      optionsMarker.title(item.getCategoria().getNome());
+      marcadores.put(map.addMarker(optionsMarker), item);
+    } catch (Exception e) {
+      Log.e("ZUP", e.getMessage(), e);
+      Crashlytics.logException(e);
     }
-    LatLng latLong = new LatLng(item.getLatitude(), item.getLongitude());
-    String markerToInventory = "";
-    if (item.getCategoria().isShowMarker()) {
-      markerToInventory = item.getCategoria().getMarcador();
-    } else {
-      markerToInventory = item.getCategoria().getPin();
-    }
-    Bitmap marker = BitmapUtils.getInventoryMarker(getActivity(), markerToInventory);
-    BitmapDescriptor bdf = BitmapDescriptorFactory.fromBitmap(marker);
-    MarkerOptions optionsMarker = new MarkerOptions();
-    optionsMarker.position(latLong);
-    optionsMarker.icon(bdf);
-    optionsMarker.title(item.getCategoria().getNome());
-    marcadores.put(map.addMarker(optionsMarker), item);
   }
 
   @UiThread public void addMarkerReport(ItemRelato item) {
-    itens.add(item);
-    if (!isInsideFilter(item.getCategoria())) {
-      return;
+    try {
+      itens.add(item);
+      if (!isInsideFilter(item.getCategoria())) {
+        return;
+      }
+      LatLng latLong = new LatLng(item.getLatitude(), item.getLongitude());
+      String markerFromCategory = item.getCategoria().getMarcador();
+      Bitmap marker = BitmapUtils.getReportMarker(getActivity(), markerFromCategory);
+      BitmapDescriptor bdf = BitmapDescriptorFactory.fromBitmap(marker);
+      MarkerOptions optionsMarker = new MarkerOptions();
+      optionsMarker.position(latLong);
+      optionsMarker.icon(bdf);
+      optionsMarker.title(item.getCategoria().getNome());
+      marcadores.put(map.addMarker(optionsMarker), item);
+    } catch (Exception e) {
+      Log.e("ZUP", e.getMessage(), e);
+      Crashlytics.logException(e);
     }
-    LatLng latLong = new LatLng(item.getLatitude(), item.getLongitude());
-    String markerFromCategory = item.getCategoria().getMarcador();
-    Bitmap marker = BitmapUtils.getReportMarker(getActivity(), markerFromCategory);
-    BitmapDescriptor bdf = BitmapDescriptorFactory.fromBitmap(marker);
-    MarkerOptions optionsMarker = new MarkerOptions();
-    optionsMarker.position(latLong);
-    optionsMarker.icon(bdf);
-    optionsMarker.title(item.getCategoria().getNome());
-    marcadores.put(map.addMarker(optionsMarker), item);
   }
 
   @UiThread public void addMarkerCluster(Cluster item) {
-    validateCluster(item);
-    LatLng latLong = new LatLng(item.getLatitude(), item.getLongitude());
-    BitmapDescriptor bdf = BitmapDescriptorFactory.fromBitmap(MapUtils.createMarker(
-        getActivity(), getClusterColor(item), item.getCount()));
-    MarkerOptions optionsMarker = new MarkerOptions();
-    optionsMarker.position(latLong);
-    optionsMarker.icon(bdf);
-    itens.add(item);
-    marcadores.put(map.addMarker(optionsMarker), item);
+    try {
+      validateCluster(item);
+      LatLng latLong = new LatLng(item.getLatitude(), item.getLongitude());
+      BitmapDescriptor bdf = BitmapDescriptorFactory.fromBitmap(
+          MapUtils.createMarker(getActivity(), getClusterColor(item), item.getCount()));
+      MarkerOptions optionsMarker = new MarkerOptions();
+      optionsMarker.position(latLong);
+      optionsMarker.icon(bdf);
+      itens.add(item);
+      marcadores.put(map.addMarker(optionsMarker), item);
+    } catch (Exception e) {
+      Log.e("ZUP", e.getMessage(), e);
+      Crashlytics.logException(e);
+    }
   }
 
   private void validateCluster(Cluster item) {
@@ -402,40 +418,50 @@ import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
   }
 
   @UiThread void removeInventoryMarkerIfContained(long id) {
-    ItemInventario itemInventario = null;
-    for (Object item : itens) {
-      if (item instanceof ItemInventario) {
-        if (((ItemInventario) item).getId() == id) {
-          itemInventario = (ItemInventario) item;
-          break;
+    try {
+      ItemInventario itemInventario = null;
+      for (Object item : itens) {
+        if (item instanceof ItemInventario) {
+          if (((ItemInventario) item).getId() == id) {
+            itemInventario = (ItemInventario) item;
+            break;
+          }
         }
       }
-    }
 
-    if (itemInventario != null) {
-      itens.remove(itemInventario);
-      Marker marker = getKeyFromValue(marcadores, itemInventario);
-      marcadores.remove(marker);
-      marker.remove();
+      if (itemInventario != null) {
+        itens.remove(itemInventario);
+        Marker marker = getKeyFromValue(marcadores, itemInventario);
+        marcadores.remove(marker);
+        marker.remove();
+      }
+    } catch(Exception e){
+      Log.e("ZUP", e.getMessage(), e);
+      Crashlytics.logException(e);
     }
   }
 
   @UiThread void removeReportMarkerIfContained(long id) {
-    ItemRelato itemRelato = null;
-    for (Object item : itens) {
-      if (item instanceof ItemRelato) {
-        if (((ItemRelato) item).getId() == id) {
-          itemRelato = (ItemRelato) item;
-          break;
+    try {
+      ItemRelato itemRelato = null;
+      for (Object item : itens) {
+        if (item instanceof ItemRelato) {
+          if (((ItemRelato) item).getId() == id) {
+            itemRelato = (ItemRelato) item;
+            break;
+          }
         }
       }
-    }
 
-    if (itemRelato != null) {
-      itens.remove(itemRelato);
-      Marker marker = getKeyFromValue(marcadores, itemRelato);
-      marcadores.remove(marker);
-      marker.remove();
+      if (itemRelato != null) {
+        itens.remove(itemRelato);
+        Marker marker = getKeyFromValue(marcadores, itemRelato);
+        marcadores.remove(marker);
+        marker.remove();
+      }
+    } catch(Exception e){
+      Log.e("ZUP", e.getMessage(), e);
+      Crashlytics.logException(e);
     }
   }
 
@@ -470,30 +496,40 @@ import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
   }
 
   @UiThread void exibirElementos() {
-    for (Object pontoMapa : itens) {
-      if (pontoMapa instanceof ItemRelato) {
-        ItemRelato item = (ItemRelato) pontoMapa;
-        if (busca.getIdsCategoriaRelato().contains(item.getId())) {
-          addMarkerReport(item);
-        }
-      } else if (pontoMapa instanceof ItemInventario) {
-        ItemInventario item = (ItemInventario) pontoMapa;
-        if (busca.getIdsCategoriaInventario().contains(item.getId())) {
-          addMarkerInventory(item);
+    try {
+      for (Object pontoMapa : itens) {
+        if (pontoMapa instanceof ItemRelato) {
+          ItemRelato item = (ItemRelato) pontoMapa;
+          if (busca.getIdsCategoriaRelato().contains(item.getId())) {
+            addMarkerReport(item);
+          }
+        } else if (pontoMapa instanceof ItemInventario) {
+          ItemInventario item = (ItemInventario) pontoMapa;
+          if (busca.getIdsCategoriaInventario().contains(item.getId())) {
+            addMarkerInventory(item);
+          }
         }
       }
+    } catch(Exception e){
+      Log.e("ZUP", e.getMessage(), e);
+      Crashlytics.logException(e);
     }
   }
 
   @UiThread void removerItensMapa() {
-    Iterator<Marker> it = marcadores.keySet().iterator();
-    while (it.hasNext()) {
-      Marker marker = it.next();
-      if (!GeoUtils.isVisible(map.getProjection().getVisibleRegion(), marker.getPosition())) {
-        marker.remove();
-        it.remove();
-        marcadores.remove(marker);
+    try {
+      Iterator<Marker> it = marcadores.keySet().iterator();
+      while (it.hasNext()) {
+        Marker marker = it.next();
+        if (!GeoUtils.isVisible(map.getProjection().getVisibleRegion(), marker.getPosition())) {
+          marker.remove();
+          it.remove();
+          marcadores.remove(marker);
+        }
       }
+    } catch(Exception e){
+      Log.e("ZUP", e.getMessage(), e);
+      Crashlytics.logException(e);
     }
   }
 
@@ -531,8 +567,9 @@ import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
           }
           requestModel = null;
         }
-      } catch (Exception e) {
+      } catch(Exception e){
         Log.e("ZUP", e.getMessage(), e);
+        Crashlytics.logException(e);
       }
     }
   }
@@ -558,9 +595,14 @@ import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
         pontoBusca.remove();
       }
       updateCameraWithMarkerb(addr);
-    } catch (Exception e) {
+    } catch(Exception e){
       Log.e("ZUP", e.getMessage(), e);
+      Crashlytics.logException(e);
     }
+  }
+
+  @UiThread void removeAndUpdate() {
+
   }
 
   @Background void searchTask(String param) {
@@ -573,30 +615,24 @@ import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
         pontoBusca.remove();
       }
       updateCamera(addr);
-    } catch (Exception e) {
+    } catch(Exception e){
       Log.e("ZUP", e.getMessage(), e);
+      Crashlytics.logException(e);
     }
   }
 
   @UiThread void updateCamera(Address addr) {
     LatLng latLong = new LatLng(addr.getLatitude(), addr.getLongitude());
-    CameraPosition p =
-        new CameraPosition.Builder().target(latLong)
-            .zoom(15)
-            .build();
+    CameraPosition p = new CameraPosition.Builder().target(latLong).zoom(15).build();
     CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
     map.animateCamera(update);
   }
 
-  @UiThread void updateCameraWithMarkerb (Address addr) {
+  @UiThread void updateCameraWithMarkerb(Address addr) {
     LatLng latLong = new LatLng(addr.getLatitude(), addr.getLongitude());
     pontoBusca = map.addMarker(
-        new MarkerOptions().position(latLong)
-            .icon(BitmapDescriptorFactory.defaultMarker()));
-    CameraPosition p =
-        new CameraPosition.Builder().target(latLong)
-            .zoom(15)
-            .build();
+        new MarkerOptions().position(latLong).icon(BitmapDescriptorFactory.defaultMarker()));
+    CameraPosition p = new CameraPosition.Builder().target(latLong).zoom(15).build();
     CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
     map.animateCamera(update);
   }

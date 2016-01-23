@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.todddavies.components.progressbar.ProgressWheel;
@@ -130,6 +131,7 @@ public class EstatisticasFragment extends BaseFragment {
                 Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
                 if (response.isSuccessful()) return response.body().string();
             } catch (Exception e) {
+                Crashlytics.logException(e);
                 Log.e("ZUP", e.getMessage(), e);
             }
             return null;
@@ -173,6 +175,7 @@ public class EstatisticasFragment extends BaseFragment {
 
                     montarGraficos(estatisticas);
                 } catch (Exception e) {
+                    Crashlytics.logException(e);
                     Log.e("ZUP", e.getMessage(), e);
                     Toast.makeText(getActivity(), "Não foi possível obter as estatísticas", Toast.LENGTH_LONG).show();
                 }

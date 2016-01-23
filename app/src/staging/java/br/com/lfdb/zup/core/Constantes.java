@@ -7,7 +7,7 @@ public class Constantes {
     public static final String PREF_KEY_OAUTH_SECRET = "oauthTokenSecret";
     
     public static final String REST_URL = "http://api.latest.staging.zup.ntxdev.com.br";
-    public static final String REST_URL_BOAVISTA = "http://api.boa-vista.zeladoriaurbana.com.br";
+    public static final String REST_URL_SBC = "http://vcsbc.saobernardo.sp.gov.br:8081";
     public static final String WEBSITE_URL = "http://web.latest.staging.zup.ntxdev.com.br/web";
     public static final String PLACES_KEY = "AIzaSyBBgfh2T7cl4cfOijvlSYAjDs713ucx35g";
 

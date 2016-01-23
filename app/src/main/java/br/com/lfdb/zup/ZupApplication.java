@@ -2,42 +2,37 @@ package br.com.lfdb.zup;
 
 import android.content.Context;
 import android.support.multidex.MultiDexApplication;
-
-import com.crashlytics.android.Crashlytics;
-
-import net.danlew.android.joda.JodaTimeAndroid;
-
 import br.com.lfdb.zup.track.GoogleAnalyticsTracker;
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
 import io.fabric.sdk.android.Fabric;
+import net.danlew.android.joda.JodaTimeAndroid;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 public class ZupApplication extends MultiDexApplication {
 
-    static Context context;
+  static Context context;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
+  @Override public void onCreate() {
+    super.onCreate();
 
-        JodaTimeAndroid.init(this);
-        new Thread(() -> {
-            CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                    .setDefaultFontPath("fonts/OpenSans-Regular.ttf")
-                    .setFontAttrId(R.attr.fontPath)
-                    .build());
+    JodaTimeAndroid.init(this);
+    new Thread(() -> {
+      CalligraphyConfig.initDefault(
+          new CalligraphyConfig.Builder().setDefaultFontPath("fonts/OpenSans-Regular.ttf")
+              .setFontAttrId(R.attr.fontPath)
+              .build());
 
-            if (!BuildConfig.DEBUG) {
-                Fabric.with(this, new Crashlytics());
-            }
-        }).start();
+      CrashlyticsCore core = new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build();
+      Fabric.with(this, new Crashlytics.Builder().core(core).build(), new Crashlytics());
+    }).start();
 
-        GoogleAnalyticsTracker.init(this);
+    GoogleAnalyticsTracker.init(this);
 
-        context = this.getApplicationContext();
-    }
+    context = this.getApplicationContext();
+  }
 
-    public static Context getContext() {
-        return context;
-    }
-
+  public static Context getContext() {
+    return context;
+  }
 }

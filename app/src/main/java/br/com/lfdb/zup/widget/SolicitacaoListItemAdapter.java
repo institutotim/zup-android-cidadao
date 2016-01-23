@@ -39,6 +39,7 @@ public class SolicitacaoListItemAdapter {
         } else {
             categoria = service.getById(context, json.getJSONObject("category").getLong("id"));
         }
+
         item.setTitulo(categoria.getNome());
         item.setCategoria(categoria);
         item.setProtocolo(json.optString("protocol", null));

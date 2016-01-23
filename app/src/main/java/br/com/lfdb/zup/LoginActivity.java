@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.Request;
@@ -47,6 +48,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private EditText campoEmail;
     private TextView linkEsqueciSenha;
 
+    LoginService loginService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +81,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
         campoEmail = (EditText) findViewById(R.id.campoEmail);
         campoEmail.setTypeface(FontUtils.getLight(this));
+
+        loginService = new LoginService();
     }
 
     @Override
@@ -144,9 +149,12 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             if (result != null) {
                 try {
                     JSONObject json = new JSONObject(result);
-                    new LoginService().registrarLogin(LoginActivity.this,
+                    loginService.registrarLogin(LoginActivity.this,
                             json.getJSONObject("user"),
                             json.getString("token"));
+                    Crashlytics.setUserIdentifier(
+                        String.valueOf(loginService.getUserId(LoginActivity.this)));
+                    Crashlytics.setUserEmail(campoEmail.getText().toString().trim());
                 } catch (JSONException e) {
                     Log.e("ZUP", e.getMessage(), e);
                 }

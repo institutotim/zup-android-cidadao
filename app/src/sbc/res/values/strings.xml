@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">VcSBC</string>
-    <string name="google_key">AIzaSyC7gX48UhEQCzznqspcgTqWyaqvtxqH_Xw</string>
+    <!--<string name="google_key">AIzaSyC7gX48UhEQCzznqspcgTqWyaqvtxqH_Xw</string>-->
+    <string name="google_key">AIzaSyCi0d9CQTXb-AYnR_zNtsbmVhqZPg84EpM</string>
     <string name="gcm_project">42155023351</string>
     <string name="prefeitura">Prefeitura de São Bernardo do Campo</string>
 </resources>
