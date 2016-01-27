@@ -3,6 +3,7 @@ package br.com.lfdb.zup.api;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import android.util.Log;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;

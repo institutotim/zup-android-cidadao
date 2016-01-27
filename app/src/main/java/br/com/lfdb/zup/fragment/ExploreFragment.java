@@ -254,6 +254,9 @@ import org.androidannotations.annotations.ViewById;
         }
         return handled;
       });
+      getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+      timerTask();
+      buildGoogleApiClient();
     } catch (Exception e) {
       Log.e("ZUP", e.getMessage(), e);
       Crashlytics.logException(e);
@@ -292,13 +295,6 @@ import org.androidannotations.annotations.ViewById;
     if (googleApiClient != null) {
       googleApiClient.disconnect();
     }
-  }
-
-  @Override public void onActivityCreated(Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
-    getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-    timerTask();
-    buildGoogleApiClient();
   }
 
   @Override public void onInfoWindowClick(Marker marker) {
@@ -405,7 +401,7 @@ import org.androidannotations.annotations.ViewById;
     }
   }
 
-  private void validateCluster(Cluster item) {
+  @UiThread void validateCluster(Cluster item) {
     if (item.isReport()) {
       for (Long id : item.getCategoriesIds()) {
         removeReportMarkerIfContained(id);

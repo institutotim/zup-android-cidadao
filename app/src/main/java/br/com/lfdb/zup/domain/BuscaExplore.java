@@ -9,7 +9,7 @@ public class BuscaExplore implements Serializable {
 
 	private ArrayList<Long> idsCategoriaInventario = new ArrayList<Long>();
 	private ArrayList<Long> idsCategoriaRelato = new ArrayList<Long>();
-	private Periodo periodo = Periodo.ULTIMA_SEMANA;
+	private Periodo periodo = Periodo.ULTIMOS_3_MESES;
 	private CategoriaRelato.Status status;
 
 	public enum Status {

@@ -20,7 +20,7 @@ public class SolicitacaoListItemAdapter {
         SolicitacaoListItem item = new SolicitacaoListItem();
         item.setId(json.getLong("id"));
         item.setComentario(json.getString("description"));
-        item.setData(DateUtils.getIntervaloTempo(DateUtils.parseRFC3339Date(json.getString("created_at"))));
+        item.setData(DateUtils.getDefault(DateUtils.parseRFC3339Date(json.getString("created_at"))));
         item.setEndereco(json.getString("address") +
                 (json.has("number") && !json.isNull("number") ? ", " + json.getString("number") : "") +
                 (json.has("postal_code") && !json.isNull("postal_code") ? ", " + json.getString("postal_code") : "") +

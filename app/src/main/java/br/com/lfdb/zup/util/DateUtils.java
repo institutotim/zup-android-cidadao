@@ -62,6 +62,18 @@ public class DateUtils {
         return "há " + contador + " dias atrás";
     }
 
+    public static String getDefault(Date data) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(data);
+        String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+        String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+        String year = String.valueOf(calendar.get(Calendar.YEAR));
+
+        if (day.length() < 2) { day = "0" + day; }
+        if (month.length() < 2) { month = "0" + month; }
+        return day + "/" + month + "/" + year;
+    }
+
     public static String getString(Long tempoEmSegundos) {
         long var = tempoEmSegundos != null ? tempoEmSegundos : 0;
         if (var < 60) return String.format("%d Segundos", var);
