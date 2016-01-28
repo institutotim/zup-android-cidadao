@@ -156,18 +156,23 @@ import org.androidannotations.annotations.ViewById;
         GooglePlayServicesUtil.getErrorDialog(resultCode, getActivity(),
             PLAY_SERVICES_RESOLUTION_REQUEST).show();
       } else {
-        Toast.makeText(getActivity(), getString(R.string.no_location_detected), Toast.LENGTH_LONG)
-            .show();
+        toast(getString(R.string.no_location_detected));
       }
       return false;
     }
     return true;
   }
 
+  @UiThread void toast(String msg){
+    Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG)
+        .show();
+  }
+
   @Override public void onConnectionSuspended(int i) {
 
   }
 
+  @UiThread
   @Override public void onLocationChanged(Location location) {
     userLatitude = location.getLatitude();
     userLongitude = location.getLongitude();
@@ -175,6 +180,7 @@ import org.androidannotations.annotations.ViewById;
       CameraPosition position = new CameraPosition.Builder().target(
           new LatLng(location.getLatitude(), location.getLongitude())).zoom(15).build();
       CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+      map.clear();
       map.animateCamera(update);
       updateCameraUser = false;
       wasLocalized = true;
@@ -335,6 +341,7 @@ import org.androidannotations.annotations.ViewById;
         .build();
     CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
     map.animateCamera(update);
+
   }
 
   @UiThread public void addMarkerInventory(ItemInventario item) {
@@ -481,6 +488,7 @@ import org.androidannotations.annotations.ViewById;
     ViewUtils.hideKeyboard(getActivity(), autocomplete);
   }
 
+  @UiThread
   @Override public void onCameraChange(CameraPosition cameraPosition) {
     latitude = cameraPosition.target.latitude;
     longitude = cameraPosition.target.longitude;
@@ -523,6 +531,7 @@ import org.androidannotations.annotations.ViewById;
           marcadores.remove(marker);
         }
       }
+      map.clear();
     } catch(Exception e){
       Log.e("ZUP", e.getMessage(), e);
       Crashlytics.logException(e);
@@ -595,10 +604,6 @@ import org.androidannotations.annotations.ViewById;
       Log.e("ZUP", e.getMessage(), e);
       Crashlytics.logException(e);
     }
-  }
-
-  @UiThread void removeAndUpdate() {
-
   }
 
   @Background void searchTask(String param) {

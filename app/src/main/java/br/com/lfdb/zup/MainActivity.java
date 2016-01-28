@@ -70,12 +70,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             setFragment(exploreFragment);
         } else {
             exploreButton.setVisibility(View.GONE);
-
             if (!FeatureService.getInstance(this).isStatsEnabled() &&
                     !FeatureService.getInstance(this).isCreateReportsClients()) {
                 findViewById(R.id.footer).setVisibility(View.GONE);
             }
-
             selectCurrent(R.id.minhaContaButton);
             current = minhaContaButton;
             minhaContaFragment = new MinhaContaFragment();
