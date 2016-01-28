@@ -56,6 +56,8 @@ import org.json.JSONObject;
   @ViewById TextView btnCreate;
   @ViewById TextView terms;
 
+  List<Integer> campos;
+
   @AfterViews void init() {
     loadTypeface();
     loadTerms();
@@ -103,11 +105,11 @@ import org.json.JSONObject;
     terms.setText(Html.fromHtml(getString(R.string.termos_de_uso_cadastro)));
   }
 
-  void registerIsValid() {
+  @UiThread void registerIsValid() {
     clear();
-    List<Integer> validadores = isValid();
-    if (!validadores.isEmpty()) {
-      focusLabels(validadores);
+    isValid();
+    if (campos != null && !campos.isEmpty()) {
+      focusLabels(campos);
       return;
     }
     if (FeatureService.getInstance(this).isAnySocialEnabled()) {
@@ -117,32 +119,35 @@ import org.json.JSONObject;
     register();
   }
 
-  private List<Integer> isValid() {
-    List<Integer> campos = new ArrayList<>();
+  void isValid() {
+    campos = new ArrayList<>();
     String pass = passField.getText().toString().trim();
     String confirmPass = confirmPassField.getText().toString().trim();
-    if (pass.isEmpty() || confirmPass.isEmpty() || !passField.equals(confirmPass)) {
+    if (pass.isEmpty() || confirmPass.isEmpty() || !pass.equals(confirmPass)) {
       campos.add(passField.getId());
       campos.add(confirmPassField.getId());
     } else if (pass.length() < 6) {
       campos.add(passField.getId());
-      Toast.makeText(this, getString(R.string.pass_length_message), Toast.LENGTH_SHORT).show();
+      toast(getString(R.string.pass_length_message));
     }
-    for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF,
-        R.id.campoTelefone, R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro,
-        R.id.campoCidade)) {
-      if (((TextView) findViewById(id)).getText().toString().trim().isEmpty()) {
-        campos.add(id);
-      }
-    }
+    add();
     String document = documentField.getText().toString().trim();
     if (!CpfValidador.isValid(document.replace("-", "").replace(".", ""))) {
       campos.add(documentField.getId());
     }
-    return campos;
   }
 
-  private void register() {
+  void add(){
+    for (Integer id : Arrays.asList(R.id.nameField, R.id.emailField, R.id.documentField,
+        R.id.phoneField, R.id.addressField, R.id.cepField, R.id.neighborhoodField,
+        R.id.cityField)) {
+      if (((TextView) findViewById(id)).getText().toString().trim().isEmpty()) {
+        campos.add(id);
+      }
+    }
+  }
+
+  @UiThread void register() {
     Usuario usuario = new Usuario();
     usuario.setBairro(neighborhoodField.getText().toString());
     usuario.setCep(cepField.getText().toString());
@@ -155,20 +160,25 @@ import org.json.JSONObject;
     usuario.setSenha(passField.getText().toString());
     usuario.setConfirmacaoSenha(confirmPassField.getText().toString());
     usuario.setCidade(cityField.getText().toString().trim());
-    tasker(usuario);
+    ProgressDialog dialog = new ProgressDialog(CadastroActivity.this);
+    dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+    dialog.setIndeterminate(true);
+    dialog.setMessage(getString(R.string.waiting_message));
+    dialog.show();
+    tasker(dialog, usuario);
   }
 
   @UiThread void focusLabels(List<Integer> campos) {
     for (Integer id : campos) {
       findViewById(id).setBackgroundResource(R.drawable.textbox_red);
     }
-    Toast.makeText(this, getString(R.string.review_fields_message), Toast.LENGTH_LONG).show();
+    toast(getString(R.string.review_fields_message));
   }
 
-  @UiThread void clear() {
-    for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF,
-        R.id.campoTelefone, R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro, R.id.campoSenha,
-        R.id.campoConfirmarSenha, R.id.campoCidade)) {
+  void clear() {
+    for (Integer id : Arrays.asList(R.id.nameField, R.id.emailField, R.id.documentField,
+        R.id.phoneField, R.id.addressField, R.id.cepField, R.id.neighborhoodField,
+        R.id.cityField)) {
       findViewById(id).setBackgroundResource(R.drawable.textbox_bg);
     }
   }
@@ -183,12 +193,7 @@ import org.json.JSONObject;
     return getString(R.string.cadastro);
   }
 
-  @Background void tasker(Usuario usuario) {
-    ProgressDialog dialog = new ProgressDialog(CadastroActivity.this);
-    dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-    dialog.setIndeterminate(true);
-    dialog.setMessage(getString(R.string.waiting_message));
-    dialog.show();
+  @Background void tasker(ProgressDialog dialog, Usuario usuario) {
     String result = null;
     try {
       SharedPreferences prefs =
@@ -219,19 +224,22 @@ import org.json.JSONObject;
       }
       dialog.dismiss();
       if (result == null) {
-        Toast.makeText(CadastroActivity.this, getString(R.string.register_fail), Toast.LENGTH_LONG)
-            .show();
+        toast(getString(R.string.register_fail));
         return;
       }
       JSONObject json = new JSONObject(result);
       new LoginService().registrarLogin(CadastroActivity.this, json.getJSONObject("user"),
           json.getString("token"));
-      Toast.makeText(CadastroActivity.this, getString(R.string.login_success), Toast.LENGTH_LONG)
-          .show();
+      toast(getString(R.string.login_success));
       setResult(Activity.RESULT_OK);
       finish();
     } catch (Exception e) {
       Log.e("ZUP Register error", e.getMessage());
     }
+  }
+
+  @UiThread void toast(String msg){
+    Toast.makeText(CadastroActivity.this, msg, Toast.LENGTH_LONG)
+        .show();
   }
 }

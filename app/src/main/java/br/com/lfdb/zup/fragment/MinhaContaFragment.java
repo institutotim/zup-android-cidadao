@@ -169,13 +169,12 @@ public class MinhaContaFragment extends BaseFragment implements AdapterView.OnIt
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         int loadedItems = firstVisibleItem + visibleItemCount;
         if ((loadedItems == totalItemCount) && !isLoading) {
-            if ((task != null && (task.getStatus() == AsyncTask.Status.FINISHED)) || task == null) {
-                task = new Tasker();
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
-                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                } else {
-                    task.execute();
-                }
+            shouldContinueLoading = true;
+            task = new Tasker();
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                task.execute();
             }
         }
     }

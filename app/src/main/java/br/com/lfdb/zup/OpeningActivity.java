@@ -70,7 +70,7 @@ public class OpeningActivity extends BaseActivity {
 
         TextView botaoCadastrar = (TextView) findViewById(R.id.botaoCadastrar);
         botaoCadastrar.setTypeface(FontUtils.getRegular(this));
-        botaoCadastrar.setOnClickListener(v -> startActivityForResult(new Intent(OpeningActivity.this, CadastroActivity.class), REGISTER_REQUEST));
+        botaoCadastrar.setOnClickListener(v -> startActivityForResult(new Intent(OpeningActivity.this, CadastroActivity_.class), REGISTER_REQUEST));
 
         TextView botaoLogin = (TextView) findViewById(R.id.botaoLogin);
         botaoLogin.setTypeface(FontUtils.getRegular(this));
