@@ -137,11 +137,15 @@ import org.json.JSONObject;
     }
   }
 
-  void add(){
-    for (Integer id : Arrays.asList(R.id.nameField, R.id.emailField, R.id.documentField,
+  List<Integer> getFields(){
+    return Arrays.asList(R.id.nameField, R.id.emailField, R.id.documentField,
         R.id.phoneField, R.id.addressField, R.id.cepField, R.id.neighborhoodField,
-        R.id.cityField)) {
-      if (((TextView) findViewById(id)).getText().toString().trim().isEmpty()) {
+        R.id.cityField);
+  }
+
+  void add(){
+    for (Integer id : getFields()) {
+      if (((EditText) findViewById(id)).getText().toString().trim().isEmpty()) {
         campos.add(id);
       }
     }
@@ -176,9 +180,7 @@ import org.json.JSONObject;
   }
 
   void clear() {
-    for (Integer id : Arrays.asList(R.id.nameField, R.id.emailField, R.id.documentField,
-        R.id.phoneField, R.id.addressField, R.id.cepField, R.id.neighborhoodField,
-        R.id.cityField)) {
+    for (Integer id : getFields()) {
       findViewById(id).setBackgroundResource(R.drawable.textbox_bg);
     }
   }

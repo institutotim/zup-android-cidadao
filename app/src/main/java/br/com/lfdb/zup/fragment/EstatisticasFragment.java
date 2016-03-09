@@ -123,11 +123,12 @@ public class EstatisticasFragment extends BaseFragment {
                         url += "?begin_date=" + data;
                     }
                 }
-
+                LoginService loginService = new LoginService();
                 Request request = new Request.Builder()
                         .url(url)
-                        .addHeader("X-App-Token", new LoginService().getToken(getActivity()))
+                        .addHeader("X-App-Token", loginService.getToken(getActivity()))
                         .build();
+                Crashlytics.setLong("User", loginService.getUserId(getActivity()));
                 Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
                 if (response.isSuccessful()) return response.body().string();
             } catch (Exception e) {
@@ -217,7 +218,6 @@ public class EstatisticasFragment extends BaseFragment {
             }
             view.setLayoutParams(params);
             margin = !margin;
-
             container.addView(view);
         }
     }

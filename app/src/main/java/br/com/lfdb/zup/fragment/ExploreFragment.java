@@ -39,12 +39,14 @@ import br.com.lfdb.zup.domain.RequestModel;
 import br.com.lfdb.zup.domain.SolicitacaoListItem;
 import br.com.lfdb.zup.service.CategoriaInventarioService;
 import br.com.lfdb.zup.service.CategoriaRelatoService;
+import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.task.MarkerRetriever;
 import br.com.lfdb.zup.util.BitmapUtils;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.GeoUtils;
 import br.com.lfdb.zup.util.MapUtils;
 import br.com.lfdb.zup.util.PreferenceUtils;
+import br.com.lfdb.zup.util.ToastHelper;
 import br.com.lfdb.zup.util.ViewUtils;
 import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
 import com.crashlytics.android.Crashlytics;
@@ -110,6 +112,7 @@ import org.androidannotations.annotations.ViewById;
   private long raio = 0l;
   private LocationManager locationManager;
   private MarkerRetriever markerRetriever = null;
+  private LoginService loginService;
 
   @Override public void onConnected(Bundle bundle) {
     if (!wasLocalized) {
@@ -156,16 +159,11 @@ import org.androidannotations.annotations.ViewById;
         GooglePlayServicesUtil.getErrorDialog(resultCode, getActivity(),
             PLAY_SERVICES_RESOLUTION_REQUEST).show();
       } else {
-        toast(getString(R.string.no_location_detected));
+        ToastHelper.show(getActivity(), getString(R.string.no_location_detected), Toast.LENGTH_LONG);
       }
       return false;
     }
     return true;
-  }
-
-  @UiThread void toast(String msg){
-    Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG)
-        .show();
   }
 
   @Override public void onConnectionSuspended(int i) {
@@ -226,6 +224,7 @@ import org.androidannotations.annotations.ViewById;
 
   @AfterViews void init() {
     try {
+      loginService = new LoginService();
       fontFace();
       SupportMapFragment fragment =
           (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
@@ -260,8 +259,11 @@ import org.androidannotations.annotations.ViewById;
         }
         return handled;
       });
-      getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-      timerTask();
+      getActivity().getWindow()
+          .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+      if (loginService.usuarioLogado(getActivity())) {
+        timerTask();
+      }
       buildGoogleApiClient();
     } catch (Exception e) {
       Log.e("ZUP", e.getMessage(), e);
@@ -493,7 +495,9 @@ import org.androidannotations.annotations.ViewById;
     latitude = cameraPosition.target.latitude;
     longitude = cameraPosition.target.longitude;
     raio = GeoUtils.getVisibleRadius(map);
-    removerItensMapa();
+    if (zoom != cameraPosition.zoom){
+      removerTodosItensMapa();
+    }
     exibirElementos();
     zoom = cameraPosition.zoom;
     refresh();
@@ -563,7 +567,6 @@ import org.androidannotations.annotations.ViewById;
           if (markerRetriever != null) {
             markerRetriever.cancel(true);
           }
-
           markerRetriever = new MarkerRetriever(requestModel, loading, busca, getActivity(), this);
           if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
             markerRetriever.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -597,13 +600,17 @@ import org.androidannotations.annotations.ViewById;
         return;
       }
       if (pontoBusca != null) {
-        pontoBusca.remove();
+        removePoint();
       }
       updateCameraWithMarkerb(addr);
     } catch(Exception e){
       Log.e("ZUP", e.getMessage(), e);
       Crashlytics.logException(e);
     }
+  }
+
+  @UiThread void removePoint(){
+    pontoBusca.remove();
   }
 
   @Background void searchTask(String param) {
@@ -613,7 +620,7 @@ import org.androidannotations.annotations.ViewById;
         return;
       }
       if (pontoBusca != null) {
-        pontoBusca.remove();
+        removePoint();
       }
       updateCamera(addr);
     } catch(Exception e){

@@ -42,8 +42,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MinhaContaFragment extends BaseFragment implements AdapterView.OnItemClickListener,
-        AbsListView.OnScrollListener {
+public class MinhaContaFragment extends BaseFragment implements AdapterView.OnItemClickListener {
 
     private static final int REQUEST_EDIT_USER = 1099;
 
@@ -135,7 +134,7 @@ public class MinhaContaFragment extends BaseFragment implements AdapterView.OnIt
         list.setOnItemClickListener(this);
         adapter = new SolicitacaoAdapter(getActivity(), listaSolicitacoes);
         list.setAdapter(adapter);
-        list.setOnScrollListener(this);
+        //list.setOnScrollListener(this);
 
         return view;
     }
@@ -161,10 +160,12 @@ public class MinhaContaFragment extends BaseFragment implements AdapterView.OnIt
         adapter.notifyDataSetChanged();
     }
 
+    /*
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
-    }
+    }*/
 
+    /*
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         int loadedItems = firstVisibleItem + visibleItemCount;
@@ -177,7 +178,7 @@ public class MinhaContaFragment extends BaseFragment implements AdapterView.OnIt
                 task.execute();
             }
         }
-    }
+    }*/
 
     public void refresh() {
         lastPageLoaded = 0;
@@ -215,7 +216,7 @@ public class MinhaContaFragment extends BaseFragment implements AdapterView.OnIt
             TextView titulo = (TextView) row.findViewById(R.id.titulo);
 
             TextView subcategoria = (TextView) row.findViewById(R.id.subcategoria);
-            if (item.getCategoria().getCategoriaMae() != null) {
+            if (item.getCategoria() != null && item.getCategoria().getCategoriaMae() != null) {
                 titulo.setText(item.getCategoria().getNome());
                 titulo.setTypeface(FontUtils.getLight(getContext()));
 
@@ -238,20 +239,20 @@ public class MinhaContaFragment extends BaseFragment implements AdapterView.OnIt
             } else {
                 protocolo.setVisibility(View.GONE);
             }
-
-            row.findViewById(R.id.bg).setBackgroundColor(item.getStatus().getCor());
             TextView indicadorStatus = (TextView) row.findViewById(R.id.indicadorStatus);
             indicadorStatus.setTypeface(FontUtils.getBold(getContext()));
-            int fiveDp = (int) ImageUtils.dpToPx(getActivity(), 5);
-            int tenDp = (int) ImageUtils.dpToPx(getActivity(), 10);
-            indicadorStatus.setPadding(tenDp, fiveDp, tenDp, fiveDp);
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                indicadorStatus.setBackgroundDrawable(ImageUtils.getStatusBackground(getActivity(), item.getStatus().getCor()));
-            } else {
-                indicadorStatus.setBackground(ImageUtils.getStatusBackground(getActivity(), item.getStatus().getCor()));
+            if (item.getStatus() != null) {
+                row.findViewById(R.id.bg).setBackgroundColor(item.getStatus().getCor());
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+                    indicadorStatus.setBackgroundDrawable(ImageUtils.getStatusBackground(getActivity(), item.getStatus().getCor()));
+                } else {
+                    indicadorStatus.setBackground(ImageUtils.getStatusBackground(getActivity(), item.getStatus().getCor()));
+                }
+                indicadorStatus.setText(item.getStatus().getNome());
+                int fiveDp = (int) ImageUtils.dpToPx(getActivity(), 5);
+                int tenDp = (int) ImageUtils.dpToPx(getActivity(), 10);
+                indicadorStatus.setPadding(tenDp, fiveDp, tenDp, fiveDp);
             }
-            indicadorStatus.setText(item.getStatus().getNome());
-
             return row;
         }
     }

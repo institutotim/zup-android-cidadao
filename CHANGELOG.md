@@ -1,26 +1,18 @@
 # Changelog
 
-## 1.0.4.3
-
-### Adicionado
-
-- Adicionado Android Annotations
-
-### Refatorado
-
-- Refatorado activities e fragments afim de remover a complexidade, inserindo tratamentos para threads e views com Android Annotations
+## 1.0.5
 
 ### Modificado
 
-- API Key Google Places (Web Services) - AutoComplete dos endereços
-- Campo Cidade ativado no cadastro de usuário
-- Atualizado support libraries
-- Atualizado tratamento da localização (estava utilizando métodos depreciados)
+- Correção busca de endereço.
+- Campo cidade ativado no cadastro de usuário
+- Atualizado biblioteca de mapas e serviços do Google.
+- Atualizado tratamento de localização.
+- Atualizado suporte ao Fabric.io
 
 ### Resolvido
 
-- Ao cadastrar, no retorno ao usuário, um crash era lançado.
-- Tratamento ao inserir um foto a uma solicitação - Aplicativo parava em alguns casos
+- Tratamento ao inserir uma foto em uma solicitação
 
 ## 1.0.0
 - Versão estável inicial

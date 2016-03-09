@@ -33,6 +33,7 @@ public class ZupApi {
                 .build();
         Response response = new OkHttpClient().newCall(request).execute();
         JSONObject json = new JSONObject(response.body().string());
+        Log.e("Retorno Perimetro", json.toString());
         return json.optBoolean("inside_boundaries", false);
     }
 

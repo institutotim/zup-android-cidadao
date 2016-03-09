@@ -146,6 +146,7 @@
     <string name="invalid_address_inserted">O endereço inserido é inválido</string>
     <string name="no_number">Sem número</string>
     <string name="address_not_found">Endereço não encontrado</string>
+    <string name="create_report">Criação de Relato</string>
 
     <string-array name="foto_menu">
         <item>Escolher foto do álbum</item>

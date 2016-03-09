@@ -140,6 +140,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         FragmentTransaction fm = getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, fragment);
         if (atual != null) {
             fm.hide(atual);
+            fm.hide(atual);
         }
         fm.commit();
         atual = fragment;

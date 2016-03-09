@@ -1,7 +1,6 @@
 package br.com.lfdb.zup.fragment;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.location.Address;
 import android.location.Location;
@@ -21,10 +20,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SoliciteActivity;
-import br.com.lfdb.zup.SoliciteActivity_;
 import br.com.lfdb.zup.api.ZupApi;
 import br.com.lfdb.zup.base.BaseFragment;
 import br.com.lfdb.zup.core.Constantes;
@@ -36,7 +33,6 @@ import br.com.lfdb.zup.util.GeoUtils;
 import br.com.lfdb.zup.util.ImageUtils;
 import br.com.lfdb.zup.util.ViewUtils;
 import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
-
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -49,9 +45,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-
 import java.util.List;
-
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Click;
@@ -85,10 +79,12 @@ import org.apache.commons.lang3.StringUtils;
   private boolean ignoreUpdate = false;
   private boolean wasLocalized = false;
   private float currentZoom;
+  private int count = 0;
 
   private Address currentAddress = null;
   private GoogleMap map;
   private GoogleApiClient googleApiClient;
+  private PlacesAutoCompleteAdapter adapter;
 
   public static double latitude, longitude;
 
@@ -103,7 +99,8 @@ import org.apache.commons.lang3.StringUtils;
       ((SoliciteActivity) getActivity()).exibirBarraInferior(true);
       ((SoliciteActivity) getActivity()).setInfo(R.string.selecione_o_local);
       ((SoliciteActivity) getActivity()).enableNextButton(valid);
-      map = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaLocal)).getMap();
+      map = ((SupportMapFragment) getChildFragmentManager().findFragmentById(
+          R.id.mapaLocal)).getMap();
       if (map != null) {
         mapInit();
       }
@@ -128,7 +125,7 @@ import org.apache.commons.lang3.StringUtils;
       if (file != null && !file.isEmpty()) {
         marcador.setImageBitmap(ImageUtils.getScaled(getActivity(), "reports", file));
       }
-    } catch(Exception e){
+    } catch (Exception e) {
       Log.e("ZUP", e.getMessage(), e);
       Crashlytics.logException(e);
     }
@@ -149,15 +146,19 @@ import org.apache.commons.lang3.StringUtils;
           LayoutInflater.from(getActivity()).inflate(R.layout.dialog_endereco, null);
       ((TextView) dialogView.findViewById(R.id.endereco)).setText(street);
       ((TextView) dialogView.findViewById(R.id.numero)).setText(number);
-      ((TextView) dialogView.findViewById(R.id.referencia)).setText(((SoliciteActivity) getActivity()).getReferencia());
+      ((TextView) dialogView.findViewById(R.id.referencia)).setText(
+          ((SoliciteActivity) getActivity()).getReferencia());
 
       new AlertDialog.Builder(getActivity()).setTitle("Endereço do Relato")
           .setView(dialogView)
           .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
           .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
-            final String num = ((TextView) dialogView.findViewById(R.id.numero)).getText().toString();
-            final String r = ((TextView) dialogView.findViewById(R.id.endereco)).getText().toString();
-            String referencia = ((TextView) dialogView.findViewById(R.id.referencia)).getText().toString();
+            final String num =
+                ((TextView) dialogView.findViewById(R.id.numero)).getText().toString();
+            final String r =
+                ((TextView) dialogView.findViewById(R.id.endereco)).getText().toString();
+            String referencia =
+                ((TextView) dialogView.findViewById(R.id.referencia)).getText().toString();
             if (referencia != null && !referencia.trim().isEmpty()) {
               ((SoliciteActivity) getActivity()).setReferencia(referencia);
             }
@@ -167,7 +168,7 @@ import org.apache.commons.lang3.StringUtils;
             }
           })
           .show();
-    } catch(Exception e){
+    } catch (Exception e) {
       Log.e("ZUP", e.getMessage(), e);
       Crashlytics.logException(e);
     }
@@ -178,20 +179,29 @@ import org.apache.commons.lang3.StringUtils;
     map.getUiSettings().setZoomControlsEnabled(false);
     map.getUiSettings().setMyLocationButtonEnabled(true);
     map.setOnCameraChangeListener(cameraPosition -> {
-      latitude = cameraPosition.target.latitude;
-      longitude = cameraPosition.target.longitude;
-      currentZoom = cameraPosition.zoom;
-      autocompleteEndereco.setAdapter(null);
-      autocompleteEndereco.setAdapter(
-          new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item,
-              ExploreFragment_.class));
-      autocompleteEndereco.dismissDropDown();
+      Log.i("Alterou posição", "Alteração = " + count++);
+      if (latitude != cameraPosition.target.latitude
+          && longitude != cameraPosition.target.longitude) {
+        latitude = cameraPosition.target.latitude;
+        longitude = cameraPosition.target.longitude;
+        currentZoom = cameraPosition.zoom;
+        cameraChangeTask();
+      }
     });
     map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     CameraPosition p = new CameraPosition.Builder().target(
         new LatLng(Constantes.INITIAL_LATITUDE, Constantes.INITIAL_LONGITUDE)).zoom(12).build();
     CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
     map.moveCamera(update);
+  }
+
+  public double round(double value, int places) {
+    if (places < 0) throw new IllegalArgumentException();
+
+    long factor = (long) Math.pow(10, places);
+    value = value * factor;
+    long tmp = Math.round(value);
+    return (double) tmp / factor;
   }
 
   public boolean validarEndereco() {
@@ -206,7 +216,7 @@ import org.apache.commons.lang3.StringUtils;
   }
 
   boolean validarEndereco(final String r, final String num) {
-    if (TextUtils.isEmpty(r)){
+    if (TextUtils.isEmpty(r)) {
       return false;
     }
     if (TextUtils.isEmpty(num)) {
@@ -274,7 +284,7 @@ import org.apache.commons.lang3.StringUtils;
         });
         error.startAnimation(anim);
       }
-    } catch(Exception e){
+    } catch (Exception e) {
       Log.e("ZUP", e.getMessage(), e);
       Crashlytics.logException(e);
     }
@@ -304,7 +314,7 @@ import org.apache.commons.lang3.StringUtils;
       } else {
         number = "";
       }
-      updateCameraAndAutoComplete(address);
+      updateUiAdapter(address);
     }
   }
 
@@ -341,7 +351,7 @@ import org.apache.commons.lang3.StringUtils;
 
           showHideLoading(false);
         }
-      } catch(Exception e){
+      } catch (Exception e) {
         Log.e("ZUP", e.getMessage(), e);
         Crashlytics.logException(e);
       }
@@ -352,7 +362,7 @@ import org.apache.commons.lang3.StringUtils;
     showHideLoading(true);
     try {
       valid = ZupApi.validateCityBoundary(getActivity(), latitude, longitude);
-      if (GPSUtils.getFromLocation(getActivity(), latitude, longitude) == null){
+      if (GPSUtils.getFromLocation(getActivity(), latitude, longitude) == null) {
         return;
       }
       Address addr = GPSUtils.getFromLocation(getActivity(), latitude, longitude).get(0);
@@ -370,7 +380,34 @@ import org.apache.commons.lang3.StringUtils;
       }
       updateUi(addr, number);
       updateUiAdapter(addr);
-    } catch(Exception e){
+    } catch (Exception e) {
+      Log.e("ZUP", e.getMessage(), e);
+      Crashlytics.logException(e);
+    }
+  }
+
+  @Background void cameraChangeTask() {
+    showHideLoading(true);
+    try {
+      valid = ZupApi.validateCityBoundary(getActivity(), latitude, longitude);
+      if (GPSUtils.getFromLocation(getActivity(), latitude, longitude) == null) {
+        return;
+      }
+      Address addr = GPSUtils.getFromLocation(getActivity(), latitude, longitude).get(0);
+      showHideLoading(false);
+      verifyValid();
+      if (addr == null) {
+        return;
+      }
+      street = addr.getThoroughfare();
+      if (!TextUtils.isEmpty(addr.getFeatureName()) && StringUtils.isNumeric(
+          addr.getFeatureName().substring(0, 1))) {
+        number = addr.getFeatureName();
+      } else {
+        number = "";
+      }
+      updateUiAdapter(addr);
+    } catch (Exception e) {
       Log.e("ZUP", e.getMessage(), e);
       Crashlytics.logException(e);
     }
@@ -390,7 +427,7 @@ import org.apache.commons.lang3.StringUtils;
               .build();
       CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
       map.animateCamera(update);
-    } catch(Exception e){
+    } catch (Exception e) {
       Log.e("ZUP", e.getMessage(), e);
       Crashlytics.logException(e);
     }
@@ -406,7 +443,7 @@ import org.apache.commons.lang3.StringUtils;
       }
       LatLng latLong = new LatLng(addr.getLatitude(), addr.getLongitude());
       updateCamera(latLong);
-    } catch(Exception e){
+    } catch (Exception e) {
       Log.e("ZUP", e.getMessage(), e);
       Crashlytics.logException(e);
     }
@@ -417,7 +454,7 @@ import org.apache.commons.lang3.StringUtils;
       CameraPosition p = new CameraPosition.Builder().target(latLong).zoom(16f).build();
       CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
       map.animateCamera(update);
-    } catch(Exception e){
+    } catch (Exception e) {
       Log.e("ZUP", e.getMessage(), e);
       Crashlytics.logException(e);
     }
@@ -455,41 +492,6 @@ import org.apache.commons.lang3.StringUtils;
     Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
   }
 
-  @UiThread void updateUiAdapter(Address address) {
-    try {
-      ignoreUpdate = true;
-      CameraPosition position = new CameraPosition.Builder().target(new LatLng(address.getLatitude(), address.getLongitude())).zoom(currentZoom).build();
-      CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
-      map.animateCamera(update);
-
-      autocompleteEndereco.setAdapter(null);
-      autocompleteEndereco.setText(street);
-      autocompleteEndereco.setAdapter(
-          new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item,
-              ExploreFragment.class));
-      tvNumero.setText(number);
-    } catch(Exception e){
-      Log.e("ZUP", e.getMessage(), e);
-      Crashlytics.logException(e);
-    }
-  }
-
-  @UiThread void updateCameraAndAutoComplete(Address address) {
-    ignoreUpdate = true;
-    CameraPosition position = new CameraPosition.Builder().target(
-        new LatLng(address.getLatitude(), address.getLongitude())).zoom(currentZoom).build();
-    CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
-    map.animateCamera(update);
-
-    autocompleteEndereco.setAdapter(null);
-    autocompleteEndereco.setText(street);
-    autocompleteEndereco.setAdapter(
-        new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item,
-            ExploreFragment.class));
-
-    tvNumero.setText(number);
-  }
-
   @UiThread void atualizarCampoEndereco() {
     autocompleteEndereco.setText(street);
     tvNumero.setText(number);
@@ -506,6 +508,26 @@ import org.apache.commons.lang3.StringUtils;
         new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item,
             SoliciteLocalFragment.class));
     autocompleteEndereco.dismissDropDown();
+  }
+
+  @UiThread void updateUiAdapter(Address address) {
+    try {
+      ignoreUpdate = true;
+      CameraPosition position = new CameraPosition.Builder().target(
+          new LatLng(address.getLatitude(), address.getLongitude())).zoom(currentZoom).build();
+      CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+      map.animateCamera(update);
+
+      autocompleteEndereco.setAdapter(null);
+      autocompleteEndereco.setText(street);
+      autocompleteEndereco.setAdapter(
+          new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item,
+              ExploreFragment.class));
+      tvNumero.setText(number);
+    } catch (Exception e) {
+      Log.e("ZUP", e.getMessage(), e);
+      Crashlytics.logException(e);
+    }
   }
 
   @Override public void onActivityCreated(Bundle savedInstanceState) {

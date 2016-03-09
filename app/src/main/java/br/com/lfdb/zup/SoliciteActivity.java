@@ -49,6 +49,7 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.InstanceState;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 import org.json.JSONArray;
@@ -68,6 +69,8 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
   @ViewById TextView botaoCancelar;
   @ViewById RelativeLayout barra_navegacao;
 
+  @InstanceState Bundle savedInstanceState;
+
   public static final int LOGIN_REQUEST = 1578;
 
   private Passo atual = Passo.TIPO;
@@ -82,9 +85,7 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
     TIPO, LOCAL, FOTOS, COMENTARIOS
   }
 
-  @Override protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_solicite);
+  @AfterViews void init(){
     if (savedInstanceState != null) {
       solicitacao = (Solicitacao) savedInstanceState.getSerializable("solicitacao");
       atual = new Gson().fromJson(savedInstanceState.getString("passo"), Passo.class);
@@ -95,6 +96,10 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
           .add(R.id.fragments_place, tipoFragment)
           .commit();
     }
+    botaoAvancar.setTypeface(FontUtils.getRegular(this));
+    botaoVoltar.setTypeface(FontUtils.getRegular(this));
+    botaoCancelar.setTypeface(FontUtils.getRegular(this));
+    titulo.setTypeface(FontUtils.getLight(this));
   }
 
   @Override protected void onSaveInstanceState(Bundle outState) {
@@ -109,13 +114,6 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
     outState.putBoolean("local", localFragment != null);
     outState.putBoolean("ponto", pontoFragment != null);
     outState.putBoolean("detalhes", detalhesFragment != null);
-  }
-
-  @AfterViews void init() {
-    botaoAvancar.setTypeface(FontUtils.getRegular(this));
-    botaoVoltar.setTypeface(FontUtils.getRegular(this));
-    botaoCancelar.setTypeface(FontUtils.getRegular(this));
-    titulo.setTypeface(FontUtils.getLight(this));
   }
 
   @Click void botaoAvancar() {
@@ -463,7 +461,7 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
   }
 
   @Override protected String getScreenName() {
-    return "Criação de Relato";
+    return getString(R.string.create_report);
   }
 
   @Background void tasker(ProgressDialog dialog) {

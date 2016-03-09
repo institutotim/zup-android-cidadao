@@ -29,7 +29,7 @@ public class WarningActivity extends BaseActivity {
 
         TextView botaoCadastrar = (TextView) findViewById(R.id.botaoCadastrar);
         botaoCadastrar.setTypeface(FontUtils.getRegular(this));
-        botaoCadastrar.setOnClickListener(v -> startActivityForResult(new Intent(WarningActivity.this, CadastroActivity.class), REGISTER_REQUEST));
+        botaoCadastrar.setOnClickListener(v -> startActivityForResult(new Intent(WarningActivity.this, CadastroActivity_.class), REGISTER_REQUEST));
 
         TextView botaoLogin = (TextView) findViewById(R.id.botaoLogin);
         botaoLogin.setTypeface(FontUtils.getRegular(this));
