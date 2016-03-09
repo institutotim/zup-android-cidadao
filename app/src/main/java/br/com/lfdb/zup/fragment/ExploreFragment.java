@@ -113,6 +113,7 @@ import org.androidannotations.annotations.ViewById;
   private LocationManager locationManager;
   private MarkerRetriever markerRetriever = null;
   private LoginService loginService;
+  private ToastHelper toast;
 
   @Override public void onConnected(Bundle bundle) {
     if (!wasLocalized) {
@@ -159,7 +160,7 @@ import org.androidannotations.annotations.ViewById;
         GooglePlayServicesUtil.getErrorDialog(resultCode, getActivity(),
             PLAY_SERVICES_RESOLUTION_REQUEST).show();
       } else {
-        ToastHelper.show(getActivity(), getString(R.string.no_location_detected), Toast.LENGTH_LONG);
+        toast.show(getActivity(), getString(R.string.no_location_detected), Toast.LENGTH_LONG);
       }
       return false;
     }
@@ -225,6 +226,7 @@ import org.androidannotations.annotations.ViewById;
   @AfterViews void init() {
     try {
       loginService = new LoginService();
+      toast = new ToastHelper();
       fontFace();
       SupportMapFragment fragment =
           (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);

@@ -8,7 +8,7 @@ import android.text.method.NumberKeyListener;
 import android.util.AttributeSet;
 import android.widget.EditText;
 
-public class CepEditText extends EditText {
+public class CepEditText extends CustomFontEditText {
 	private boolean isUpdating;
 
 	private int positioning[] = { 0, 1, 2, 3, 4, 5, 7, 8, 9 };

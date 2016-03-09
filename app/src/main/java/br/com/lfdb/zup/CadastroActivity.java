@@ -19,6 +19,7 @@ import br.com.lfdb.zup.service.FeatureService;
 import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.service.UsuarioService;
 import br.com.lfdb.zup.util.FontUtils;
+import br.com.lfdb.zup.util.ToastHelper;
 import br.com.lfdb.zup.validador.CpfValidador;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.squareup.okhttp.MediaType;
@@ -56,9 +57,11 @@ import org.json.JSONObject;
   @ViewById TextView btnCreate;
   @ViewById TextView terms;
 
+  ToastHelper toast;
   List<Integer> campos;
 
   @AfterViews void init() {
+    toast = new ToastHelper();
     loadTypeface();
     loadTerms();
     cityField.setOnEditorActionListener((v, actionId, event) -> {
@@ -86,17 +89,6 @@ import org.json.JSONObject;
   @UiThread void loadTypeface() {
     btnCancel.setTypeface(FontUtils.getRegular(this));
     btnCreate.setTypeface(FontUtils.getRegular(this));
-    nameField.setTypeface(FontUtils.getLight(this));
-    passField.setTypeface(FontUtils.getLight(this));
-    confirmPassField.setTypeface(FontUtils.getLight(this));
-    emailField.setTypeface(FontUtils.getLight(this));
-    documentField.setTypeface(FontUtils.getLight(this));
-    phoneField.setTypeface(FontUtils.getLight(this));
-    addressField.setTypeface(FontUtils.getLight(this));
-    complField.setTypeface(FontUtils.getLight(this));
-    cepField.setTypeface(FontUtils.getLight(this));
-    neighborhoodField.setTypeface(FontUtils.getLight(this));
-    cityField.setTypeface(FontUtils.getLight(this));
     addAccount.setTypeface(FontUtils.getLight(this));
     terms.setTypeface(FontUtils.getLight(this));
   }
@@ -128,7 +120,7 @@ import org.json.JSONObject;
       campos.add(confirmPassField.getId());
     } else if (pass.length() < 6) {
       campos.add(passField.getId());
-      toast(getString(R.string.pass_length_message));
+      toast.show(this, getString(R.string.pass_length_message), Toast.LENGTH_LONG);
     }
     add();
     String document = documentField.getText().toString().trim();
@@ -137,15 +129,14 @@ import org.json.JSONObject;
     }
   }
 
-  List<Integer> getFields(){
-    return Arrays.asList(R.id.nameField, R.id.emailField, R.id.documentField,
-        R.id.phoneField, R.id.addressField, R.id.cepField, R.id.neighborhoodField,
-        R.id.cityField);
+  List<Integer> getFields() {
+    return Arrays.asList(R.id.nameField, R.id.emailField, R.id.documentField, R.id.phoneField,
+        R.id.addressField, R.id.cepField, R.id.neighborhoodField, R.id.cityField);
   }
 
-  void add(){
+  void add() {
     for (Integer id : getFields()) {
-      if (((EditText) findViewById(id)).getText().toString().trim().isEmpty()) {
+      if (((TextView) findViewById(id)).getText().toString().trim().isEmpty()) {
         campos.add(id);
       }
     }
@@ -176,7 +167,7 @@ import org.json.JSONObject;
     for (Integer id : campos) {
       findViewById(id).setBackgroundResource(R.drawable.textbox_red);
     }
-    toast(getString(R.string.review_fields_message));
+    toast.show(this, getString(R.string.review_fields_message), Toast.LENGTH_LONG);
   }
 
   void clear() {
@@ -226,13 +217,13 @@ import org.json.JSONObject;
       }
       dialog.dismiss();
       if (result == null) {
-        toast(getString(R.string.register_fail));
+        toast.show(this, getString(R.string.register_fail), Toast.LENGTH_LONG);
         return;
       }
       JSONObject json = new JSONObject(result);
       new LoginService().registrarLogin(CadastroActivity.this, json.getJSONObject("user"),
           json.getString("token"));
-      toast(getString(R.string.login_success));
+      toast.show(this, getString(R.string.login_success), Toast.LENGTH_LONG);
       setResult(Activity.RESULT_OK);
       finish();
     } catch (Exception e) {
@@ -240,8 +231,4 @@ import org.json.JSONObject;
     }
   }
 
-  @UiThread void toast(String msg){
-    Toast.makeText(CadastroActivity.this, msg, Toast.LENGTH_LONG)
-        .show();
-  }
 }

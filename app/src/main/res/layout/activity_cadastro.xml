@@ -14,7 +14,7 @@
       android:paddingRight="5dp"
       android:paddingTop="10dp">
 
-    <TextView
+    <br.com.lfdb.zup.widget.CustomFontTextView
         android:id="@+id/addAccount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -23,7 +23,7 @@
         android:textColor="#000"
         android:textSize="@dimen/title_text_size"/>
 
-    <TextView
+    <br.com.lfdb.zup.widget.CustomFontTextView
         android:id="@+id/btnCancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
         android:orientation="vertical"
         android:paddingBottom="15dp">
 
-      <EditText
+      <br.com.lfdb.zup.widget.CustomFontEditText
           android:id="@+id/nameField"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
           android:textColor="#000"
           android:textSize="@dimen/navigation_text_size"/>
 
-      <EditText
+      <br.com.lfdb.zup.widget.CustomFontEditText
           android:id="@+id/emailField"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -99,7 +99,7 @@
           android:orientation="horizontal"
           android:weightSum="2">
 
-        <EditText
+        <br.com.lfdb.zup.widget.CustomFontEditText
             android:id="@+id/passField"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -113,7 +113,7 @@
             android:textColor="#000"
             android:textSize="@dimen/navigation_text_size"/>
 
-        <EditText
+        <br.com.lfdb.zup.widget.CustomFontEditText
             android:id="@+id/confirmPassField"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -162,7 +162,7 @@
             android:textSize="@dimen/navigation_text_size"/>
       </LinearLayout>
 
-      <EditText
+      <br.com.lfdb.zup.widget.CustomFontEditText
           android:id="@+id/addressField"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -181,7 +181,7 @@
           android:orientation="horizontal"
           android:weightSum="2">
 
-        <EditText
+        <br.com.lfdb.zup.widget.CustomFontEditText
             android:id="@+id/complField"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -209,7 +209,7 @@
             android:textSize="@dimen/navigation_text_size"/>
       </LinearLayout>
 
-      <EditText
+      <br.com.lfdb.zup.widget.CustomFontEditText
           android:id="@+id/neighborhoodField"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -222,7 +222,7 @@
           android:textColor="#000"
           android:textSize="@dimen/navigation_text_size"/>
 
-      <EditText
+      <br.com.lfdb.zup.widget.CustomFontEditText
           android:id="@+id/cityField"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
