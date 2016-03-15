@@ -14,7 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
+import br.com.lfdb.zup.core.Crashlytics;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.Request;

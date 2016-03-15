@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="appFacebook_id">205770772949525</string>
+    <string name="appFacebook_id">0</string>
     <string name="estatisticas">Estatísticas</string>
     <string name="minha_conta">Minha Conta</string>
     <string name="solicite">Solicite</string>
@@ -147,6 +147,7 @@
     <string name="no_number">Sem número</string>
     <string name="address_not_found">Endereço não encontrado</string>
     <string name="create_report">Criação de Relato</string>
+    <string name="gcm_project">gcmvalue</string>
 
     <string-array name="foto_menu">
         <item>Escolher foto do álbum</item>

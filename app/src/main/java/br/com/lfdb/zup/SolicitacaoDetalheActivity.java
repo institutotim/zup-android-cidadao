@@ -11,9 +11,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import br.com.lfdb.zup.core.Crashlytics;
 import br.com.lfdb.zup.util.AuthHelper;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;

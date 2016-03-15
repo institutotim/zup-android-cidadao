@@ -3,7 +3,7 @@ package br.com.lfdb.zup.widget;
 import android.content.Context;
 
 import android.util.Log;
-import com.crashlytics.android.Crashlytics;
+import br.com.lfdb.zup.core.Crashlytics;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

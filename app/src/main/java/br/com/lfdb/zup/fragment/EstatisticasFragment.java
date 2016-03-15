@@ -15,7 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
+import br.com.lfdb.zup.core.Crashlytics;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.todddavies.components.progressbar.ProgressWheel;
