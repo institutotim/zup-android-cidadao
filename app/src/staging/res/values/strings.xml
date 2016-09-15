@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ZUP Staging</string>
+    <string name="google_key"></string>
+    <string name="gcm_project"></string>
+    <string name="prefeitura"></string>
+</resources>
