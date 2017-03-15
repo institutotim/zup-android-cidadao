@@ -44,23 +44,20 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
 
     private View temp = null;
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
+    @Override public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
             ((SoliciteActivity) getActivity()).setInfo(R.string.adicione_fotos);
         }
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
+    @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                       Bundle savedInstanceState) {
         ((SoliciteActivity) getActivity()).setInfo(R.string.adicione_fotos);
 
         View view = inflater.inflate(R.layout.fragment_solicite_fotos, container, false);
@@ -75,8 +72,7 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
         return view;
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    @Override public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         if (getArguments() != null && getArguments().containsKey("imagemTemporaria")) {
@@ -102,11 +98,9 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
         }
     }
 
-    @Override
-    public void onClick(View v) {
+    @Override public void onClick(View v) {
         if (listaFotos != null && listaFotos.size() == 3) {
-            new AlertDialog.Builder(getActivity()).setMessage(
-                    getString(R.string.only_three_photos))
+            new AlertDialog.Builder(getActivity()).setMessage(getString(R.string.only_three_photos))
                     .setNeutralButton(getString(R.string.ok), (dialog, which) -> dialog.dismiss())
                     .show();
             return;
@@ -143,7 +137,7 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
 
     private void selecionarFoto() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        getActivity().startActivityForResult(intent, GALLERY_RETURN);
+        startActivityForResult(intent, GALLERY_RETURN);
     }
 
     private void tirarFoto() {
@@ -153,11 +147,11 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
                 "tmp_image_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imagemTemporaria);
         intent.putExtra("return-data", true);
-        getActivity().startActivityForResult(intent, CAMERA_RETURN);
+        startActivityForResult(intent, CAMERA_RETURN);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    @Override public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) {
             temp = null;
             return;
@@ -176,7 +170,7 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
                 break;
             case GALLERY_RETURN:
                 Uri selectedImage = data.getData();
-                String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                String[] filePathColumn = { MediaStore.Images.Media.DATA };
                 if (selectedImage == null) return;
                 Cursor cursor = getActivity().getContentResolver()
                         .query(selectedImage, filePathColumn, null, null, null);
@@ -197,7 +191,7 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
                 intent.putExtra(CropImage.OUTPUT_X, 800);
                 intent.putExtra(CropImage.OUTPUT_Y, 800);
 
-                getActivity().startActivityForResult(intent, CROP_RETURN);
+                startActivityForResult(intent, CROP_RETURN);
                 break;
         }
     }
@@ -298,8 +292,7 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
         containerFotos.addView(layout);
     }
 
-    @Override
-    protected String getScreenName() {
+    @Override protected String getScreenName() {
         return "Adição de Fotos (Novo Relato)";
     }
 }

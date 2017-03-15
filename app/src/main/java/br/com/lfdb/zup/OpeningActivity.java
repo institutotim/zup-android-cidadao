@@ -25,28 +25,30 @@ import br.com.lfdb.zup.widget.ImageResourcePagerAdapter;
 
 public class OpeningActivity extends BaseActivity {
 
-    private static final int LOGIN_REQUEST = 1010;
+    public static final int LOGIN_REQUEST = 1010;
     private static final int REGISTER_REQUEST = 1011;
 
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_opening);
 
-        findViewById(R.id.logo).setVisibility(getResources().getBoolean(R.bool.show_logo_header) ?
-                View.VISIBLE : View.INVISIBLE);
+        findViewById(R.id.logo).setVisibility(
+                getResources().getBoolean(R.bool.show_logo_header) ? View.VISIBLE : View.INVISIBLE);
 
         List<Integer> images = new ArrayList<>();
         for (int i = 1; ; i++) {
             int identifier = getResources().getIdentifier("tour_img" + i, "drawable", getPackageName());
-            if (identifier != 0) images.add(identifier);
-            else break;
+            if (identifier != 0) {
+                images.add(identifier);
+            } else {
+                break;
+            }
         }
 
-        ImageResourcePagerAdapter mAdapter = new ImageResourcePagerAdapter(getSupportFragmentManager(),
-                images);
+        ImageResourcePagerAdapter mAdapter =
+                new ImageResourcePagerAdapter(getSupportFragmentManager(), images);
 
         ViewPager mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
@@ -60,7 +62,9 @@ public class OpeningActivity extends BaseActivity {
         TextView linkPular = (TextView) findViewById(R.id.linkPular);
         linkPular.setTypeface(FontUtils.getBold(this));
         linkPular.setOnClickListener(v -> {
-            startActivity(new Intent(OpeningActivity.this, MainActivity.class));
+            Intent intent = new Intent(OpeningActivity.this, SplashActivity.class);
+            intent.putExtra("jump", true);
+            startActivity(intent);
             finish();
         });
 
@@ -70,30 +74,33 @@ public class OpeningActivity extends BaseActivity {
 
         TextView botaoCadastrar = (TextView) findViewById(R.id.botaoCadastrar);
         botaoCadastrar.setTypeface(FontUtils.getRegular(this));
-        botaoCadastrar.setOnClickListener(v -> startActivityForResult(new Intent(OpeningActivity.this, CadastroActivity_.class), REGISTER_REQUEST));
+        botaoCadastrar.setOnClickListener(
+                v -> startActivityForResult(new Intent(OpeningActivity.this, CadastroActivity_.class),
+                        REGISTER_REQUEST));
 
         TextView botaoLogin = (TextView) findViewById(R.id.botaoLogin);
         botaoLogin.setTypeface(FontUtils.getRegular(this));
-        botaoLogin.setOnClickListener(v -> startActivityForResult(new Intent(OpeningActivity.this, LoginActivity.class), LOGIN_REQUEST));
+        botaoLogin.setOnClickListener(
+                v -> startActivityForResult(new Intent(OpeningActivity.this, LoginActivity.class),
+                        LOGIN_REQUEST));
 
         if (checkPlayServices()) {
             if (new LoginService().usuarioLogado(this)) {
-                startActivity(new Intent(this, MainActivity.class));
+                startActivity(new Intent(this, SplashActivity.class));
                 finish();
             }
         }
     }
 
-    @Override
-    protected void onResume() {
+    @Override protected void onResume() {
         super.onResume();
         checkPlayServices();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if ((requestCode == LOGIN_REQUEST || requestCode == REGISTER_REQUEST) && resultCode == Activity.RESULT_OK) {
-            startActivity(new Intent(this, MainActivity.class));
+    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if ((requestCode == LOGIN_REQUEST || requestCode == REGISTER_REQUEST)
+                && resultCode == Activity.RESULT_OK) {
+            startActivity(new Intent(this, SplashActivity.class));
             finish();
         }
     }
@@ -102,8 +109,8 @@ public class OpeningActivity extends BaseActivity {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
-                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
             } else {
                 Log.i("ZUP", "This device is not supported.");
                 Toast.makeText(this, "Dispositivo não suportado", Toast.LENGTH_LONG).show();
@@ -114,8 +121,7 @@ public class OpeningActivity extends BaseActivity {
         return true;
     }
 
-    @Override
-    protected String getScreenName() {
+    @Override protected String getScreenName() {
         return "Tela de Slides (abertura)";
     }
 }

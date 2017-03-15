@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -16,11 +17,11 @@ import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.core.ConstantesBase;
 import br.com.lfdb.zup.domain.Usuario;
 import br.com.lfdb.zup.service.FeatureService;
-import br.com.lfdb.zup.service.LoginService;
 import br.com.lfdb.zup.service.UsuarioService;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.ToastHelper;
 import br.com.lfdb.zup.validador.CpfValidador;
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.Request;
@@ -57,6 +58,7 @@ import org.json.JSONObject;
   @ViewById TextView btnCreate;
   @ViewById TextView terms;
 
+  List<EditText> listToValidate;
   ToastHelper toast;
   List<Integer> campos;
 
@@ -64,14 +66,31 @@ import org.json.JSONObject;
     toast = new ToastHelper();
     loadTypeface();
     loadTerms();
-    cityField.setOnEditorActionListener((v, actionId, event) -> {
-      boolean handled = false;
-      if (actionId == EditorInfo.IME_ACTION_GO) {
-        registerIsValid();
-        handled = true;
+    cityField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+      @Override public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        boolean handled = false;
+        if (actionId == EditorInfo.IME_ACTION_GO) {
+          registerIsValid();
+          handled = true;
+        }
+        return handled;
       }
-      return handled;
     });
+    loadListToValidate();
+  }
+
+  @UiThread void loadListToValidate() {
+    listToValidate = new ArrayList<>();
+    listToValidate.add(nameField);
+    listToValidate.add(emailField);
+    listToValidate.add(documentField);
+    listToValidate.add(phoneField);
+    listToValidate.add(addressField);
+    listToValidate.add(cepField);
+    listToValidate.add(neighborhoodField);
+    listToValidate.add(passField);
+    listToValidate.add(confirmPassField);
+    listToValidate.add(cityField);
   }
 
   @Click void btnCancel() {
@@ -129,9 +148,17 @@ import org.json.JSONObject;
     }
   }
 
+  @UiThread void verifyFields(List<Integer> campos) {
+    for (EditText et : listToValidate) {
+      if (et.getText().toString().trim().isEmpty()) {
+        campos.add(et.getId());
+      }
+    }
+  }
+
   List<Integer> getFields() {
     return Arrays.asList(R.id.nameField, R.id.emailField, R.id.documentField, R.id.phoneField,
-        R.id.addressField, R.id.cepField, R.id.neighborhoodField, R.id.cityField);
+            R.id.addressField, R.id.cepField, R.id.neighborhoodField, R.id.cityField);
   }
 
   void add() {
@@ -155,6 +182,9 @@ import org.json.JSONObject;
     usuario.setSenha(passField.getText().toString());
     usuario.setConfirmacaoSenha(confirmPassField.getText().toString());
     usuario.setCidade(cityField.getText().toString().trim());
+    if (isFinishing()) {
+      return;
+    }
     ProgressDialog dialog = new ProgressDialog(CadastroActivity.this);
     dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
     dialog.setIndeterminate(true);
@@ -179,6 +209,9 @@ import org.json.JSONObject;
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == REQUEST_SOCIAL && resultCode == Activity.RESULT_OK) {
       register();
+    } else if (requestCode == OpeningActivity.LOGIN_REQUEST) {
+      setResult(resultCode);
+      finish();
     }
   }
 
@@ -190,45 +223,80 @@ import org.json.JSONObject;
     String result = null;
     try {
       SharedPreferences prefs =
-          PreferenceManager.getDefaultSharedPreferences(CadastroActivity.this);
+              PreferenceManager.getDefaultSharedPreferences(CadastroActivity.this);
       GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(CadastroActivity.this);
       prefs.edit()
-          .putString("gcm", gcm.register(CadastroActivity.this.getString(R.string.gcm_project)))
-          .apply();
+              .putString("gcm", gcm.register(CadastroActivity.this.getString(R.string.gcm_project)))
+              .apply();
 
       RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),
-          new UsuarioService().converterParaJSON(usuario).toString());
+              new UsuarioService().converterParaJSON(usuario).toString());
       Request request =
-          new Request.Builder().url(Constantes.REST_URL + "/users").post(body).build();
+              new Request.Builder().addHeader("X-App-Namespace", Constantes.NAMESPACE_DEFAULT)
+                      .url(Constantes.REST_URL + "/users")
+                      .post(body)
+                      .build();
       Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
       if (response.isSuccessful()) {
         body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),
-            new UsuarioService().loginData(usuario.getEmail(), usuario.getSenha(), PreferenceManager
-                .getDefaultSharedPreferences(CadastroActivity.this)
-                .getString("gcm", "")));
-        request =
-            new Request.Builder().url(Constantes.REST_URL + "/authenticate").post(body).build();
+                new UsuarioService().loginData(usuario.getEmail(), usuario.getSenha(), PreferenceManager
+                        .getDefaultSharedPreferences(CadastroActivity.this)
+                        .getString("gcm", "")));
+        request = new Request.Builder().addHeader("X-App-Namespace", Constantes.NAMESPACE_DEFAULT)
+                .url(Constantes.REST_URL + "/authenticate")
+                .post(body)
+                .build();
         response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
         if (response.isSuccessful()) {
           result = response.body().string();
         } else {
           Log.e("Error!", response.body().toString());
         }
+      } else {
+        JSONObject jsonObject = new JSONObject(response.body().string());
+        jsonObject = jsonObject.getJSONObject("error");
+        List<Integer> fields = new ArrayList<>();
+        if (jsonObject.has("document")) {
+          fields.add(R.id.documentField);
+        }
+        if (jsonObject.has("email")) {
+          fields.add(R.id.emailField);
+        }
+        if (jsonObject.has("district")) {
+          fields.add(R.id.documentField);
+        }
+        if (jsonObject.has("postal_code")) {
+          fields.add(R.id.cepField);
+        }
+        if (jsonObject.has("address")) {
+          fields.add(R.id.addressField);
+        }
+        if (jsonObject.has("phone")) {
+          fields.add(R.id.phoneField);
+        }
+        if (jsonObject.has("city")) {
+          fields.add(R.id.cityField);
+        }
+        focusLabels(fields);
       }
       dialog.dismiss();
-      if (result == null) {
-        toast.show(this, getString(R.string.register_fail), Toast.LENGTH_LONG);
-        return;
-      }
-      JSONObject json = new JSONObject(result);
-      new LoginService().registrarLogin(CadastroActivity.this, json.getJSONObject("user"),
-          json.getString("token"));
-      toast.show(this, getString(R.string.login_success), Toast.LENGTH_LONG);
-      setResult(Activity.RESULT_OK);
-      finish();
     } catch (Exception e) {
       Log.e("ZUP Register error", e.getMessage());
+      Crashlytics.logException(e);
+    } finally {
+      final String finalResult = result;
+      runOnUiThread(new Runnable() {
+        @Override public void run() {
+          if (finalResult != null) {
+            Toast.makeText(CadastroActivity.this, R.string.register_success, Toast.LENGTH_LONG)
+                    .show();
+            Intent intent = new Intent(CadastroActivity.this, LoginActivity.class);
+            intent.putExtra("login", emailField.getText().toString().trim());
+            intent.putExtra("pass", passField.getText().toString());
+            startActivityForResult(intent, OpeningActivity.LOGIN_REQUEST);
+          }
+        }
+      });
     }
   }
-
 }

@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import br.com.lfdb.zup.core.Crashlytics;
+import com.crashlytics.android.Crashlytics;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.todddavies.components.progressbar.ProgressWheel;
@@ -41,15 +40,20 @@ public class EstatisticasFragment extends BaseFragment {
 
     public static final int REQUEST_FILTRO = 1478;
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                       Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_estatisticas, container, false);
 
         ((TextView) view.findViewById(R.id.titulo)).setTypeface(FontUtils.getLight(getActivity()));
 
         TextView botaoFiltrar = (TextView) view.findViewById(R.id.botaoFiltrar);
         botaoFiltrar.setTypeface(FontUtils.getRegular(getActivity()));
-        botaoFiltrar.setOnClickListener(v -> getActivity().startActivityForResult(new Intent(getActivity(), FiltroEstatisticasNovoActivity.class), REQUEST_FILTRO));
+        botaoFiltrar.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                getActivity().startActivityForResult(
+                        new Intent(getActivity(), FiltroEstatisticasNovoActivity.class), REQUEST_FILTRO);
+            }
+        });
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
             new Tasker().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -60,8 +64,7 @@ public class EstatisticasFragment extends BaseFragment {
         return view;
     }
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
+    @Override public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
@@ -80,8 +83,7 @@ public class EstatisticasFragment extends BaseFragment {
         }
     }
 
-    @Override
-    protected String getScreenName() {
+    @Override protected String getScreenName() {
         return "Estatísticas";
     }
 
@@ -99,8 +101,7 @@ public class EstatisticasFragment extends BaseFragment {
             this.data = busca.getPeriodo().getDateString();
         }
 
-        @Override
-        protected void onPreExecute() {
+        @Override protected void onPreExecute() {
             dialog = new ProgressDialog(getActivity());
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             dialog.setIndeterminate(true);
@@ -108,8 +109,7 @@ public class EstatisticasFragment extends BaseFragment {
             dialog.show();
         }
 
-        @Override
-        protected String doInBackground(Void... params) {
+        @Override protected String doInBackground(Void... params) {
             try {
 
                 String url = Constantes.REST_URL + "/reports/stats";
@@ -124,11 +124,13 @@ public class EstatisticasFragment extends BaseFragment {
                     }
                 }
                 LoginService loginService = new LoginService();
-                Request request = new Request.Builder()
-                        .url(url)
+                Request request = new Request.Builder().url(url)
+                        .addHeader("X-App-Namespace", Constantes.NAMESPACE_DEFAULT)
                         .addHeader("X-App-Token", loginService.getToken(getActivity()))
                         .build();
                 Crashlytics.setLong("User", loginService.getUserId(getActivity()));
+                Crashlytics.setLong("CategoryId", id);
+                Crashlytics.setString("Date", data);
                 Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
                 if (response.isSuccessful()) return response.body().string();
             } catch (Exception e) {
@@ -138,8 +140,7 @@ public class EstatisticasFragment extends BaseFragment {
             return null;
         }
 
-        @Override
-        protected void onPostExecute(String result) {
+        @Override protected void onPostExecute(String result) {
             dialog.dismiss();
             if (result != null) {
                 try {
@@ -149,9 +150,10 @@ public class EstatisticasFragment extends BaseFragment {
                         JSONArray statuses = array.getJSONObject(i).getJSONArray("statuses");
                         for (int j = 0; j < statuses.length(); j++) {
                             JSONObject status = statuses.getJSONObject(j);
-                            Estatistica estatistica = new Estatistica(status.getInt("status_id"), status.isNull("color") ?
-                                    Color.BLACK : Color.parseColor(status.getString("color")),
-                                    status.getInt("count"), status.getString("title"));
+                            Estatistica estatistica = new Estatistica(status.getInt("status_id"),
+                                    status.isNull("color") ? Color.BLACK
+                                            : Color.parseColor(status.getString("color")), status.getInt("count"),
+                                    status.getString("title"));
                             if (estatisticas.contains(estatistica)) {
                                 for (Estatistica e : estatisticas) {
                                     if (e.equals(estatistica)) {
@@ -178,17 +180,20 @@ public class EstatisticasFragment extends BaseFragment {
                 } catch (Exception e) {
                     Crashlytics.logException(e);
                     Log.e("ZUP", e.getMessage(), e);
-                    Toast.makeText(getActivity(), "Não foi possível obter as estatísticas", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Não foi possível obter as estatísticas", Toast.LENGTH_LONG)
+                            .show();
                 }
             } else {
-                Toast.makeText(getActivity(), "Não foi possível obter as estatísticas", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Não foi possível obter as estatísticas", Toast.LENGTH_LONG)
+                        .show();
             }
         }
     }
 
     private void montarGraficos(List<Estatistica> estatisticas) {
         for (int i = 1; i <= 5; i++) {
-            ((LinearLayout) getView().findViewById(getActivity().getResources().getIdentifier("line_" + i, "id", getActivity().getPackageName()))).removeAllViews();
+            ((LinearLayout) getView().findViewById(getActivity().getResources()
+                    .getIdentifier("line_" + i, "id", getActivity().getPackageName()))).removeAllViews();
         }
 
         int linha = 0;
@@ -196,7 +201,8 @@ public class EstatisticasFragment extends BaseFragment {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         for (int i = 0; i < estatisticas.size(); i++) {
             if (i % 2 == 0) linha++;
-            LinearLayout container = (LinearLayout) getView().findViewById(getActivity().getResources().getIdentifier("line_" + linha, "id", getActivity().getPackageName()));
+            LinearLayout container = (LinearLayout) getView().findViewById(getActivity().getResources()
+                    .getIdentifier("line_" + linha, "id", getActivity().getPackageName()));
             View view = inflater.inflate(R.layout.estatistica_item, container, false);
             ProgressWheel wheel = (ProgressWheel) view.findViewById(R.id.spinner);
             wheel.setText(estatisticas.get(i).getPorcentagem() + "%");
@@ -210,7 +216,8 @@ public class EstatisticasFragment extends BaseFragment {
             label.setText(estatisticas.get(i).getTexto());
             label.setTypeface(FontUtils.getRegular(getActivity()));
 
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+            LinearLayout.LayoutParams params =
+                    new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
             if (margin) {
                 params.setMargins(0, 0, (int) ImageUtils.dpToPx(getActivity(), 35), 0);
             } else {

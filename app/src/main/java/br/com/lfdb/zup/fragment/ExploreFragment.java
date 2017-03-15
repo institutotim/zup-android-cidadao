@@ -1,7 +1,9 @@
 package br.com.lfdb.zup.fragment;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Address;
@@ -10,7 +12,10 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
@@ -21,6 +26,40 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Background;
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.UiThread;
+import org.androidannotations.annotations.ViewById;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import br.com.lfdb.zup.DetalheMapaActivity;
 import br.com.lfdb.zup.FiltroExploreNovoActivity;
 import br.com.lfdb.zup.MainActivity;
@@ -29,7 +68,6 @@ import br.com.lfdb.zup.SolicitacaoDetalheActivity;
 import br.com.lfdb.zup.api.model.Cluster;
 import br.com.lfdb.zup.base.BaseFragment;
 import br.com.lfdb.zup.core.Constantes;
-import br.com.lfdb.zup.core.Crashlytics;
 import br.com.lfdb.zup.domain.BuscaExplore;
 import br.com.lfdb.zup.domain.CategoriaInventario;
 import br.com.lfdb.zup.domain.CategoriaRelato;
@@ -50,40 +88,14 @@ import br.com.lfdb.zup.util.PreferenceUtils;
 import br.com.lfdb.zup.util.ToastHelper;
 import br.com.lfdb.zup.util.ViewUtils;
 import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Background;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.UiThread;
-import org.androidannotations.annotations.ViewById;
 
 @EFragment(R.layout.fragment_explore) public class ExploreFragment extends BaseFragment
-    implements GoogleMap.OnInfoWindowClickListener, GoogleMap.OnCameraChangeListener,
-    AdapterView.OnItemClickListener, LocationListener, GoogleMap.OnMarkerClickListener,
-    GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        implements GoogleMap.OnInfoWindowClickListener, GoogleMap.OnCameraChangeListener,
+        AdapterView.OnItemClickListener, LocationListener, GoogleMap.OnMarkerClickListener,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+        OnMapReadyCallback {
 
+  public static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 12122;
   @ViewById RelativeLayout header;
   @ViewById ImageView logo_header;
   @ViewById TextView botaoFiltrar;
@@ -141,27 +153,25 @@ import org.androidannotations.annotations.ViewById;
 
   @Click void locationButton() {
     CameraPosition position =
-        new CameraPosition.Builder().target(new LatLng(userLatitude, userLongitude))
-            .zoom(15)
-            .build();
+            new CameraPosition.Builder().target(new LatLng(userLatitude, userLongitude))
+                    .zoom(15)
+                    .build();
     CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
     map.animateCamera(update);
   }
 
   protected void startLocationUpdates() {
     LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest,
-        this);
+            this);
   }
 
   private boolean checkPlayServices() {
-    int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity());
-    if (resultCode != ConnectionResult.SUCCESS) {
-      if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-        GooglePlayServicesUtil.getErrorDialog(resultCode, getActivity(),
-            PLAY_SERVICES_RESOLUTION_REQUEST).show();
-      } else {
-        toast.show(getActivity(), getString(R.string.no_location_detected), Toast.LENGTH_LONG);
-      }
+    int permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
+            Manifest.permission.ACCESS_COARSE_LOCATION);
+    if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+      ActivityCompat.requestPermissions(getActivity(),
+              new String[] { Manifest.permission.ACCESS_COARSE_LOCATION },
+              MY_PERMISSIONS_REQUEST_READ_CONTACTS);
       return false;
     }
     return true;
@@ -171,13 +181,15 @@ import org.androidannotations.annotations.ViewById;
 
   }
 
-  @UiThread
-  @Override public void onLocationChanged(Location location) {
+  @UiThread @Override public void onLocationChanged(Location location) {
+    if (map == null) {
+      return;
+    }
     userLatitude = location.getLatitude();
     userLongitude = location.getLongitude();
     if (updateCameraUser) {
       CameraPosition position = new CameraPosition.Builder().target(
-          new LatLng(location.getLatitude(), location.getLongitude())).zoom(15).build();
+              new LatLng(location.getLatitude(), location.getLongitude())).zoom(15).build();
       CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
       map.clear();
       map.animateCamera(update);
@@ -209,9 +221,9 @@ import org.androidannotations.annotations.ViewById;
       boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
       if (gpsEnabled) {
         googleApiClient = new GoogleApiClient.Builder(getActivity()).addConnectionCallbacks(this)
-            .addOnConnectionFailedListener(this)
-            .addApi(LocationServices.API)
-            .build();
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
       }
     } catch (Exception ex) {
       Log.e("TAG", "GPS Error : " + ex.getLocalizedMessage());
@@ -229,8 +241,13 @@ import org.androidannotations.annotations.ViewById;
       toast = new ToastHelper();
       fontFace();
       SupportMapFragment fragment =
-          (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-      map = fragment.getMap();
+              (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+      if (checkPlayServices()) {
+        buildGoogleApiClient();
+        fragment.getMapAsync(this);
+      } else {
+        toast.show(getActivity(), "Necessitamos saber da sua localização. Por favor, autorize nas configurações do seu aparelho.", Toast.LENGTH_SHORT);
+      }
       boolean showLogo = getResources().getBoolean(R.bool.show_logo_header);
       if (showLogo) {
         logo_header.setVisibility(View.VISIBLE);
@@ -239,7 +256,7 @@ import org.androidannotations.annotations.ViewById;
       if (busca == null) {
         busca = new BuscaExplore();
         List<CategoriaRelato> categorias =
-            new CategoriaRelatoService().getCategorias(getActivity());
+                new CategoriaRelatoService().getCategorias(getActivity());
         for (CategoriaRelato categoria : categorias) {
           busca.getIdsCategoriaRelato().add(categoria.getId());
           for (CategoriaRelato sub : categoria.getSubcategorias()) {
@@ -247,22 +264,23 @@ import org.androidannotations.annotations.ViewById;
           }
         }
       }
-      mapSettings();
       autocomplete.setAdapter(
-          new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item,
-              ExploreFragment.class));
+              new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item,
+                      ExploreFragment.class));
       autocomplete.setOnItemClickListener(this);
-      autocomplete.setOnEditorActionListener((v, actionId, event) -> {
-        boolean handled = false;
-        if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-          searchTask(v.getText().toString());
-          ViewUtils.hideKeyboard(getActivity(), v);
-          handled = true;
+      autocomplete.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        @Override public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+          boolean handled = false;
+          if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+            searchTask(v.getText().toString());
+            ViewUtils.hideKeyboard(getActivity(), v);
+            handled = true;
+          }
+          return handled;
         }
-        return handled;
       });
       getActivity().getWindow()
-          .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+              .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
       if (loginService.usuarioLogado(getActivity())) {
         timerTask();
       }
@@ -285,16 +303,13 @@ import org.androidannotations.annotations.ViewById;
     map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     map.setOnMarkerClickListener(this);
     CameraPosition p = new CameraPosition.Builder().target(
-        new LatLng(Constantes.INITIAL_LATITUDE, Constantes.INITIAL_LONGITUDE)).zoom(12).build();
+            new LatLng(Constantes.INITIAL_LATITUDE, Constantes.INITIAL_LONGITUDE)).zoom(12).build();
     CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
     map.moveCamera(update);
   }
 
   @Override public void onResume() {
     super.onResume();
-    if (checkPlayServices()) {
-      buildGoogleApiClient();
-    }
     if (googleApiClient != null) {
       googleApiClient.connect();
     }
@@ -340,15 +355,20 @@ import org.androidannotations.annotations.ViewById;
   }
 
   @UiThread void increaseZoomTo(LatLng position) {
+    if (map == null) {
+      return;
+    }
     CameraPosition p = new CameraPosition.Builder().target(position)
-        .zoom(map.getCameraPosition().zoom + 0.5f)
-        .build();
+            .zoom(map.getCameraPosition().zoom + 0.5f)
+            .build();
     CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
     map.animateCamera(update);
-
   }
 
   @UiThread public void addMarkerInventory(ItemInventario item) {
+    if (map == null) {
+      return;
+    }
     try {
       itens.add(item);
       if (!isInsideFilter(item.getCategoria())) {
@@ -375,6 +395,9 @@ import org.androidannotations.annotations.ViewById;
   }
 
   @UiThread public void addMarkerReport(ItemRelato item) {
+    if (map == null || item == null) {
+      return;
+    }
     try {
       itens.add(item);
       if (!isInsideFilter(item.getCategoria())) {
@@ -400,7 +423,7 @@ import org.androidannotations.annotations.ViewById;
       validateCluster(item);
       LatLng latLong = new LatLng(item.getLatitude(), item.getLongitude());
       BitmapDescriptor bdf = BitmapDescriptorFactory.fromBitmap(
-          MapUtils.createMarker(getActivity(), getClusterColor(item), item.getCount()));
+              MapUtils.createMarker(getActivity(), getClusterColor(item), item.getCount()));
       MarkerOptions optionsMarker = new MarkerOptions();
       optionsMarker.position(latLong);
       optionsMarker.icon(bdf);
@@ -413,60 +436,34 @@ import org.androidannotations.annotations.ViewById;
   }
 
   @UiThread void validateCluster(Cluster item) {
-    if (item.isReport()) {
-      for (Long id : item.getCategoriesIds()) {
-        removeReportMarkerIfContained(id);
-      }
-    } else {
-      for (Long id : item.getCategoriesIds()) {
-        removeInventoryMarkerIfContained(id);
-      }
+    for (Long id : item.getCategoriesIds()) {
+      removeIfContained(id);
     }
   }
 
-  @UiThread void removeInventoryMarkerIfContained(long id) {
+  @UiThread void removeIfContained(long id) {
     try {
-      ItemInventario itemInventario = null;
       for (Object item : itens) {
         if (item instanceof ItemInventario) {
           if (((ItemInventario) item).getId() == id) {
-            itemInventario = (ItemInventario) item;
+            itens.remove(item);
+            Marker marker = getKeyFromValue(marcadores, item);
+            marcadores.remove(marker);
+            marker.remove();
             break;
           }
         }
-      }
-
-      if (itemInventario != null) {
-        itens.remove(itemInventario);
-        Marker marker = getKeyFromValue(marcadores, itemInventario);
-        marcadores.remove(marker);
-        marker.remove();
-      }
-    } catch(Exception e){
-      Log.e("ZUP", e.getMessage(), e);
-      Crashlytics.logException(e);
-    }
-  }
-
-  @UiThread void removeReportMarkerIfContained(long id) {
-    try {
-      ItemRelato itemRelato = null;
-      for (Object item : itens) {
         if (item instanceof ItemRelato) {
           if (((ItemRelato) item).getId() == id) {
-            itemRelato = (ItemRelato) item;
+            itens.remove(item);
+            Marker marker = getKeyFromValue(marcadores, item);
+            marcadores.remove(marker);
+            marker.remove();
             break;
           }
         }
       }
-
-      if (itemRelato != null) {
-        itens.remove(itemRelato);
-        Marker marker = getKeyFromValue(marcadores, itemRelato);
-        marcadores.remove(marker);
-        marker.remove();
-      }
-    } catch(Exception e){
+    } catch (Exception e) {
       Log.e("ZUP", e.getMessage(), e);
       Crashlytics.logException(e);
     }
@@ -475,11 +472,13 @@ import org.androidannotations.annotations.ViewById;
   private int getClusterColor(Cluster item) {
     if (!item.isSingleCategory()) return Color.parseColor("#2ab4db");
 
-    return Color.parseColor(
-        item.isReport() ? new CategoriaRelatoService().getById(getActivity(), item.getCategoryId())
-            .getCor()
-            : new CategoriaInventarioService().getById(getActivity(), item.getCategoryId())
-                .getCor());
+    if (item.isReport()) {
+      return Color.parseColor(
+              new CategoriaRelatoService().getById(getActivity(), item.getCategoryId()).getCor());
+    } else {
+      return Color.parseColor(
+              new CategoriaInventarioService().getById(getActivity(), item.getCategoryId()).getCor());
+    }
   }
 
   @Override public void onStop() {
@@ -492,12 +491,11 @@ import org.androidannotations.annotations.ViewById;
     ViewUtils.hideKeyboard(getActivity(), autocomplete);
   }
 
-  @UiThread
-  @Override public void onCameraChange(CameraPosition cameraPosition) {
+  @UiThread @Override public void onCameraChange(CameraPosition cameraPosition) {
     latitude = cameraPosition.target.latitude;
     longitude = cameraPosition.target.longitude;
     raio = GeoUtils.getVisibleRadius(map);
-    if (zoom != cameraPosition.zoom){
+    if (zoom != cameraPosition.zoom) {
       removerTodosItensMapa();
     }
     exibirElementos();
@@ -520,25 +518,27 @@ import org.androidannotations.annotations.ViewById;
           }
         }
       }
-    } catch(Exception e){
+    } catch (Exception e) {
       Log.e("ZUP", e.getMessage(), e);
       Crashlytics.logException(e);
     }
   }
 
   @UiThread void removerItensMapa() {
+    if (map == null) {
+      return;
+    }
     try {
       Iterator<Marker> it = marcadores.keySet().iterator();
       while (it.hasNext()) {
         Marker marker = it.next();
         if (!GeoUtils.isVisible(map.getProjection().getVisibleRegion(), marker.getPosition())) {
           marker.remove();
-          it.remove();
           marcadores.remove(marker);
         }
       }
       map.clear();
-    } catch(Exception e){
+    } catch (Exception e) {
       Log.e("ZUP", e.getMessage(), e);
       Crashlytics.logException(e);
     }
@@ -577,7 +577,7 @@ import org.androidannotations.annotations.ViewById;
           }
           requestModel = null;
         }
-      } catch(Exception e){
+      } catch (Exception e) {
         Log.e("ZUP", e.getMessage(), e);
         Crashlytics.logException(e);
       }
@@ -586,13 +586,13 @@ import org.androidannotations.annotations.ViewById;
 
   private boolean isInsideFilter(CategoriaRelato categoria) {
     return busca != null && busca.getIdsCategoriaRelato() != null && busca.getIdsCategoriaRelato()
-        .contains(categoria.getId());
+            .contains(categoria.getId());
   }
 
   private boolean isInsideFilter(CategoriaInventario categoria) {
     return busca != null
-        && busca.getIdsCategoriaInventario() != null
-        && busca.getIdsCategoriaInventario().contains(categoria.getId());
+            && busca.getIdsCategoriaInventario() != null
+            && busca.getIdsCategoriaInventario().contains(categoria.getId());
   }
 
   @Background void geocoderTask(Place place) {
@@ -605,13 +605,13 @@ import org.androidannotations.annotations.ViewById;
         removePoint();
       }
       updateCameraWithMarkerb(addr);
-    } catch(Exception e){
+    } catch (Exception e) {
       Log.e("ZUP", e.getMessage(), e);
       Crashlytics.logException(e);
     }
   }
 
-  @UiThread void removePoint(){
+  @UiThread void removePoint() {
     pontoBusca.remove();
   }
 
@@ -625,13 +625,16 @@ import org.androidannotations.annotations.ViewById;
         removePoint();
       }
       updateCamera(addr);
-    } catch(Exception e){
+    } catch (Exception e) {
       Log.e("ZUP", e.getMessage(), e);
       Crashlytics.logException(e);
     }
   }
 
   @UiThread void updateCamera(Address addr) {
+    if (map == null) {
+      return;
+    }
     LatLng latLong = new LatLng(addr.getLatitude(), addr.getLongitude());
     CameraPosition p = new CameraPosition.Builder().target(latLong).zoom(15).build();
     CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
@@ -639,20 +642,31 @@ import org.androidannotations.annotations.ViewById;
   }
 
   @UiThread void updateCameraWithMarkerb(Address addr) {
+    if (map == null) {
+      return;
+    }
     LatLng latLong = new LatLng(addr.getLatitude(), addr.getLongitude());
     pontoBusca = map.addMarker(
-        new MarkerOptions().position(latLong).icon(BitmapDescriptorFactory.defaultMarker()));
+            new MarkerOptions().position(latLong).icon(BitmapDescriptorFactory.defaultMarker()));
     CameraPosition p = new CameraPosition.Builder().target(latLong).zoom(15).build();
     CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
     map.animateCamera(update);
   }
 
   public Marker getKeyFromValue(Map<Marker, Object> map, Object value) {
+    if (map == null) {
+      return null;
+    }
     for (Marker m : map.keySet()) {
       if (map.get(m).equals(value)) {
         return m;
       }
     }
     return null;
+  }
+
+  @Override public void onMapReady(GoogleMap googleMap) {
+    map = googleMap;
+    mapSettings();
   }
 }

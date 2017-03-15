@@ -14,20 +14,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import br.com.lfdb.zup.util.AuthHelper;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
-
-import org.apache.commons.lang3.StringUtils;
-import org.json.JSONException;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import br.com.lfdb.zup.base.BaseActivity;
 import br.com.lfdb.zup.core.Constantes;
 import br.com.lfdb.zup.core.ConstantesBase;
@@ -40,8 +26,18 @@ import br.com.lfdb.zup.social.auth.FacebookAuth;
 import br.com.lfdb.zup.social.auth.GooglePlusAuth;
 import br.com.lfdb.zup.social.auth.TwitterAuth;
 import br.com.lfdb.zup.social.util.SocialUtils;
+import br.com.lfdb.zup.util.AuthHelper;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.ViewUtils;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONException;
 
 public class EditarContaActivity extends BaseActivity implements View.OnClickListener {
 
@@ -61,8 +57,7 @@ public class EditarContaActivity extends BaseActivity implements View.OnClickLis
     private EditText campoCidade;
     private Usuario usuario;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editar_conta);
 
@@ -127,8 +122,7 @@ public class EditarContaActivity extends BaseActivity implements View.OnClickLis
         preencherTela();
     }
 
-    @Override
-    protected void onResume() {
+    @Override protected void onResume() {
         super.onResume();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -167,8 +161,7 @@ public class EditarContaActivity extends BaseActivity implements View.OnClickLis
         }
     }
 
-    @Override
-    public void onClick(View v) {
+    @Override public void onClick(View v) {
         ViewUtils.hideKeyboard(this, campoNome);
         if (v.getId() == R.id.botaoSalvar) {
             limparFundoCampos();
@@ -201,14 +194,15 @@ public class EditarContaActivity extends BaseActivity implements View.OnClickLis
     }
 
     private void logout(final String social, final ImageButton imgButton) {
-        new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.logout_social))
+        new AlertDialog.Builder(this).setTitle(getString(R.string.logout_social))
                 .setMessage(getString(R.string.logout_social_message, StringUtils.capitalize(social)))
                 .setPositiveButton(R.string.sim, (dialog, which) -> {
                     Activity context = EditarContaActivity.this;
                     dialog.dismiss();
                     SocialUtils.logout(context);
-                    int resource = context.getResources().getIdentifier(String.format("btn_logar_%s_logoff", social.replace("+", "")), "drawable", context.getPackageName());
+                    int resource = context.getResources()
+                            .getIdentifier(String.format("btn_logar_%s_logoff", social.replace("+", "")),
+                                    "drawable", context.getPackageName());
                     imgButton.setImageResource(resource);
                 })
                 .setNegativeButton(R.string.nao, null)
@@ -244,16 +238,14 @@ public class EditarContaActivity extends BaseActivity implements View.OnClickLis
             if (usuario.getCpf() != null) campoCPF.setText(usuario.getCpf());
             if (usuario.getTelefone() != null) campoTelefone.setText(usuario.getTelefone());
             if (usuario.getEndereco() != null) campoEndereco.setText(usuario.getEndereco());
-            if (usuario.getComplemento() != null)
-                campoComplemento.setText(usuario.getComplemento());
+            if (usuario.getComplemento() != null) campoComplemento.setText(usuario.getComplemento());
             if (usuario.getCep() != null) campoCEP.setText(usuario.getCep());
             if (usuario.getBairro() != null) campoBairro.setText(usuario.getBairro());
             if (usuario.getCidade() != null) campoCidade.setText(usuario.getCidade());
         }
     }
 
-    @Override
-    protected String getScreenName() {
+    @Override protected String getScreenName() {
         return "Editar Conta";
     }
 
@@ -261,8 +253,7 @@ public class EditarContaActivity extends BaseActivity implements View.OnClickLis
 
         private ProgressDialog dialog;
 
-        @Override
-        protected void onPreExecute() {
+        @Override protected void onPreExecute() {
             dialog = new ProgressDialog(EditarContaActivity.this);
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             dialog.setIndeterminate(true);
@@ -270,17 +261,16 @@ public class EditarContaActivity extends BaseActivity implements View.OnClickLis
             dialog.show();
         }
 
-        @SuppressWarnings("unchecked")
-        @Override
-        protected String doInBackground(Void... params) {
+        @SuppressWarnings("unchecked") @Override protected String doInBackground(Void... params) {
             try {
                 RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),
                         new UsuarioService().converterParaJSON(usuario).toString());
-                Request request = new Request.Builder()
-                        .addHeader("X-App-Token", new LoginService().getToken(EditarContaActivity.this))
-                        .url(Constantes.REST_URL + "/users/" + usuario.getId())
-                        .put(body)
-                        .build();
+                Request request =
+                        new Request.Builder().addHeader("X-App-Namespace", Constantes.NAMESPACE_DEFAULT)
+                                .addHeader("X-App-Token", new LoginService().getToken(EditarContaActivity.this))
+                                .url(Constantes.REST_URL + "/users/" + usuario.getId())
+                                .put(body)
+                                .build();
                 Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
                 if (response.isSuccessful()) {
                     return response.body().string();
@@ -294,20 +284,22 @@ public class EditarContaActivity extends BaseActivity implements View.OnClickLis
             return null;
         }
 
-        @Override
-        protected void onPostExecute(String result) {
+        @Override protected void onPostExecute(String result) {
             dialog.dismiss();
             if (result != null) {
                 try {
-                    new LoginService().atualizarUsuario(EditarContaActivity.this, new UsuarioService().converterParaJSON(usuario));
+                    new LoginService().atualizarUsuario(EditarContaActivity.this,
+                            new UsuarioService().converterParaJSON(usuario));
                 } catch (JSONException e) {
                     Log.e("ZUP", e.getMessage(), e);
                 }
-                Toast.makeText(EditarContaActivity.this, "Dados atualizados com sucesso", Toast.LENGTH_LONG).show();
+                Toast.makeText(EditarContaActivity.this, "Dados atualizados com sucesso", Toast.LENGTH_LONG)
+                        .show();
                 setResult(Activity.RESULT_OK);
                 finish();
             } else {
-                Toast.makeText(EditarContaActivity.this, "Falha no atualização dos dados", Toast.LENGTH_LONG).show();
+                Toast.makeText(EditarContaActivity.this, "Falha no atualização dos dados",
+                        Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -320,31 +312,40 @@ public class EditarContaActivity extends BaseActivity implements View.OnClickLis
     }
 
     private void limparFundoCampos() {
-        for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF, R.id.campoTelefone,
-                R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro, R.id.campoSenha, R.id.campoConfirmarSenha)) {
+        for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF,
+                R.id.campoTelefone, R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro, R.id.campoSenha,
+                R.id.campoConfirmarSenha)) {
             findViewById(id).setBackgroundResource(R.drawable.textbox_bg);
         }
     }
 
     private List<Integer> validar() {
         List<Integer> campos = new ArrayList<>();
-        if (!campoSenha.getText().toString().trim().isEmpty() && !campoConfirmarSenha.getText().toString().trim().isEmpty()
-                && campoSenhaAntiga.getText().toString().trim().isEmpty()) {
+        if (!campoSenha.getText().toString().trim().isEmpty() && !campoConfirmarSenha.getText()
+                .toString()
+                .trim()
+                .isEmpty() && campoSenhaAntiga.getText().toString().trim().isEmpty()) {
             campos.add(campoSenhaAntiga.getId());
-        } else if (!campoSenha.getText().toString().trim().isEmpty() && !campoConfirmarSenha.getText().toString().trim().isEmpty()
-                && campoSenha.getText().toString().trim().length() < 6) {
+        } else if (!campoSenha.getText().toString().trim().isEmpty() && !campoConfirmarSenha.getText()
+                .toString()
+                .trim()
+                .isEmpty() && campoSenha.getText().toString().trim().length() < 6) {
             campos.add(campoSenha.getId());
             Toast.makeText(this, "A senha deve ter pelo menos 6 caracteres!", Toast.LENGTH_SHORT).show();
         }
 
-        if (!campoSenha.getText().toString().trim().isEmpty() && !campoConfirmarSenha.getText().toString().trim().isEmpty()
-                && !campoSenha.getText().toString().equals(campoConfirmarSenha.getText().toString())) {
+        if (!campoSenha.getText().toString().trim().isEmpty() && !campoConfirmarSenha.getText()
+                .toString()
+                .trim()
+                .isEmpty() && !campoSenha.getText()
+                .toString()
+                .equals(campoConfirmarSenha.getText().toString())) {
             campos.add(campoSenha.getId());
             campos.add(campoConfirmarSenha.getId());
         }
 
-        for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF, R.id.campoTelefone,
-                R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro)) {
+        for (Integer id : Arrays.asList(R.id.campoNome, R.id.campoEmail, R.id.campoCPF,
+                R.id.campoTelefone, R.id.campoEndereco, R.id.campoCEP, R.id.campoBairro)) {
             if (((TextView) findViewById(id)).getText().toString().trim().isEmpty()) {
                 campos.add(id);
             }
@@ -353,8 +354,7 @@ public class EditarContaActivity extends BaseActivity implements View.OnClickLis
         return campos;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE) {
             if (resultCode != Activity.RESULT_OK) {
                 Toast.makeText(this, getString(R.string.failed_social_auth), Toast.LENGTH_LONG).show();

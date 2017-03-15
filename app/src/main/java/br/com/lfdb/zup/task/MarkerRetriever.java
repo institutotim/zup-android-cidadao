@@ -47,8 +47,8 @@ public class MarkerRetriever extends AsyncTask<Void, Object, Void> {
   private Map<Marker, Object> marcadores = new HashMap<>();
   private ExploreFragment fragment;
 
-  public MarkerRetriever(RequestModel request, ProgressBar loading, BuscaExplore search, Context context,
-      ExploreFragment fragment) {
+  public MarkerRetriever(RequestModel request, ProgressBar loading, BuscaExplore search,
+                         Context context, ExploreFragment fragment) {
     this.request = request;
     this.loading = loading;
     this.search = search;
@@ -83,21 +83,23 @@ public class MarkerRetriever extends AsyncTask<Void, Object, Void> {
           query = builder.toString();
           query = query.substring(0, query.length() - 1);
         }
-        requisicao = new Request.Builder().url(Constantes.REST_URL
-            + "/search/inventory/items"
-            + ConstantesBase.getItemInventarioQuery(context)
-            + "&position[latitude]="
-            + request.getLatitude()
-            + "&position[longitude]="
-            + request.getLongitude()
-            + "&position[distance]="
-            + request.getRaio()
-            + "&max_items="
-            + MAX_ITEMS_PER_REQUEST
-            + query
-            + getClusterQuery())
-            .addHeader("X-App-Token", new LoginService().getToken(context))
-            .build();
+        requisicao = new Request.Builder().url(
+                Constantes.REST_URL
+                        + "/search/inventory/items"
+                        + ConstantesBase.getItemInventarioQuery(context)
+                        + "&position[latitude]="
+                        + request.getLatitude()
+                        + "&position[longitude]="
+                        + request.getLongitude()
+                        + "&position[distance]="
+                        + request.getRaio()
+                        + "&max_items="
+                        + MAX_ITEMS_PER_REQUEST
+                        + query
+                        + getClusterQuery())
+                .addHeader("X-App-Namespace", Constantes.NAMESPACE_DEFAULT)
+                .addHeader("X-App-Token", new LoginService().getToken(context))
+                .build();
         if (isCancelled()) return null;
         Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(requisicao).execute();
         if (response.isSuccessful()) {
@@ -122,32 +124,33 @@ public class MarkerRetriever extends AsyncTask<Void, Object, Void> {
           categories = categories.substring(0, categories.length() - 1);
         }
         String query =
-            Constantes.REST_URL
-                + "/search/reports/items"
-                + ConstantesBase.getItemRelatoQuery(context)
-                + "&position[latitude]="
-                + request.getLatitude()
-                + "&position[longitude]="
-                + request.getLongitude()
-                + "&position[distance]="
-                + request.getRaio()
-                + "&max_items="
-                + MAX_ITEMS_PER_REQUEST
-                + "&begin_date="
-                + search.getPeriodo().getDateString()
-                + "&end_date="
-                + DateTime.now()
-                + "&display_type=full"
-                + categories
-                + getClusterQuery();
+                Constantes.REST_URL
+                        + "/search/reports/items"
+                        + ConstantesBase.getItemRelatoQuery(context)
+                        + "&position[latitude]="
+                        + request.getLatitude()
+                        + "&position[longitude]="
+                        + request.getLongitude()
+                        + "&position[distance]="
+                        + request.getRaio()
+                        + "&max_items="
+                        + MAX_ITEMS_PER_REQUEST
+                        + "&begin_date="
+                        + search.getPeriodo().getDateString()
+                        + "&end_date="
+                        + DateTime.now()
+                        + "&display_type=full"
+                        + categories
+                        + getClusterQuery();
         if (search.getStatus() != null) {
           query += "&statuses=" + search.getStatus().getId();
         }
         Log.d("REQUEST", query);
         String token = new LoginService().getToken(context);
         requisicao = new Request.Builder().url(query)
-            .addHeader("X-App-Token", token)
-            .build();
+                .addHeader("X-App-Namespace", Constantes.NAMESPACE_DEFAULT)
+                .addHeader("X-App-Token", token)
+                .build();
         if (isCancelled()) return null;
 
         Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(requisicao).execute();
@@ -227,15 +230,14 @@ public class MarkerRetriever extends AsyncTask<Void, Object, Void> {
       item.setDescricao(json.getString("description"));
       item.setProtocolo(json.optString("protocol", null));
       item.setEndereco(json.getString("address") +
-          (json.has("number") && !json.isNull("number") ? ", " + json.getString("number") : "") +
-          (json.has("postal_code") && !json.isNull("postal_code") ? ", " + json.getString(
-              "postal_code") : "") +
-          (json.has("district") && !json.isNull("district") ? ", " + json.getString("district")
-              : ""));
+              (json.has("number") && !json.isNull("number") ? ", " + json.getString("number") : "") +
+              (json.has("postal_code") && !json.isNull("postal_code") ? ", " + json.getString(
+                      "postal_code") : "") +
+              (json.has("district") && !json.isNull("district") ? ", " + json.getString("district")
+                      : ""));
       item.setData(
-          DateUtils.getIntervaloTempo(DateUtils.parseRFC3339Date(json.getString("created_at"))));
-      item.setCategoria(
-          service.getById(context, json.getJSONObject("category").getLong("id")));
+              DateUtils.getIntervaloTempo(DateUtils.parseRFC3339Date(json.getString("created_at"))));
+      item.setCategoria(service.getById(context, json.getJSONObject("category").getLong("id")));
       item.setLatitude(json.getJSONObject("position").getDouble("latitude"));
       item.setLongitude(json.getJSONObject("position").getDouble("longitude"));
       item.setIdItemInventario(json.optLong("inventory_item_id", -1));
@@ -245,8 +247,8 @@ public class MarkerRetriever extends AsyncTask<Void, Object, Void> {
       JSONArray fotos = json.getJSONArray("images");
       for (int j = 0; j < fotos.length(); j++) {
         item.getFotos()
-            .add(ViewUtils.isMdpiOrLdpi(context) ? fotos.getJSONObject(j).getString("low")
-                : fotos.getJSONObject(j).getString("high"));
+                .add(ViewUtils.isMdpiOrLdpi(context) ? fotos.getJSONObject(j).getString("low")
+                        : fotos.getJSONObject(j).getString("high"));
       }
 
       itensRelato.add(item);
@@ -262,13 +264,13 @@ public class MarkerRetriever extends AsyncTask<Void, Object, Void> {
     List<Cluster> clusters = new ArrayList<>();
     for (int i = 0; i < array.length(); i++) {
       if (isCancelled()) return;
-      Cluster cluster = ConstantesBase.GSON.fromJson(array.get(i).toString(), Cluster.class)
-          .setReport(isReport);
+      Cluster cluster =
+              ConstantesBase.GSON.fromJson(array.get(i).toString(), Cluster.class).setReport(isReport);
       ids.addAll(cluster.getItemsIds());
       clusters.add(cluster);
     }
 
-    ((Activity)context).runOnUiThread(() -> {
+    ((Activity) context).runOnUiThread(() -> {
       Iterator<Marker> it = marcadores.keySet().iterator();
       while (it.hasNext()) {
         Marker marker = it.next();

@@ -9,23 +9,20 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import br.com.lfdb.zup.base.BaseActivity;
+import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.core.ConstantesBase;
+import br.com.lfdb.zup.util.FontUtils;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
-import br.com.lfdb.zup.base.BaseActivity;
-import br.com.lfdb.zup.core.Constantes;
-import br.com.lfdb.zup.core.ConstantesBase;
-import br.com.lfdb.zup.util.FontUtils;
-
 public class RecuperarSenhaActivity extends BaseActivity implements View.OnClickListener {
 
     private EditText campoEmail;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recuperar_senha);
 
@@ -43,13 +40,11 @@ public class RecuperarSenhaActivity extends BaseActivity implements View.OnClick
         campoEmail.setTypeface(FontUtils.getLight(this));
     }
 
-    @Override
-    public void onClick(View v) {
+    @Override public void onClick(View v) {
         new Tasker().execute();
     }
 
-    @Override
-    protected String getScreenName() {
+    @Override protected String getScreenName() {
         return "Recuperar Senha";
     }
 
@@ -57,8 +52,7 @@ public class RecuperarSenhaActivity extends BaseActivity implements View.OnClick
 
         private ProgressDialog dialog;
 
-        @Override
-        protected void onPreExecute() {
+        @Override protected void onPreExecute() {
             dialog = new ProgressDialog(RecuperarSenhaActivity.this);
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             dialog.setIndeterminate(true);
@@ -66,15 +60,15 @@ public class RecuperarSenhaActivity extends BaseActivity implements View.OnClick
             dialog.show();
         }
 
-        @Override
-        protected String doInBackground(Void... params) {
+        @Override protected String doInBackground(Void... params) {
             try {
                 RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),
                         String.format("{\"email\":\"%s\"", campoEmail.getText().toString().trim()));
-                Request request = new Request.Builder()
-                        .url(Constantes.REST_URL + "/recover_password")
-                        .put(body)
-                        .build();
+                Request request =
+                        new Request.Builder().addHeader("X-App-Namespace", Constantes.NAMESPACE_DEFAULT)
+                                .url(Constantes.REST_URL + "/recover_password")
+                                .put(body)
+                                .build();
                 Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
                 if (response.isSuccessful()) {
                     return response.body().string();
@@ -85,15 +79,16 @@ public class RecuperarSenhaActivity extends BaseActivity implements View.OnClick
             return null;
         }
 
-        @Override
-        protected void onPostExecute(String result) {
+        @Override protected void onPostExecute(String result) {
             dialog.dismiss();
             if (result != null) {
-                Toast.makeText(RecuperarSenhaActivity.this, "Solicitação enviada com sucesso. Verifique seu e-mail", Toast.LENGTH_LONG).show();
+                Toast.makeText(RecuperarSenhaActivity.this,
+                        "Solicitação enviada com sucesso. Verifique seu e-mail", Toast.LENGTH_LONG).show();
                 setResult(Activity.RESULT_OK);
                 finish();
             } else {
-                Toast.makeText(RecuperarSenhaActivity.this, "Falha no envio da solicitação", Toast.LENGTH_LONG).show();
+                Toast.makeText(RecuperarSenhaActivity.this, "Falha no envio da solicitação",
+                        Toast.LENGTH_LONG).show();
             }
         }
     }

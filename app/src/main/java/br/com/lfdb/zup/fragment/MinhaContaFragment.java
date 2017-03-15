@@ -57,14 +57,14 @@ public class MinhaContaFragment extends BaseFragment implements AdapterView.OnIt
 
     List<SolicitacaoListItem> listaSolicitacoes = new ArrayList<>();
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                       Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_minha_conta, container, false);
 
         TextView botaoSair = (TextView) view.findViewById(R.id.botaoSair);
         botaoSair.setTypeface(FontUtils.getRegular(getActivity()));
-        botaoSair.setOnClickListener(v -> new AlertDialog.Builder(getActivity())
-                .setMessage(R.string.deseja_realmente_sair_da_sua_conta)
+        botaoSair.setOnClickListener(v -> new AlertDialog.Builder(getActivity()).setMessage(
+                R.string.deseja_realmente_sair_da_sua_conta)
                 .setPositiveButton(R.string.sim, (dialog, which) -> {
                     final ProgressDialog dialog1 = new ProgressDialog(getActivity());
                     dialog1.setMessage("Saindo...");
@@ -75,15 +75,20 @@ public class MinhaContaFragment extends BaseFragment implements AdapterView.OnIt
                         try {
                             GoogleCloudMessaging.getInstance(getActivity()).unregister();
                             OkHttpClient client = new OkHttpClient();
-                            Request request = new Request.Builder()
-                                    .addHeader("X-App-Token", new LoginService().getToken(getActivity()))
-                                    .url(Constantes.REST_URL + "/sign_out?token=" + Uri.encode(new LoginService().getToken(getActivity())))
-                                    .delete()
-                                    .build();
+                            Request request =
+                                    new Request.Builder().addHeader("X-App-Namespace", Constantes.NAMESPACE_DEFAULT)
+                                            .addHeader("X-App-Token", new LoginService().getToken(getActivity()))
+                                            .url(Constantes.REST_URL + "/sign_out?token=" + Uri.encode(
+                                                    new LoginService().getToken(getActivity())))
+                                            .delete()
+                                            .build();
                             Response response = client.newCall(request).execute();
                             if (response.isSuccessful()) {
                                 dialog1.dismiss();
-                                PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().remove("gcm").apply();
+                                PreferenceManager.getDefaultSharedPreferences(getActivity())
+                                        .edit()
+                                        .remove("gcm")
+                                        .apply();
                                 startActivity(new Intent(getActivity(), OpeningActivity.class));
                                 new LoginService().registrarLogout(getActivity());
                                 getActivity().finish();
@@ -91,7 +96,8 @@ public class MinhaContaFragment extends BaseFragment implements AdapterView.OnIt
                                 AuthHelper.redirectSessionExpired(getActivity());
                             } else {
                                 dialog1.dismiss();
-                                getActivity().runOnUiThread(() -> Toast.makeText(getActivity(), "Ops... Não foi possível realizar seu logout...", Toast.LENGTH_SHORT).show());
+                                getActivity().runOnUiThread(() -> Toast.makeText(getActivity(),
+                                        "Ops... Não foi possível realizar seu logout...", Toast.LENGTH_SHORT).show());
                             }
                         } catch (IOException e) {
                             dialog1.dismiss();
@@ -104,7 +110,9 @@ public class MinhaContaFragment extends BaseFragment implements AdapterView.OnIt
 
         TextView botaoEditar = (TextView) view.findViewById(R.id.botaoEditar);
         botaoEditar.setTypeface(FontUtils.getRegular(getActivity()));
-        botaoEditar.setOnClickListener(v -> startActivityForResult(new Intent(getActivity(), EditarContaActivity.class), REQUEST_EDIT_USER));
+        botaoEditar.setOnClickListener(
+                v -> startActivityForResult(new Intent(getActivity(), EditarContaActivity.class),
+                        REQUEST_EDIT_USER));
 
         ((TextView) view.findViewById(R.id.instrucoes)).setTypeface(FontUtils.getBold(getActivity()));
 
@@ -139,8 +147,7 @@ public class MinhaContaFragment extends BaseFragment implements AdapterView.OnIt
         return view;
     }
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
+    @Override public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
             lastPageLoaded = 0;
@@ -192,8 +199,7 @@ public class MinhaContaFragment extends BaseFragment implements AdapterView.OnIt
         }
     }
 
-    @Override
-    protected String getScreenName() {
+    @Override protected String getScreenName() {
         return "Minha Conta";
     }
 
@@ -206,9 +212,7 @@ public class MinhaContaFragment extends BaseFragment implements AdapterView.OnIt
             items = objects;
         }
 
-        @SuppressLint("NewApi")
-        @SuppressWarnings("deprecation")
-        @Override
+        @SuppressLint("NewApi") @SuppressWarnings("deprecation") @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View row = getActivity().getLayoutInflater().inflate(R.layout.solicitacao_row, parent, false);
             SolicitacaoListItem item = items.get(position);
@@ -244,9 +248,11 @@ public class MinhaContaFragment extends BaseFragment implements AdapterView.OnIt
             if (item.getStatus() != null) {
                 row.findViewById(R.id.bg).setBackgroundColor(item.getStatus().getCor());
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                    indicadorStatus.setBackgroundDrawable(ImageUtils.getStatusBackground(getActivity(), item.getStatus().getCor()));
+                    indicadorStatus.setBackgroundDrawable(
+                            ImageUtils.getStatusBackground(getActivity(), item.getStatus().getCor()));
                 } else {
-                    indicadorStatus.setBackground(ImageUtils.getStatusBackground(getActivity(), item.getStatus().getCor()));
+                    indicadorStatus.setBackground(
+                            ImageUtils.getStatusBackground(getActivity(), item.getStatus().getCor()));
                 }
                 indicadorStatus.setText(item.getStatus().getNome());
                 int fiveDp = (int) ImageUtils.dpToPx(getActivity(), 5);
@@ -257,16 +263,14 @@ public class MinhaContaFragment extends BaseFragment implements AdapterView.OnIt
         }
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         SolicitacaoListItem item = (SolicitacaoListItem) parent.getItemAtPosition(position);
         Intent intent = new Intent(getActivity(), SolicitacaoDetalheActivity.class);
         intent.putExtra("solicitacao", item);
         startActivity(intent);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    @Override public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_EDIT_USER && resultCode == Activity.RESULT_OK) {
             Usuario usuario = new UsuarioService().getUsuarioAtivo(getActivity());
             if (usuario != null) {
@@ -279,8 +283,7 @@ public class MinhaContaFragment extends BaseFragment implements AdapterView.OnIt
 
         private ProgressDialog dialog;
 
-        @Override
-        protected void onPreExecute() {
+        @Override protected void onPreExecute() {
             if (shouldContinueLoading) {
                 dialog = new ProgressDialog(getActivity());
                 dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -290,13 +293,14 @@ public class MinhaContaFragment extends BaseFragment implements AdapterView.OnIt
             }
         }
 
-        @Override
-        protected String doInBackground(Void... params) {
+        @Override protected String doInBackground(Void... params) {
             if (shouldContinueLoading) {
                 try {
                     isLoading = true;
-                    Request request = new Request.Builder()
-                            .url(Constantes.REST_URL + "/reports/users/me/items?per_page=10&page=" + (lastPageLoaded + 1) + "&sort=created_at&order=DESC")
+                    Request request = new Request.Builder().url(
+                            Constantes.REST_URL + "/reports/users/me/items?per_page=10&page=" + (lastPageLoaded
+                                    + 1) + "&sort=created_at&order=DESC")
+                            .addHeader("X-App-Namespace", Constantes.NAMESPACE_DEFAULT)
                             .addHeader("X-App-Token", new LoginService().getToken(getActivity()))
                             .build();
                     Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
@@ -310,7 +314,6 @@ public class MinhaContaFragment extends BaseFragment implements AdapterView.OnIt
                             lastResult = json;
                         }
 
-
                         return json;
                     } else if (response.code() == 401) {
                         AuthHelper.redirectSessionExpired(getActivity());
@@ -323,8 +326,7 @@ public class MinhaContaFragment extends BaseFragment implements AdapterView.OnIt
             return null;
         }
 
-        @Override
-        protected void onPostExecute(String result) {
+        @Override protected void onPostExecute(String result) {
             isLoading = false;
             if (dialog != null) dialog.dismiss();
             if (shouldContinueLoading) {
@@ -347,12 +349,16 @@ public class MinhaContaFragment extends BaseFragment implements AdapterView.OnIt
                         preencherLista(itens);
                     } catch (Exception e) {
                         Log.e("ZUP", e.getMessage(), e);
-                        if (getActivity() != null)
-                            Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos", Toast.LENGTH_LONG).show();
+                        if (getActivity() != null) {
+                            Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos",
+                                    Toast.LENGTH_LONG).show();
+                        }
                     }
                 } else {
-                    if (getActivity() != null)
-                        Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos", Toast.LENGTH_LONG).show();
+                    if (getActivity() != null) {
+                        Toast.makeText(getActivity(), "Não foi possível obter sua lista de relatos",
+                                Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         }

@@ -1,10 +1,14 @@
 package br.com.lfdb.zup.fragment;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
@@ -12,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 import br.com.lfdb.zup.R;
 import br.com.lfdb.zup.SoliciteActivity;
 import br.com.lfdb.zup.base.BaseFragment;
@@ -33,6 +38,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.*;
 import com.squareup.okhttp.Response;
@@ -43,16 +49,17 @@ import org.json.JSONObject;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnCameraChangeListener,
-        GoogleMap.OnMarkerClickListener, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener, AdapterView.OnItemClickListener {
+public class SolicitePontoFragment extends BaseFragment
+        implements GoogleMap.OnCameraChangeListener, GoogleMap.OnMarkerClickListener,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+        LocationListener, AdapterView.OnItemClickListener, OnMapReadyCallback {
 
     private static final int MAX_ITEMS_PER_REQUEST = 30;
 
-    private static final LocationRequest REQUEST = LocationRequest.create()
-            .setInterval(5000)         // 5 seconds
-            .setFastestInterval(16)    // 16ms = 60fps
-            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    private static final LocationRequest REQUEST =
+            LocationRequest.create().setInterval(5000)         // 5 seconds
+                    .setFastestInterval(16)    // 16ms = 60fps
+                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
     private GoogleMap map;
     private static View view;
@@ -85,25 +92,35 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
 
     private GoogleApiClient googleApiClient;
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
+    @Override public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
             ((SoliciteActivity) getActivity()).setInfo(R.string.toque_no_ponto_exato_solicitacao);
         }
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
+    @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
     }
 
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    private boolean checkPlayServices() {
+        int permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_COARSE_LOCATION);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            //ActivityCompat.requestPermissions(getActivity(),
+                    //new String[] { Manifest.permission.ACCESS_COARSE_LOCATION },
+                   // ExploreFragment_.MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+            return false;
+        }
+        return true;
+    }
+
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         if (view != null) {
             ViewGroup parent = (ViewGroup) view.getParent();
-            if (parent != null)
-                parent.removeView(view);
+            if (parent != null) parent.removeView(view);
         }
 
         ((SoliciteActivity) getActivity()).enableNextButton(false);
@@ -115,26 +132,20 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
         } catch (InflateException e) {
             Log.w("ZUP", e.getMessage());
         }
-
-        map = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaPonto)).getMap();
+        if (checkPlayServices()) {
+            ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaPonto)).getMapAsync(
+                    this);
+        } else {
+            Toast.makeText(getActivity(),
+                    "Necessitamos saber da sua localização. Por favor, autorize nas configurações do seu aparelho.",
+                    Toast.LENGTH_SHORT).show();
+        }
         progressBar = (ProgressBar) view.findViewById(R.id.loading);
 
-        if (map != null) {
-            map.setMyLocationEnabled(true);
-            map.getUiSettings().setMyLocationButtonEnabled(false);
-            map.getUiSettings().setZoomControlsEnabled(false);
-            map.setOnCameraChangeListener(this);
-            map.setOnMarkerClickListener(this);
-            map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-
-            CameraPosition p = new CameraPosition.Builder().target(new LatLng(Constantes.INITIAL_LATITUDE,
-                    Constantes.INITIAL_LONGITUDE)).zoom(16).build();
-            CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
-            map.moveCamera(update);
-        }
-
         autoCompView = (AutoCompleteTextView) view.findViewById(R.id.autocomplete);
-        autoCompView.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, ExploreFragment.class));
+        autoCompView.setAdapter(
+                new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item,
+                        ExploreFragment.class));
         autoCompView.setTypeface(FontUtils.getRegular(getActivity()));
         autoCompView.setOnItemClickListener(this);
         autoCompView.setOnEditorActionListener((v, actionId, event) -> {
@@ -155,29 +166,28 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
         return id;
     }
 
-    @Override
-    public void onResume() {
+    @Override public void onResume() {
         super.onResume();
         setUpLocationClientIfNeeded();
-        googleApiClient.connect();
+        if (googleApiClient != null) {
+            googleApiClient.connect();
+        }
     }
 
-    @Override
-    public void onPause() {
+    @Override public void onPause() {
         super.onPause();
         if (googleApiClient != null) {
             googleApiClient.disconnect();
         }
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    @Override public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setUpLocationClientIfNeeded();
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         categoria = ((SoliciteActivity) getActivity()).getCategoria();
-        if (categoria.isPosicaoLivre()) {
+        if (categoria.isPosicaoLivre() && marcador != null) {
             marcador.setVisibility(View.VISIBLE);
         }
 
@@ -187,50 +197,51 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
 
     private void setUpLocationClientIfNeeded() {
         if (googleApiClient == null) {
-            googleApiClient = new GoogleApiClient.Builder(getActivity())
-                    .addApi(LocationServices.API)
+            googleApiClient = new GoogleApiClient.Builder(getActivity()).addApi(LocationServices.API)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .build();
         }
     }
 
-    @Override
-    public void onConnected(Bundle bundle) {
+    @Override public void onConnected(Bundle bundle) {
         if (!wasLocalized) {
             LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, REQUEST, this);
         }
     }
 
-    @Override
-    public void onConnectionSuspended(int i) {
+    @Override public void onConnectionSuspended(int i) {
 
     }
 
     private void adicionarMarker(ItemInventario item) {
+        if (map == null) {
+            return;
+        }
         try {
             itens.add(item);
-            marcadores.put(map.addMarker(new MarkerOptions()
-                            .position(new LatLng(item.getLatitude(), item.getLongitude()))
-                            .icon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.getInventoryMarker(getActivity(), item.getCategoria().getMarcador())))
-            ), item);
+            marcadores.put(map.addMarker(
+                    new MarkerOptions().position(new LatLng(item.getLatitude(), item.getLongitude()))
+                            .icon(BitmapDescriptorFactory.fromBitmap(BitmapUtils.getInventoryMarker(getActivity(),
+                                    item.getCategoria().getMarcador())))), item);
         } catch (Exception e) {
             Log.w("ZUP", e.getMessage() == null ? "null" : e.getMessage(), e);
         }
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        CameraPosition position = new CameraPosition.Builder().target(new LatLng(location.getLatitude(),
-                location.getLongitude())).zoom(18.5f).build();
+    @Override public void onLocationChanged(Location location) {
+        if (map == null) {
+            return;
+        }
+        CameraPosition position = new CameraPosition.Builder().target(
+                new LatLng(location.getLatitude(), location.getLongitude())).zoom(18.5f).build();
         CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
         map.animateCamera(update);
         LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
         wasLocalized = true;
     }
 
-    @Override
-    public void onCameraChange(CameraPosition cameraPosition) {
+    @Override public void onCameraChange(CameraPosition cameraPosition) {
         latitude = cameraPosition.target.latitude;
         longitude = cameraPosition.target.longitude;
         raio = GeoUtils.getVisibleRadius(map);
@@ -247,13 +258,15 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
         }
     }
 
-    @Override
-    public void onDestroy() {
+    @Override public void onDestroy() {
         if (timer != null) timer.cancel();
         super.onDestroy();
     }
 
     private void removerItensMapa() {
+        if (map == null) {
+            return;
+        }
         Iterator<Marker> it = marcadores.keySet().iterator();
         while (it.hasNext()) {
             Marker marker = it.next();
@@ -281,8 +294,7 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
         return longitudePonto;
     }
 
-    @Override
-    public boolean onMarkerClick(Marker marker) {
+    @Override public boolean onMarkerClick(Marker marker) {
         try {
             ItemInventario item = (ItemInventario) marcadores.get(marker);
             id = item.getId();
@@ -290,9 +302,8 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
                 this.marker.setVisible(false);
             }
 
-            this.marker = map.addMarker(new MarkerOptions()
-                    .icon(BitmapDescriptorFactory.fromBitmap(ImageUtils.getScaled(getActivity(),
-                            "reports", categoria.getMarcador())))
+            this.marker = map.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromBitmap(
+                    ImageUtils.getScaled(getActivity(), "reports", categoria.getMarcador())))
                     .position(new LatLng(item.getLatitude(), item.getLongitude())));
             latitudePonto = marker.getPosition().latitude;
             longitudePonto = marker.getPosition().longitude;
@@ -320,9 +331,26 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
         return address;
     }
 
-    @Override
-    protected String getScreenName() {
+    @Override protected String getScreenName() {
         return "Seleção de Local (Novo Relato)";
+    }
+
+    @Override public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+        if (map == null) {
+            return;
+        }
+        map.setMyLocationEnabled(true);
+        map.getUiSettings().setMyLocationButtonEnabled(false);
+        map.getUiSettings().setZoomControlsEnabled(false);
+        map.setOnCameraChangeListener(this);
+        map.setOnMarkerClickListener(this);
+        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+        CameraPosition p = new CameraPosition.Builder().target(
+                new LatLng(Constantes.INITIAL_LATITUDE, Constantes.INITIAL_LONGITUDE)).zoom(16).build();
+        CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
+        map.moveCamera(update);
     }
 
     private class MarkerRetriever extends AsyncTask<Void, ItemInventario, Void> {
@@ -335,33 +363,41 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
             this.request = request;
         }
 
-        @Override
-        protected void onPreExecute() {
+        @Override protected void onPreExecute() {
             progressBar.post(() -> progressBar.setVisibility(View.VISIBLE));
         }
 
-        @Override
-        protected void onPostExecute(Void aVoid) {
+        @Override protected void onPostExecute(Void aVoid) {
             progressBar.post(() -> progressBar.setVisibility(View.GONE));
         }
 
-        @Override
-        protected void onCancelled() {
+        @Override protected void onCancelled() {
             progressBar.post(() -> progressBar.setVisibility(View.GONE));
             Log.d("ZUP", "Request cancelled");
         }
 
-        @Override
-        protected Void doInBackground(Void... voids) {
+        @Override protected Void doInBackground(Void... voids) {
             Log.i("ZUP", "Request started");
             try {
                 for (CategoriaInventario c : categoria.getCategoriasInventario()) {
-                    com.squareup.okhttp.Request request1 = new com.squareup.okhttp.Request.Builder()
-                            .addHeader("X-App-Token", new LoginService().getToken(getActivity()))
-                            .url(Constantes.REST_URL + "/inventory/items" + ConstantesBase.getItemInventarioQuery(getActivity()) + "&position[latitude]=" + request.latitude + "&position[longitude]="
-                                    + request.longitude + "&position[distance]=" + request.raio + "&max_items=" + MAX_ITEMS_PER_REQUEST + "&inventory_category_id=" + c.getId())
-                            .build();
-
+                    com.squareup.okhttp.Request request1 =
+                            new com.squareup.okhttp.Request.Builder().addHeader("X-App-Namespace",
+                                    Constantes.NAMESPACE_DEFAULT)
+                                    .addHeader("X-App-Token", new LoginService().getToken(getActivity()))
+                                    .url(Constantes.REST_URL
+                                            + "/inventory/items"
+                                            + ConstantesBase.getItemInventarioQuery(getActivity())
+                                            + "&position[latitude]="
+                                            + request.latitude
+                                            + "&position[longitude]="
+                                            + request.longitude
+                                            + "&position[distance]="
+                                            + request.raio
+                                            + "&max_items="
+                                            + MAX_ITEMS_PER_REQUEST
+                                            + "&inventory_category_id="
+                                            + c.getId())
+                                    .build();
 
                     if (isCancelled()) return null;
 
@@ -388,8 +424,7 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
             return null;
         }
 
-        @Override
-        protected void onProgressUpdate(ItemInventario... values) {
+        @Override protected void onProgressUpdate(ItemInventario... values) {
             adicionarMarker(values[0]);
         }
 
@@ -415,8 +450,7 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
 
     private class GeocoderTask extends AsyncTask<Place, Void, Address> {
 
-        @Override
-        protected Address doInBackground(Place... params) {
+        @Override protected Address doInBackground(Place... params) {
             try {
                 return GeoUtils.getFromPlace(params[0]);
             } catch (Exception e) {
@@ -425,21 +459,22 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
             }
         }
 
-        @Override
-        protected void onPostExecute(Address addr) {
-            if (addr != null) {
-                CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
-                        addr.getLongitude())).zoom(18.5f).build();
-                CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
-                map.animateCamera(update);
+        @Override protected void onPostExecute(Address addr) {
+            if (map == null || addr == null) {
+                return;
             }
+            CameraPosition p =
+                    new CameraPosition.Builder().target(new LatLng(addr.getLatitude(), addr.getLongitude()))
+                            .zoom(18.5f)
+                            .build();
+            CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
+            map.animateCamera(update);
         }
     }
 
     private class SearchTask extends AsyncTask<String, Void, Address> {
 
-        @Override
-        protected Address doInBackground(String... params) {
+        @Override protected Address doInBackground(String... params) {
             try {
                 return GeoUtils.search(params[0], latitude, longitude);
             } catch (Exception e) {
@@ -448,23 +483,23 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
             }
         }
 
-        @Override
-        protected void onPostExecute(Address addr) {
-            if (addr != null) {
-                CameraPosition p = new CameraPosition.Builder().target(new LatLng(addr.getLatitude(),
-                        addr.getLongitude())).zoom(18.5f).build();
-                CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
-                map.animateCamera(update);
+        @Override protected void onPostExecute(Address addr) {
+            if (map == null || addr == null) {
+                return;
             }
+            CameraPosition p =
+                    new CameraPosition.Builder().target(new LatLng(addr.getLatitude(), addr.getLongitude()))
+                            .zoom(18.5f)
+                            .build();
+            CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
+            map.animateCamera(update);
         }
     }
 
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    @Override public void onConnectionFailed(ConnectionResult connectionResult) {
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         realizarBuscaAutocomplete((Place) parent.getItemAtPosition(position));
         ViewUtils.hideKeyboard(getActivity(), autoCompView);
     }
@@ -503,8 +538,7 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
 
     private class Requester extends TimerTask {
 
-        @Override
-        public void run() {
+        @Override public void run() {
             if (request != null) {
                 if (markerRetriever != null) {
                     markerRetriever.cancel(true);
@@ -529,8 +563,7 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
             this.posicao = posicao;
         }
 
-        @Override
-        protected Address doInBackground(Void... params) {
+        @Override protected Address doInBackground(Void... params) {
             try {
                 return GeoUtils.getFromLocation(posicao.latitude, posicao.longitude, 1).get(0);
             } catch (Exception e) {
@@ -539,14 +572,15 @@ public class SolicitePontoFragment extends BaseFragment implements GoogleMap.OnC
             }
         }
 
-        @Override
-        protected void onPostExecute(Address addr) {
+        @Override protected void onPostExecute(Address addr) {
             if (addr != null) {
                 endereco = getFormattedAddress(addr);
                 autoCompView.setText(endereco);
                 //autoCompView.setAdapter(null);
                 if (getActivity() != null) {
-                    autoCompView.setAdapter(new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item, SolicitePontoFragment.class));
+                    autoCompView.setAdapter(
+                            new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item,
+                                    SolicitePontoFragment.class));
                 }
             }
         }

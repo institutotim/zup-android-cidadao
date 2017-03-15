@@ -23,12 +23,11 @@ import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.widget.SolicitacaoListItemAdapter;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class DetalheMapaActivity extends BaseActivity implements View.OnClickListener {
 
@@ -41,8 +40,7 @@ public class DetalheMapaActivity extends BaseActivity implements View.OnClickLis
     private ItemInventario item;
     private TextView solicitacoes;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalhe_mapa);
 
@@ -69,7 +67,10 @@ public class DetalheMapaActivity extends BaseActivity implements View.OnClickLis
         infoFragment = new InformacoesFragment();
         solFragment = new SolicitacoesFragment();
 
-        getSupportFragmentManager().beginTransaction().add(R.id.fragments_place, solFragment).add(R.id.fragments_place, infoFragment).commit();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragments_place, solFragment)
+                .add(R.id.fragments_place, infoFragment)
+                .commit();
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
             new Tasker().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -82,17 +83,22 @@ public class DetalheMapaActivity extends BaseActivity implements View.OnClickLis
         findViewById(R.id.barra_navegacao).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
-    @Override
-    public void onClick(View v) {
+    @Override public void onClick(View v) {
         ((TextView) findViewById(R.id.botaoInformacoes)).setTextColor(Color.rgb(0x2a, 0xb4, 0xdc));
         ((TextView) findViewById(R.id.botaoSolicitacoes)).setTextColor(Color.rgb(0x2a, 0xb4, 0xdc));
 
         switch (v.getId()) {
             case R.id.botaoInformacoes:
-                getSupportFragmentManager().beginTransaction().show(infoFragment).hide(solFragment).commit();
+                getSupportFragmentManager().beginTransaction()
+                        .show(infoFragment)
+                        .hide(solFragment)
+                        .commit();
                 break;
             case R.id.botaoSolicitacoes:
-                getSupportFragmentManager().beginTransaction().hide(infoFragment).show(solFragment).commit();
+                getSupportFragmentManager().beginTransaction()
+                        .hide(infoFragment)
+                        .show(solFragment)
+                        .commit();
                 break;
             default:
                 return;
@@ -101,17 +107,16 @@ public class DetalheMapaActivity extends BaseActivity implements View.OnClickLis
         ((TextView) findViewById(v.getId())).setTextColor(Color.WHITE);
     }
 
-    @Override
-    protected String getScreenName() {
+    @Override protected String getScreenName() {
         return "Informações de um Item de Inventário";
     }
 
-    private class Tasker extends AsyncTask<Void, Void, Boolean> implements DialogInterface.OnCancelListener {
+    private class Tasker extends AsyncTask<Void, Void, Boolean>
+            implements DialogInterface.OnCancelListener {
 
         private ProgressDialog dialog;
 
-        @Override
-        protected void onPreExecute() {
+        @Override protected void onPreExecute() {
             dialog = new ProgressDialog(DetalheMapaActivity.this);
             dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             dialog.setIndeterminate(true);
@@ -120,13 +125,18 @@ public class DetalheMapaActivity extends BaseActivity implements View.OnClickLis
             dialog.show();
         }
 
-        @Override
-        protected Boolean doInBackground(Void... params) {
+        @Override protected Boolean doInBackground(Void... params) {
             try {
-                Request request = new Request.Builder()
-                        .addHeader("X-App-Token", new LoginService().getToken(DetalheMapaActivity.this))
-                        .url(Constantes.REST_URL + "/reports/inventory/" + item.getId() + "/items" + ConstantesBase.getItemRelatoQuery(DetalheMapaActivity.this) + ",data.field.id,data.content")
-                        .build();
+                Request request =
+                        new Request.Builder().addHeader("X-App-Namespace", Constantes.NAMESPACE_DEFAULT)
+                                .addHeader("X-App-Token", new LoginService().getToken(DetalheMapaActivity.this))
+                                .url(Constantes.REST_URL
+                                        + "/reports/inventory/"
+                                        + item.getId()
+                                        + "/items"
+                                        + ConstantesBase.getItemRelatoQuery(DetalheMapaActivity.this)
+                                        + ",data.field.id,data.content")
+                                .build();
                 if (isCancelled()) return Boolean.FALSE;
 
                 Response response = ConstantesBase.OK_HTTP_CLIENT.newCall(request).execute();
@@ -138,9 +148,13 @@ public class DetalheMapaActivity extends BaseActivity implements View.OnClickLis
                 }
 
                 // Dados (campos dinâmicos)
-                request = new Request.Builder()
+                request = new Request.Builder().addHeader("X-App-Namespace", Constantes.NAMESPACE_DEFAULT)
                         .addHeader("X-App-Token", new LoginService().getToken(DetalheMapaActivity.this))
-                        .url(Constantes.REST_URL + "/inventory/categories/" + item.getCategoria().getId() + ConstantesBase.getCategoriasInventarioQuery(DetalheMapaActivity.this) + ",sections.title,sections.fields.label")
+                        .url(Constantes.REST_URL
+                                + "/inventory/categories/"
+                                + item.getCategoria().getId()
+                                + ConstantesBase.getCategoriasInventarioQuery(DetalheMapaActivity.this)
+                                + ",sections.title,sections.fields.label")
                         .build();
 
                 if (isCancelled()) return Boolean.FALSE;
@@ -154,9 +168,13 @@ public class DetalheMapaActivity extends BaseActivity implements View.OnClickLis
                     return Boolean.FALSE;
                 }
 
-                request = new Request.Builder()
+                request = new Request.Builder().addHeader("X-App-Namespace", Constantes.NAMESPACE_DEFAULT)
                         .addHeader("X-App-Token", new LoginService().getToken(DetalheMapaActivity.this))
-                        .url(Constantes.REST_URL + "/inventory/categories/" + item.getCategoria().getId() + "/items/" + item.getId())
+                        .url(Constantes.REST_URL
+                                + "/inventory/categories/"
+                                + item.getCategoria().getId()
+                                + "/items/"
+                                + item.getId())
                         .build();
 
                 if (isCancelled()) return Boolean.FALSE;
@@ -180,8 +198,7 @@ public class DetalheMapaActivity extends BaseActivity implements View.OnClickLis
             }
         }
 
-        @Override
-        protected void onPostExecute(Boolean result) {
+        @Override protected void onPostExecute(Boolean result) {
             dialog.dismiss();
             if (result) {
                 if (relatos == null || relatos.isEmpty()) {
@@ -196,7 +213,8 @@ public class DetalheMapaActivity extends BaseActivity implements View.OnClickLis
                 }
                 setBarraNavegacaoVisivel(true);
             } else {
-                Toast.makeText(DetalheMapaActivity.this, "Não foi possível obter os dados do item", Toast.LENGTH_LONG).show();
+                Toast.makeText(DetalheMapaActivity.this, "Não foi possível obter os dados do item",
+                        Toast.LENGTH_LONG).show();
                 finish();
             }
         }
@@ -205,7 +223,8 @@ public class DetalheMapaActivity extends BaseActivity implements View.OnClickLis
             JSONArray array = new JSONObject(json).getJSONArray("reports");
             relatos = new ArrayList<>();
             for (int i = 0; i < array.length(); i++) {
-                relatos.add(SolicitacaoListItemAdapter.adapt(DetalheMapaActivity.this, array.getJSONObject(i)));
+                relatos.add(
+                        SolicitacaoListItemAdapter.adapt(DetalheMapaActivity.this, array.getJSONObject(i)));
             }
         }
 
@@ -217,7 +236,8 @@ public class DetalheMapaActivity extends BaseActivity implements View.OnClickLis
                 dados.add(data.getJSONObject(i));
             }
 
-            JSONArray sections = new JSONObject(categoria).getJSONObject("category").getJSONArray("sections");
+            JSONArray sections =
+                    new JSONObject(categoria).getJSONObject("category").getJSONArray("sections");
             for (int i = 0; i < sections.length(); i++) {
                 List<JSONObject> campos = new ArrayList<>();
                 String sectionName = sections.getJSONObject(i).getString("title");
@@ -231,8 +251,9 @@ public class DetalheMapaActivity extends BaseActivity implements View.OnClickLis
                     for (JSONObject dado : dados) {
                         if (dado.getJSONObject("field").getLong("id") == campo.getLong("id")) {
                             if (!dado.getString("content").equals("null")) {
-                                camposDinamicos.put(campo.getString("label").equals("null") ?
-                                        campo.getString("title") : campo.getString("label"), dado.getString("content"));
+                                camposDinamicos.put(
+                                        campo.getString("label").equals("null") ? campo.getString("title")
+                                                : campo.getString("label"), dado.getString("content"));
                             }
                         }
                     }
@@ -242,8 +263,7 @@ public class DetalheMapaActivity extends BaseActivity implements View.OnClickLis
             }
         }
 
-        @Override
-        public void onCancel(DialogInterface dialog) {
+        @Override public void onCancel(DialogInterface dialog) {
             dialog.dismiss();
             cancel(true);
             finish();

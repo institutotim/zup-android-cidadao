@@ -1,10 +1,14 @@
 package br.com.lfdb.zup.fragment;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,7 +29,6 @@ import br.com.lfdb.zup.SoliciteActivity;
 import br.com.lfdb.zup.api.ZupApi;
 import br.com.lfdb.zup.base.BaseFragment;
 import br.com.lfdb.zup.core.Constantes;
-import br.com.lfdb.zup.core.Crashlytics;
 import br.com.lfdb.zup.domain.Place;
 import br.com.lfdb.zup.domain.Solicitacao;
 import br.com.lfdb.zup.util.FontUtils;
@@ -34,6 +37,7 @@ import br.com.lfdb.zup.util.GeoUtils;
 import br.com.lfdb.zup.util.ImageUtils;
 import br.com.lfdb.zup.util.ViewUtils;
 import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -42,6 +46,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -55,8 +60,8 @@ import org.androidannotations.annotations.ViewById;
 import org.apache.commons.lang3.StringUtils;
 
 @EFragment(R.layout.fragment_solicite_local) public class SoliciteLocalFragment extends BaseFragment
-    implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-    LocationListener, AdapterView.OnItemClickListener {
+        implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+        LocationListener, AdapterView.OnItemClickListener, OnMapReadyCallback {
 
   @ViewById View posicaoCentral;
   @ViewById View div;
@@ -89,9 +94,21 @@ import org.apache.commons.lang3.StringUtils;
   public static double latitude, longitude;
 
   private static final LocationRequest REQUEST =
-      LocationRequest.create().setInterval(5000)         // 5 seconds
-          .setFastestInterval(16)    // 16ms = 60fps
-          .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+          LocationRequest.create().setInterval(5000)         // 5 seconds
+                  .setFastestInterval(16)    // 16ms = 60fps
+                  .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+  private boolean checkPlayServices() {
+    int permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
+            Manifest.permission.ACCESS_COARSE_LOCATION);
+    if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+      ActivityCompat.requestPermissions(getActivity(),
+              new String[] { Manifest.permission.ACCESS_COARSE_LOCATION },
+              ExploreFragment_.MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+      return false;
+    }
+    return true;
+  }
 
   @AfterViews void init() {
     try {
@@ -99,14 +116,18 @@ import org.apache.commons.lang3.StringUtils;
       ((SoliciteActivity) getActivity()).exibirBarraInferior(true);
       ((SoliciteActivity) getActivity()).setInfo(R.string.selecione_o_local);
       ((SoliciteActivity) getActivity()).enableNextButton(valid);
-      map = ((SupportMapFragment) getChildFragmentManager().findFragmentById(
-          R.id.mapaLocal)).getMap();
-      if (map != null) {
-        mapInit();
+      if (checkPlayServices()) {
+        ((SupportMapFragment) getChildFragmentManager().findFragmentById(
+                R.id.mapaLocal)).getMapAsync(this);
+      } else {
+        Toast.makeText(getActivity(),
+                "Necessitamos saber da sua localização. Por favor, autorize nas configurações do seu aparelho.",
+                Toast.LENGTH_SHORT).show();
       }
+
       PlacesAutoCompleteAdapter placesAutoCompleteAdapter =
-          new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item,
-              ExploreFragment.class);
+              new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item,
+                      ExploreFragment.class);
       autocompleteEndereco.setTypeface(FontUtils.getRegular(getActivity()));
       autocompleteEndereco.setAdapter(placesAutoCompleteAdapter);
       autocompleteEndereco.setOnItemClickListener(this);
@@ -132,10 +153,13 @@ import org.apache.commons.lang3.StringUtils;
   }
 
   @Click void locationButton() {
+    if (map == null) {
+      return;
+    }
     CameraPosition position =
-        new CameraPosition.Builder().target(new LatLng(userLatitude, userLongitude))
-            .zoom(16f)
-            .build();
+            new CameraPosition.Builder().target(new LatLng(userLatitude, userLongitude))
+                    .zoom(16f)
+                    .build();
     CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
     map.animateCamera(update);
   }
@@ -143,31 +167,31 @@ import org.apache.commons.lang3.StringUtils;
   @Click void editar() {
     try {
       final View dialogView =
-          LayoutInflater.from(getActivity()).inflate(R.layout.dialog_endereco, null);
+              LayoutInflater.from(getActivity()).inflate(R.layout.dialog_endereco, null);
       ((TextView) dialogView.findViewById(R.id.endereco)).setText(street);
       ((TextView) dialogView.findViewById(R.id.numero)).setText(number);
       ((TextView) dialogView.findViewById(R.id.referencia)).setText(
-          ((SoliciteActivity) getActivity()).getReferencia());
+              ((SoliciteActivity) getActivity()).getReferencia());
 
       new AlertDialog.Builder(getActivity()).setTitle("Endereço do Relato")
-          .setView(dialogView)
-          .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
-          .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
-            final String num =
-                ((TextView) dialogView.findViewById(R.id.numero)).getText().toString();
-            final String r =
-                ((TextView) dialogView.findViewById(R.id.endereco)).getText().toString();
-            String referencia =
-                ((TextView) dialogView.findViewById(R.id.referencia)).getText().toString();
-            if (referencia != null && !referencia.trim().isEmpty()) {
-              ((SoliciteActivity) getActivity()).setReferencia(referencia);
-            }
-            if (validarEndereco(r, num)) {
-              task(r, num, dialog);
-              dialog.dismiss();
-            }
-          })
-          .show();
+              .setView(dialogView)
+              .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
+              .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
+                final String num =
+                        ((TextView) dialogView.findViewById(R.id.numero)).getText().toString();
+                final String r =
+                        ((TextView) dialogView.findViewById(R.id.endereco)).getText().toString();
+                String referencia =
+                        ((TextView) dialogView.findViewById(R.id.referencia)).getText().toString();
+                if (referencia != null && !referencia.trim().isEmpty()) {
+                  ((SoliciteActivity) getActivity()).setReferencia(referencia);
+                }
+                if (validarEndereco(r, num)) {
+                  task(r, num, dialog);
+                  dialog.dismiss();
+                }
+              })
+              .show();
     } catch (Exception e) {
       Log.e("ZUP", e.getMessage(), e);
       Crashlytics.logException(e);
@@ -181,7 +205,7 @@ import org.apache.commons.lang3.StringUtils;
     map.setOnCameraChangeListener(cameraPosition -> {
       Log.i("Alterou posição", "Alteração = " + count++);
       if (latitude != cameraPosition.target.latitude
-          && longitude != cameraPosition.target.longitude) {
+              && longitude != cameraPosition.target.longitude) {
         latitude = cameraPosition.target.latitude;
         longitude = cameraPosition.target.longitude;
         currentZoom = cameraPosition.zoom;
@@ -190,7 +214,7 @@ import org.apache.commons.lang3.StringUtils;
     });
     map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     CameraPosition p = new CameraPosition.Builder().target(
-        new LatLng(Constantes.INITIAL_LATITUDE, Constantes.INITIAL_LONGITUDE)).zoom(12).build();
+            new LatLng(Constantes.INITIAL_LATITUDE, Constantes.INITIAL_LONGITUDE)).zoom(12).build();
     CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
     map.moveCamera(update);
   }
@@ -205,11 +229,15 @@ import org.apache.commons.lang3.StringUtils;
   }
 
   public boolean validarEndereco() {
+    if (autocompleteEndereco == null ||
+            TextUtils.isEmpty(autocompleteEndereco.getText())){
+      return false;
+    }
     if (!street.equalsIgnoreCase(autocompleteEndereco.getText().toString())) {
       new AlertDialog.Builder(getActivity()).setTitle(getString(R.string.invalid_address))
-          .setMessage(getString(R.string.invalid_address_inserted))
-          .setNegativeButton(getString(R.string.ok), null)
-          .show();
+              .setMessage(getString(R.string.invalid_address_inserted))
+              .setNegativeButton(getString(R.string.ok), null)
+              .show();
       return false;
     }
     return validarEndereco(street, number);
@@ -229,20 +257,20 @@ import org.apache.commons.lang3.StringUtils;
   void dialogNumberView(String r) {
     View dialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_numero, null);
     new AlertDialog.Builder(getActivity()).setTitle(r)
-        .setView(dialogView)
-        .setNegativeButton(getString(R.string.no_number), (dialog, which) -> {
-          dialog.dismiss();
-          number = "s/n";
-          atualizarCampoEndereco();
-        })
-        .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
-          final String num1 =
-              ((EditText) dialogView.findViewById(R.id.numero)).getText().toString();
-          if (!num1.isEmpty()) {
-            dialogNumberTask(num1, dialog);
-          }
-        })
-        .show();
+            .setView(dialogView)
+            .setNegativeButton(getString(R.string.no_number), (dialog, which) -> {
+              dialog.dismiss();
+              number = "s/n";
+              atualizarCampoEndereco();
+            })
+            .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
+              final String num1 =
+                      ((EditText) dialogView.findViewById(R.id.numero)).getText().toString();
+              if (!num1.isEmpty()) {
+                dialogNumberTask(num1, dialog);
+              }
+            })
+            .show();
   }
 
   @UiThread void verifyValid() {
@@ -293,16 +321,16 @@ import org.apache.commons.lang3.StringUtils;
   void setUpLocationClientIfNeeded() {
     if (googleApiClient == null) {
       googleApiClient = new GoogleApiClient.Builder(getActivity()).addApi(LocationServices.API)
-          .addConnectionCallbacks(this)
-          .addOnConnectionFailedListener(this)
-          .build();
+              .addConnectionCallbacks(this)
+              .addOnConnectionFailedListener(this)
+              .build();
     }
   }
 
   @Background void dialogNumberTask(String num1, DialogInterface dialog) {
     List<Address> addresses = GPSUtils.getFromLocationName(getActivity(),
-        street + ", " + num1 + " - " + (currentAddress.getSubAdminArea() != null
-            ? currentAddress.getSubAdminArea() : currentAddress.getLocality()));
+            street + ", " + num1 + " - " + (currentAddress.getSubAdminArea() != null
+                    ? currentAddress.getSubAdminArea() : currentAddress.getLocality()));
     if (addresses.isEmpty()) {
       toast(getString(R.string.address_not_found));
       dialog.dismiss();
@@ -373,7 +401,7 @@ import org.apache.commons.lang3.StringUtils;
       }
       street = addr.getThoroughfare();
       if (!TextUtils.isEmpty(addr.getFeatureName()) && StringUtils.isNumeric(
-          addr.getFeatureName().substring(0, 1))) {
+              addr.getFeatureName().substring(0, 1))) {
         number = addr.getFeatureName();
       } else {
         number = "";
@@ -401,7 +429,7 @@ import org.apache.commons.lang3.StringUtils;
       }
       street = addr.getThoroughfare();
       if (!TextUtils.isEmpty(addr.getFeatureName()) && StringUtils.isNumeric(
-          addr.getFeatureName().substring(0, 1))) {
+              addr.getFeatureName().substring(0, 1))) {
         number = addr.getFeatureName();
       } else {
         number = "";
@@ -418,13 +446,13 @@ import org.apache.commons.lang3.StringUtils;
     try {
       Address addr = GeoUtils.search(query, latitude, longitude);
       showHideLoading(false);
-      if (addr == null) {
+      if (addr == null || map == null) {
         return;
       }
       CameraPosition p =
-          new CameraPosition.Builder().target(new LatLng(addr.getLatitude(), addr.getLongitude()))
-              .zoom(16f)
-              .build();
+              new CameraPosition.Builder().target(new LatLng(addr.getLatitude(), addr.getLongitude()))
+                      .zoom(16f)
+                      .build();
       CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
       map.animateCamera(update);
     } catch (Exception e) {
@@ -450,6 +478,9 @@ import org.apache.commons.lang3.StringUtils;
   }
 
   @UiThread void updateCamera(LatLng latLong) {
+    if (map == null) {
+      return;
+    }
     try {
       CameraPosition p = new CameraPosition.Builder().target(latLong).zoom(16f).build();
       CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
@@ -465,10 +496,10 @@ import org.apache.commons.lang3.StringUtils;
       return;
     }
     String addressCompl =
-        currentAddress.getSubAdminArea() != null ? currentAddress.getSubAdminArea()
-            : currentAddress.getLocality();
+            currentAddress.getSubAdminArea() != null ? currentAddress.getSubAdminArea()
+                    : currentAddress.getLocality();
     List<Address> addresses =
-        GPSUtils.getFromLocationName(getActivity(), r + ", " + num + " - " + (addressCompl));
+            GPSUtils.getFromLocationName(getActivity(), r + ", " + num + " - " + (addressCompl));
     if (addresses.isEmpty()) {
       toast(getString(R.string.address_not_found));
       dialog.dismiss();
@@ -505,24 +536,27 @@ import org.apache.commons.lang3.StringUtils;
       return;
     }
     autocompleteEndereco.setAdapter(
-        new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item,
-            SoliciteLocalFragment.class));
+            new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item,
+                    SoliciteLocalFragment.class));
     autocompleteEndereco.dismissDropDown();
   }
 
   @UiThread void updateUiAdapter(Address address) {
+    if (map == null) {
+      return;
+    }
     try {
       ignoreUpdate = true;
       CameraPosition position = new CameraPosition.Builder().target(
-          new LatLng(address.getLatitude(), address.getLongitude())).zoom(currentZoom).build();
+              new LatLng(address.getLatitude(), address.getLongitude())).zoom(currentZoom).build();
       CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
       map.animateCamera(update);
 
       autocompleteEndereco.setAdapter(null);
       autocompleteEndereco.setText(street);
       autocompleteEndereco.setAdapter(
-          new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item,
-              ExploreFragment.class));
+              new PlacesAutoCompleteAdapter(getActivity(), R.layout.autocomplete_list_item,
+                      ExploreFragment.class));
       tvNumero.setText(number);
     } catch (Exception e) {
       Log.e("ZUP", e.getMessage(), e);
@@ -542,7 +576,7 @@ import org.apache.commons.lang3.StringUtils;
     if (solicitacao != null) {
       file = solicitacao.getCategoria().getMarcador();
       CameraPosition p = new CameraPosition.Builder().target(
-          new LatLng(solicitacao.getLatitude(), solicitacao.getLongitude())).zoom(16f).build();
+              new LatLng(solicitacao.getLatitude(), solicitacao.getLongitude())).zoom(16f).build();
       CameraUpdate update = CameraUpdateFactory.newCameraPosition(p);
       map.moveCamera(update);
     }
@@ -579,7 +613,7 @@ import org.apache.commons.lang3.StringUtils;
       return;
     }
     CameraPosition position = new CameraPosition.Builder().target(
-        new LatLng(location.getLatitude(), location.getLongitude())).zoom(16f).build();
+            new LatLng(location.getLatitude(), location.getLongitude())).zoom(16f).build();
     CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
     map.moveCamera(update);
     latitude = location.getLatitude();
@@ -621,7 +655,7 @@ import org.apache.commons.lang3.StringUtils;
 
   private String getCity() {
     return currentAddress.getSubAdminArea() != null ? currentAddress.getSubAdminArea()
-        : currentAddress.getLocality();
+            : currentAddress.getLocality();
   }
 
   public double getLatitudeAtual() {
@@ -661,5 +695,10 @@ import org.apache.commons.lang3.StringUtils;
       builder.append(", ").append(currentAddress.getPostalCode());
     }
     return builder.toString();
+  }
+
+  @Override public void onMapReady(GoogleMap googleMap) {
+    map = googleMap;
+    mapInit();
   }
 }
