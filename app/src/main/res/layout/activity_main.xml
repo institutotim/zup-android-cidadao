@@ -39,13 +39,6 @@
             android:textColor="@color/tabbar_text_color"
             android:textSize="@dimen/main_menu_font" />
 
-        <TextView
-            android:id="@+id/estatisticasButton"
-            style="@style/barButton"
-            android:drawableTop="@drawable/tabbar_icon_estatisticas"
-            android:text="@string/estatisticas"
-            android:textColor="@color/tabbar_text_color"
-            android:textSize="@dimen/main_menu_font" />
     </LinearLayout>
 
     <FrameLayout

@@ -53,12 +53,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         minhaContaButton.setOnClickListener(this);
         minhaContaButton.setTypeface(FontUtils.getRegular(this));
 
-        TextView estatisticasButton = (TextView) findViewById(R.id.estatisticasButton);
+ /*       TextView estatisticasButton = (TextView) findViewById(R.id.estatisticasButton);
         estatisticasButton.setOnClickListener(this);
         estatisticasButton.setTypeface(FontUtils.getRegular(this));
         if (!FeatureService.getInstance(this).isStatsEnabled()) {
             estatisticasButton.setVisibility(View.GONE);
-        }
+        }*/
 
         if (new CategoriaRelatoService().getCategorias(this).isEmpty()) {
             findViewById(R.id.footer).setVisibility(View.GONE);

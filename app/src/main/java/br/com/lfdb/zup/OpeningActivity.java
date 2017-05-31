@@ -1,8 +1,11 @@
 package br.com.lfdb.zup;
 
+import android.*;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -32,6 +35,7 @@ public class OpeningActivity extends BaseActivity {
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_opening);
 
         findViewById(R.id.logo).setVisibility(
@@ -96,6 +100,7 @@ public class OpeningActivity extends BaseActivity {
         super.onResume();
         checkPlayServices();
     }
+
 
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if ((requestCode == LOGIN_REQUEST || requestCode == REGISTER_REQUEST)
