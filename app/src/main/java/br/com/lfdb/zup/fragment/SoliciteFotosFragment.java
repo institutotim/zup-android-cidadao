@@ -1,14 +1,16 @@
 package br.com.lfdb.zup.fragment;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +20,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import br.com.lfdb.zup.R;
@@ -30,6 +35,8 @@ import br.com.lfdb.zup.util.FileUtils;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.ImageUtils;
 import eu.janmuller.android.simplecropimage.CropImage;
+
+import static android.app.Activity.RESULT_OK;
 
 public class SoliciteFotosFragment extends BaseFragment implements View.OnClickListener {
 
@@ -43,6 +50,8 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
     private List<String> listaFotos = new ArrayList<>();
 
     private View temp = null;
+
+    private String mCurrentPhotoPath;
 
     @Override public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
@@ -143,16 +152,45 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
     private void tirarFoto() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Arquivo temporário
-        imagemTemporaria = Uri.fromFile(new File(FileUtils.getTempImagesFolder(),
-                "tmp_image_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
+        if (Build.VERSION.SDK_INT < 24) {
+            imagemTemporaria = Uri.fromFile(new File(FileUtils.getTempImagesFolder(),
+                    "tmp_image_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
+        } else {
+            imagemTemporaria = FileProvider.getUriForFile(getActivity(),
+                    getActivity().getApplicationContext().getPackageName() + ".provider",
+                    createImageFile());
+        }
+
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imagemTemporaria);
         intent.putExtra("return-data", true);
+
         startActivityForResult(intent, CAMERA_RETURN);
+    }
+
+    private File createImageFile() {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = null;
+        try {
+            image = File.createTempFile(
+                    imageFileName,  /* prefix */
+                    ".jpg",         /* suffix */
+                    storageDir      /* directory */
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
     }
 
     @Override public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != Activity.RESULT_OK) {
+        if (resultCode != RESULT_OK) {
             temp = null;
             return;
         }
@@ -179,13 +217,20 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
                 String picturePath = cursor.getString(columnIndex);
                 cursor.close();
-                imagemTemporaria = Uri.fromFile(new File(picturePath));
+                imagemTemporaria = Uri.fromFile( new File(picturePath));
             case CAMERA_RETURN:
                 Intent intent = new Intent(getActivity(), CropImage.class);
                 intent.putExtra(CropImage.IMAGE_PATH, imagemTemporaria.getPath());
-                intent.putExtra(CropImage.SCALE, true);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(
-                        new File(FileUtils.getTempImagesFolder(), System.currentTimeMillis() + ".jpg")));
+
+                if (Build.VERSION.SDK_INT < 24) {
+                    imagemTemporaria = Uri.fromFile(new File(FileUtils.getTempImagesFolder(),
+                        "tmp_image_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
+                } else {
+                    imagemTemporaria = FileProvider.getUriForFile(getActivity(),
+                            getActivity().getApplicationContext().getPackageName() + ".provider",
+                            createImageFile());
+                }
+
                 intent.putExtra(CropImage.ASPECT_X, 1);
                 intent.putExtra(CropImage.ASPECT_Y, 1);
                 intent.putExtra(CropImage.OUTPUT_X, 800);
