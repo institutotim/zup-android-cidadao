@@ -51,15 +51,6 @@ public class FileUtils {
         return imagesFolder;
     }
 
-    public static File getFiles() {
-        File imagesFolder = new File("ZUP" + File.separator + "temp");
-        if (!imagesFolder.exists()) {
-            imagesFolder.mkdirs();
-        }
-
-        return imagesFolder;
-    }
-
     public static void downloadImage(Context context, String url) throws Exception {
         if (!url.startsWith("http")) url = Constantes.REST_URL + (url.startsWith("/") ? url : ("/" + url));
 

@@ -21,9 +21,7 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import br.com.lfdb.zup.R;
@@ -51,6 +49,8 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
 
     private View temp = null;
 
+    private static final int NOUGAT = 24;
+    private String path_provider = "br.com.lfdb.zup.provider";
     private String mCurrentPhotoPath;
 
     @Override public void onHiddenChanged(boolean hidden) {
@@ -151,39 +151,36 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
 
     private void tirarFoto() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Arquivo temporário
-        if (Build.VERSION.SDK_INT < 24) {
-            imagemTemporaria = Uri.fromFile(new File(FileUtils.getTempImagesFolder(),
-                    "tmp_image_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
-        } else {
-            imagemTemporaria = FileProvider.getUriForFile(getActivity(),
-                    getActivity().getApplicationContext().getPackageName() + ".provider",
-                    createImageFile());
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            // Arquivo temporário
+            if (Build.VERSION.SDK_INT < NOUGAT) {
+                imagemTemporaria = Uri.fromFile(new File(FileUtils.getTempImagesFolder(),
+                        "tmp_image_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
+            } else {
+                imagemTemporaria = FileProvider.getUriForFile(getActivity(),
+                        path_provider, createImageFile());
+                intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION|Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            }
+
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, imagemTemporaria);
+            intent.putExtra("return-data", true);
+            startActivityForResult(intent, CAMERA_RETURN);
         }
-
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, imagemTemporaria);
-        intent.putExtra("return-data", true);
-
-        startActivityForResult(intent, CAMERA_RETURN);
     }
 
     private File createImageFile() {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        String imageFileName = "tmp_image_" + String.valueOf(System.currentTimeMillis());
+        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = null;
         try {
             image = File.createTempFile(
-                    imageFileName,  /* prefix */
-                    ".jpg",         /* suffix */
-                    storageDir      /* directory */
+                    imageFileName,
+                    ".jpg",
+                    storageDir
             );
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
     }
@@ -217,20 +214,29 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
                 String picturePath = cursor.getString(columnIndex);
                 cursor.close();
-                imagemTemporaria = Uri.fromFile( new File(picturePath));
+
+                imagemTemporaria = Uri.fromFile(new File(picturePath));
+
             case CAMERA_RETURN:
                 Intent intent = new Intent(getActivity(), CropImage.class);
-                intent.putExtra(CropImage.IMAGE_PATH, imagemTemporaria.getPath());
 
-                if (Build.VERSION.SDK_INT < 24) {
-                    imagemTemporaria = Uri.fromFile(new File(FileUtils.getTempImagesFolder(),
-                        "tmp_image_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
+                if (Build.VERSION.SDK_INT < NOUGAT) {
+                    intent.putExtra(CropImage.IMAGE_PATH, imagemTemporaria.getPath());
+
+                    imagemTemporaria = Uri.fromFile(
+                            new File(FileUtils.getTempImagesFolder(), System.currentTimeMillis() + ".jpg"));
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imagemTemporaria);
                 } else {
+                    intent.putExtra(CropImage.IMAGE_PATH, mCurrentPhotoPath);
+
                     imagemTemporaria = FileProvider.getUriForFile(getActivity(),
-                            getActivity().getApplicationContext().getPackageName() + ".provider",
-                            createImageFile());
+                            path_provider, createImageFile());
+
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imagemTemporaria);
+                    intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 }
 
+                intent.putExtra(CropImage.SCALE, true);
                 intent.putExtra(CropImage.ASPECT_X, 1);
                 intent.putExtra(CropImage.ASPECT_Y, 1);
                 intent.putExtra(CropImage.OUTPUT_X, 800);
