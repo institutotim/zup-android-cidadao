@@ -1,6 +1,7 @@
 package br.com.lfdb.zup.fragment;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -38,8 +39,6 @@ import br.com.lfdb.zup.util.FileUtils;
 import br.com.lfdb.zup.util.FontUtils;
 import br.com.lfdb.zup.util.ImageUtils;
 import eu.janmuller.android.simplecropimage.CropImage;
-
-import static android.app.Activity.RESULT_OK;
 
 public class SoliciteFotosFragment extends BaseFragment implements View.OnClickListener {
 
@@ -207,7 +206,7 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
 
     @Override public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_OK) {
+        if (resultCode != Activity.RESULT_OK) {
             temp = null;
             return;
         }
