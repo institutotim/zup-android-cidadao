@@ -1,7 +1,9 @@
 package br.com.lfdb.zup.fragment;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.google.common.io.Files;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +54,7 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
 
     private View temp = null;
 
-    private static final int NOUGAT = 24;
+    private static final int MARSHMALLOW = 23;
     private String path_provider = "br.com.lfdb.zup.provider";
     private String mCurrentPhotoPath;
 
@@ -62,6 +67,7 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
 
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setPermission();
         setRetainInstance(true);
     }
 
@@ -153,7 +159,7 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
             // Arquivo temporário
-            if (Build.VERSION.SDK_INT < NOUGAT) {
+            if (Build.VERSION.SDK_INT < MARSHMALLOW) {
                 imagemTemporaria = Uri.fromFile(new File(FileUtils.getTempImagesFolder(),
                         "tmp_image_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
             } else {
@@ -165,6 +171,20 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
             intent.putExtra(MediaStore.EXTRA_OUTPUT, imagemTemporaria);
             intent.putExtra("return-data", true);
             startActivityForResult(intent, CAMERA_RETURN);
+        }
+    }
+
+    private void setPermission() {
+        int permission = ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    getActivity(),
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    1
+            );
         }
     }
 
@@ -215,12 +235,27 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
                 String picturePath = cursor.getString(columnIndex);
                 cursor.close();
 
-                imagemTemporaria = Uri.fromFile(new File(picturePath));
+                if (Build.VERSION.SDK_INT < MARSHMALLOW) {
+
+                    imagemTemporaria = Uri.fromFile(new File(picturePath));
+
+                } else {
+                    File destiny = createImageFile();
+                    File source =  new File(picturePath);
+
+                    try {
+                        Files.copy(source, destiny);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    mCurrentPhotoPath = destiny.getAbsolutePath();
+                }
 
             case CAMERA_RETURN:
                 Intent intent = new Intent(getActivity(), CropImage.class);
 
-                if (Build.VERSION.SDK_INT < NOUGAT) {
+                if (Build.VERSION.SDK_INT < MARSHMALLOW) {
                     intent.putExtra(CropImage.IMAGE_PATH, imagemTemporaria.getPath());
 
                     imagemTemporaria = Uri.fromFile(
@@ -232,8 +267,8 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
                     imagemTemporaria = FileProvider.getUriForFile(getActivity(),
                             path_provider, createImageFile());
 
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imagemTemporaria);
                     intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imagemTemporaria);
                 }
 
                 intent.putExtra(CropImage.SCALE, true);
