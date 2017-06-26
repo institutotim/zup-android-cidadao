@@ -1,11 +1,11 @@
 package br.com.lfdb.zup;
 
-import android.*;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -31,6 +31,7 @@ public class OpeningActivity extends BaseActivity {
     public static final int LOGIN_REQUEST = 1010;
     private static final int REGISTER_REQUEST = 1011;
 
+    public static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 12122;
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +95,19 @@ public class OpeningActivity extends BaseActivity {
                 finish();
             }
         }
+        checkPermission();
+    }
+
+    private boolean checkPermission() {
+        int permissionCheck = ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[] { android.Manifest.permission.ACCESS_COARSE_LOCATION },
+                    MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+            return false;
+        }
+        return true;
     }
 
     @Override protected void onResume() {
