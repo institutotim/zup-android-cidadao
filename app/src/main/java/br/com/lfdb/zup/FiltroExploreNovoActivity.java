@@ -87,6 +87,13 @@ public class FiltroExploreNovoActivity extends BaseActivity implements SeekBar.O
         new Thread(() -> {
             preencherInventario();
             aplicarFiltroInicial();
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             popularListStatus();
 
             runOnUiThread(dialog::dismiss);
