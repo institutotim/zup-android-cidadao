@@ -466,7 +466,7 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
 
   @Background void tasker(ProgressDialog dialog) {
     try {
-      Thread.sleep(1000);
+      Thread.sleep(2000);
       ReportItemRequest item = new ReportItemRequest();
       ReportItem response = null;
 
