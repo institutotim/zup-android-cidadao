@@ -20,9 +20,7 @@ Para instalar o projeto, o modo recomendado é [baixar a última versão do Andr
 
 Você precisará configurar o endereço do mesmo no arquivo `src/main/java/br/com/lfdb/zup/core/Constantes.java`, modificando a constante `REST_URL` para o endereço correto do seu servidor.
 
-==========================
-Zup Técnico
-==========================
+## ZUP Técnico
 
 # Lista de Build Types
 * debug
