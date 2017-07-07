@@ -35,6 +35,8 @@ public class ReportItemRequest {
     private ReportCategoryStatus status;
     private User user;
 
+    private long resolutionTime;
+
     public String getDescription() {
         return description;
     }
@@ -209,5 +211,14 @@ public class ReportItemRequest {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+
+    public long getResolutionTime() {
+        return resolutionTime;
+    }
+
+    public void setResolutionTime(long resolutionTime) {
+        this.resolutionTime = resolutionTime;
     }
 }
