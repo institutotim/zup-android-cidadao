@@ -485,6 +485,7 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
         solicitacao.setLatitudeLongitude(pontoFragment.getLatitude(), pontoFragment.getLongitude());
       }
       item.setCategoryId(solicitacao.getCategoria().getId());
+      item.setResolutionTime(solicitacao.getCategoria().getTempoResolucao());
       List<String> images = new ArrayList<>();
       for (String foto : solicitacao.getFotos()) {
         images.add(encodeBase64(foto));
@@ -533,7 +534,7 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
     message.append(getString(R.string.line_separator));
     message.append(getString(R.string.note_protocol));
     message.append(response.getProtocol());
-    message.append(getSolutionDue(message, item));
+    message.append(getSolutionDue(item));
     new AlertDialog.Builder(this).setTitle(getString(R.string.request_sent))
             .setMessage(message)
             .setNeutralButton(getString(R.string.ok), (dialog1, which) -> {
@@ -547,13 +548,14 @@ import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
             .show();
   }
 
-  private String getSolutionDue(StringBuilder message, ReportItemRequest item) {
+  private String getSolutionDue(ReportItemRequest item) {
+    StringBuilder message = new StringBuilder();
     if (FeatureService.getInstance(this).isShowResolutionTimeToClientsEnabled()
             && solicitacao.getCategoria().isTempoResolucaoAtivado()
             && !solicitacao.getCategoria().isTempoResolucaoPrivado()) {
       message.append(getString(R.string.line_separator));
       message.append(getString(R.string.solution_due));
-      message.append(DateUtils.getString(item.getCategory().getResolutionTime()));
+      message.append(DateUtils.getString(item.getResolutionTime()));
       return message.toString();
     }
     return "";
