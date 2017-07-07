@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.fragment;
+package br.com.lfdb.particity.fragment;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -25,16 +25,16 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.lfdb.zup.FiltroEstatisticasNovoActivity;
-import br.com.lfdb.zup.R;
-import br.com.lfdb.zup.base.BaseFragment;
-import br.com.lfdb.zup.core.Constantes;
-import br.com.lfdb.zup.core.ConstantesBase;
-import br.com.lfdb.zup.domain.BuscaEstatisticas;
-import br.com.lfdb.zup.domain.Estatistica;
-import br.com.lfdb.zup.service.LoginService;
-import br.com.lfdb.zup.util.FontUtils;
-import br.com.lfdb.zup.util.ImageUtils;
+import br.com.lfdb.particity.FiltroEstatisticasNovoActivity;
+import br.com.lfdb.particity.R;
+import br.com.lfdb.particity.base.BaseFragment;
+import br.com.lfdb.particity.core.Constantes;
+import br.com.lfdb.particity.core.ConstantesBase;
+import br.com.lfdb.particity.domain.BuscaEstatisticas;
+import br.com.lfdb.particity.domain.Estatistica;
+import br.com.lfdb.particity.service.LoginService;
+import br.com.lfdb.particity.util.FontUtils;
+import br.com.lfdb.particity.util.ImageUtils;
 
 public class EstatisticasFragment extends BaseFragment {
 

@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.widget;
+package br.com.lfdb.particity.widget;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,8 +13,8 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
-import br.com.lfdb.zup.R;
-import br.com.lfdb.zup.util.FontUtils;
+import br.com.lfdb.particity.R;
+import br.com.lfdb.particity.util.FontUtils;
 
 public class SeekbarWithIntervals extends LinearLayout {
 	private RelativeLayout relativeLayout = null;

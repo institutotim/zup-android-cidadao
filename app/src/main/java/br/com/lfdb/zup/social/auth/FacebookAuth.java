@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.social.auth;
+package br.com.lfdb.particity.social.auth;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -12,7 +12,7 @@ import com.facebook.Request;
 import com.facebook.Session;
 import com.facebook.Settings;
 
-import br.com.lfdb.zup.social.SocialConstants;
+import br.com.lfdb.particity.social.SocialConstants;
 
 public class FacebookAuth extends Activity {
 

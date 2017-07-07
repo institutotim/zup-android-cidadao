@@ -1,4 +1,4 @@
-package br.com.lfdb.zup;
+package br.com.lfdb.particity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -8,12 +8,12 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import br.com.lfdb.zup.base.BaseActivity;
-import br.com.lfdb.zup.service.FeatureService;
-import br.com.lfdb.zup.social.auth.FacebookAuth;
-import br.com.lfdb.zup.social.auth.GooglePlusAuth;
-import br.com.lfdb.zup.social.auth.TwitterAuth;
-import br.com.lfdb.zup.util.FontUtils;
+import br.com.lfdb.particity.base.BaseActivity;
+import br.com.lfdb.particity.service.FeatureService;
+import br.com.lfdb.particity.social.auth.FacebookAuth;
+import br.com.lfdb.particity.social.auth.GooglePlusAuth;
+import br.com.lfdb.particity.social.auth.TwitterAuth;
+import br.com.lfdb.particity.util.FontUtils;
 
 public class RedesSociaisCadastroActivity extends BaseActivity implements View.OnClickListener {
 

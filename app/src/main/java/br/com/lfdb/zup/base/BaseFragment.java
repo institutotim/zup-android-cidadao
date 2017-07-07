@@ -1,8 +1,8 @@
-package br.com.lfdb.zup.base;
+package br.com.lfdb.particity.base;
 
 import android.support.v4.app.Fragment;
 
-import br.com.lfdb.zup.track.GoogleAnalyticsTracker;
+import br.com.lfdb.particity.track.GoogleAnalyticsTracker;
 
 public abstract class BaseFragment extends Fragment {
 

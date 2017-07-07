@@ -1,12 +1,12 @@
-package br.com.lfdb.zup.api;
+package br.com.lfdb.particity.api;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import br.com.lfdb.zup.BuildConfig;
-import br.com.lfdb.zup.core.Constantes;
-import br.com.lfdb.zup.core.ConstantesBase;
-import br.com.lfdb.zup.service.LoginService;
+import br.com.lfdb.particity.BuildConfig;
+import br.com.lfdb.particity.core.Constantes;
+import br.com.lfdb.particity.core.ConstantesBase;
+import br.com.lfdb.particity.service.LoginService;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;

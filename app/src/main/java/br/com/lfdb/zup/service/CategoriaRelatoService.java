@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.service;
+package br.com.lfdb.particity.service;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -16,12 +16,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import br.com.lfdb.zup.ZupApplication;
-import br.com.lfdb.zup.api.model.ReportCategoryStatus;
-import br.com.lfdb.zup.core.ConstantesBase;
-import br.com.lfdb.zup.domain.CategoriaInventario;
-import br.com.lfdb.zup.domain.CategoriaRelato;
-import br.com.lfdb.zup.util.ImageUtils;
+import br.com.lfdb.particity.ZupApplication;
+import br.com.lfdb.particity.api.model.ReportCategoryStatus;
+import br.com.lfdb.particity.core.ConstantesBase;
+import br.com.lfdb.particity.domain.CategoriaInventario;
+import br.com.lfdb.particity.domain.CategoriaRelato;
+import br.com.lfdb.particity.util.ImageUtils;
 
 public class CategoriaRelatoService {
 

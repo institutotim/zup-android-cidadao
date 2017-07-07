@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.fragment;
+package br.com.lfdb.particity.fragment;
 
 import android.Manifest;
 import android.content.Context;
@@ -60,34 +60,34 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import br.com.lfdb.zup.DetalheMapaActivity;
-import br.com.lfdb.zup.FiltroExploreNovoActivity;
-import br.com.lfdb.zup.MainActivity;
-import br.com.lfdb.zup.R;
-import br.com.lfdb.zup.SolicitacaoDetalheActivity;
-import br.com.lfdb.zup.api.model.Cluster;
-import br.com.lfdb.zup.base.BaseFragment;
-import br.com.lfdb.zup.core.Constantes;
-import br.com.lfdb.zup.domain.BuscaExplore;
-import br.com.lfdb.zup.domain.CategoriaInventario;
-import br.com.lfdb.zup.domain.CategoriaRelato;
-import br.com.lfdb.zup.domain.ItemInventario;
-import br.com.lfdb.zup.domain.ItemRelato;
-import br.com.lfdb.zup.domain.Place;
-import br.com.lfdb.zup.domain.RequestModel;
-import br.com.lfdb.zup.domain.SolicitacaoListItem;
-import br.com.lfdb.zup.service.CategoriaInventarioService;
-import br.com.lfdb.zup.service.CategoriaRelatoService;
-import br.com.lfdb.zup.service.LoginService;
-import br.com.lfdb.zup.task.MarkerRetriever;
-import br.com.lfdb.zup.util.BitmapUtils;
-import br.com.lfdb.zup.util.FontUtils;
-import br.com.lfdb.zup.util.GeoUtils;
-import br.com.lfdb.zup.util.MapUtils;
-import br.com.lfdb.zup.util.PreferenceUtils;
-import br.com.lfdb.zup.util.ToastHelper;
-import br.com.lfdb.zup.util.ViewUtils;
-import br.com.lfdb.zup.widget.PlacesAutoCompleteAdapter;
+import br.com.lfdb.particity.DetalheMapaActivity;
+import br.com.lfdb.particity.FiltroExploreNovoActivity;
+import br.com.lfdb.particity.MainActivity;
+import br.com.lfdb.particity.R;
+import br.com.lfdb.particity.SolicitacaoDetalheActivity;
+import br.com.lfdb.particity.api.model.Cluster;
+import br.com.lfdb.particity.base.BaseFragment;
+import br.com.lfdb.particity.core.Constantes;
+import br.com.lfdb.particity.domain.BuscaExplore;
+import br.com.lfdb.particity.domain.CategoriaInventario;
+import br.com.lfdb.particity.domain.CategoriaRelato;
+import br.com.lfdb.particity.domain.ItemInventario;
+import br.com.lfdb.particity.domain.ItemRelato;
+import br.com.lfdb.particity.domain.Place;
+import br.com.lfdb.particity.domain.RequestModel;
+import br.com.lfdb.particity.domain.SolicitacaoListItem;
+import br.com.lfdb.particity.service.CategoriaInventarioService;
+import br.com.lfdb.particity.service.CategoriaRelatoService;
+import br.com.lfdb.particity.service.LoginService;
+import br.com.lfdb.particity.task.MarkerRetriever;
+import br.com.lfdb.particity.util.BitmapUtils;
+import br.com.lfdb.particity.util.FontUtils;
+import br.com.lfdb.particity.util.GeoUtils;
+import br.com.lfdb.particity.util.MapUtils;
+import br.com.lfdb.particity.util.PreferenceUtils;
+import br.com.lfdb.particity.util.ToastHelper;
+import br.com.lfdb.particity.util.ViewUtils;
+import br.com.lfdb.particity.widget.PlacesAutoCompleteAdapter;
 
 @EFragment(R.layout.fragment_explore) public class ExploreFragment extends BaseFragment
         implements GoogleMap.OnInfoWindowClickListener, GoogleMap.OnCameraChangeListener,

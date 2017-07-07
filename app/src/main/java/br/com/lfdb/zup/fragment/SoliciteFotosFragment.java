@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.fragment;
+package br.com.lfdb.particity.fragment;
 
 import android.Manifest;
 import android.app.Activity;
@@ -30,14 +30,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.lfdb.zup.R;
-import br.com.lfdb.zup.SoliciteActivity;
-import br.com.lfdb.zup.base.BaseFragment;
-import br.com.lfdb.zup.domain.Solicitacao;
-import br.com.lfdb.zup.service.FeatureService;
-import br.com.lfdb.zup.util.FileUtils;
-import br.com.lfdb.zup.util.FontUtils;
-import br.com.lfdb.zup.util.ImageUtils;
+import br.com.lfdb.particity.R;
+import br.com.lfdb.particity.SoliciteActivity;
+import br.com.lfdb.particity.base.BaseFragment;
+import br.com.lfdb.particity.domain.Solicitacao;
+import br.com.lfdb.particity.service.FeatureService;
+import br.com.lfdb.particity.util.FileUtils;
+import br.com.lfdb.particity.util.FontUtils;
+import br.com.lfdb.particity.util.ImageUtils;
 import eu.janmuller.android.simplecropimage.CropImage;
 
 public class SoliciteFotosFragment extends BaseFragment implements View.OnClickListener {
@@ -54,7 +54,7 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
     private View temp = null;
 
     private static final int MARSHMALLOW = 23;
-    private String path_provider = "br.com.lfdb.zup.provider";
+    private String path_provider = "br.com.lfdb.particity.provider";
     private String mCurrentPhotoPath;
 
     @Override public void onHiddenChanged(boolean hidden) {

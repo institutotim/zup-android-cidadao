@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.api.model;
+package br.com.lfdb.particity.api.model;
 
 import android.graphics.Color;
 
@@ -8,8 +8,8 @@ import org.joda.time.DateTime;
 
 import java.io.Serializable;
 
-import br.com.lfdb.zup.domain.CategoriaRelato;
-import br.com.lfdb.zup.domain.SolicitacaoListItem;
+import br.com.lfdb.particity.domain.CategoriaRelato;
+import br.com.lfdb.particity.domain.SolicitacaoListItem;
 
 public class ReportCategoryStatus implements Serializable {
 

@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.core;
+package br.com.lfdb.particity.core;
 
 public class Constantes {
 

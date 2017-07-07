@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.track;
+package br.com.lfdb.particity.track;
 
 import android.content.Context;
 
@@ -7,7 +7,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Logger;
 import com.google.android.gms.analytics.Tracker;
 
-import br.com.lfdb.zup.R;
+import br.com.lfdb.particity.R;
 
 public class GoogleAnalyticsTracker {
 

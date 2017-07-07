@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.api.model;
+package br.com.lfdb.particity.api.model;
 
 import java.io.Serializable;
 import java.util.Collections;

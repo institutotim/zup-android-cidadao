@@ -1,4 +1,4 @@
-package br.com.lfdb.zup;
+package br.com.lfdb.particity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -9,16 +9,16 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.TextView;
 
-import br.com.lfdb.zup.base.BaseActivity;
-import br.com.lfdb.zup.domain.BuscaEstatisticas;
-import br.com.lfdb.zup.domain.BuscaExplore;
-import br.com.lfdb.zup.fragment.EstatisticasFragment;
-import br.com.lfdb.zup.fragment.ExploreFragment_;
-import br.com.lfdb.zup.fragment.MinhaContaFragment;
-import br.com.lfdb.zup.service.CategoriaRelatoService;
-import br.com.lfdb.zup.service.FeatureService;
-import br.com.lfdb.zup.service.LoginService;
-import br.com.lfdb.zup.util.FontUtils;
+import br.com.lfdb.particity.base.BaseActivity;
+import br.com.lfdb.particity.domain.BuscaEstatisticas;
+import br.com.lfdb.particity.domain.BuscaExplore;
+import br.com.lfdb.particity.fragment.EstatisticasFragment;
+import br.com.lfdb.particity.fragment.ExploreFragment_;
+import br.com.lfdb.particity.fragment.MinhaContaFragment;
+import br.com.lfdb.particity.service.CategoriaRelatoService;
+import br.com.lfdb.particity.service.FeatureService;
+import br.com.lfdb.particity.service.LoginService;
+import br.com.lfdb.particity.util.FontUtils;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
 

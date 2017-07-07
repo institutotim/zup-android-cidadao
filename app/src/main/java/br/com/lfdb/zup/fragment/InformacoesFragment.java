@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.fragment;
+package br.com.lfdb.particity.fragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,11 +25,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import br.com.lfdb.zup.R;
-import br.com.lfdb.zup.util.FontUtils;
-import br.com.lfdb.zup.util.ImageUtils;
-import br.com.lfdb.zup.util.JsonUtils;
-import br.com.lfdb.zup.widget.RemoteImageAdapter;
+import br.com.lfdb.particity.R;
+import br.com.lfdb.particity.util.FontUtils;
+import br.com.lfdb.particity.util.ImageUtils;
+import br.com.lfdb.particity.util.JsonUtils;
+import br.com.lfdb.particity.widget.RemoteImageAdapter;
 import butterknife.ButterKnife;
 
 public class InformacoesFragment extends Fragment {

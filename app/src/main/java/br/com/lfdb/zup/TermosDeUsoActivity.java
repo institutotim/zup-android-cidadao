@@ -1,4 +1,4 @@
-package br.com.lfdb.zup;
+package br.com.lfdb.particity;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -12,7 +12,7 @@ import com.google.common.io.CharStreams;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import br.com.lfdb.zup.base.BaseActivity;
+import br.com.lfdb.particity.base.BaseActivity;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class TermosDeUsoActivity extends BaseActivity {

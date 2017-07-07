@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.api.model;
+package br.com.lfdb.particity.api.model;
 
 import android.content.Context;
 
@@ -7,8 +7,8 @@ import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.lfdb.zup.domain.SolicitacaoListItem;
-import br.com.lfdb.zup.service.CategoriaRelatoService;
+import br.com.lfdb.particity.domain.SolicitacaoListItem;
+import br.com.lfdb.particity.service.CategoriaRelatoService;
 
 public class ReportItemRequest {
 

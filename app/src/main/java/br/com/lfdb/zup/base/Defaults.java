@@ -1,7 +1,7 @@
-package br.com.lfdb.zup.base;
+package br.com.lfdb.particity.base;
 
-import br.com.lfdb.zup.api.model.ImageResource;
-import br.com.lfdb.zup.api.model.ReportCategory;
+import br.com.lfdb.particity.api.model.ImageResource;
+import br.com.lfdb.particity.api.model.ReportCategory;
 
 public class Defaults {
 

@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.util;
+package br.com.lfdb.particity.util;
 
 import android.app.Activity;
 

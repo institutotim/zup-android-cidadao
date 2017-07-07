@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.fragment;
+package br.com.lfdb.particity.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,13 +11,13 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import br.com.lfdb.zup.R;
-import br.com.lfdb.zup.SoliciteActivity;
-import br.com.lfdb.zup.base.BaseFragment;
-import br.com.lfdb.zup.domain.CategoriaRelato;
-import br.com.lfdb.zup.domain.Solicitacao;
-import br.com.lfdb.zup.service.CategoriaRelatoService;
-import br.com.lfdb.zup.util.ImageUtils;
+import br.com.lfdb.particity.R;
+import br.com.lfdb.particity.SoliciteActivity;
+import br.com.lfdb.particity.base.BaseFragment;
+import br.com.lfdb.particity.domain.CategoriaRelato;
+import br.com.lfdb.particity.domain.Solicitacao;
+import br.com.lfdb.particity.service.CategoriaRelatoService;
+import br.com.lfdb.particity.util.ImageUtils;
 import butterknife.ButterKnife;
 import butterknife.Bind;
 

@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.view;
+package br.com.lfdb.particity.view;
 
 import android.annotation.TargetApi;
 import android.content.Context;

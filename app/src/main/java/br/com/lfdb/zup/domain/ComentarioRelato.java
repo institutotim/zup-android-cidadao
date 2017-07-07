@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.domain;
+package br.com.lfdb.particity.domain;
 
 import java.util.Date;
 

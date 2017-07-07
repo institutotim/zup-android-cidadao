@@ -1,11 +1,11 @@
-package br.com.lfdb.zup.util;
+package br.com.lfdb.particity.util;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
-import br.com.lfdb.zup.OpeningActivity;
-import br.com.lfdb.zup.service.LoginService;
+import br.com.lfdb.particity.OpeningActivity;
+import br.com.lfdb.particity.service.LoginService;
 
 public class AuthHelper {
 

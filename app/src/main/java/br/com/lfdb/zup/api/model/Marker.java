@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.api.model;
+package br.com.lfdb.particity.api.model;
 
 import com.google.gson.annotations.SerializedName;
 

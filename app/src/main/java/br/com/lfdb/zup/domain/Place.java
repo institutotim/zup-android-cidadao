@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.domain;
+package br.com.lfdb.particity.domain;
 
 public class Place {
 

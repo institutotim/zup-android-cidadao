@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.validador;
+package br.com.lfdb.particity.validador;
 
 public class CpfValidador {
 

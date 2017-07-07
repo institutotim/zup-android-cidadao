@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.util;
+package br.com.lfdb.particity.util;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

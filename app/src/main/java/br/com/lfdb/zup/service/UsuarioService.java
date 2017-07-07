@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.service;
+package br.com.lfdb.particity.service;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -8,7 +8,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import br.com.lfdb.zup.domain.Usuario;
+import br.com.lfdb.particity.domain.Usuario;
 
 public class UsuarioService {
 

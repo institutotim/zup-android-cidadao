@@ -1,4 +1,4 @@
-package br.com.lfdb.zup;
+package br.com.lfdb.particity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -20,17 +20,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import br.com.lfdb.zup.base.BaseActivity;
-import br.com.lfdb.zup.domain.BuscaExplore;
-import br.com.lfdb.zup.domain.CategoriaInventario;
-import br.com.lfdb.zup.domain.CategoriaRelato;
-import br.com.lfdb.zup.domain.Periodo;
-import br.com.lfdb.zup.service.CategoriaInventarioService;
-import br.com.lfdb.zup.service.CategoriaRelatoService;
-import br.com.lfdb.zup.util.FontUtils;
-import br.com.lfdb.zup.util.ImageUtils;
-import br.com.lfdb.zup.view.CategoryPicker;
-import br.com.lfdb.zup.widget.SeekbarWithIntervals;
+import br.com.lfdb.particity.base.BaseActivity;
+import br.com.lfdb.particity.domain.BuscaExplore;
+import br.com.lfdb.particity.domain.CategoriaInventario;
+import br.com.lfdb.particity.domain.CategoriaRelato;
+import br.com.lfdb.particity.domain.Periodo;
+import br.com.lfdb.particity.service.CategoriaInventarioService;
+import br.com.lfdb.particity.service.CategoriaRelatoService;
+import br.com.lfdb.particity.util.FontUtils;
+import br.com.lfdb.particity.util.ImageUtils;
+import br.com.lfdb.particity.view.CategoryPicker;
+import br.com.lfdb.particity.widget.SeekbarWithIntervals;
 import butterknife.ButterKnife;
 import butterknife.Bind;
 import butterknife.OnClick;

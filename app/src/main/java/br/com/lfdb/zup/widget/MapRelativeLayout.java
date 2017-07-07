@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.widget;
+package br.com.lfdb.particity.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;

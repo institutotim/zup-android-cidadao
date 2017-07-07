@@ -1,8 +1,8 @@
-package br.com.lfdb.zup;
+package br.com.lfdb.particity;
 
 import android.content.Context;
 import android.support.multidex.MultiDexApplication;
-import br.com.lfdb.zup.track.GoogleAnalyticsTracker;
+import br.com.lfdb.particity.track.GoogleAnalyticsTracker;
 import net.danlew.android.joda.JodaTimeAndroid;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 

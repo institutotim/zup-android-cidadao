@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.util;
+package br.com.lfdb.particity.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,8 +12,8 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import br.com.lfdb.zup.R;
-import br.com.lfdb.zup.ZupApplication;
+import br.com.lfdb.particity.R;
+import br.com.lfdb.particity.ZupApplication;
 
 public class MapUtils {
 

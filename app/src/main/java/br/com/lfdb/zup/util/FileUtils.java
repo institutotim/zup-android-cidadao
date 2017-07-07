@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.util;
+package br.com.lfdb.particity.util;
 
 import android.content.Context;
 import android.os.Environment;
@@ -9,8 +9,8 @@ import com.squareup.okhttp.Response;
 
 import java.io.File;
 
-import br.com.lfdb.zup.core.Constantes;
-import br.com.lfdb.zup.core.ConstantesBase;
+import br.com.lfdb.particity.core.Constantes;
+import br.com.lfdb.particity.core.ConstantesBase;
 import okio.BufferedSink;
 import okio.Okio;
 

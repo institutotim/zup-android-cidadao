@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.fragment;
+package br.com.lfdb.particity.fragment;
 
 import java.util.List;
 
@@ -14,11 +14,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import br.com.lfdb.zup.R;
-import br.com.lfdb.zup.SolicitacaoDetalheActivity;
-import br.com.lfdb.zup.domain.SolicitacaoListItem;
-import br.com.lfdb.zup.util.FontUtils;
-import br.com.lfdb.zup.util.ImageUtils;
+import br.com.lfdb.particity.R;
+import br.com.lfdb.particity.SolicitacaoDetalheActivity;
+import br.com.lfdb.particity.domain.SolicitacaoListItem;
+import br.com.lfdb.particity.util.FontUtils;
+import br.com.lfdb.particity.util.ImageUtils;
 
 public class SolicitacoesFragment extends ListFragment implements AdapterView.OnItemClickListener {
 

@@ -1,4 +1,4 @@
-package br.com.lfdb.zup.view;
+package br.com.lfdb.particity.view;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -14,10 +14,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import br.com.lfdb.zup.R;
-import br.com.lfdb.zup.domain.CategoriaRelato;
-import br.com.lfdb.zup.service.CategoriaRelatoService;
-import br.com.lfdb.zup.util.ImageUtils;
+import br.com.lfdb.particity.R;
+import br.com.lfdb.particity.domain.CategoriaRelato;
+import br.com.lfdb.particity.service.CategoriaRelatoService;
+import br.com.lfdb.particity.util.ImageUtils;
 import butterknife.ButterKnife;
 
 import java.util.ArrayList;
