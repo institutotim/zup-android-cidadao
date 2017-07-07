@@ -35,7 +35,6 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
             android:gravity="center"
-            android:text="@string/estatisticas"
             android:textSize="@dimen/title_text_size" />
     </RelativeLayout>
 

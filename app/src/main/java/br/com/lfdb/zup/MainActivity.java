@@ -105,15 +105,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         TextView view = (TextView) findViewById(id);
         view.setTextColor(Color.WHITE);
         switch (id) {
-            case R.id.estatisticasButton:
-                view.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.tabbar_icon_estatisticas_active), null, null);
-                if (estatisticasFragment == null) {
-                    estatisticasFragment = new EstatisticasFragment();
-                    setFragment(estatisticasFragment);
-                } else {
-                    activeFragment(estatisticasFragment);
-                }
-                break;
             case R.id.exploreButton:
                 view.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.tabbar_icon_explore_active), null, null);
                 if (exploreFragment == null) {
@@ -154,9 +145,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void unselectCurrent() {
         current.setTextColor(getResources().getColorStateList(R.color.tabbar_text_color));
         switch (current.getId()) {
-            case R.id.estatisticasButton:
-                current.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.tabbar_icon_estatisticas), null, null);
-                break;
             case R.id.exploreButton:
                 current.setCompoundDrawablesWithIntrinsicBounds(null, getResources().getDrawable(R.drawable.tabbar_icon_explore), null, null);
                 break;
