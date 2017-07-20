@@ -20,12 +20,15 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.GPS" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" />
 
-    <uses-feature android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.permission.GPS" />
+
+    <uses-feature android:name="android.permission.camera" android:required="false" />
+    <uses-feature android:name="android.permission.gps" android:required="false" />
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />

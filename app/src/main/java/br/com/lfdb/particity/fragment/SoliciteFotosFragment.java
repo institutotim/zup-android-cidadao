@@ -181,6 +181,7 @@ public class SoliciteFotosFragment extends BaseFragment implements View.OnClickL
             ActivityCompat.requestPermissions(
                     getActivity(),
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.CAMERA,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     1
             );

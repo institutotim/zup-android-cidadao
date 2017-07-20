@@ -36,9 +36,9 @@ android {
     }
     defaultConfig {
         minSdkVersion 10
-        targetSdkVersion 24
-        versionCode 10100
-        versionName '1.1'
+        targetSdkVersion 25
+        versionCode 10104
+        versionName '1.1.4'
         multiDexEnabled = true
     }
     productFlavors {
