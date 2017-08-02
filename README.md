@@ -1,7 +1,7 @@
 # Zeladoria Urbana Participativa - Aplicativo Cidadão Android
 
     ZUP Android Cidadão
-    Copyright (C) <2016> <Instituto TIM>
+    Copyright (C) <2014> <Instituto TIM>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
