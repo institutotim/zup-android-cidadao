@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="br.com.lfdb.particity">
+    package="br.com.lfdb.vcsbc">
 
     <permission
         android:name="${applicationId}.permission.MAPS_RECEIVE"
@@ -34,7 +34,7 @@
         android:required="true" />
 
     <application
-        android:name=".ZupApplication"
+        android:name="br.com.lfdb.vcsbc.ZupApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
@@ -42,7 +42,7 @@
         android:largeHeap="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".OpeningActivity"
+            android:name="br.com.lfdb.vcsbc.OpeningActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -51,59 +51,59 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name="br.com.lfdb.vcsbc.MainActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".SplashActivity"
+            android:name="br.com.lfdb.vcsbc.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" />
         <activity
-            android:name=".SoliciteActivity_"
+            android:name="br.com.lfdb.vcsbc.SoliciteActivity_"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".SolicitacaoDetalheActivity"
+            android:name="br.com.lfdb.vcsbc.SolicitacaoDetalheActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".EditarContaActivity"
+            android:name="br.com.lfdb.vcsbc.EditarContaActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".TermosDeUsoActivity"
+            android:name="br.com.lfdb.vcsbc.TermosDeUsoActivity"
             android:label="@string/termos_de_uso"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".CadastroActivity_"
+            android:name="br.com.lfdb.vcsbc.CadastroActivity_"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".RedesSociaisCadastroActivity"
+            android:name="br.com.lfdb.vcsbc.RedesSociaisCadastroActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".WarningActivity"
+            android:name="br.com.lfdb.vcsbc.WarningActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".FiltroExploreNovoActivity"
+            android:name="br.com.lfdb.vcsbc.FiltroExploreNovoActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".FiltroEstatisticasNovoActivity"
+            android:name="br.com.lfdb.vcsbc.FiltroEstatisticasNovoActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".LoginActivity"
+            android:name="br.com.lfdb.vcsbc.LoginActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".RecuperarSenhaActivity"
+            android:name="br.com.lfdb.vcsbc.RecuperarSenhaActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".DetalheMapaActivity"
+            android:name="br.com.lfdb.vcsbc.DetalheMapaActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".social.auth.TwitterAuth"
+            android:name="br.com.lfdb.vcsbc.social.auth.TwitterAuth"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
-            android:name=".social.auth.GooglePlusAuth"
+            android:name="br.com.lfdb.vcsbc.social.auth.GooglePlusAuth"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
-            android:name=".social.auth.FacebookAuth"
+            android:name="br.com.lfdb.vcsbc.social.auth.FacebookAuth"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
             android:name="eu.janmuller.android.simplecropimage.CropImage"
@@ -113,7 +113,7 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <receiver
-            android:name=".receiver.PushReceiver"
+            android:name="br.com.lfdb.vcsbc.receiver.PushReceiver"
             android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
@@ -140,7 +140,7 @@
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="br.com.lfdb.particity.provider"
+            android:authorities="br.com.lfdb.vcsbc.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

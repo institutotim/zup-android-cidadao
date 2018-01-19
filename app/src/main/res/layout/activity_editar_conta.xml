@@ -235,7 +235,7 @@
                 android:orientation="horizontal"
                 android:weightSum="2">
 
-                <br.com.lfdb.particity.widget.PhoneEditText
+                <br.com.lfdb.vcsbc.widget.PhoneEditText
                     android:id="@+id/campoTelefone"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -247,7 +247,7 @@
                     android:textColor="#000"
                     android:textSize="@dimen/navigation_text_size" />
 
-                <br.com.lfdb.particity.widget.CpfEditText
+                <br.com.lfdb.vcsbc.widget.CpfEditText
                     android:id="@+id/campoCPF"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -291,7 +291,7 @@
                     android:textColor="#000"
                     android:textSize="@dimen/navigation_text_size" />
 
-                <br.com.lfdb.particity.widget.CepEditText
+                <br.com.lfdb.vcsbc.widget.CepEditText
                     android:id="@+id/campoCEP"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
