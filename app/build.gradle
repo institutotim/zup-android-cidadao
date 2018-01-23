@@ -47,7 +47,7 @@ android {
         applicationId 'br.com.lfdb.zup'
     }
     productFlavors {
-        main {
+        zup {
             minSdkVersion 22
             applicationId 'br.com.lfdb.zup'
             targetSdkVersion 25
@@ -85,9 +85,7 @@ android {
         zup {
             manifest.srcFile 'src/main/AndroidManifest.xml'
             java.srcDirs = ['src/zup/java', 'build/generated/source/apt/${variant.dirName}']
-            resources.srcDirs = ['src/main/res']
-            res.srcDirs = ['src/main/res']
-            assets.srcDirs = ['src/main/assets']
+
         }
         vcsbc {
             manifest.srcFile 'src/main/AndroidManifest.xml'
