@@ -1,4 +1,4 @@
-package br.com.lfdb.particity.social;
+package br.com.lfdb.zup.social;
 
 public class SocialConstants {
 

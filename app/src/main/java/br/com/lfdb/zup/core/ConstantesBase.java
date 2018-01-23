@@ -1,4 +1,4 @@
-package br.com.lfdb.particity.core;
+package br.com.lfdb.zup.core;
 
 import android.content.Context;
 
@@ -9,8 +9,8 @@ import com.squareup.okhttp.OkHttpClient;
 
 import org.joda.time.DateTime;
 
-import br.com.lfdb.particity.api.converter.DateTimeConverter;
-import br.com.lfdb.particity.util.ImageUtils;
+import br.com.lfdb.zup.api.converter.DateTimeConverter;
+import br.com.lfdb.zup.util.ImageUtils;
 
 public class ConstantesBase {
 

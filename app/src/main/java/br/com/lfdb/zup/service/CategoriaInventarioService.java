@@ -1,4 +1,4 @@
-package br.com.lfdb.particity.service;
+package br.com.lfdb.zup.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,8 +12,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import br.com.lfdb.particity.domain.CategoriaInventario;
-import br.com.lfdb.particity.util.ImageUtils;
+import br.com.lfdb.zup.domain.CategoriaInventario;
+import br.com.lfdb.zup.util.ImageUtils;
 
 public class CategoriaInventarioService {
 

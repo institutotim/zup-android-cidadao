@@ -1,4 +1,4 @@
-package br.com.lfdb.particity.social.extra;
+package br.com.lfdb.zup.social.extra;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -20,8 +20,8 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import br.com.lfdb.particity.R;
-import br.com.lfdb.particity.social.SocialConstants;
+import br.com.lfdb.zup.R;
+import br.com.lfdb.zup.social.SocialConstants;
 
 public class TwitterDialog extends Dialog {
 

@@ -1,19 +1,19 @@
-package br.com.lfdb.particity.widget;
+package br.com.lfdb.zup.widget;
 
 import android.content.Context;
 
 import android.util.Log;
-import br.com.lfdb.particity.core.Crashlytics;
+import br.com.lfdb.zup.core.Crashlytics;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import br.com.lfdb.particity.domain.CategoriaRelato;
-import br.com.lfdb.particity.domain.SolicitacaoListItem;
-import br.com.lfdb.particity.service.CategoriaRelatoService;
-import br.com.lfdb.particity.util.DateUtils;
-import br.com.lfdb.particity.util.ViewUtils;
+import br.com.lfdb.zup.domain.CategoriaRelato;
+import br.com.lfdb.zup.domain.SolicitacaoListItem;
+import br.com.lfdb.zup.service.CategoriaRelatoService;
+import br.com.lfdb.zup.util.DateUtils;
+import br.com.lfdb.zup.util.ViewUtils;
 
 public class SolicitacaoListItemAdapter {
 

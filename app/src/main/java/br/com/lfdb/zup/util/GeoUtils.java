@@ -1,10 +1,10 @@
-package br.com.lfdb.particity.util;
+package br.com.lfdb.zup.util;
 
 import android.location.Address;
 import android.util.Log;
-import br.com.lfdb.particity.core.Constantes;
-import br.com.lfdb.particity.core.ConstantesBase;
-import br.com.lfdb.particity.domain.Place;
+import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.core.ConstantesBase;
+import br.com.lfdb.zup.domain.Place;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.VisibleRegion;

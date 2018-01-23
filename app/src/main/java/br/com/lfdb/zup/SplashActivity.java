@@ -1,4 +1,4 @@
-package br.com.lfdb.particity;
+package br.com.lfdb.zup;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -11,13 +11,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-import br.com.lfdb.particity.core.Constantes;
-import br.com.lfdb.particity.core.ConstantesBase;
-import br.com.lfdb.particity.domain.SolicitacaoListItem;
-import br.com.lfdb.particity.service.LoginService;
-import br.com.lfdb.particity.task.Updater;
-import br.com.lfdb.particity.util.NetworkUtils;
-import br.com.lfdb.particity.widget.SolicitacaoListItemAdapter;
+import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.core.ConstantesBase;
+import br.com.lfdb.zup.domain.SolicitacaoListItem;
+import br.com.lfdb.zup.service.LoginService;
+import br.com.lfdb.zup.task.Updater;
+import br.com.lfdb.zup.util.NetworkUtils;
+import br.com.lfdb.zup.widget.SolicitacaoListItemAdapter;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;

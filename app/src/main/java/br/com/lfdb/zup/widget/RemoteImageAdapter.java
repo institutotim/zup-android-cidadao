@@ -1,4 +1,4 @@
-package br.com.lfdb.particity.widget;
+package br.com.lfdb.zup.widget;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import java.util.List;
 
-import br.com.lfdb.particity.fragment.RemoteImageFragment;
+import br.com.lfdb.zup.fragment.RemoteImageFragment;
 
 public class RemoteImageAdapter extends FragmentPagerAdapter {
 

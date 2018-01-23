@@ -1,13 +1,13 @@
-package br.com.lfdb.particity;
+package br.com.lfdb.zup;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import br.com.lfdb.particity.base.BaseActivity;
-import br.com.lfdb.particity.service.LoginService;
-import br.com.lfdb.particity.util.FontUtils;
+import br.com.lfdb.zup.base.BaseActivity;
+import br.com.lfdb.zup.service.LoginService;
+import br.com.lfdb.zup.util.FontUtils;
 
 public class WarningActivity extends BaseActivity {
 

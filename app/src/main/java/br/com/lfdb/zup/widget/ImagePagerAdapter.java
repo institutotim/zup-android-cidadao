@@ -1,4 +1,4 @@
-package br.com.lfdb.particity.widget;
+package br.com.lfdb.zup.widget;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,8 @@ import java.util.List;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import br.com.lfdb.particity.R;
-import br.com.lfdb.particity.fragment.ImageViewFragment;
+import br.com.lfdb.zup.R;
+import br.com.lfdb.zup.fragment.ImageViewFragment;
 
 import com.viewpagerindicator.IconPagerAdapter;
 

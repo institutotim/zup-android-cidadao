@@ -1,4 +1,4 @@
-package br.com.lfdb.particity.service;
+package br.com.lfdb.zup.service;
 
 import android.content.Context;
 import android.content.SharedPreferences;

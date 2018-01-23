@@ -1,4 +1,4 @@
-package br.com.lfdb.particity;
+package br.com.lfdb.zup;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -9,10 +9,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import br.com.lfdb.particity.base.BaseActivity;
-import br.com.lfdb.particity.core.Constantes;
-import br.com.lfdb.particity.core.ConstantesBase;
-import br.com.lfdb.particity.util.FontUtils;
+import br.com.lfdb.zup.base.BaseActivity;
+import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.core.ConstantesBase;
+import br.com.lfdb.zup.util.FontUtils;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;

@@ -1,4 +1,4 @@
-package br.com.lfdb.particity.util;
+package br.com.lfdb.zup.util;
 
 import android.content.Context;
 import android.graphics.Typeface;

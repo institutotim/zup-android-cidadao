@@ -1,11 +1,11 @@
-package br.com.lfdb.particity.social.auth;
+package br.com.lfdb.zup.social.auth;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
-import br.com.lfdb.particity.social.SocialConstants;
+import br.com.lfdb.zup.social.SocialConstants;
 
 public class GooglePlusAuth extends Activity {
 

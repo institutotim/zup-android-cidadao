@@ -1,4 +1,4 @@
-package br.com.lfdb.particity;
+package br.com.lfdb.zup;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -20,11 +20,11 @@ import com.viewpagerindicator.PageIndicator;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.lfdb.particity.base.BaseActivity;
-import br.com.lfdb.particity.service.FeatureService;
-import br.com.lfdb.particity.service.LoginService;
-import br.com.lfdb.particity.util.FontUtils;
-import br.com.lfdb.particity.widget.ImageResourcePagerAdapter;
+import br.com.lfdb.zup.base.BaseActivity;
+import br.com.lfdb.zup.service.FeatureService;
+import br.com.lfdb.zup.service.LoginService;
+import br.com.lfdb.zup.util.FontUtils;
+import br.com.lfdb.zup.widget.ImageResourcePagerAdapter;
 
 public class OpeningActivity extends BaseActivity {
 

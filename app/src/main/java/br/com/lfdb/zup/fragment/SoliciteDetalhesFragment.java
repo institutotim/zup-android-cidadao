@@ -1,4 +1,4 @@
-package br.com.lfdb.particity.fragment;
+package br.com.lfdb.zup.fragment;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,15 +15,15 @@ import android.widget.TextView;
 
 import org.apache.commons.lang3.StringUtils;
 
-import br.com.lfdb.particity.R;
-import br.com.lfdb.particity.RedesSociaisCadastroActivity;
-import br.com.lfdb.particity.SoliciteActivity;
-import br.com.lfdb.particity.TermosDeUsoActivity;
-import br.com.lfdb.particity.base.BaseFragment;
-import br.com.lfdb.particity.domain.Solicitacao;
-import br.com.lfdb.particity.service.FeatureService;
-import br.com.lfdb.particity.social.SocialConstants;
-import br.com.lfdb.particity.util.FontUtils;
+import br.com.lfdb.zup.R;
+import br.com.lfdb.zup.RedesSociaisCadastroActivity;
+import br.com.lfdb.zup.SoliciteActivity;
+import br.com.lfdb.zup.TermosDeUsoActivity;
+import br.com.lfdb.zup.base.BaseFragment;
+import br.com.lfdb.zup.domain.Solicitacao;
+import br.com.lfdb.zup.service.FeatureService;
+import br.com.lfdb.zup.social.SocialConstants;
+import br.com.lfdb.zup.util.FontUtils;
 import butterknife.ButterKnife;
 
 public class SoliciteDetalhesFragment extends BaseFragment implements View.OnClickListener {

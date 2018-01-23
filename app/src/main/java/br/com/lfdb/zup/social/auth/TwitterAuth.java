@@ -1,4 +1,4 @@
-package br.com.lfdb.particity.social.auth;
+package br.com.lfdb.zup.social.auth;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -14,9 +14,9 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import java.net.URI;
 import java.util.List;
 
-import br.com.lfdb.particity.R;
-import br.com.lfdb.particity.social.SocialConstants;
-import br.com.lfdb.particity.social.extra.TwitterDialog;
+import br.com.lfdb.zup.R;
+import br.com.lfdb.zup.social.SocialConstants;
+import br.com.lfdb.zup.social.extra.TwitterDialog;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;

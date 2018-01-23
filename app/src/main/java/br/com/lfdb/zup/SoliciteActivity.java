@@ -1,4 +1,4 @@
-package br.com.lfdb.particity;
+package br.com.lfdb.zup;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -32,31 +32,31 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import br.com.lfdb.particity.api.ZupApi;
-import br.com.lfdb.particity.api.model.ReportItem;
-import br.com.lfdb.particity.api.model.ReportItemRequest;
-import br.com.lfdb.particity.base.BaseActivity;
-import br.com.lfdb.particity.core.Constantes;
-import br.com.lfdb.particity.domain.CategoriaRelato;
-import br.com.lfdb.particity.domain.Solicitacao;
-import br.com.lfdb.particity.domain.SolicitacaoListItem;
-import br.com.lfdb.particity.fragment.SoliciteDetalhesFragment;
-import br.com.lfdb.particity.fragment.SoliciteFotosFragment;
-import br.com.lfdb.particity.fragment.SoliciteLocalFragment_;
-import br.com.lfdb.particity.fragment.SolicitePontoFragment;
-import br.com.lfdb.particity.fragment.SoliciteTipoNovoFragment;
-import br.com.lfdb.particity.service.FeatureService;
-import br.com.lfdb.particity.service.UsuarioService;
-import br.com.lfdb.particity.social.util.SocialUtils;
-import br.com.lfdb.particity.util.AuthHelper;
-import br.com.lfdb.particity.util.DateUtils;
-import br.com.lfdb.particity.util.FontUtils;
-import br.com.lfdb.particity.util.NetworkUtils;
-import br.com.lfdb.particity.util.ViewUtils;
+import br.com.lfdb.zup.api.ZupApi;
+import br.com.lfdb.zup.api.model.ReportItem;
+import br.com.lfdb.zup.api.model.ReportItemRequest;
+import br.com.lfdb.zup.base.BaseActivity;
+import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.domain.CategoriaRelato;
+import br.com.lfdb.zup.domain.Solicitacao;
+import br.com.lfdb.zup.domain.SolicitacaoListItem;
+import br.com.lfdb.zup.fragment.SoliciteDetalhesFragment;
+import br.com.lfdb.zup.fragment.SoliciteFotosFragment;
+import br.com.lfdb.zup.fragment.SoliciteLocalFragment_;
+import br.com.lfdb.zup.fragment.SolicitePontoFragment;
+import br.com.lfdb.zup.fragment.SoliciteTipoNovoFragment;
+import br.com.lfdb.zup.service.FeatureService;
+import br.com.lfdb.zup.service.UsuarioService;
+import br.com.lfdb.zup.social.util.SocialUtils;
+import br.com.lfdb.zup.util.AuthHelper;
+import br.com.lfdb.zup.util.DateUtils;
+import br.com.lfdb.zup.util.FontUtils;
+import br.com.lfdb.zup.util.NetworkUtils;
+import br.com.lfdb.zup.util.ViewUtils;
 import retrofit.RetrofitError;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-import static br.com.lfdb.particity.util.ImageUtils.encodeBase64;
+import static br.com.lfdb.zup.util.ImageUtils.encodeBase64;
 
 @EActivity(R.layout.activity_solicite) public class SoliciteActivity extends BaseActivity {
 

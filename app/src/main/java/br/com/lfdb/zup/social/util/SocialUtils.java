@@ -1,4 +1,4 @@
-package br.com.lfdb.particity.social.util;
+package br.com.lfdb.zup.social.util;
 
 import android.app.Activity;
 import android.content.Context;
@@ -14,9 +14,7 @@ import com.facebook.FacebookRequestError;
 import com.facebook.HttpMethod;
 import com.facebook.Request;
 import com.facebook.RequestAsyncTask;
-import com.facebook.Response;
 import com.facebook.Session;
-import com.facebook.SessionState;
 import com.google.android.gms.plus.PlusShare;
 
 import org.json.JSONException;
@@ -25,7 +23,7 @@ import org.json.JSONObject;
 import java.util.Arrays;
 import java.util.Date;
 
-import br.com.lfdb.particity.social.SocialConstants;
+import br.com.lfdb.zup.social.SocialConstants;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;

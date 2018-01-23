@@ -1,4 +1,4 @@
-package br.com.lfdb.particity;
+package br.com.lfdb.zup;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -14,32 +14,21 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import br.com.lfdb.particity.core.Crashlytics;
+import br.com.lfdb.zup.core.Crashlytics;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import br.com.lfdb.particity.base.BaseActivity;
-import br.com.lfdb.particity.core.Constantes;
-import br.com.lfdb.particity.core.ConstantesBase;
-import br.com.lfdb.particity.service.LoginService;
-import br.com.lfdb.particity.util.FontUtils;
+import br.com.lfdb.zup.base.BaseActivity;
+import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.core.ConstantesBase;
+import br.com.lfdb.zup.service.LoginService;
+import br.com.lfdb.zup.util.FontUtils;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
 

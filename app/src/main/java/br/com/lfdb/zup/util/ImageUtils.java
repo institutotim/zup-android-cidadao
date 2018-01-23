@@ -1,4 +1,4 @@
-package br.com.lfdb.particity.util;
+package br.com.lfdb.zup.util;
 
 import android.app.Activity;
 import android.content.Context;
@@ -22,8 +22,8 @@ import android.util.TypedValue;
 import java.io.File;
 import java.io.FileInputStream;
 
-import br.com.lfdb.particity.ZupApplication;
-import br.com.lfdb.particity.base.Defaults;
+import br.com.lfdb.zup.ZupApplication;
+import br.com.lfdb.zup.base.Defaults;
 
 public class ImageUtils {
 

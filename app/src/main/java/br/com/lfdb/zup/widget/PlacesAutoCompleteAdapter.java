@@ -1,4 +1,4 @@
-package br.com.lfdb.particity.widget;
+package br.com.lfdb.zup.widget;
 
 import android.content.Context;
 import android.util.Log;
@@ -19,8 +19,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-import br.com.lfdb.particity.core.Constantes;
-import br.com.lfdb.particity.domain.Place;
+import br.com.lfdb.zup.core.Constantes;
+import br.com.lfdb.zup.domain.Place;
 
 public class PlacesAutoCompleteAdapter extends ArrayAdapter<Place> implements Filterable {
     private ArrayList<Place> resultList;

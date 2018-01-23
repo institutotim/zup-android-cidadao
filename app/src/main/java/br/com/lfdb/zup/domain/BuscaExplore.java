@@ -1,4 +1,4 @@
-package br.com.lfdb.particity.domain;
+package br.com.lfdb.zup.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;

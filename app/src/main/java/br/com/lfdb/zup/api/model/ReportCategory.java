@@ -1,9 +1,9 @@
-package br.com.lfdb.particity.api.model;
+package br.com.lfdb.zup.api.model;
 
 import java.io.Serializable;
 import java.util.List;
 
-import br.com.lfdb.particity.domain.CategoriaRelato;
+import br.com.lfdb.zup.domain.CategoriaRelato;
 
 public class ReportCategory implements Serializable {
 

@@ -1,7 +1,7 @@
-package br.com.lfdb.particity.fragment;
+package br.com.lfdb.zup.fragment;
 
-import br.com.lfdb.particity.R;
-import br.com.lfdb.particity.core.Constantes;
+import br.com.lfdb.zup.R;
+import br.com.lfdb.zup.core.Constantes;
 
 import android.net.Uri;
 import android.os.Bundle;

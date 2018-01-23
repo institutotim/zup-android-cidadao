@@ -1,4 +1,4 @@
-package br.com.lfdb.particity.fragment;
+package br.com.lfdb.zup.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import br.com.lfdb.particity.R;
+import br.com.lfdb.zup.R;
 import butterknife.ButterKnife;
 import com.squareup.picasso.Picasso;
 

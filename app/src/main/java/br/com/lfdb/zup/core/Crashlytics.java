@@ -1,4 +1,4 @@
-package br.com.lfdb.particity.core;
+package br.com.lfdb.zup.core;
 
 import com.twitter.sdk.android.Twitter;
 

@@ -1,10 +1,10 @@
-package br.com.lfdb.particity.util;
+package br.com.lfdb.zup.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import br.com.lfdb.particity.domain.BuscaEstatisticas;
-import br.com.lfdb.particity.domain.BuscaExplore;
+import br.com.lfdb.zup.domain.BuscaEstatisticas;
+import br.com.lfdb.zup.domain.BuscaExplore;
 
 import com.google.gson.Gson;
 

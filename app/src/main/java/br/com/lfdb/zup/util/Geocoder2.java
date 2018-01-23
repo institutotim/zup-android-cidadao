@@ -1,4 +1,4 @@
-package br.com.lfdb.particity.util;
+package br.com.lfdb.zup.util;
 
 import android.location.Address;
 import android.util.Log;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import br.com.lfdb.particity.core.ConstantesBase;
+import br.com.lfdb.zup.core.ConstantesBase;
 
 public class Geocoder2 {
 

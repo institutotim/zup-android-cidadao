@@ -1,4 +1,4 @@
-package br.com.lfdb.particity.fragment;
+package br.com.lfdb.zup.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

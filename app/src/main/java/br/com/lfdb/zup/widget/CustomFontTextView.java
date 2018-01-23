@@ -1,11 +1,10 @@
-package br.com.lfdb.particity.widget;
+package br.com.lfdb.zup.widget;
 
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.widget.EditText;
 import android.widget.TextView;
-import br.com.lfdb.particity.util.TypefaceHelper;
+import br.com.lfdb.zup.util.TypefaceHelper;
 
 public class CustomFontTextView extends TextView {
 

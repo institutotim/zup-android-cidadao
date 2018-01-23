@@ -1,4 +1,4 @@
-package br.com.lfdb.particity.api.converter;
+package br.com.lfdb.zup.api.converter;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;

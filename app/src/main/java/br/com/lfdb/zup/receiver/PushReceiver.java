@@ -1,4 +1,4 @@
-package br.com.lfdb.particity.receiver;
+package br.com.lfdb.zup.receiver;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -8,9 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 
-import br.com.lfdb.particity.R;
-import br.com.lfdb.particity.SplashActivity;
-import br.com.lfdb.particity.service.LoginService;
+import br.com.lfdb.zup.R;
+import br.com.lfdb.zup.SplashActivity;
+import br.com.lfdb.zup.service.LoginService;
 
 public class PushReceiver extends BroadcastReceiver {
     @Override

@@ -1,4 +1,4 @@
-package br.com.lfdb.particity.widget;
+package br.com.lfdb.zup.widget;
 
 import android.content.Context;
 import android.text.Editable;
@@ -6,7 +6,6 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.NumberKeyListener;
 import android.util.AttributeSet;
-import android.widget.EditText;
 
 public class CepEditText extends CustomFontEditText {
 	private boolean isUpdating;
